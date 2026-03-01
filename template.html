@@ -1,0 +1,416 @@
+
+<!-- PASSWORD GATE -->
+<div id="password-screen" class="screen active">
+  <div class="container page-pad" style="max-width:420px;margin-top:15vh;text-align:center">
+    <h1 style="font-family:'Merriweather',serif;font-weight:900;font-size:28px;margin-bottom:4px">Antisemitism Decoded: <span style="color:var(--gold)">The Game</span></h1>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;font-style:italic">A Jewish Leadership Simulator</p>
+    <label class="label" style="text-align:left;display:block;margin-bottom:6px">Enter Password to Continue</label>
+    <input type="password" id="pw-input" placeholder="Password" style="width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);background:var(--white);font-family:'Merriweather Sans',sans-serif;margin-bottom:6px" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div id="pw-err" style="color:#c0392b;font-size:12px;min-height:20px;margin-bottom:12px"></div>
+    <button class="btn btn-primary" onclick="checkPassword()" style="width:100%">Enter →</button>
+  </div>
+</div>
+
+<!-- INTRO / LANDING PAGE -->
+<div id="intro-screen" class="screen">
+  <div class="landing-header" id="landing-header">
+    <div class="landing-header-kicker" id="lp-kicker"></div>
+    <h1 class="landing-header-title" id="lp-title"></h1>
+  </div>
+  <div class="cold-open-wrap">
+    <div class="cold-open-scenario" id="lp-scenario">
+      <h2 id="lp-scenario-title"></h2>
+      <p id="lp-scenario-body"></p>
+    </div>
+    <div class="cold-choices-label" id="lp-choices-label"></div>
+    <div class="cold-choices" id="lp-choices"></div>
+    <div class="cold-outcome" id="lp-outcome">
+      <div class="cold-outcome-inner">
+        <div class="cold-outcome-label">Outcome</div>
+        <div class="cold-outcome-text" id="lp-outcome-text"></div>
+        <div class="cold-outcome-chips" id="lp-outcome-chips"></div>
+        <div class="cold-outcome-pol">
+          <div class="cold-outcome-pol-label">Political Position</div>
+          <div class="pol-spectrum-lp"><div class="pol-marker-lp" id="lp-pol-marker" style="left:50%"></div></div>
+          <div class="pol-spectrum-lp-labels"><span>← Left</span><span>Center</span><span>Right →</span></div>
+          <div class="pol-shift-lp-text" id="lp-pol-shift"></div>
+        </div>
+        <div class="cold-outcome-seg">
+          <div class="cold-outcome-seg-label">Community Response</div>
+          <div id="lp-seg-bars"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cold-transition" id="lp-transition"><p id="lp-transition-text"></p></div>
+  </div>
+  <div class="landing-hidden-section" id="lp-reveal">
+    <div class="lp-reveal-inner">
+      <div class="lp-reveal-divider"><span id="lp-divider-text"></span></div>
+      <h1 class="lp-reveal-title" id="lp-reveal-h1"></h1>
+      <p class="lp-reveal-subtitle" id="lp-reveal-sub"></p>
+      <p class="lp-reveal-premise" id="lp-reveal-premise"></p>
+      <p class="lp-reveal-stakes" id="lp-reveal-stakes"></p>
+      <div class="cta-area">
+        <button class="btn btn-primary lp-cta-btn" id="lp-cta-btn" onclick="showScreen('char-screen')"></button>
+        <p class="lp-cta-tagline" id="lp-cta-tagline"></p>
+      </div>
+    </div>
+  </div>
+  <div class="landing-hidden-section" id="lp-depth">
+    <div class="lp-depth-strip">
+      <div class="lp-depth-label" id="lp-depth-label"></div>
+      <div class="lp-depth-grid" id="lp-depth-grid"></div>
+    </div>
+  </div>
+  <div class="landing-hidden-section" id="lp-headlines">
+    <div class="lp-headline-scatter">
+      <div class="lp-headline-label" id="lp-headline-label"></div>
+      <div class="lp-headline-clippings" id="lp-headline-clips"></div>
+    </div>
+  </div>
+  <div class="landing-hidden-section" id="lp-bottom">
+    <div class="lp-bottom-cta">
+      <p id="lp-bottom-text"></p>
+      <button class="btn btn-primary lp-cta-btn" onclick="showScreen('char-screen')">Accept the Position →</button>
+    </div>
+  </div>
+  <div class="lp-ticker" id="lp-ticker">
+    <div class="lp-ticker-content" id="lp-ticker-content"></div>
+  </div>
+</div>
+
+<!-- CHARACTER -->
+<div id="char-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">Step 1 of 6 — Character Creation</span>
+      <h2>Who Are You?</h2>
+      <p>Your background and traits shape how the community responds to you — and what options open up when crises hit.</p>
+    </div>
+    <span class="label">Character Name <span style="color:#c0392b">*required</span></span>
+    <div class="name-wrap">
+      <input type="text" id="char-name" placeholder="Enter your character's name..." oninput="onNameInput()" />
+      <div class="name-err" id="name-err">⚠ A character name is required to continue.</div>
+      <div class="name-hint">This is how your character will be addressed throughout the game.</div>
+    </div>
+    <span class="label">Choose Your Avatar <span style="color:#c0392b">*required</span></span>
+    <div class="emoji-grid" id="emoji-grid"></div>
+      <div id="emoji-err" class="err-msg">Please select an avatar emoji above</div>
+    <span class="label" id="trait-label">Select Your Traits (choose 2)</span>
+    <div class="traits-grid" id="traits-grid"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('intro-screen')">← Back</button>
+      <div id="trait-err" class="err-msg">Please select 2 character traits above</div>
+      <button class="btn btn-primary" onclick="tryAdvanceChar()">Next: Choose Organization →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ORG -->
+<div id="org-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">Step 2 of 6 — Organization</span>
+      <h2>Choose Your Organization</h2>
+      <p>Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
+    </div>
+    <div class="card-grid" id="org-grid"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('char-screen')">← Back</button>
+      <button class="btn btn-primary" id="org-next-btn" disabled onclick="goToMission()">Next: Set Your Mission →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION -->
+<div id="mission-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">Step 3 of 6 — Mission</span>
+      <h2>What Is Your Mission?</h2>
+      <p>Your mission defines what your organization stands for. Every decision you make will be flagged as <strong>Mission Aligned ✓</strong> or <strong>Mission Opposed ✗</strong> — and you'll see it before you choose.</p>
+    </div>
+    <div class="mission-list" id="mission-list"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('org-screen')">← Back</button>
+      <button class="btn btn-primary" id="mission-next-btn" disabled onclick="showScreen('advisor-screen')">Next: Choose Advisors →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADVISOR SELECTION (now Step 4) -->
+<div id="advisor-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">Step 4 of 6 — Advisory Team</span>
+      <h2>Build Your Advisory Team</h2>
+      <p>Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.</p>
+    </div>
+    <div class="advisor-selection-hint" id="advisor-hint">Select <strong>3</strong> advisors to continue</div>
+    <div class="card-grid" id="advisor-grid"></div>
+    <div id="advisor-err" class="err-msg"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('mission-screen')">← Back</button>
+      <button class="btn btn-primary" onclick="goToBudget()">Next: Allocate Priorities →</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET ALLOCATION (now Step 5) -->
+<div id="budget-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">Step 5 of 6 — Priority Allocation</span>
+      <h2>Set Your Priorities</h2>
+      <p>Your organization, traits, mission, and advisors give you a starting baseline in each area. Now allocate your remaining priority points to shape where your organization is strongest.</p>
+    </div>
+    <div class="pool-box">
+      <div>
+        <div class="label" style="margin:0 0 2px">Points to Allocate</div>
+        <div class="pool-num ok" id="pool-display">0</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);max-width:220px;text-align:right;font-style:italic">Use + and − to distribute your priority points across stats.</div>
+    </div>
+    <div class="pri-grid" id="pri-grid"></div>
+    <div id="pri-floor-warning" style="display:none;background:#fdf2f2;border:1px solid #e8a0a0;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:#8b1a1a;line-height:1.6"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('advisor-screen')">← Back</button>
+      <button class="btn btn-primary" id="briefing-btn" onclick="goToBriefing()">Next: Your Briefing →</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<!-- BRIEFING -->
+<div id="briefing-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">Step 6 of 6 — Your Briefing</span>
+      <h2>Before You Begin</h2>
+      <p>The outgoing executive director pulls you aside for one last conversation.</p>
+    </div>
+    <div style="max-width:640px;margin:0 auto;font-family:'Merriweather Sans',sans-serif;line-height:1.8;color:#3d3425">
+      <div style="background:#f9f6f0;border-left:4px solid #b8860b;padding:16px 20px;border-radius:6px;margin-bottom:20px;font-size:14px">
+        <div style="font-weight:700;margin-bottom:6px">👨‍💼 Avi Rosen <span style="font-weight:400;opacity:0.7;font-size:12px">· Outgoing Executive Director</span></div>
+        <div style="font-style:italic">"Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching."</div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">📊 Your Stats Are Your Lifeline</div>
+        <div style="font-size:13px">You're managing three core metrics: <strong>Community Trust</strong>, <strong>Staff Morale</strong>, and <strong>Donor Confidence</strong>. Every decision you make affects them — sometimes in ways you don't expect.</div>
+      </div>
+
+      <div style="background:#fdf2f2;border-radius:8px;padding:14px 18px;margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:#8b1a1a">🚨 How You Get Fired</div>
+        <div style="font-size:13px">If <strong>any stat drops to 20 or below</strong>, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit you hardest.</div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">⏳ Entropy Is Real</div>
+        <div style="font-size:13px">Every round, your stats <strong>naturally decay by 2–4 points</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. Progress requires constant effort.</div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">👥 You Can't Please Everyone</div>
+        <div style="font-size:13px">"Community Trust" isn't one number — it's the <strong>weighted average</strong> of how different groups feel about you: Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another. Watch the segment breakdown carefully.</div>
+      </div>
+
+      <div style="background:#f0f7f0;border-radius:8px;padding:14px 18px;margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:#1a5c1a">🏆 How You Win</div>
+        <div style="font-size:13px">At year's end, the board evaluates your overall performance. Score <strong>above 80</strong> and you'll be offered a promotion to lead a national organization. Score <strong>below 40</strong> and your contract won't be renewed. In between? You survived — but just barely.</div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">⭐ Mission Matters</div>
+        <div style="font-size:13px">Your mission stars reflect how consistently you've stayed true to your stated priorities. Lose all your stars and the board loses confidence in your direction. Earn bonus stars through mission-aligned decisions and they'll boost your year-end score.</div>
+      </div>
+
+      <div style="background:#f9f6f0;border-left:4px solid #b8860b;padding:16px 20px;border-radius:6px;margin-bottom:24px;font-size:14px">
+        <div style="font-weight:700;margin-bottom:6px">👨‍💼 Avi Rosen</div>
+        <div style="font-style:italic">"One more thing — there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford."</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('budget-screen')">← Back</button>
+      <button class="btn btn-primary" onclick="startGame()">Begin Your Tenure →</button>
+    </div>
+  </div>
+</div>
+
+<div id="game-screen" class="screen">
+  <div class="hud-banner" id="hud-banner-el" style="display:none">
+    <div class="hud-banner-inner">
+      <span class="hud-char-emoji" id="hud-char-emoji"></span>
+      <span class="hud-char-name" id="hud-char-name"></span>
+      <span class="hud-org-label">—</span>
+      <span class="hud-org-label" id="hud-org-name" style="color:#d4a843"></span>
+    </div>
+  </div>
+  <div class="hud" id="hud-el" style="display:none">
+    <div class="hud-inner">
+      <div class="hud-politics" id="hud-politics" onclick="togglePolDetail(event)">
+        <span class="hud-politics-label">Political Capital</span>
+        <div class="pol-spectrum">
+          <div class="pol-marker-glow" id="pol-marker-glow"></div>
+          <div class="pol-marker" id="pol-marker"></div>
+        </div>
+        <div class="hud-politics-vals">
+          <span class="pol-pos-label" id="pol-pos-label">Center</span>
+          <span class="pol-clout-label" id="pol-clout-val">0</span>
+        </div>
+        <div class="pol-detail" id="pol-detail">
+          <div class="pol-detail-title">⚖️ Political Capital</div>
+          <div class="pol-detail-row"><span>Position</span><span id="pol-d-position">Center</span></div>
+          <div class="pol-detail-row"><span>Clout</span><span id="pol-d-clout">0</span></div>
+          <div class="pol-detail-spectrum"><div class="pol-detail-marker" id="pol-d-marker"></div></div>
+          <div class="pol-detail-labels"><span>← Left</span><span>Center</span><span>Right →</span></div>
+          <div class="pol-detail-row"><span>Effectiveness</span><span id="pol-d-eff">Normal</span></div>
+          <div id="pol-d-eff-bar" class="pol-effectiveness pol-eff-neutral"></div>
+          <div class="pol-detail-desc" id="pol-d-desc">Your political position affects which coalitions, politicians, and outcomes are available to you.</div>
+        </div>
+      </div>
+      <div class="meters" id="hud-meters"></div>
+      <div class="hud-budget-mission">
+        <div class="hud-budget" id="hud-budget">
+          <span class="hud-budget-label">Budget</span>
+          <div class="hud-budget-bags" id="hud-budget-bags"></div>
+          <span class="hud-budget-val" id="hud-budget-val">0</span>
+        </div>
+        <div class="hud-mission">
+          <span class="hud-stars-label">Mission</span>
+          <span class="hud-stars" id="hud-stars"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hud-spacer" id="hud-spacer"></div>
+  <div class="invest-strip" id="invest-strip">
+    <div class="invest-strip-inner" id="invest-strip-inner"></div>
+  </div>
+  <div class="coalition-strip" id="coalition-strip" style="display:none">
+    <div class="coalition-strip-inner" id="coalition-strip-inner"></div>
+  </div>
+  <div class="game-main">
+    <div class="game-inner" id="game-inner"></div>
+  </div>
+  <!-- CONVERSATION OVERLAY -->
+  <div class="conv-overlay" id="conv-overlay" style="display:none">
+    <div class="container page-pad" style="padding-top:24px;padding-bottom:40px">
+      <div class="conv-card" id="conv-card">
+        <!-- Header -->
+        <div class="conv-header">
+          <div class="conv-char">
+            <div class="conv-avatar" id="conv-avatar"></div>
+            <div class="conv-char-info">
+              <span class="conv-char-name" id="conv-char-name"></span>
+              <span class="conv-char-role" id="conv-char-role"></span>
+              <span class="conv-context" id="conv-context"></span>
+            </div>
+          </div>
+          <div class="disp-meter">
+            <span class="disp-label">Disposition</span>
+            <div class="disp-track">
+              <div class="disp-fill" id="disp-fill"></div>
+            </div>
+            <span class="disp-word" id="disp-word"></span>
+          </div>
+        </div>
+        <!-- Turn indicator -->
+        <div class="conv-turn-track" id="conv-turn-track"></div>
+        <!-- Transcript -->
+        <div class="conv-transcript" id="conv-transcript"></div>
+        <!-- Choices -->
+        <div class="conv-choices" id="conv-choices"></div>
+      </div>
+    </div>
+  </div>
+  <!-- INVESTMENT MODAL -->
+  <div class="invest-modal-overlay" id="invest-modal-overlay" onclick="if(event.target===this)closeInvestModal()">
+    <div class="invest-modal" id="invest-modal-content">
+      <button class="invest-modal-close" onclick="closeInvestModal()">✕</button>
+      <div id="invest-modal-body"></div>
+    </div>
+  </div>
+  <!-- INBOX PANEL (slides up from bottom) -->
+  <div class="inbox-overlay" id="inbox-overlay" onclick="toggleInbox()"></div>
+  <div class="inbox-panel" id="inbox-panel">
+    <div class="inbox-panel-header">
+      <span class="inbox-panel-title">📬 Inbox</span>
+      <button class="inbox-close" onclick="toggleInbox()">✕</button>
+    </div>
+    <div class="inbox-panel-body" id="inbox-panel-body">
+      <div class="inbox-empty">No messages yet.</div>
+    </div>
+  </div>
+  <!-- INBOX STRIP (above news ticker) -->
+  <div class="inbox-strip" id="inbox-strip" style="display:none">
+    <div class="inbox-strip-inner">
+      <span class="inbox-strip-label" onclick="toggleInbox()">📬 Inbox</span>
+      <div class="inbox-strip-items" id="inbox-strip-items"></div>
+    </div>
+  </div>
+  <!-- NEWS TICKER -->
+  <div class="news-ticker-wrap" id="news-ticker">
+    <div class="news-ticker-track">
+      <div class="news-ticker-content" id="ticker-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- END / YEAR END -->
+<div id="end-screen" class="screen">
+  <div class="masthead">
+    <h1 id="end-title">Year's <span>End</span></h1>
+    <p class="masthead-sub" id="end-subtitle"></p>
+  </div>
+  <div class="container page-pad" style="padding-top:0">
+    <div class="end-card">
+      <div id="end-heading" style="font-family:'Merriweather',serif;font-weight:900;font-size:22px;margin-bottom:13px;"></div>
+      <span class="end-score-lbl">Final Score</span>
+      <div class="end-score" id="end-score"></div>
+      <div class="end-grade" id="end-grade"></div>
+      <div class="end-meters" id="end-meters"></div>
+      <p class="end-verdict" id="end-verdict"></p>
+      <div class="end-actions" id="end-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMOTION -->
+<div id="promo-screen" class="screen">
+  <div class="masthead">
+    <h1>You've Been <span>Promoted</span></h1>
+    <p class="masthead-sub">Choose your next organization</p>
+  </div>
+  <div class="container page-pad" style="padding-top:0">
+    <div class="section-header">
+      <h2>A Larger Stage Awaits</h2>
+      <p id="promo-intro">Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you.</p>
+    </div>
+    <div class="promo-list" id="promo-list"></div>
+  </div>
+</div>
+
+<!-- PROMO BUDGET -->
+<div id="promo-budget-screen" class="screen">
+  <div class="container page-pad">
+    <div class="section-header">
+      <span class="step-ind">New Organization — Reset Priorities</span>
+      <h2>Set Your New Priorities</h2>
+      <p>You're leading a larger, more complex organization now. Reallocate your priorities for this new challenge.</p>
+    </div>
+    <div class="budget-disp"><span>New Operating Budget</span><span id="promo-budget-amt">$0</span></div>
+    <div class="pool-box">
+      <div>
+        <div class="label" style="margin:0 0 2px">Points Remaining</div>
+        <div class="pool-num ok" id="promo-pool-display">0</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);max-width:200px;text-align:right;font-style:italic">Drag sliders to allocate your new priorities.</div>
+    </div>
+    <div class="pri-grid" id="promo-pri-grid"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startPromoGame()">Begin New Tenure →</button>
+    </div>
+  </div>
+</div>
+

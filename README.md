@@ -1,0 +1,2 @@
+# AntisemitismDecoded
+Jewish leadership simulator

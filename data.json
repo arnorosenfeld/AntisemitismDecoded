@@ -1,0 +1,4114 @@
+{
+  "config": {
+    "gameTitle": "Antisemitism Decoded: The Game",
+    "totalRounds": 6,
+    "actionPointsPerRound": 3,
+    "startingBudget": 500000,
+    "traitsToSelect": 2,
+    "priorityTotal": 150,
+    "priorityMin": 10,
+    "priorityMax": 70,
+    "missionStartStars": 3,
+    "missionMaxStars": 5,
+    "failureBarThreshold": 20,
+    "failureScoreThreshold": 40,
+    "promotionThreshold": 80,
+    "inboxPerRound": 2,
+    "scoreWeights": {
+      "budget": 0.25,
+      "trust": 0.25,
+      "morale": 0.25,
+      "donors": 0.25
+    },
+    "roundNames": [
+      {
+        "year": "Year 1",
+        "round": "Round 1",
+        "hebrew": "Elul",
+        "english": "September"
+      },
+      {
+        "year": "Year 1",
+        "round": "Round 2",
+        "hebrew": "Tishrei",
+        "english": "October \u2014 High Holidays"
+      },
+      {
+        "year": "Year 1",
+        "round": "Round 3",
+        "hebrew": "Kislev",
+        "english": "December"
+      },
+      {
+        "year": "Year 1",
+        "round": "Round 4",
+        "hebrew": "Shevat",
+        "english": "February"
+      },
+      {
+        "year": "Year 1",
+        "round": "Round 5",
+        "hebrew": "Nisan",
+        "english": "April"
+      },
+      {
+        "year": "Year 1",
+        "round": "Round 6",
+        "hebrew": "Sivan",
+        "english": "June"
+      }
+    ],
+    "editorPassword": "admin1234",
+    "missionStarPoints": 5,
+    "pageText": {
+      "introScreen": {
+        "title": "Antisemitism Decoded:",
+        "titleAccent": "The Game",
+        "subtitle": "A Jewish leadership simulator",
+        "body": "You're a rising leader in the Jewish community. Search firms keep calling and the world is your oyster. Pick the type of organization you want to run. Then get ready \u2014 your staff is hopeful and the community is counting on you.\n\nOver the course of several rounds, you'll face real decisions that leaders like you make every day \u2014 managing staff, courting donors, navigating crises, and fighting for your mission. Every choice has consequences.\n\nCan you keep your organization alive and thriving?",
+        "beginButton": "BEGIN \u2192",
+        "tagline": "What would you do?"
+      },
+      "charScreen": {
+        "stepLabel": "Step 1 of 5 \u2014 Character Creation",
+        "heading": "Who Are You?",
+        "description": "Your background and traits shape how the community responds to you \u2014 and what options open up when crises hit."
+      },
+      "orgScreen": {
+        "stepLabel": "Step 2 of 5 \u2014 Organization",
+        "heading": "Choose Your Organization",
+        "description": "Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
+      },
+      "missionScreen": {
+        "stepLabel": "Step 3 of 5 \u2014 Mission",
+        "heading": "What Is Your Mission?",
+        "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned \u2713, Mission Opposed \u2717, or neutral \u2014 and you'll see it before you choose."
+      },
+      "budgetScreen": {
+        "stepLabel": "Step 4 of 5 \u2014 Priorities",
+        "heading": "Set Your Priorities",
+        "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required \u2014 you cannot max everything out."
+      },
+      "gameScreen": {
+        "actionHeading": "Choose Your Next Action",
+        "noApMessage": "No action points remaining. Click \"End Round\" to continue.",
+        "endRoundButton": "End Round \u2192"
+      },
+      "endScreen": {
+        "anotherYearTitle": "End of Year",
+        "failureTitle": "Your Tenure Has Ended",
+        "promotionTitle": "You've Been Promoted",
+        "retirementTitle": "A Distinguished Career",
+        "playAgainButton": "Play Again \u2192",
+        "startOverButton": "Start Over"
+      },
+      "promoScreen": {
+        "heading": "A Larger Stage Awaits",
+        "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
+      },
+      "advisorScreen": {
+        "stepLabel": "Step 5 of 5 \u2014 Advisory Team",
+        "heading": "Build Your Advisory Team",
+        "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
+      }
+    },
+    "momentumWindow": 2,
+    "momentumBonus": 2,
+    "momentumPenalty": 3,
+    "advisorSlots": 3,
+    "advisorBonusStacking": "best"
+  },
+  "stats": [
+    {
+      "id": "budget",
+      "label": "Budget",
+      "startBase": 65
+    },
+    {
+      "id": "trust",
+      "label": "Trust",
+      "startBase": 60
+    },
+    {
+      "id": "morale",
+      "label": "Morale",
+      "startBase": 65
+    },
+    {
+      "id": "donors",
+      "label": "Donors",
+      "startBase": 60
+    }
+  ],
+  "avatarEmojis": [
+    "\ud83d\udc69",
+    "\ud83d\udc68",
+    "\ud83d\udc69\u200d\ud83d\udcbc",
+    "\ud83d\udc68\u200d\ud83d\udcbc",
+    "\ud83d\udc69\u200d\ud83c\udfeb",
+    "\ud83d\udc68\u200d\ud83c\udfeb",
+    "\ud83d\udc69\u200d\u2696\ufe0f",
+    "\ud83d\udc68\u200d\u2696\ufe0f",
+    "\ud83e\uddd5",
+    "\ud83d\udc72",
+    "\ud83e\uddd4",
+    "\ud83d\udc69\u200d\ud83e\uddb1",
+    "\ud83d\udc68\u200d\ud83e\uddb1",
+    "\ud83d\udc69\u200d\ud83e\uddb3",
+    "\ud83d\udc68\u200d\ud83e\uddb3",
+    "\ud83d\udc75",
+    "\ud83e\udd81",
+    "\ud83e\udd8a",
+    "\ud83d\udc3a",
+    "\ud83e\udd89",
+    "\ud83d\udc3b",
+    "\ud83d\udc3c",
+    "\ud83e\udd85",
+    "\u2721\ufe0f"
+  ],
+  "characterTraits": [
+    {
+      "id": "community_insider",
+      "name": "Community Insider",
+      "description": "You've been in Jewish communal life for decades. People know you \u2014 and you know where the bodies are buried.",
+      "statModifiers": {
+        "trust": 8,
+        "donors": 5
+      },
+      "unlocksChoices": []
+    },
+    {
+      "id": "outsider_voice",
+      "name": "Outsider Voice",
+      "description": "You came from outside the Jewish communal bubble. You see things others miss \u2014 and don't owe anyone favors.",
+      "statModifiers": {
+        "morale": 8
+      },
+      "unlocksChoices": []
+    },
+    {
+      "id": "fundraiser",
+      "name": "Master Fundraiser",
+      "description": "You have a gift for the ask. Donors take your calls and write bigger checks than they planned.",
+      "statModifiers": {
+        "budget": 10,
+        "donors": 8
+      },
+      "unlocksChoices": [
+        "major_gift_option"
+      ]
+    },
+    {
+      "id": "organizer",
+      "name": "Grassroots Organizer",
+      "description": "You built power from the ground up. You know how to mobilize people who've never shown up before.",
+      "statModifiers": {
+        "trust": 6,
+        "morale": 8
+      },
+      "unlocksChoices": [
+        "coalition_option"
+      ]
+    },
+    {
+      "id": "scholar",
+      "name": "Jewish Scholar",
+      "description": "Your depth of Jewish learning gives you moral authority. When you cite Torah, people listen.",
+      "statModifiers": {
+        "trust": 5
+      },
+      "unlocksChoices": [
+        "halachic_option"
+      ]
+    },
+    {
+      "id": "political_operator",
+      "name": "Political Operator",
+      "description": "You understand power. You know who to call, what to trade, and when to hold your fire.",
+      "statModifiers": {
+        "donors": 6,
+        "budget": 6
+      },
+      "unlocksChoices": [
+        "political_option"
+      ]
+    },
+    {
+      "id": "media_savvy",
+      "name": "Media Savvy",
+      "description": "You know how to work a story. Journalists take your calls and you rarely come off badly in print.",
+      "statModifiers": {
+        "trust": 10
+      },
+      "unlocksChoices": [
+        "press_option"
+      ]
+    },
+    {
+      "id": "burnout_survivor",
+      "name": "Burnout Survivor",
+      "description": "You've been through the fire before. You protect your staff because you know what it costs when no one does.",
+      "statModifiers": {
+        "morale": 12
+      },
+      "unlocksChoices": [
+        "staff_support_option"
+      ]
+    }
+  ],
+  "organizations": [
+    {
+      "id": "left",
+      "name": "Jewish Voice for Justice",
+      "badge": "Progressive",
+      "badgeClass": "badge-left",
+      "description": "A left-wing advocacy org focused on social justice, Palestinian rights, anti-racism, and progressive domestic policy.",
+      "traits": [
+        "Progressive donor base: bold stances required",
+        "Coalition-dependent: allies can turn quickly",
+        "Authenticity under constant scrutiny"
+      ],
+      "statModifiers": {
+        "trust": -5
+      },
+      "allowedMissions": [
+        "antisemitism_left",
+        "social_justice",
+        "israel_peace",
+        "diaspora_unity"
+      ],
+      "politicalTilt": [
+        "left"
+      ],
+      "promotionEligible": [
+        "left",
+        "center"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "progressive"
+      ]
+    },
+    {
+      "id": "right",
+      "name": "Am Tzion Institute",
+      "badge": "Conservative",
+      "badgeClass": "badge-right",
+      "description": "A right-wing pro-Israel advocacy org focused on combating left-wing antisemitism and supporting strong US-Israel ties.",
+      "traits": [
+        "Major donor driven: consistency expected",
+        "Strong Israel focus: deviations are costly",
+        "Credibility at risk on right-wing antisemitism"
+      ],
+      "statModifiers": {
+        "donors": 8
+      },
+      "allowedMissions": [
+        "antisemitism_right",
+        "israel_security",
+        "jewish_identity",
+        "diaspora_unity"
+      ],
+      "politicalTilt": [
+        "right"
+      ],
+      "promotionEligible": [
+        "right",
+        "center"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "conservative"
+      ]
+    },
+    {
+      "id": "center",
+      "name": "Jewish Civic Partnership",
+      "badge": "Centrist",
+      "badgeClass": "badge-center",
+      "description": "A centrist advocacy org seeking bipartisan coalitions on antisemitism, Israel, and Jewish continuity.",
+      "traits": [
+        "Bipartisan by design: balance is everything",
+        "Moderate donors: no dramatic moves",
+        "Credibility through consistency"
+      ],
+      "statModifiers": {
+        "trust": 5,
+        "budget": 3
+      },
+      "allowedMissions": [
+        "antisemitism_all",
+        "diaspora_unity",
+        "jewish_identity",
+        "israel_security"
+      ],
+      "politicalTilt": [
+        "center"
+      ],
+      "promotionEligible": [
+        "left",
+        "right",
+        "center"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "centrist"
+      ]
+    },
+    {
+      "id": "jcc",
+      "name": "Lakeview JCC",
+      "badge": "Apolitical",
+      "badgeClass": "badge-apolitical",
+      "description": "A community hub providing programs, childcare, fitness, and cultural events for Jews of all backgrounds.",
+      "traits": [
+        "Pluralistic mandate: serve all Jews",
+        "Budget driven by membership revenue",
+        "Apolitical pressure: controversy is costly"
+      ],
+      "statModifiers": {
+        "morale": 5,
+        "trust": 5
+      },
+      "allowedMissions": [
+        "community_hub",
+        "jewish_identity",
+        "diaspora_unity",
+        "social_justice"
+      ],
+      "politicalTilt": [
+        "center"
+      ],
+      "promotionEligible": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "centrist"
+      ]
+    }
+  ],
+  "nationalOrganizations": [
+    {
+      "id": "nat_left",
+      "name": "American Jewish Action Network",
+      "badge": "Progressive National",
+      "badgeClass": "badge-left",
+      "description": "A national progressive Jewish advocacy organization working on social justice, voting rights, and Israeli-Palestinian peace at the federal level.",
+      "traits": [
+        "National media: every statement is amplified",
+        "Large progressive donor base across 30+ cities",
+        "Coalition work with major civil rights organizations"
+      ],
+      "statModifiers": {
+        "trust": -8,
+        "morale": 5
+      },
+      "allowedMissions": [
+        "antisemitism_left",
+        "social_justice",
+        "israel_peace",
+        "diaspora_unity"
+      ],
+      "politicalTilt": [
+        "left"
+      ],
+      "startingBudget": 2000000,
+      "orgLevel": "national",
+      "scenarioCategories": [
+        "progressive"
+      ]
+    },
+    {
+      "id": "nat_right",
+      "name": "Israel-America Security Alliance",
+      "badge": "Conservative National",
+      "badgeClass": "badge-right",
+      "description": "A national pro-Israel advocacy organization with deep congressional relationships, focused on US-Israel relations and combating left-wing antisemitism.",
+      "traits": [
+        "Major donor network spans Wall Street and Silicon Valley",
+        "Congressional relationships on both sides of the aisle",
+        "High expectations: any misstep is front-page news"
+      ],
+      "statModifiers": {
+        "donors": 10,
+        "trust": -5
+      },
+      "allowedMissions": [
+        "antisemitism_right",
+        "israel_security",
+        "jewish_identity",
+        "diaspora_unity"
+      ],
+      "politicalTilt": [
+        "right"
+      ],
+      "startingBudget": 2000000,
+      "orgLevel": "national",
+      "scenarioCategories": [
+        "conservative"
+      ]
+    },
+    {
+      "id": "nat_center",
+      "name": "Jewish Leadership Council",
+      "badge": "Centrist National",
+      "badgeClass": "badge-center",
+      "description": "The umbrella body for mainstream American Jewish advocacy, representing hundreds of local organizations and speaking for the communal consensus.",
+      "traits": [
+        "Represents diverse constituency: every decision is contested",
+        "Largest platform in Jewish America",
+        "Bipartisan credibility is your greatest asset"
+      ],
+      "statModifiers": {
+        "trust": 5
+      },
+      "allowedMissions": [
+        "antisemitism_all",
+        "diaspora_unity",
+        "jewish_identity",
+        "israel_security"
+      ],
+      "politicalTilt": [
+        "center"
+      ],
+      "startingBudget": 3000000,
+      "orgLevel": "national",
+      "scenarioCategories": [
+        "centrist"
+      ]
+    },
+    {
+      "id": "nat_jcc",
+      "name": "Jewish Community Centers of America",
+      "badge": "National Network",
+      "badgeClass": "badge-apolitical",
+      "description": "The national JCC association supporting 150+ community centers across North America with programming, funding, and crisis response.",
+      "traits": [
+        "Network of 150 local JCCs depending on your leadership",
+        "Apolitical brand: politics fractures the network",
+        "Security and continuity are the twin mandates"
+      ],
+      "statModifiers": {
+        "morale": 5
+      },
+      "allowedMissions": [
+        "community_hub",
+        "jewish_identity",
+        "diaspora_unity"
+      ],
+      "politicalTilt": [
+        "center"
+      ],
+      "startingBudget": 2500000,
+      "orgLevel": "national",
+      "scenarioCategories": [
+        "centrist"
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": "antisemitism_all",
+      "name": "Combat Antisemitism from All Directions",
+      "description": "Your organization fights antisemitism wherever it comes from \u2014 far right, far left, and everywhere in between.",
+      "availableTo": [
+        "center",
+        "jcc",
+        "nat_center"
+      ],
+      "statBonus": {
+        "trust": 3
+      }
+    },
+    {
+      "id": "antisemitism_left",
+      "name": "Counter Antisemitism from the Progressive Left",
+      "description": "You focus on left-wing antisemitism \u2014 in progressive movements, on campuses, and in political discourse.",
+      "availableTo": [
+        "left",
+        "center",
+        "nat_left",
+        "nat_center"
+      ],
+      "statBonus": {
+        "donors": -5
+      }
+    },
+    {
+      "id": "antisemitism_right",
+      "name": "Counter Antisemitism from the Far Right",
+      "description": "You focus on right-wing and white nationalist antisemitism \u2014 the most statistically deadly threat to Jewish Americans.",
+      "availableTo": [
+        "right",
+        "center",
+        "nat_right",
+        "nat_center"
+      ],
+      "statBonus": {
+        "trust": 5
+      }
+    },
+    {
+      "id": "israel_security",
+      "name": "Strengthen US-Israel Relations",
+      "description": "Your primary mission is securing American political and financial support for Israel.",
+      "availableTo": [
+        "right",
+        "center",
+        "nat_right",
+        "nat_center"
+      ],
+      "statBonus": {
+        "donors": 8,
+        "trust": -3
+      }
+    },
+    {
+      "id": "israel_peace",
+      "name": "Advocate for Israeli-Palestinian Peace",
+      "description": "You push for a two-state solution, lifting the blockade, and accountability for both sides.",
+      "availableTo": [
+        "left",
+        "nat_left"
+      ],
+      "statBonus": {
+        "donors": -10
+      }
+    },
+    {
+      "id": "social_justice",
+      "name": "Jewish Social Justice Advocacy",
+      "description": "You ground your work in Jewish values \u2014 tikkun olam, tzedakah \u2014 applied to racial justice, immigrants' rights, and economic equality.",
+      "availableTo": [
+        "left",
+        "jcc",
+        "nat_left"
+      ],
+      "statBonus": {
+        "morale": 8,
+        "donors": -5
+      }
+    },
+    {
+      "id": "jewish_identity",
+      "name": "Jewish Identity and Continuity",
+      "description": "Your mission is keeping Jews Jewish \u2014 through education, culture, day schools, and fighting assimilation.",
+      "availableTo": [
+        "right",
+        "center",
+        "jcc",
+        "nat_right",
+        "nat_center",
+        "nat_jcc"
+      ],
+      "statBonus": {
+        "morale": 5
+      }
+    },
+    {
+      "id": "community_hub",
+      "name": "Be the Center of Jewish Community Life",
+      "description": "You aim to be the place every Jew in your city turns to \u2014 for culture, connection, childcare, and crisis.",
+      "availableTo": [
+        "jcc",
+        "nat_jcc"
+      ],
+      "statBonus": {
+        "trust": 8,
+        "morale": 5
+      }
+    },
+    {
+      "id": "diaspora_unity",
+      "name": "Unite the Jewish Diaspora",
+      "description": "You work to build bridges across denominations, politics, and geographies.",
+      "availableTo": [
+        "left",
+        "right",
+        "center",
+        "jcc",
+        "nat_left",
+        "nat_right",
+        "nat_center",
+        "nat_jcc"
+      ],
+      "statBonus": {
+        "trust": 5
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "fundraise",
+      "name": "Fundraise",
+      "icon": "\ud83d\udcb0",
+      "description": "Court donors, plan events, write grants. Keeps the lights on but can blur your mission.",
+      "cost": 1,
+      "baseEffects": {
+        "budget": 8,
+        "donors": 5,
+        "morale": -3
+      },
+      "outcomeText": "You spend the week in donor meetings and grant applications.",
+      "triggersEventType": "fundraise"
+    },
+    {
+      "id": "engage",
+      "name": "Community Engagement",
+      "icon": "\ud83e\udd1d",
+      "description": "Host programs, build relationships, show up for your community. Builds trust and morale.",
+      "cost": 1,
+      "baseEffects": {
+        "trust": 8,
+        "morale": 6,
+        "budget": -4,
+        "donors": 2
+      },
+      "outcomeText": "You spend time with your community \u2014 in synagogues, at events, at school pickups.",
+      "triggersEventType": "community"
+    },
+    {
+      "id": "advocate",
+      "name": "Advocacy",
+      "icon": "\ud83d\udce2",
+      "description": "Speak out, write op-eds, lobby, build coalitions. Advances your mission but can cost you.",
+      "cost": 1,
+      "baseEffects": {
+        "trust": 4,
+        "donors": -3,
+        "budget": -3
+      },
+      "outcomeText": "You take a visible public position. Some people are energized. Others are watching carefully.",
+      "triggersEventType": "advocacy"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "antisemitism_incident",
+      "tag": "Crisis",
+      "title": "Antisemitic Vandalism at the Local University",
+      "body": "Swastikas were spray-painted on the Jewish student center at the nearby university. The local Jewish community is shaken. Your board chair calls you asking what you intend to do. Media requests are already coming in.",
+      "trigger": "community",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Issue a strong, unequivocal public statement condemning the attack and calling on university leadership to act.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "diaspora_unity"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "Your statement is widely shared. Community members feel seen. Several new donors reach out.",
+              "effects": {
+                "trust": 10,
+                "donors": 5,
+                "morale": 5,
+                "budget": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Coordinate a coalition response with other civil rights organizations before speaking publicly.",
+          "missionAligned": [
+            "social_justice",
+            "diaspora_unity",
+            "antisemitism_all"
+          ],
+          "requiresUnlock": "coalition_option",
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "The coalition statement takes three days. Some community members feel you were too slow. The statement itself is broadly praised.",
+              "effects": {
+                "trust": 5,
+                "morale": 3,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Organize a campus solidarity vigil and connect affected students to resources.",
+          "missionAligned": [
+            "community_hub",
+            "diaspora_unity",
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "Attendance is strong. You receive heartfelt appreciation from students. Less visible nationally but deeply meaningful locally.",
+              "effects": {
+                "trust": 8,
+                "morale": 10,
+                "budget": -8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Wait for more information before acting. Issue a brief holding statement.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The perpetrator turns out to be a current student. Your caution was partly wise, but community members noticed the silence.",
+              "effects": {
+                "trust": -5,
+                "donors": -5,
+                "morale": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "We need to be visible but careful. A wrong word now could define us for years.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": false
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "The students need to hear from us TODAY. Not tomorrow, not after a committee meeting. Today.",
+          "recommendsChoice": 2,
+          "effectModifier": {
+            "morale": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "Three donors have already called. They want to see leadership, not hesitation.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "donors": 2
+          },
+          "explicit": true
+        }
+      ]
+    },
+    {
+      "id": "major_donor",
+      "tag": "Development",
+      "title": "A Major Donor Makes a Restricted Gift Offer",
+      "body": "Harold Weinstein, a longtime real-estate developer and major donor, offers $300,000 \u2014 but the gift must fund a specific program tangential to your core work. Several staff members have quietly opposed it on strategic grounds.",
+      "trigger": "fundraise",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Accept the full restricted gift and launch the program as Harold envisions it.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The money stabilizes your budget significantly. But two senior staff members resign in protest over mission drift.",
+              "effects": {
+                "budget": 25,
+                "donors": 10,
+                "morale": -12
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Accept the gift but negotiate to modify the program's scope to align better with your mission.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "diaspora_unity",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "After difficult conversations, Harold agrees to modified terms. He is slightly less enthusiastic but still supportive.",
+              "effects": {
+                "budget": 15,
+                "donors": 5,
+                "morale": 3,
+                "trust": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Decline the restricted gift and have an honest conversation with Harold about your mission.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "diaspora_unity",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Harold ultimately respects your integrity. His annual gift remains. Word gets around that your organization holds firm on mission.",
+              "effects": {
+                "donors": 8,
+                "morale": 8,
+                "trust": 8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Accept and immediately find a matching unrestricted donor to protect your core work.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "diaspora_unity",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "requiresUnlock": "major_gift_option",
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "You accept Harold's gift AND secure a matching unrestricted gift. The new program runs but your core work is fully protected.",
+              "effects": {
+                "budget": 30,
+                "donors": 15,
+                "morale": 5,
+                "trust": 8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "dev_director",
+          "text": "$300K is transformational money. We can make almost anything work with that.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "donors": 3
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "If we take restricted money for the wrong program, we lose the staff who do our actual work.",
+          "recommendsChoice": 2,
+          "effectModifier": {
+            "morale": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "board_chair",
+          "text": "Harold has been with us for 15 years. We need to handle this without burning bridges.",
+          "recommendsChoice": 1,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": false
+        }
+      ]
+    },
+    {
+      "id": "israel_statement",
+      "tag": "Israel",
+      "title": "A Request for a Statement on the Latest Conflict",
+      "body": "Following renewed fighting in Gaza, young professionals in your community circulate a letter urging you to issue a statement. Some want condemnation of Israeli military actions. Others want unequivocal solidarity with Israel. Your board is divided.",
+      "trigger": "advocacy",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Issue a statement of solidarity with Israel's right to self-defense, without addressing civilian casualties.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Your right-leaning donors and board members are relieved. Several progressive staff members express deep disappointment.",
+              "effects": {
+                "donors": 8,
+                "morale": -10,
+                "budget": 5,
+                "trust": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Issue a statement expressing concern for all civilian casualties on both sides, calling for a ceasefire.",
+          "missionAligned": [
+            "israel_peace",
+            "social_justice"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Progressive community members are energized. Several major donors freeze their gifts pending clarification.",
+              "effects": {
+                "trust": 5,
+                "donors": -15,
+                "morale": 8,
+                "budget": -10
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Issue a carefully balanced statement affirming Israel's security while acknowledging humanitarian concerns.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "Almost everyone finds something to criticize. A few people appreciate the nuance. No one forwards it.",
+              "effects": {
+                "trust": -3,
+                "donors": -3,
+                "morale": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Frame your statement entirely through Jewish textual tradition \u2014 pikuach nefesh, the sanctity of all human life.",
+          "missionAligned": [
+            "jewish_identity",
+            "diaspora_unity",
+            "community_hub"
+          ],
+          "requiresUnlock": "halachic_option",
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The statement is widely praised by rabbis across denominations. It sidesteps the political fight and elevates the conversation.",
+              "effects": {
+                "trust": 8,
+                "morale": 5,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "Whatever we say will be screenshot'd and shared out of context. Let's be precise.",
+          "recommendsChoice": 2,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": false
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "Our young professionals are watching. Silence is a statement too.",
+          "recommendsChoice": 1,
+          "effectModifier": {
+            "morale": 2
+          },
+          "explicit": false
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "I need to be honest \u2014 two of our top five donors have already told me what they expect us to say.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "donors": 3
+          },
+          "explicit": false
+        }
+      ]
+    },
+    {
+      "id": "staff_burnout",
+      "tag": "Internal",
+      "title": "Staff Burnout Before the High Holiday Season",
+      "body": "It's early September. Your two biggest events of the year require enormous staff effort. Your program director reports three staff are burned out, one has requested leave, and everyone is underpaid compared to similar roles.",
+      "trigger": "community",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Offer meaningful raises funded by drawing down reserves, and hire a part-time events coordinator.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "diaspora_unity",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The events go well. Staff morale surges. Your reserves are leaner than your board wanted.",
+              "effects": {
+                "morale": 18,
+                "budget": -15,
+                "trust": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Acknowledge the problem and promise a compensation review after the High Holidays, offering small bonuses now.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Staff appreciate being heard. The compensation review reveals how underpaid everyone is \u2014 creating pressure for next year.",
+              "effects": {
+                "morale": 8,
+                "budget": -5,
+                "trust": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Recruit community volunteers aggressively to fill the capacity gap.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "You find enough volunteers, but the burden falls on your most burned-out staff. One of them quits the week before the gala.",
+              "effects": {
+                "morale": -8,
+                "budget": -3,
+                "donors": 3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "diaspora_unity",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "requiresUnlock": "staff_support_option",
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Some donors are disappointed. But your team enters the year rested and turnover hits zero.",
+              "effects": {
+                "morale": 15,
+                "donors": -8,
+                "trust": 3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "program_dir",
+          "text": "I'm telling you right now \u2014 if we don't address comp, I'll lose my best people by December.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "morale": 3
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "The board approved this budget. Drawing down reserves without authorization will be a governance issue.",
+          "recommendsChoice": 1,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": true
+        }
+      ]
+    },
+    {
+      "id": "board_conflict",
+      "tag": "Governance",
+      "title": "Two Board Members at War",
+      "body": "Two of your most influential board members \u2014 both major donors \u2014 have come into open conflict. The dispute began over programming but has become personal. One walked out of last month's board meeting. Both are calling you asking you to take sides.",
+      "trigger": "advocacy",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Convene a facilitated conversation between the two with an outside mediator.",
+          "missionAligned": [
+            "diaspora_unity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "The mediator earns both parties' trust. Neither is fully satisfied but both agree to remain on the board.",
+              "effects": {
+                "trust": 5,
+                "donors": 3,
+                "morale": 8,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Meet with each board member individually, listening carefully but refusing to take sides.",
+          "missionAligned": [
+            "diaspora_unity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "Both feel heard. The conflict simmers but doesn't boil over. You earn a reputation for steadiness.",
+              "effects": {
+                "trust": 8,
+                "morale": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Side with the board member whose position you actually agree with and say so.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The situation resolves faster, but the other board member reduces her gift and becomes a source of gossip.",
+              "effects": {
+                "trust": -8,
+                "donors": -10
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Quietly engineer a public honor for one of them, making it impossible to continue the feud without looking petty.",
+          "missionAligned": [
+            "diaspora_unity"
+          ],
+          "requiresUnlock": "political_option",
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "The feud ends quickly. Neither board member figures out how it happened. Pure political craft.",
+              "effects": {
+                "trust": 5,
+                "donors": 8,
+                "morale": 10,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "I've seen board conflicts destroy organizations. This needs to be contained fast.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "Between them, they represent $180K in annual giving. We can't afford to lose either.",
+          "recommendsChoice": 1,
+          "effectModifier": {
+            "donors": 2
+          },
+          "explicit": false
+        }
+      ]
+    },
+    {
+      "id": "left_coalition",
+      "tag": "Coalition",
+      "title": "A Progressive Coalition Asks You to Sign an Embargo Letter",
+      "body": "A broad progressive coalition is circulating a letter demanding an arms embargo on Israel. Many of your staff signed a staff-side version. Some of your major donors have explicitly said they will reduce gifts if you sign anything critical of Israeli military policy.",
+      "trigger": "advocacy",
+      "applicableOrgs": [
+        "left"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Sign the letter. Your values are your values, and your donors should understand that.",
+          "missionAligned": [
+            "israel_peace",
+            "social_justice"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "You sign. Three major donors reduce their gifts. Your progressive coalition relationships deepen. Staff morale surges.",
+              "effects": {
+                "donors": -18,
+                "morale": 15,
+                "trust": 8,
+                "budget": -12
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Sign a modified version that advocates for accountability but not a full embargo.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "Neither side is fully satisfied. The coalition lists you with an asterisk. Some donors accept the compromise.",
+              "effects": {
+                "donors": -5,
+                "morale": 5,
+                "budget": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Decline as an organization but don't prevent staff from signing personally.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Several staff sign publicly. One donor withdraws citing organizational chaos.",
+              "effects": {
+                "donors": -8,
+                "morale": 3,
+                "trust": -5,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Decline and explain your organization focuses on domestic Jewish advocacy, not foreign policy.",
+          "missionAligned": [
+            "antisemitism_left"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Your progressive allies are deeply disappointed. One partner publicly criticizes you. Moderate donors are quietly relieved.",
+              "effects": {
+                "donors": 8,
+                "morale": -10,
+                "trust": -10
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "progressive"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "program_dir",
+          "text": "Our staff overwhelming supports this letter. If we don't sign, we'll have a credibility crisis internally.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "morale": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "I have three donors who will pull six-figure gifts if we sign anything related to an arms embargo.",
+          "recommendsChoice": 3,
+          "effectModifier": {
+            "donors": 3
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "board_chair",
+          "text": "This is the kind of issue where there is no safe choice. Only choices with different costs.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        }
+      ]
+    },
+    {
+      "id": "right_farright",
+      "tag": "Crisis",
+      "title": "Antisemitism from a Political Ally",
+      "body": "A prominent politician who has co-sponsored your events makes remarks widely characterized as antisemitic \u2014 dog-whistling about 'globalists' and dual loyalties. Several Jewish newspapers call on organizations to cut ties. This politician is influential in securing a federal grant your org depends on.",
+      "trigger": "advocacy",
+      "applicableOrgs": [
+        "right"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Publicly condemn the remarks and cut all ties, regardless of financial and political consequences.",
+          "missionAligned": [
+            "antisemitism_right",
+            "antisemitism_all"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_left",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The condemnation is credible given the relationship. The grant is at risk, but your moral authority on antisemitism is strengthened substantially.",
+              "effects": {
+                "trust": 15,
+                "donors": -8,
+                "budget": -15,
+                "morale": 10
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Issue a mild statement expressing concern while preserving the relationship.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Critics are not satisfied. Jewish newspapers run a piece on your tepid response.",
+              "effects": {
+                "trust": -10,
+                "morale": -8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Reach out privately, demanding a retraction as the price of continued partnership.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The politician issues a partial clarification. The private pressure eventually leaks, making the episode messier.",
+              "effects": {
+                "trust": -5,
+                "donors": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Argue the remarks have been taken out of context and this politician is a true friend of the Jewish people.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "A significant portion of your own community is alienated. Several rabbis refuse to attend future events.",
+              "effects": {
+                "trust": -18,
+                "donors": 5,
+                "budget": 5,
+                "morale": -15
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "conservative"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "Our credibility on antisemitism is on the line. But that grant is 15% of our budget.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "trust": 3
+          },
+          "explicit": false
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "If we don't condemn this clearly, everything we say about antisemitism becomes hollow.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "morale": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "I can find replacement funding, but it'll take 6-8 months. Can we survive the gap?",
+          "recommendsChoice": 2,
+          "effectModifier": {
+            "donors": 2
+          },
+          "explicit": false
+        }
+      ]
+    },
+    {
+      "id": "jcc_bomb_threat",
+      "tag": "Crisis",
+      "title": "A Bomb Threat",
+      "body": "At 9:15 on a Tuesday morning, your JCC receives a bomb threat by phone \u2014 the third at a JCC in your region this month. You evacuate 84 people including 31 children. Police sweep the building and find nothing. You must decide how to respond.",
+      "trigger": "community",
+      "applicableOrgs": [
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Reopen the next morning with enhanced visible security and a clear, calm communication to families.",
+          "missionAligned": [
+            "community_hub",
+            "jewish_identity"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Most families return. Your calm leadership under pressure is noted. Some families temporarily withdraw their children.",
+              "effects": {
+                "trust": 10,
+                "morale": 5,
+                "budget": -10,
+                "donors": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Close for a week while you secure federal security grants and upgrade your infrastructure.",
+          "missionAligned": [
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The closure costs revenue but you reopen with meaningful security improvements that become a model for other JCCs.",
+              "effects": {
+                "trust": 5,
+                "morale": 8,
+                "budget": -15
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Reopen immediately and say as little as possible to avoid alarming the community.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Rumors fill the vacuum. A parent posts on Facebook and the local news picks it up. Families feel uninformed.",
+              "effects": {
+                "trust": -12,
+                "morale": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Host an emergency community meeting that evening, inviting law enforcement and community leaders.",
+          "missionAligned": [
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "Turnout is overwhelming. Families feel heard and informed. Several major donors make gifts on the spot.",
+              "effects": {
+                "trust": 15,
+                "morale": 8,
+                "budget": 8,
+                "donors": 10
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "centrist"
+      ],
+      "orgLevel": "both",
+      "complexity": 3
+    },
+    {
+      "id": "press_crisis",
+      "tag": "Communications",
+      "title": "A Hostile Journalist Is Working on a Story",
+      "body": "A journalist at a Jewish newspaper is working on a critical profile of your organization. She's been calling board members. One board member warns the story could be damaging. You have a week before publication.",
+      "trigger": "advocacy",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Call the journalist and offer a full sit-down interview, sharing everything openly.",
+          "missionAligned": [
+            "diaspora_unity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "The piece runs. It is critical in places but fair. Your openness is noted. The story does less damage than feared.",
+              "effects": {
+                "trust": 8,
+                "donors": -3,
+                "morale": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Decline to comment and prepare a rapid response for the day of publication.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The piece is harsher than expected. Your no-comment is featured prominently.",
+              "effects": {
+                "trust": -10,
+                "donors": -5,
+                "morale": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Pitch a counter-story to a more sympathetic outlet to run the same day.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Both stories run the same day. The dueling narratives create confusion.",
+              "effects": {
+                "trust": -3,
+                "morale": 3,
+                "budget": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Use your media relationships to get advance notice of key claims and prepare a surgical rebuttal.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
+          "requiresUnlock": "press_option",
+          "missionOpposed": [
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "You rebut two factual errors before publication. The editor runs corrections. The story lands with much less impact.",
+              "effects": {
+                "trust": 10,
+                "donors": 5,
+                "morale": 8,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "We've been through bad press before. The key is controlling the narrative, not hiding from it.",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "Our spring gala is in six weeks. Bad press right now could cost us $50K in ticket sales.",
+          "recommendsChoice": 1,
+          "effectModifier": {
+            "donors": 2
+          },
+          "explicit": false
+        }
+      ]
+    }
+  ],
+  "inboxScenarios": [
+    {
+      "id": "inbox_celebrity",
+      "tag": "Email",
+      "from": "Board Chair <rjackson@board.org>",
+      "subject": "RE: Celebrity donation offer \u2014 your thoughts?",
+      "body": "Just got off the phone with management for Elijah Cole \u2014 the actor who was dropped by his agency last month after those antisemitic comments. He's offering $75,000 to any Jewish organization that will publicly accept it. The board is split. Some see it as a redemption arc; others think this is a PR disaster waiting to happen. What do you want to do?",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Accept the gift and issue a statement saying we believe in redemption and accountability.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The story gets coverage. Half the community is moved; half is furious. The $75k comes in.",
+              "effects": {
+                "budget": 10,
+                "trust": -8,
+                "donors": -5,
+                "morale": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Decline publicly and explain that accepting would compromise our credibility on antisemitism.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "You are praised by those who care most about the antisemitism issue. You lose the $75k. Your moral clarity is noted.",
+              "effects": {
+                "trust": 8,
+                "morale": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Accept quietly, with no press statement.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The donation is discovered by a journalist two months later. The story is worse than if you'd been transparent.",
+              "effects": {
+                "budget": 10,
+                "trust": -15,
+                "donors": -10,
+                "morale": -8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Decline for now but invite him to engage with our programming before revisiting.",
+          "missionAligned": [
+            "diaspora_unity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "He attends two events. The community is cautiously open. He donates $25k with no strings attached six months later.",
+              "effects": {
+                "trust": 5,
+                "morale": 5,
+                "budget": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "dev_director",
+          "text": "$75K is $75K. And the redemption angle could actually play well.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "Accepting money from someone who attacked our community? I can't explain that to my team.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        }
+      ],
+      "expiresIn": 3,
+      "expiredOutcome": {
+        "text": "You never responded to the board chair's email about Elijah Cole's donation offer. He accepted another organization's invitation and publicly thanked them. Your board chair is frustrated by the silence.",
+        "effects": {
+          "trust": -5,
+          "donors": -3,
+          "morale": -3
+        },
+        "contextNote": "Failing to respond to time-sensitive opportunities has real costs in Jewish communal life."
+      }
+    },
+    {
+      "id": "inbox_intern",
+      "tag": "Message",
+      "from": "Staff Slack \u2014 #general",
+      "subject": "Urgent: Intern social media post going viral",
+      "body": "Our summer intern just posted a thread on X comparing our organization's work to 'Jewish supremacy' and tagging several journalists. It's getting traction. She says it's her personal account but she identifies herself as an intern here in her bio. HR is asking what to do. She's been one of our best interns.",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Terminate the internship immediately and issue a statement distancing the org.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The decision is defensible but generates a secondary story about workplace culture. She becomes a minor cause c\u00e9l\u00e8bre.",
+              "effects": {
+                "trust": -5,
+                "morale": -12,
+                "donors": 3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Issue a private reprimand and update your social media policy with clearer guidelines.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "She stays, removes the post, and continues to do excellent work. The policy update was overdue anyway.",
+              "effects": {
+                "morale": 3,
+                "trust": 3,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Defend her publicly as a private individual exercising free expression, while clarifying your org's position.",
+          "missionAligned": [
+            "social_justice"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Staff morale surges. Some donors are furious. A complicated outcome.",
+              "effects": {
+                "morale": 12,
+                "donors": -10,
+                "trust": 3,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Say nothing publicly and handle it in a quiet internal conversation.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "It doesn't pass. A journalist calls for comment. Your silence becomes the story.",
+              "effects": {
+                "trust": -10,
+                "donors": -5,
+                "morale": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "expiresIn": 2,
+      "expiredOutcome": {
+        "text": "The viral social media post continued spreading while you said nothing. A journalist wrote a piece about your organization's 'non-response' that was shared widely. The intern eventually deleted the post on her own, but the damage was done.",
+        "effects": {
+          "trust": -10,
+          "morale": -8,
+          "donors": -5
+        },
+        "contextNote": "In the age of social media, silence is rarely neutral \u2014 it's interpreted as either complicity or incompetence."
+      }
+    },
+    {
+      "id": "inbox_grant",
+      "tag": "Email",
+      "from": "Development Director <mgoldstein@org.org>",
+      "subject": "Grant opportunity \u2014 strings attached",
+      "body": "The Hartmann Foundation is offering us a $150,000 unrestricted grant. The catch: they want us to co-sign a letter that takes a position on Israel we've intentionally stayed neutral on. The foundation has been pushing several organizations to take this position in exchange for funding. The letter is not extreme, but it would be our first formal position on the issue.",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Accept the grant and co-sign the letter. $150k is too important to pass up.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The money comes in. Board members who valued our neutrality are upset. You've set a precedent that money buys positions.",
+              "effects": {
+                "budget": 20,
+                "trust": -10,
+                "morale": -5,
+                "donors": -8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Decline and tell the foundation we don't take positions in exchange for funding.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity",
+            "community_hub",
+            "jewish_identity"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "You lose the $150k but preserve your independence. The foundation respects the answer and may return with no strings.",
+              "effects": {
+                "trust": 10,
+                "morale": 8,
+                "donors": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Negotiate: accept the grant but water down the letter to a vague statement of values.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Both sides feel they got something. Critics notice the correlation between the gift and the letter.",
+              "effects": {
+                "budget": 12,
+                "trust": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Decline and publish a statement about donors trying to buy positions, without naming the foundation.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity",
+            "community_hub",
+            "jewish_identity",
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "israel_security",
+            "israel_peace",
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The statement goes modestly viral in Jewish professional circles. Several foundations contact you impressed by your integrity.",
+              "effects": {
+                "trust": 15,
+                "morale": 10,
+                "donors": 8,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "dev_director",
+          "text": "The Hartmann Foundation gives to everyone. If we say no, they'll just fund our competitors.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        },
+        {
+          "advisorId": "board_chair",
+          "text": "Once you let a donor buy a position, you never get that independence back.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        }
+      ]
+    },
+    {
+      "id": "inbox_politician",
+      "tag": "Message",
+      "from": "Text \u2014 Unknown number",
+      "subject": "Inbound from Rep. Baumann's office",
+      "body": "Just got a call from Congressman Baumann's chief of staff. The Congressman wants to attend our next major event and give remarks \u2014 he'll bring press. He's been a strong ally on Israel and antisemitism, but he voted against the Voting Rights Act last year, which is a red line for several of our coalition partners. Do we invite him?",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Invite him \u2014 he's been a strong ally on our core issues and we don't demand perfection.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "He attends, the event gets press coverage. Two coalition partners quietly pull back from joint programming.",
+              "effects": {
+                "trust": 3,
+                "donors": 8,
+                "morale": -5,
+                "budget": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Decline and explain that the Voting Rights vote makes it impossible to host him at this time.",
+          "missionAligned": [
+            "social_justice",
+            "antisemitism_all"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Coalition partners are gratified. Several of the Congressman's donors quietly make smaller gifts to your org.",
+              "effects": {
+                "trust": 5,
+                "donors": -8,
+                "morale": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Invite him but don't publicize his attendance in advance.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "He attends. A journalist tweets his presence live. The 'quiet' strategy is immediately exposed and criticized.",
+              "effects": {
+                "trust": -8,
+                "morale": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Counter-propose a private meeting instead of a public appearance \u2014 build the relationship without the optics.",
+          "missionAligned": [
+            "diaspora_unity",
+            "antisemitism_all",
+            "israel_security"
+          ],
+          "requiresUnlock": "political_option",
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "He agrees. The private relationship proves valuable six months later when you need an urgent congressional ask.",
+              "effects": {
+                "trust": 8,
+                "donors": 5,
+                "morale": 3,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3
+    },
+    {
+      "id": "inbox_fire",
+      "tag": "Email",
+      "from": "Board Vice Chair <slevi@board.org>",
+      "subject": "FWD: Concerns re: your leadership",
+      "body": "I'm forwarding this reluctantly. A group of five board members has sent a letter to the full board raising concerns about your leadership style and recent decisions. They're not calling for termination but they want a formal performance review moved up from June to next month. I'm with you, but you need to know this is happening.",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Request a meeting with the full board to address concerns head-on before the formal review.",
+          "missionAligned": [
+            "diaspora_unity",
+            "community_hub"
+          ],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity"
+          ],
+          "outcomes": [
+            {
+              "text": "Your directness earns respect. The review happens quickly and concludes without formal action.",
+              "effects": {
+                "trust": 10,
+                "morale": 5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Work through the Vice Chair to understand the specific concerns before responding formally.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "You learn the concerns are mostly about communication style, not substance. An easy fix once you know.",
+              "effects": {
+                "trust": 8,
+                "morale": 8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Push back firmly \u2014 the review timing is inappropriate and this looks like an attempt to destabilize leadership.",
+          "missionAligned": [],
+          "requiresUnlock": null,
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The pushback causes the five members to dig in. The conflict becomes an organizational drama that distracts everyone.",
+              "effects": {
+                "trust": -8,
+                "morale": -10,
+                "donors": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Use your political relationships to identify who is driving this and quietly address their specific concerns.",
+          "missionAligned": [],
+          "requiresUnlock": "political_option",
+          "missionOpposed": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "israel_security",
+            "israel_peace",
+            "social_justice",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Two of the five come around quickly once their specific concerns are addressed. The formal review becomes a formality.",
+              "effects": {
+                "trust": 5,
+                "morale": 8,
+                "donors": 3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "I know these five. Two are genuinely concerned; three are playing politics. Handle accordingly.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "The staff already knows something is happening. If you don't address this fast, rumors will fill the vacuum.",
+          "recommendsChoice": null,
+          "effectModifier": null,
+          "explicit": false
+        }
+      ],
+      "expiresIn": 2,
+      "expiredOutcome": {
+        "text": "You didn't respond to the board revolt, and the five members interpreted your silence as arrogance. They successfully moved up the performance review and framed it publicly as a 'leadership accountability measure.' The review was painful.",
+        "effects": {
+          "trust": -8,
+          "morale": -10,
+          "donors": -3
+        },
+        "contextNote": "Board dynamics move fast when left unmanaged. In Jewish organizations, silence is almost never interpreted charitably."
+      }
+    }
+  ],
+  "scoring": {
+    "thresholds": [
+      {
+        "min": 80,
+        "grade": "A",
+        "heading": "A Year of Real Leadership",
+        "verdict": "You navigated a difficult year with integrity and skill. No decision was perfect, and you made some enemies \u2014 that is the cost of having convictions. But the organization is stronger, the community trusts you, and your staff knows you have their backs."
+      },
+      {
+        "min": 65,
+        "grade": "B",
+        "heading": "A Solid Performance",
+        "verdict": "You kept the organization on course through real challenges. A few decisions you'd take back, but the fundamentals are sound. The board has renewed your contract."
+      },
+      {
+        "min": 50,
+        "grade": "C",
+        "heading": "A Mixed Record",
+        "verdict": "You survived. Some decisions you're proud of; others you'd take back. The organization is intact but not thriving. The Jewish communal world is small and long-memoried."
+      },
+      {
+        "min": 40,
+        "grade": "D",
+        "heading": "A Difficult Year",
+        "verdict": "The year exposed how hard this work is. Budget pressure, community conflict, and moral complexity took their toll. The board has expressed concerns. You have been given another year."
+      },
+      {
+        "min": 0,
+        "grade": "F",
+        "heading": "Your Tenure Has Ended",
+        "verdict": "Multiple organizational indicators reached critical levels. The board has asked for your resignation. The work is hard, the stakeholders are demanding, and the stakes are real. The organization will continue."
+      }
+    ]
+  },
+  "gazetteTemplates": [
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "antisemitism_incident",
+        "choiceIndex": 0
+      },
+      "headline": "Director Issues Swift Condemnation of Campus Antisemitism",
+      "subline": "Community leaders praise rapid response as 'exactly what we needed to hear.'"
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "antisemitism_incident",
+        "choiceIndex": 3
+      },
+      "headline": "Silence from Local Jewish Leadership After Campus Attack",
+      "subline": "Community members express frustration at delayed response."
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "major_donor",
+        "choiceIndex": 0
+      },
+      "headline": "Organization Accepts $300K Restricted Gift Amid Staff Concerns",
+      "subline": "Two senior staff reportedly resign over 'mission drift.'"
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "major_donor",
+        "choiceIndex": 2
+      },
+      "headline": "Director Declines Major Gift, Cites Mission Integrity",
+      "subline": "Move praised by mission-focused leaders; financial implications remain unclear."
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "israel_statement",
+        "choiceIndex": 0
+      },
+      "headline": "Jewish Org Takes Strong Pro-Israel Stance Amid Conflict",
+      "subline": "Progressive staff express 'deep disappointment' at statement."
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "israel_statement",
+        "choiceIndex": 1
+      },
+      "headline": "'Both Sides' Statement Draws Fire from All Directions",
+      "subline": "Donors freeze gifts; progressive members energized."
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "left_coalition",
+        "choiceIndex": 0
+      },
+      "headline": "Progressive Jewish Org Signs Arms Embargo Letter",
+      "subline": "Three major donors reduce gifts; coalition relationships deepen."
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "right_farright",
+        "choiceIndex": 0
+      },
+      "headline": "Organization Cuts Ties with Politician Over Antisemitic Remarks",
+      "subline": "Bold move strengthens moral authority but puts federal grant at risk."
+    },
+    {
+      "trigger": {
+        "type": "choiceMade",
+        "scenarioId": "right_farright",
+        "choiceIndex": 3
+      },
+      "headline": "Jewish Org Defends Politician After 'Globalist' Remarks",
+      "subline": "Rabbis boycott future events; community trust plummets."
+    },
+    {
+      "trigger": {
+        "type": "statAbove",
+        "stat": "trust",
+        "threshold": 85
+      },
+      "headline": "Community Trust in Local Jewish Leadership at All-Time High",
+      "subline": "Survey shows broad confidence across denominations."
+    },
+    {
+      "trigger": {
+        "type": "statBelow",
+        "stat": "trust",
+        "threshold": 30
+      },
+      "headline": "Crisis of Confidence: Community Questions Jewish Leadership",
+      "subline": "Board sources say 'difficult conversations' ahead."
+    },
+    {
+      "trigger": {
+        "type": "statAbove",
+        "stat": "morale",
+        "threshold": 85
+      },
+      "headline": "Staff Satisfaction Surges at Jewish Organization",
+      "subline": "'Best workplace culture in the community,' says anonymous employee."
+    },
+    {
+      "trigger": {
+        "type": "statBelow",
+        "stat": "morale",
+        "threshold": 30
+      },
+      "headline": "Reports of Staff Exodus at Local Jewish Org",
+      "subline": "Multiple departures raise questions about workplace culture."
+    },
+    {
+      "trigger": {
+        "type": "statAbove",
+        "stat": "budget",
+        "threshold": 85
+      },
+      "headline": "Jewish Org Reports Strongest Financial Position in Years",
+      "subline": "Reserves and donor base both expanding steadily."
+    },
+    {
+      "trigger": {
+        "type": "statBelow",
+        "stat": "budget",
+        "threshold": 30
+      },
+      "headline": "Financial Warning Signs at Jewish Organization",
+      "subline": "Insiders worry about 'unsustainable trajectory.'"
+    },
+    {
+      "trigger": {
+        "type": "statAbove",
+        "stat": "donors",
+        "threshold": 85
+      },
+      "headline": "Donor Base Expanding Rapidly for Local Jewish Org",
+      "subline": "New supporters cite 'authentic leadership' as key factor."
+    },
+    {
+      "trigger": {
+        "type": "statBelow",
+        "stat": "donors",
+        "threshold": 30
+      },
+      "headline": "Major Donors Quietly Pulling Back",
+      "subline": "Development office scrambles as annual giving commitments soften."
+    },
+    {
+      "trigger": {
+        "type": "momentumUp",
+        "stat": "trust"
+      },
+      "headline": "Trust Trend: Third Straight Month of Gains",
+      "subline": "Consistency paying dividends in community relations."
+    },
+    {
+      "trigger": {
+        "type": "momentumDown",
+        "stat": "morale"
+      },
+      "headline": "Staff Morale in Extended Decline",
+      "subline": "'Something has to change,' says departing employee."
+    },
+    {
+      "trigger": {
+        "type": "coalitionFormed"
+      },
+      "headline": "New Partnership Announced Between Jewish Org and Coalition",
+      "subline": "Alliance expected to strengthen programming and outreach."
+    },
+    {
+      "trigger": {
+        "type": "coalitionBroken"
+      },
+      "headline": "Coalition Partnership Collapses After Policy Disagreement",
+      "subline": "Former allies express disappointment at 'broken commitments.'"
+    },
+    {
+      "trigger": {
+        "type": "inboxExpired"
+      },
+      "headline": "Unanswered Messages Pile Up at Jewish Organization",
+      "subline": "Sources say leadership is 'overwhelmed and unresponsive.'"
+    },
+    {
+      "trigger": {
+        "type": "missionStarsHigh"
+      },
+      "headline": "Organization Praised for Strong Mission Alignment",
+      "subline": "Board commends director for 'walking the talk.'"
+    },
+    {
+      "trigger": {
+        "type": "missionStarsLow"
+      },
+      "headline": "Questions Arise About Organization's Mission Focus",
+      "subline": "Critics say leadership has 'lost sight of why we exist.'"
+    },
+    {
+      "trigger": {
+        "type": "generic"
+      },
+      "headline": "Annual Gala Planning Underway Across Jewish Community",
+      "subline": "Event chairs named; silent auction items being solicited."
+    },
+    {
+      "trigger": {
+        "type": "generic"
+      },
+      "headline": "Federation Announces New Grant Cycle for Local Orgs",
+      "subline": "Applications due next quarter; focus on innovation and outreach."
+    },
+    {
+      "trigger": {
+        "type": "generic"
+      },
+      "headline": "Interfaith Dialogue Series Draws Record Attendance",
+      "subline": "Organizers credit 'genuine hunger for connection across differences.'"
+    },
+    {
+      "trigger": {
+        "type": "generic"
+      },
+      "headline": "Jewish Day School Enrollment Steady Despite National Trends",
+      "subline": "Community investment in education seen as stabilizing factor."
+    },
+    {
+      "trigger": {
+        "type": "generic"
+      },
+      "headline": "Local Rabbi Named to National Antisemitism Task Force",
+      "subline": "Appointment seen as recognition of community's growing influence."
+    }
+  ],
+  "breakingNews": [
+    {
+      "id": "bn_shooting",
+      "tag": "BREAKING",
+      "title": "Shooting at Synagogue in Neighboring City",
+      "body": "A gunman opened fire during Shabbat services at Congregation Beth Israel, 40 miles from your office. Three people are injured. The community is in shock. Your phone is ringing nonstop.",
+      "trigger": "any",
+      "probability": 8,
+      "minRound": 2,
+      "maxRound": 6,
+      "once": true,
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 5,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Drop everything. Drive to the hospital. Organize a community vigil for tonight.",
+          "missionAligned": [
+            "community_hub",
+            "diaspora_unity",
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your presence at the hospital is noted by every rabbi in the region. The vigil draws 800 people. National media covers it.",
+              "effects": {
+                "trust": 15,
+                "morale": 10,
+                "budget": -10,
+                "donors": 8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Issue an immediate statement and coordinate with security agencies to assess local threats.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your statement is among the first from any Jewish org. The security coordination uncovers a copycat threat that is quietly neutralized.",
+              "effects": {
+                "trust": 12,
+                "morale": 5,
+                "budget": -8
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": "Your quick coordination may have prevented a second attack. Law enforcement credits your organization privately."
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Focus inward \u2014 secure your own buildings, notify your community, cancel events for the week.",
+          "missionAligned": [
+            "community_hub"
+          ],
+          "missionOpposed": [
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Your community feels safe. But other organizations notice you didn't show up for the broader Jewish community in crisis.",
+              "effects": {
+                "trust": -3,
+                "morale": 8,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": "In moments of communal trauma, organizations that turn inward are remembered \u2014 and not fondly."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bn_viral_video",
+      "tag": "BREAKING",
+      "title": "Viral Video: Antisemitic Attack on Jewish Student",
+      "body": "A video of a Jewish college student being physically attacked while wearing a Star of David necklace is going viral. It happened on a campus in your city. The video has 2 million views and climbing. Cable news is covering it live.",
+      "trigger": "any",
+      "probability": 10,
+      "minRound": 1,
+      "maxRound": 5,
+      "once": true,
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Go on cable news immediately to condemn the attack and demand campus accountability.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right",
+            "antisemitism_left"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your interview is powerful and goes viral itself. You become the face of the Jewish community's response. Some love it; others think you're grandstanding.",
+              "effects": {
+                "trust": 10,
+                "donors": 8,
+                "morale": 3,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Connect the student with legal resources and organize a campus support network before going public.",
+          "missionAligned": [
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The student's family thanks you personally. The campus network becomes a model. Less visibility, more impact.",
+              "effects": {
+                "trust": 8,
+                "morale": 12,
+                "budget": -5
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Use the moment to launch a fundraising campaign for campus antisemitism programs.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "The campaign raises $45K in 48 hours. Some accuse you of exploiting a crisis for fundraising. The money funds real programs.",
+              "effects": {
+                "budget": 15,
+                "donors": 10,
+                "trust": -5,
+                "morale": -3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": "Crisis fundraising is effective but ethically fraught. The Jewish communal world has long memory."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bn_political_crisis",
+      "tag": "BREAKING",
+      "title": "White House Omits Jews from Holocaust Statement",
+      "body": "The White House just released a Holocaust Remembrance Day statement that doesn't mention Jews or antisemitism. Jewish organizations across the spectrum are reacting. Your board, staff, and community are all watching to see what you do.",
+      "trigger": "any",
+      "probability": 8,
+      "minRound": 1,
+      "maxRound": 6,
+      "once": true,
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Issue a blistering public condemnation calling the omission 'dangerous erasure.'",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your statement is quoted by three major outlets. Allies across the political spectrum share it. One government contact goes cold.",
+              "effects": {
+                "trust": 12,
+                "morale": 8,
+                "donors": 5,
+                "budget": -2
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Reach out privately to White House contacts to push for a corrected statement before going public.",
+          "missionAligned": [
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The White House issues a clarification 6 hours later mentioning Jewish victims specifically. You get no public credit but insiders know.",
+              "effects": {
+                "trust": 5,
+                "donors": 8,
+                "morale": 3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": "Sometimes the most effective advocacy happens where no one can see it."
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Use the moment for education \u2014 publish a thread about Holocaust history and why the omission matters.",
+          "missionAligned": [
+            "jewish_identity",
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your educational thread goes viral with 50K shares. Teachers across the country use it in classrooms. A quieter but deeper impact.",
+              "effects": {
+                "trust": 8,
+                "morale": 10,
+                "donors": 3
+              },
+              "weight": 100,
+              "conditions": [],
+              "contextNote": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "coalitionOffers": [
+    {
+      "id": "coal_interfaith",
+      "name": "Interfaith Alliance Partnership",
+      "description": "The local Interfaith Council wants a formal partnership. You'll co-host monthly events and they'll amplify your work to their 15,000-member network. But they expect you to remain neutral on Israel-Palestine issues in all public communications.",
+      "offeredByRound": 2,
+      "benefits": {
+        "perRound": {
+          "trust": 3,
+          "morale": 2
+        }
+      },
+      "constraints": [
+        {
+          "type": "avoidMission",
+          "missionIds": [
+            "israel_security",
+            "israel_peace"
+          ],
+          "description": "Must stay neutral on Israel-Palestine in public statements"
+        }
+      ],
+      "violationPenalty": {
+        "effects": {
+          "trust": -10,
+          "morale": -5
+        },
+        "text": "The Interfaith Alliance publicly ends the partnership, calling your Israel statement a 'betrayal of the neutral space we built together.'"
+      },
+      "duration": 0
+    },
+    {
+      "id": "coal_campus",
+      "name": "Campus Coalition Against Hate",
+      "description": "A coalition of campus organizations invites you to join their anti-hate alliance. You'll get direct access to college students and shared programming resources. But they require members to publicly support all coalition statements \u2014 even ones you might disagree with.",
+      "offeredByRound": 3,
+      "benefits": {
+        "perRound": {
+          "trust": 2,
+          "donors": 2,
+          "morale": 1
+        }
+      },
+      "constraints": [
+        {
+          "type": "maintainStat",
+          "stat": "trust",
+          "above": 40,
+          "description": "Must maintain community trust above 40"
+        }
+      ],
+      "violationPenalty": {
+        "effects": {
+          "trust": -8,
+          "morale": -5,
+          "donors": -3
+        },
+        "text": "The Campus Coalition votes to remove your organization, citing 'loss of community trust that undermines our shared mission.'"
+      },
+      "duration": 4
+    },
+    {
+      "id": "coal_donor_circle",
+      "name": "Major Donor Collective",
+      "description": "A group of five major donors wants to form an advisory circle with guaranteed annual giving of $200K combined. In exchange, they want quarterly briefings and veto power over any public statement on Israel.",
+      "offeredByRound": 1,
+      "benefits": {
+        "perRound": {
+          "budget": 5,
+          "donors": 4
+        }
+      },
+      "constraints": [
+        {
+          "type": "avoidMission",
+          "missionIds": [
+            "israel_peace",
+            "social_justice"
+          ],
+          "description": "No public statements critical of Israel or progressive social policy without donor circle approval"
+        }
+      ],
+      "violationPenalty": {
+        "effects": {
+          "budget": -15,
+          "donors": -12
+        },
+        "text": "The Donor Collective withdraws all funding effective immediately. 'We had an agreement,' their letter reads. 'You broke it.'"
+      },
+      "duration": 0
+    },
+    {
+      "id": "coal_federation",
+      "name": "Federation Partnership Grant",
+      "description": "The Jewish Federation offers a 3-year partnership grant: $75K/year in unrestricted funding plus shared staff resources. But Federation partners must participate in community-wide campaigns and avoid public disagreements with Federation positions.",
+      "offeredByRound": 2,
+      "benefits": {
+        "perRound": {
+          "budget": 4,
+          "trust": 2
+        }
+      },
+      "constraints": [
+        {
+          "type": "maintainStat",
+          "stat": "trust",
+          "above": 50,
+          "description": "Must maintain trust above 50 to keep Federation partnership"
+        }
+      ],
+      "violationPenalty": {
+        "effects": {
+          "budget": -10,
+          "trust": -5
+        },
+        "text": "The Federation pauses the partnership grant, citing 'concerns about organizational stability.'"
+      },
+      "duration": 3
+    },
+    {
+      "id": "coal_media",
+      "name": "Jewish Media Consortium",
+      "description": "Three Jewish media outlets offer you a regular column and guaranteed coverage of your events. In exchange, you give them exclusive access and first comment rights on any controversy. You can't talk to outside media first.",
+      "offeredByRound": 3,
+      "benefits": {
+        "perRound": {
+          "trust": 3,
+          "donors": 1
+        }
+      },
+      "constraints": [
+        {
+          "type": "maintainStat",
+          "stat": "morale",
+          "above": 35,
+          "description": "Must maintain staff morale above 35 (bad internal culture = bad stories)"
+        }
+      ],
+      "violationPenalty": {
+        "effects": {
+          "trust": -8,
+          "morale": -3
+        },
+        "text": "The consortium runs a piece about low staff morale at your organization. So much for the friendly media relationship."
+      },
+      "duration": 0
+    }
+  ],
+  "advisorPool": [
+    {
+      "id": "board_chair",
+      "name": "Rachel Steinberg",
+      "role": "Board Chair",
+      "emoji": "\ud83e\uddd1\u200d\ud83d\udcbc",
+      "personality": "cautious",
+      "bio": "20 years in Jewish communal governance. Thinks in terms of risk, reputation, and fiduciary duty.",
+      "type": "internal",
+      "statModifiers": {
+        "trust": 3
+      },
+      "politicalLean": 0,
+      "cloutBonus": 5,
+      "expertise": [
+        "governance",
+        "crisis"
+      ],
+      "budgetBonus": 0
+    },
+    {
+      "id": "program_dir",
+      "name": "Avi Kessler",
+      "role": "Program Director",
+      "emoji": "\ud83e\uddd1\u200d\ud83c\udfeb",
+      "personality": "idealist",
+      "bio": "Former campus Hillel director. Believes the mission comes first, always. Staff love him.",
+      "type": "internal",
+      "statModifiers": {
+        "morale": 3
+      },
+      "politicalLean": -3,
+      "cloutBonus": 2,
+      "expertise": [
+        "community",
+        "advocacy"
+      ],
+      "budgetBonus": 0
+    },
+    {
+      "id": "dev_director",
+      "name": "Miriam Gold",
+      "role": "Development Director",
+      "emoji": "\ud83d\udcbc",
+      "personality": "pragmatist",
+      "bio": "Raised $40M across three organizations. Knows every major donor by name and preference.",
+      "type": "internal",
+      "statModifiers": {
+        "donors": 3
+      },
+      "politicalLean": 2,
+      "cloutBonus": 3,
+      "expertise": [
+        "fundraise",
+        "donors"
+      ],
+      "budgetBonus": 3
+    },
+    {
+      "id": "rabbi_scholar",
+      "name": "Rabbi David Friedman",
+      "role": "Senior Rabbi, Congregation Ohev Shalom",
+      "emoji": "\ud83d\udcd6",
+      "personality": "principled",
+      "type": "external",
+      "bio": "Orthodox-trained, pluralistic in practice. Deep Talmudic knowledge and a reputation for moral clarity that crosses denominational lines.",
+      "statModifiers": {
+        "trust": 4
+      },
+      "politicalLean": 3,
+      "cloutBonus": 4,
+      "expertise": [
+        "advocacy",
+        "crisis"
+      ],
+      "budgetBonus": 0
+    },
+    {
+      "id": "political_consultant",
+      "name": "Sarah Feld",
+      "role": "Political Consultant",
+      "emoji": "\ud83c\udfdb\ufe0f",
+      "personality": "strategic",
+      "type": "external",
+      "bio": "Former congressional chief of staff. Knows every elected official in the state and half the ones in Washington. Thinks three moves ahead.",
+      "statModifiers": {
+        "donors": 2
+      },
+      "politicalLean": -2,
+      "cloutBonus": 8,
+      "expertise": [
+        "advocacy",
+        "crisis"
+      ],
+      "budgetBonus": 2
+    },
+    {
+      "id": "community_organizer",
+      "name": "Tali Navarro",
+      "role": "Community Organizer",
+      "emoji": "\u270a",
+      "personality": "activist",
+      "type": "external",
+      "bio": "Built the largest Jewish young adult network in the region from scratch. Speaks for a generation that doesn\u2019t show up to galas but will march in the rain.",
+      "statModifiers": {
+        "trust": 2,
+        "morale": 3
+      },
+      "politicalLean": -5,
+      "cloutBonus": 3,
+      "expertise": [
+        "community",
+        "advocacy"
+      ],
+      "budgetBonus": 0
+    },
+    {
+      "id": "major_donor_rep",
+      "name": "Leonard Katz",
+      "role": "Philanthropic Advisor",
+      "emoji": "\ud83c\udfe6",
+      "personality": "transactional",
+      "type": "external",
+      "bio": "Manages giving strategy for three family foundations worth $400M combined. Pragmatic, well-connected, and always thinking about ROI.",
+      "statModifiers": {
+        "donors": 5
+      },
+      "politicalLean": 5,
+      "cloutBonus": 5,
+      "expertise": [
+        "fundraise",
+        "governance"
+      ],
+      "budgetBonus": 5
+    },
+    {
+      "id": "media_strategist",
+      "name": "Noa Berman",
+      "role": "Media Strategist",
+      "emoji": "\ud83d\udcf1",
+      "personality": "calculated",
+      "type": "external",
+      "bio": "Former editor at the Forward, now a crisis communications consultant. Controls narratives for a living. Never says anything by accident.",
+      "statModifiers": {
+        "trust": 3
+      },
+      "politicalLean": -1,
+      "cloutBonus": 4,
+      "expertise": [
+        "crisis",
+        "advocacy"
+      ],
+      "budgetBonus": 0
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conv_donor_harold",
+      "type": "character",
+      "character": {
+        "name": "Harold Weinstein",
+        "emoji": "\ud83e\uddd1\u200d\ud83d\udcbc",
+        "role": "Major Donor \u00b7 15 Years",
+        "context": "Called to discuss your decision on his restricted gift"
+      },
+      "trigger": {
+        "type": "afterScenario",
+        "scenarioId": "major_donor",
+        "choiceIndex": null
+      },
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "startDisposition": 35,
+      "totalNodes": 4,
+      "nodes": {
+        "n0": {
+          "characterLine": "I'll be frank with you. I offered this organization $300,000 and I feel like it was thrown back in my face. I've been giving for fifteen years. I think I've earned the right to have some input on programming.",
+          "responses": [
+            {
+              "text": "Harold, I appreciate you calling. Your fifteen years mean a great deal, and I want to understand what this program means to you.",
+              "approach": "Listen",
+              "dispositionDelta": 12,
+              "next": "n1_warm"
+            },
+            {
+              "text": "We didn't throw anything back. We made a strategic decision about mission alignment \u2014 which is exactly what a well-run organization does.",
+              "approach": "Direct",
+              "dispositionDelta": -5,
+              "next": "n1_cool"
+            },
+            {
+              "text": "Before we discuss the gift, can I share what we accomplished this year with your previous support?",
+              "approach": "Redirect",
+              "dispositionDelta": 5,
+              "next": "n1_neutral"
+            }
+          ]
+        },
+        "n1_warm": {
+          "characterLine": "It means a lot, actually. My father was a Holocaust survivor. This program would have honored his memory. I know that's personal, but that's where it comes from.",
+          "responses": [
+            {
+              "text": "That context changes things. Could we find a way to honor your father's memory that also strengthens our core mission? I have some ideas.",
+              "approach": "Bridge",
+              "dispositionDelta": 15,
+              "next": "n2_positive"
+            },
+            {
+              "text": "I hear you, and I respect that deeply. But a restricted gift for a program outside our mission isn't the right vehicle for that legacy.",
+              "approach": "Firm + Kind",
+              "dispositionDelta": 5,
+              "next": "n2_middle"
+            }
+          ]
+        },
+        "n1_cool": {
+          "characterLine": "A 'strategic decision.' You know what I hear? I hear that my money is welcome but my judgment isn't. Maybe the Civic Alliance would be more appreciative.",
+          "responses": [
+            {
+              "text": "Harold, I don't want you to leave. Your judgment matters \u2014 and I should have had this conversation with you before making the decision, not after. That's on me.",
+              "approach": "Own it",
+              "dispositionDelta": 10,
+              "next": "n2_middle"
+            },
+            {
+              "text": "I understand you're frustrated, and I respect your right to give wherever you feel valued. I'd rather keep you, but not by compromising what makes this organization worth funding.",
+              "approach": "Hold firm",
+              "dispositionDelta": -3,
+              "next": "n2_tense"
+            }
+          ]
+        },
+        "n1_neutral": {
+          "characterLine": "I know what you accomplished. I helped fund it. That's exactly my point \u2014 I've been a partner, not just a checkbook. This gift was about deepening that partnership.",
+          "responses": [
+            {
+              "text": "You're right \u2014 you are a partner. And partners negotiate. What if we took the core idea of your program and shaped it together into something that advances our mission?",
+              "approach": "Collaborate",
+              "dispositionDelta": 12,
+              "next": "n2_positive"
+            },
+            {
+              "text": "I value the partnership. But restricted gifts for off-mission programs put us in a bind that ultimately hurts the work you're funding in the first place.",
+              "approach": "Educate",
+              "dispositionDelta": 3,
+              "next": "n2_middle"
+            }
+          ]
+        },
+        "n2_positive": {
+          "characterLine": "I'd be open to that. I don't need it to be exactly what I proposed. I need it to feel like my family's story is part of what this organization stands for. Can you do that?",
+          "responses": [
+            {
+              "text": "Yes. Let me draft a concept this week that honors your father's legacy through our existing programs. You'll have it by Friday.",
+              "approach": "Commit",
+              "dispositionDelta": 15,
+              "next": "end"
+            },
+            {
+              "text": "I want to say yes, but I need to be honest \u2014 I can only commit if it genuinely fits our strategic plan. Let me take a week to think it through properly.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_middle": {
+          "characterLine": "Look, I'm not going to pretend I'm not disappointed. But I've known you long enough to know you don't make decisions carelessly. What would you want from me going forward?",
+          "responses": [
+            {
+              "text": "I want you at the table \u2014 not as a donor, as an advisor. Join our strategic planning committee. Help us shape what's next. Your judgment matters beyond the dollars.",
+              "approach": "Elevate",
+              "dispositionDelta": 12,
+              "next": "end"
+            },
+            {
+              "text": "Keep doing what you've been doing. Your unrestricted support has been the backbone of everything we've built. That matters more than any single program.",
+              "approach": "Affirm",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_tense": {
+          "characterLine": "You know, I respect that you have principles. I just wish your principles left more room for the people who make your budget possible. I need to think about next year's gift.",
+          "responses": [
+            {
+              "text": "I understand. Take the time you need. The door is always open, and your voice always matters here \u2014 whether or not there's a check attached.",
+              "approach": "Grace",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "I hope you'll stay. But I'd rather lose a gift than lose what this organization stands for. You taught me that, actually \u2014 fifteen years ago.",
+              "approach": "Mirror",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Partnership Renewed",
+          "text": "Harold leaves the call energized. He\u2019ll not only maintain his giving \u2014 he\u2019ll deepen it. Expect a call next week about increasing his annual commitment.",
+          "effects": {
+            "donors": 8,
+            "trust": 3
+          },
+          "budgetEffect": 5
+        },
+        {
+          "minDisposition": 45,
+          "heading": "An Understanding Reached",
+          "text": "Harold accepts your direction. He\u2019s not thrilled, but he respects your leadership. The relationship will survive \u2014 and he\u2019ll stay through the year.",
+          "effects": {
+            "donors": 2,
+            "trust": 3
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 25,
+          "heading": "A Strained Relationship",
+          "text": "Harold hangs up politely but coldly. Don\u2019t expect a call back anytime soon. His annual gift is in serious jeopardy.",
+          "effects": {
+            "donors": -5,
+            "trust": -3
+          },
+          "budgetEffect": -5
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Donor Lost",
+          "text": "Harold is done. He\u2019ll honor his current pledge but has already called the Civic Alliance. Other donors in his circle will hear about this.",
+          "effects": {
+            "donors": -12,
+            "trust": -8
+          },
+          "budgetEffect": -10
+        }
+      ]
+    },
+    {
+      "id": "conv_advisor_avi_burnout",
+      "type": "advisor",
+      "advisorId": "program_dir",
+      "trigger": {
+        "type": "beforeScenario",
+        "scenarioId": "staff_burnout"
+      },
+      "startDisposition": 60,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "Before you decide anything \u2014 I need you to hear something. Three of my people are in crisis. Real crisis. One is seeing a therapist for the first time because of this job. I don't say that lightly.",
+          "responses": [
+            {
+              "text": "Avi, I hear you. Tell me specifically what your team needs to get through the High Holidays.",
+              "approach": "Listen",
+              "dispositionDelta": 10,
+              "next": "n1_open"
+            },
+            {
+              "text": "I understand it's hard, but the High Holidays are the most important time of year. We all need to push through.",
+              "approach": "Push through",
+              "dispositionDelta": -12,
+              "next": "n1_resist"
+            }
+          ]
+        },
+        "n1_open": {
+          "characterLine": "They need real raises \u2014 not bonuses, raises. And they need us to either hire help or cut scope. I can't keep asking people to do the work of two positions for the salary of half a position.",
+          "responses": [
+            {
+              "text": "I'll go to the board with a compensation proposal this week. You have my word.",
+              "approach": "Commit",
+              "dispositionDelta": 12,
+              "next": "n2_end"
+            },
+            {
+              "text": "I want to do raises but the board controls compensation. What I can do right now is hire temporary help and scale back the second event.",
+              "approach": "Be honest",
+              "dispositionDelta": 5,
+              "next": "n2_end"
+            }
+          ]
+        },
+        "n1_resist": {
+          "characterLine": "Push through? That's what we said last year. And the year before. At what point does 'push through' become 'we don't actually care about our people'?",
+          "responses": [
+            {
+              "text": "You're right. I'm sorry. I defaulted to the easy answer. What would actually help?",
+              "approach": "Course correct",
+              "dispositionDelta": 8,
+              "next": "n2_end"
+            },
+            {
+              "text": "I care deeply. But we have obligations to the community too. Let's find a middle path after the holidays.",
+              "approach": "Defer",
+              "dispositionDelta": -5,
+              "next": "n2_end"
+            }
+          ]
+        },
+        "n2_end": {
+          "characterLine": "OK. I trust you to do right by us. Just... please don't let this be another conversation that leads to a committee that leads to nothing.",
+          "responses": [
+            {
+              "text": "It won't be. And Avi \u2014 thank you for being the person who says the uncomfortable thing. That's why you're invaluable.",
+              "approach": "Affirm",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "I'll have a concrete proposal within two weeks. You'll see it before the board does.",
+              "approach": "Specific",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "modifiesAdvisorBonus": 1.5,
+          "text": "Avi leaves feeling genuinely heard. He'll go to bat for whatever you decide \u2014 and his team will feel it."
+        },
+        {
+          "minDisposition": 45,
+          "modifiesAdvisorBonus": 1.0,
+          "text": "Avi accepts your direction but is watching closely. His support for your decision is conditional."
+        },
+        {
+          "minDisposition": 25,
+          "modifiesAdvisorBonus": 0,
+          "text": "Avi is visibly frustrated. He'll comply but won't advocate for your approach with his team."
+        },
+        {
+          "minDisposition": 0,
+          "modifiesAdvisorBonus": -0.5,
+          "text": "Avi leaves the meeting angry. Two staff members will hear about this conversation within the hour."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,469 @@
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1><span style="color:var(--ink)">Mission</span> <span style="color:var(--gold)">Control</span></h1>
+    <p>Antisemitism Decoded — Content Editor</p>
+    <input type="password" id="login-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" autofocus />
+    <div id="login-error" class="login-error"></div>
+    <button class="btn btn-primary" onclick="doLogin()">Enter Editor</button>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div id="editor-screen">
+  <div class="editor-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <h2><span style="color:var(--paper)">Mission</span> <span style="color:var(--gold)">Control</span></h2>
+        <span>Antisemitism Decoded</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Overview</div>
+        <button class="nav-item active" onclick="showPanel('github', this)">📋 Dashboard</button>
+
+        <div class="nav-section">Game Settings</div>
+        <button class="nav-item" onclick="showPanel('config', this)">⚙ Global Config</button>
+
+        <div class="nav-section">Characters</div>
+        <button class="nav-item" onclick="showPanel('traits', this)">🎭 Character Traits</button>
+        <button class="nav-item" onclick="showPanel('avatars', this)">😀 Emoji Avatars</button>
+
+        <div class="nav-section">Organizations</div>
+        <button class="nav-item" onclick="showPanel('orgs', this)">🏢 Local Organizations</button>
+        <button class="nav-item" onclick="showPanel('nat-orgs', this)">🌐 National Organizations</button>
+        <button class="nav-item" onclick="showPanel('missions', this)">🎯 Missions</button>
+
+        <div class="nav-section">Gameplay</div>
+        <button class="nav-item" onclick="showPanel('actions', this)">⚡ Actions</button>
+        <button class="nav-item" onclick="showPanel('scenarios', this)">📰 Scenarios / Events</button>
+        <button class="nav-item" onclick="showPanel('inbox', this)">📬 Inbox Scenarios</button>
+        <button class="nav-item" onclick="showPanel('segments', this)">👥 Segments</button>
+        <button class="nav-item" onclick="showPanel('scoring', this)">🏆 Scoring Thresholds</button>
+        <button class="nav-item" onclick="showPanel('conversations', this)">💬 Conversations</button>
+
+        <div class="nav-section">Content</div>
+        <button class="nav-item" onclick="showPanel('text', this)">📝 Page Text</button>
+        <button class="nav-item" onclick="showPanel('stats', this)">📊 Stat Configuration</button>
+
+        <div class="nav-section">Advanced</div>
+        <button class="nav-item" onclick="showPanel('politics', this)">⚖️ Political Mechanics</button>
+        <button class="nav-item" onclick="showPanel('advisors', this)">🧑‍⚖️ Advisor Pool</button>
+        <button class="nav-item" onclick="showPanel('gazette', this)">📰 Jewish Gazette</button>
+        <button class="nav-item" onclick="showPanel('breaking', this)">🚨 Breaking News</button>
+        <button class="nav-item" onclick="showPanel('coalitions', this)">🤝 Coalitions</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="sf-publish-btn" id="publish-btn" onclick="saveToGithub()">🚀 Publish to GitHub</button>
+        <button class="sf-secondary" onclick="exportCodeOnly()">⬇ Export Code Only</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.7rem">
+          <span class="sf-status" id="sf-status-line">No saved data yet</span>
+          <span class="sf-save-indicator" id="save-indicator">✓ Saved</span>
+        </div>
+        <button class="sf-ghost" onclick="toggleGhSettings()">⚙ GitHub Settings</button>
+        <button class="sf-ghost" onclick="resetToDefaults()">↺ Reset to defaults</button>
+        <button class="sf-ghost" onclick="logout()" style="margin-top:.5rem">🚪 Log Out</button>
+      </div>
+    </div>
+
+
+    <!-- MAIN -->
+    <div class="editor-main">
+      <div class="editor-topbar">
+        <h1 id="panel-title">GitHub / Save</h1>
+        <div class="topbar-actions">
+          <span id="status-msg" class="status-msg"></span>
+          <button class="btn btn-gold" onclick="saveToGithub()">Save & Push to GitHub →</button>
+        </div>
+      </div>
+      <div class="editor-content">
+
+        <!-- GITHUB / DASHBOARD PANEL -->
+        <div id="panel-github" class="panel active">
+
+          <!-- GitHub Settings Panel (collapsible, shown in main area) -->
+          <div class="gh-panel" id="gh-settings-panel">
+            <h3>⚙ GitHub Publish Settings</h3>
+            <div class="gh-grid-3">
+              <div>
+                <label>GitHub Username</label>
+                <input type="text" id="gh-username" placeholder="your-username" />
+              </div>
+              <div>
+                <label>Repository Name</label>
+                <input type="text" id="gh-repo" placeholder="mission-critical-game" />
+              </div>
+              <div>
+                <label>Personal Access Token</label>
+                <input type="password" id="gh-token" placeholder="ghp_..." />
+              </div>
+            </div>
+            <div class="gh-actions-row">
+              <button class="gh-btn gh-btn-save" onclick="saveGithubConfig()">Save Settings</button>
+              <button class="gh-btn gh-btn-clear" onclick="clearGithubConfig()">Clear</button>
+            </div>
+            <div id="gh-save-status" class="gh-status" style="display:none"></div>
+
+            <hr class="gh-divider" />
+
+            <h3 style="margin-bottom:.7rem">🔑 Change Editor Password</h3>
+            <div class="gh-grid-2">
+              <div>
+                <label>New Password</label>
+                <input type="password" id="gh-pw-new" placeholder="Enter new password" />
+              </div>
+              <div>
+                <label>Confirm Password</label>
+                <input type="password" id="gh-pw-confirm" placeholder="Confirm new password" />
+              </div>
+            </div>
+            <div class="gh-actions-row">
+              <button class="gh-btn gh-btn-save" onclick="updatePassword()">Update Password</button>
+            </div>
+            <div class="gh-pw-success" id="gh-pw-success">✓ Password updated in GitHub. Reload the editor from GitHub Pages to use the new password.</div>
+
+            <div class="gh-note">
+              Create a token at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
+              → Generate new token (classic) → check <code>repo</code> scope.<br>
+              The game file must be named <code>index.html</code> in the root of your repo.<br>
+              <strong>Security note:</strong> Your token and password are stored in this browser's localStorage only.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CONFIG PANEL -->
+        <div id="panel-config" class="panel">
+          <div class="form-section">
+            <h3>Game Settings</h3>
+            <div class="form-row" style="margin-bottom:13px">
+              <div class="form-group"><label>Game Title</label><input type="text" id="cfg-gameTitle" /></div>
+            </div>
+            <div class="form-row four">
+              <div class="form-group"><label>Total Rounds</label><input type="number" id="cfg-totalRounds" min="1" max="24" /></div>
+              <div class="form-group"><label>Action Points / Round</label><input type="number" id="cfg-actionPointsPerRound" min="1" max="10" /></div>
+              <div class="form-group"><label>Starting Budget ($)</label><input type="number" id="cfg-startingBudget" min="0" /></div>
+              <div class="form-group"><label>Traits to Select</label><input type="number" id="cfg-traitsToSelect" min="1" max="5" /></div>
+            </div>
+            <div class="form-row four">
+              <div class="form-group"><label>Inbox Events / Round</label><input type="number" id="cfg-inboxPerRound" min="0" max="5" /></div>
+              <div class="form-group"><label>Pts Per Mission Star</label><input type="number" id="cfg-missionStarPoints" min="0" max="25" /><div style="font-size:10px;color:var(--muted);margin-top:3px">Added to score. 0 stars = auto-loss.</div></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Budget System (Abstract Units)</h3>
+            <p class="section-note">The budget system uses abstract units (not dollars). Income each round = base income + (fundraising stat × multiplier). Operating costs are deducted automatically.</p>
+            <div class="form-row four">
+              <div class="form-group"><label>Starting Budget</label><input type="number" id="cfg-bc-startingBudget" min="0" /></div>
+              <div class="form-group"><label>Op Cost / Round</label><input type="number" id="cfg-bc-operatingCostPerRound" min="0" /></div>
+              <div class="form-group"><label>Base Income / Round</label><input type="number" id="cfg-bc-baseIncomePerRound" min="0" /></div>
+              <div class="form-group"><label>Fundraising Multiplier</label><input type="number" id="cfg-bc-fundraisingIncomeMultiplier" min="0" step="0.01" /></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Stat Momentum</h3>
+            <p class="section-note">When a stat trends in the same direction for consecutive rounds, momentum kicks in — bonuses for rising stats, penalties for falling ones.</p>
+            <div class="form-row three">
+              <div class="form-group"><label>Momentum Window (rounds)</label><input type="number" id="cfg-momentumWindow" min="1" max="5" /></div>
+              <div class="form-group"><label>Momentum Bonus</label><input type="number" id="cfg-momentumBonus" min="0" max="10" /></div>
+              <div class="form-group"><label>Momentum Penalty</label><input type="number" id="cfg-momentumPenalty" min="0" max="10" /></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Advisor System</h3>
+            <p class="section-note">Controls how many advisors the player selects from the pool at game start, and how multiple advisor bonuses combine when they recommend the same choice.</p>
+            <div class="form-row">
+              <div class="form-group"><label>Advisor Slots</label><input type="number" id="cfg-advisorSlots" min="1" max="5" /><div class="form-hint">How many advisors the player picks (default: 3)</div></div>
+              <div class="form-group"><label>Advisor Bonus Stacking</label><select id="cfg-advisorBonusStacking"><option value="best">Best Bonus Only</option><option value="stack">Stack All Bonuses</option></select><div class="form-hint">"Best" = only strongest advisor bonus applies. "Stack" = all bonuses add together.</div></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Priority Slider Limits</h3>
+            <p class="section-note">These control the priority allocation sliders on the budget screen. Total is the pool to distribute; Min/Max are per-stat limits. All stats × Min must be less than Total.</p>
+            <div class="form-row three">
+              <div class="form-group"><label>Priority Total (pool size)</label><input type="number" id="cfg-priorityTotal" min="10" max="500" /></div>
+              <div class="form-group"><label>Priority Min (per stat)</label><input type="number" id="cfg-priorityMin" min="0" max="50" /></div>
+              <div class="form-group"><label>Priority Max (per stat)</label><input type="number" id="cfg-priorityMax" min="10" max="200" /></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Mission Star System</h3>
+            <p class="section-note">Mission stars replace the old mission stat bar. Players start with some stars and gain/lose them based on whether their choices are mission-aligned. Stars display in the HUD.</p>
+            <div class="form-row">
+              <div class="form-group"><label>Starting Stars</label><input type="number" id="cfg-missionStartStars" min="0" max="10" /></div>
+              <div class="form-group"><label>Maximum Stars</label><input type="number" id="cfg-missionMaxStars" min="1" max="10" /></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Win / Lose / Promotion Thresholds</h3>
+            <p class="section-note">Mid-round failure triggers if any single stat bar drops to or below the bar threshold. Year-end: score below the score threshold = loss; above promotion threshold = promotion (or retirement if already national).</p>
+            <div class="form-row three">
+              <div class="form-group"><label>Sudden Death Threshold ⚡</label><input type="number" id="cfg-failureBarThreshold" min="0" max="50" /><div class="form-hint">Any single stat at or below this triggers immediate game over mid-round (default: 20)</div></div>
+              <div class="form-group"><label>Failure Score Threshold</label><input type="number" id="cfg-failureScoreThreshold" min="0" max="79" /><div class="form-hint">Year-end avg below this = loss screen</div></div>
+              <div class="form-group"><label>Promotion Threshold</label><input type="number" id="cfg-promotionThreshold" min="1" max="100" /><div class="form-hint">Year-end avg at or above this = promotion</div></div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Round Names <span style="font-size:12px;font-weight:400;color:var(--muted)">— one per round</span></h3>
+            <p class="section-note">Each round has four fields: Year label (e.g. "Year 1"), Round label (e.g. "Round 3"), Hebrew month, English month/description. Must match total rounds count.</p>
+            <div id="round-names-list"></div>
+            <button class="add-btn" onclick="addRoundName()" style="margin-top:8px">+ Add Round</button>
+          </div>
+
+          <div class="form-section">
+            <h3>Score Weights <span style="font-size:12px;font-weight:400;color:var(--muted)">— must add up to 1.0</span></h3>
+            <div class="stat-inputs cols-4" id="score-weights-inputs"></div>
+          </div>
+
+          <button class="btn btn-primary" onclick="saveConfig()">Save Config</button>
+        </div>
+
+        <!-- TRAITS PANEL -->
+        <div id="panel-traits" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Character traits affect starting stats and unlock special scenario choices. Players select a configurable number at the start.</p>
+          <div class="item-list" id="traits-list"></div>
+          <button class="add-btn" onclick="addTrait()">+ Add New Trait</button>
+        </div>
+
+        <!-- AVATARS PANEL -->
+        <div id="panel-avatars" class="panel">
+          <div class="form-section">
+            <h3>Emoji Avatar List</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:13px">One emoji per line. Players choose from this list during character creation.</p>
+            <div class="form-group"><textarea id="avatars-textarea" rows="14" placeholder="One emoji per line..."></textarea></div>
+            <button class="btn btn-primary" style="margin-top:11px" onclick="saveAvatars()">Save Avatars</button>
+          </div>
+        </div>
+
+        <!-- LOCAL ORGS PANEL -->
+        <div id="panel-orgs" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">The four local organizations players can lead in Year 1. Each has its own culture, stat modifiers, allowed missions, political tilt, and promotion eligibility rules.</p>
+          <div class="item-list" id="orgs-list"></div>
+        </div>
+
+        <!-- NATIONAL ORGS PANEL -->
+        <div id="panel-nat-orgs" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">National organizations players can be promoted to. Their political tilt must match a local org's <strong>promotionEligible</strong> list. These orgs cannot be edited in terms of promotion eligibility — they are the endpoint.</p>
+          <div class="item-list" id="nat-orgs-list"></div>
+          <button class="add-btn" onclick="addNatOrg()">+ Add National Organization</button>
+        </div>
+
+        <!-- MISSIONS PANEL -->
+        <div id="panel-missions" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Missions define the player's organizational purpose. Each choice in every scenario is tagged as mission-aligned or not, based on these IDs. The <strong>availableTo</strong> list controls which org types can select each mission — include both local and national org IDs.</p>
+          <div class="item-list" id="missions-list"></div>
+          <button class="add-btn" onclick="addMission()">+ Add New Mission</button>
+        </div>
+
+        <!-- ACTIONS PANEL -->
+        <div id="panel-actions" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Actions are what players spend action points on each round. Every action now guarantees a scenario — base effects apply first, then the scenario card loads.</p>
+          <div class="item-list" id="actions-list"></div>
+          <button class="add-btn" onclick="addAction()">+ Add New Action</button>
+        </div>
+
+        <!-- SCENARIOS PANEL -->
+        <div id="panel-scenarios" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Scenarios are the main event cards triggered by player actions. Each choice has three-tier mission alignment (aligned/opposed/neutral), and scenarios target political categories — the mission IDs for which that choice counts as aligned. If the list is empty, the choice is never mission-aligned.</p>
+          <div class="item-list" id="scenarios-list"></div>
+          <button class="add-btn" onclick="addScenario()">+ Add New Scenario</button>
+        </div>
+
+        <!-- INBOX PANEL -->
+        <div id="panel-inbox" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Inbox scenarios appear as emails or messages during gameplay — styled differently from main event cards. Two are randomly queued per round and delivered after the first action and again later in the round. Like regular scenarios, each choice needs a <strong>missionAligned</strong> list.</p>
+          <div class="item-list" id="inbox-list"></div>
+          <button class="add-btn" onclick="addInboxScenario()">+ Add New Inbox Scenario</button>
+        </div>
+
+        
+        <!-- SEGMENTS PANEL -->
+        <div id="panel-segments" class="panel">
+          <div class="form-section">
+            <h3>Constituency Segments</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">The six demographic segments that make up the Community Trust composite. Based on Pew Research Center 2020 and JVRC 2025 data. "Conservative" here refers to the Conservative Jewish denomination, not political conservatism.</p>
+            <div class="seg-config-grid" id="segments-config-grid"></div>
+            <button class="btn btn-primary" style="margin-top:14px" onclick="saveSegments()">Save Segment Config</button>
+          </div>
+        </div>
+
+        <!-- SCORING PANEL -->
+        <div id="panel-scoring" class="panel">
+          <div class="form-section">
+            <h3>Scoring Thresholds</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">These determine the grade, heading, and verdict text shown at year-end based on the player's final weighted score. Also drives the Another Year / Promotion / Loss outcomes.</p>
+            <div class="item-list" id="scoring-list"></div>
+          </div>
+        </div>
+
+        <!-- TEXT PANEL -->
+        <div id="panel-text" class="panel">
+          <div class="form-section">
+            <h3>Landing Page — Header &amp; Password</h3>
+            <div class="form-row">
+              <div class="form-group"><label>Game Password</label><input type="text" id="txt-gamePassword" placeholder="playtest2025" /></div>
+              <div class="form-group"><label>Kicker (small text above title)</label><input type="text" id="txt-lpKicker" /></div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px"><label>Page Title (large heading)</label><input type="text" id="txt-lpTitle" /></div>
+          </div>
+          <div class="form-section">
+            <h3>Landing Page — Cold Open Scenario</h3>
+            <div class="form-group"><label>Scenario Title</label><input type="text" id="txt-lpScenTitle" /></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Scenario Body</label><textarea id="txt-lpScenBody" rows="4"></textarea></div>
+            <div class="form-group"><label>Choices Label</label><input type="text" id="txt-lpChoicesLabel" /></div>
+            <div id="lp-choices-editor"></div>
+            <button class="btn btn-sm" onclick="addLpChoice()" style="margin-top:8px">+ Add Choice</button>
+          </div>
+          <div class="form-section">
+            <h3>Landing Page — Reveal Section</h3>
+            <div class="form-group"><label>Transition Text (after outcome)</label><input type="text" id="txt-lpTransition" /></div>
+            <div class="form-group"><label>Divider Text</label><input type="text" id="txt-lpDivider" /></div>
+            <div class="form-row">
+              <div class="form-group"><label>Reveal Title</label><input type="text" id="txt-lpRevealTitle" /></div>
+              <div class="form-group"><label>Reveal Title Accent (gold)</label><input type="text" id="txt-lpRevealAccent" /></div>
+            </div>
+            <div class="form-group"><label>Reveal Subtitle</label><input type="text" id="txt-lpRevealSub" /></div>
+            <div class="form-group"><label>Premise Text</label><textarea id="txt-lpPremise" rows="3"></textarea></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Stakes Text</label><textarea id="txt-lpStakes" rows="3"></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label>CTA Button (post-choice)</label><input type="text" id="txt-lpCtaPost" /></div>
+              <div class="form-group"><label>CTA Tagline</label><input type="text" id="txt-lpCtaTagline" /></div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px"><label>Bottom Text</label><textarea id="txt-lpBottomText" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Landing Page — Depth Items</h3>
+            <div class="form-group"><label>Section Label</label><input type="text" id="txt-lpDepthLabel" /></div>
+            <div id="lp-depth-editor"></div>
+            <button class="btn btn-sm" onclick="addLpDepthItem()" style="margin-top:8px">+ Add Depth Item</button>
+          </div>
+          <div class="form-section">
+            <h3>Landing Page — Headline Clippings</h3>
+            <div class="form-group"><label>Section Label</label><input type="text" id="txt-lpHeadlinesLabel" /></div>
+            <div id="lp-headlines-editor"></div>
+            <button class="btn btn-sm" onclick="addLpHeadline()" style="margin-top:8px">+ Add Headline</button>
+          </div>
+          <div class="form-section">
+            <h3>Landing Page — Ticker Headlines</h3>
+            <div class="form-group"><label>Headlines (one per line)</label><textarea id="txt-lpTicker" rows="6"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Character Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-charStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-charHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-charDesc" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Organization Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-orgStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-orgHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-orgDesc" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Mission Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-misStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-misHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-misDesc" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Priorities Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-budStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-budHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-budDesc" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Gameplay Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Action Heading</label><input id="txt-gameActionH" /></div><div class="form-group"><label>End Round Button</label><input id="txt-gameEndBtn" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>No AP Message</label><input id="txt-gameNoAP" /></div>
+          </div>
+          <div class="form-section">
+            <h3>End / Year-End Screen</h3>
+            <div class="form-row four">
+              <div class="form-group"><label>Failure Title</label><input id="txt-endFail" /></div>
+              <div class="form-group"><label>Another Year</label><input id="txt-endYear" /></div>
+              <div class="form-group"><label>Promotion</label><input id="txt-endPromo" /></div>
+              <div class="form-group"><label>Retirement</label><input id="txt-endRetire" /></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="saveText()">Save All Page Text</button>
+        </div>
+
+        <!-- STATS PANEL -->
+        <div id="panel-stats" class="panel">
+          <div class="form-section">
+            <h3>Stat Configuration</h3>
+            <p class="section-note">The four meters tracked throughout the game. Note: bar colors are now computed dynamically based on value (red → orange → blue → green → gold) and are not configurable per-stat.</p>
+            <div class="item-list" id="stats-list"></div>
+          </div>
+        </div>
+
+        <!-- POLITICS PANEL -->
+        <div id="panel-politics" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Configure how political position and clout affect gameplay. The system uses a 0–100 spectrum (0=far left, 100=far right) with an optimal center-left position at 40, asymmetric penalties, and a bipartisan trap that limits centrist influence.</p>
+          <div class="form-section">
+            <h3>Political Spectrum</h3>
+            <div class="section-note">Political position runs 0 (far left) to 100 (far right). The optimal position is 40 (center-left), reflecting the center-left skew of American Jewish leadership. Leaning right is penalized more than leaning left by the same distance. The "bipartisan trap" penalizes centrists (position 35–65) who have low clout (&lt;50) — they have access everywhere but influence nowhere.</div>
+            <div class="form-row three">
+              <div class="form-group"><label>Optimal Position</label><input type="number" id="pol-optimalPos" value="40" min="0" max="100" /><div class="form-hint">Center of the "sweet spot" (default: 40)</div></div>
+              <div class="form-group"><label>Sweet Spot Range (±)</label><input type="number" id="pol-sweetSpot" value="10" min="0" max="30" /><div class="form-hint">Distance from optimal that's still effective</div></div>
+              <div class="form-group"><label>Right-Lean Penalty Multiplier</label><input type="number" step="0.1" id="pol-rightPenalty" value="1.3" min="1.0" max="3.0" /><div class="form-hint">How much harder right-leaning is vs left (default: 1.3x)</div></div>
+            </div>
+            <div class="form-row three">
+              <div class="form-group"><label>Bipartisan Trap Range (low)</label><input type="number" id="pol-trapLow" value="35" min="0" max="50" /></div>
+              <div class="form-group"><label>Bipartisan Trap Range (high)</label><input type="number" id="pol-trapHigh" value="65" min="50" max="100" /></div>
+              <div class="form-group"><label>Centrist Clout Growth Rate</label><input type="number" step="0.1" id="pol-centristCloutRate" value="0.6" min="0.1" max="1.0" /><div class="form-hint">Centrists grow clout at this rate (default: 0.6 = 60%)</div></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <h3>Organization Starting Positions</h3>
+            <div class="section-note">Each organization starts with a political position and clout level. Edit these in the organization panels.</div>
+            <div id="pol-org-positions" style="font-size:12px;color:var(--muted)"></div>
+          </div>
+          <button class="btn btn-primary" onclick="savePoliticsConfig()">Save Political Config</button>
+        </div>
+
+        <!-- ADVISORS PANEL -->
+        <div id="panel-advisors" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Configure the advisor pool — characters who provide counsel on high-stakes scenarios. Players select a subset of these at game start. Each advisor brings stat modifiers, political leanings, and expertise.</p>
+          <div class="item-list" id="advisors-list"></div>
+          <button class="add-btn" onclick="addAdvisor()">+ Add New Advisor</button>
+        </div>
+
+        <!-- GAZETTE PANEL -->
+        <div id="panel-gazette" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Headline templates for the Jewish Gazette newspaper shown between rounds. Headlines trigger based on player choices, stat thresholds, or randomly.</p>
+          <div class="item-list" id="gazette-list"></div>
+          <button class="add-btn" onclick="addGazetteTemplate()">+ Add Headline Template</button>
+        </div>
+
+        <!-- BREAKING NEWS PANEL -->
+        <div id="panel-breaking" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Breaking news events that can interrupt mid-round. These have a probability of firing after any action and use urgent red styling.</p>
+          <div class="item-list" id="breaking-list"></div>
+          <button class="add-btn" onclick="addBreakingNews()">+ Add Breaking News Event</button>
+        </div>
+
+        <!-- COALITIONS PANEL -->
+        <div id="panel-coalitions" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Coalition offers that appear between rounds. Players can accept up to 3 simultaneously. Each gives ongoing stat benefits but imposes constraints.</p>
+          <div class="item-list" id="coalitions-list"></div>
+          <button class="add-btn" onclick="addCoalition()">+ Add Coalition Offer</button>
+        </div>
+
+        <!-- CONVERSATIONS PANEL -->
+        <div id="panel-conversations" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Branching conversations with characters and advisors. These fire before or after scenarios, at round start, or standalone. Each conversation is a node tree where player responses affect disposition, leading to different outcomes.</p>
+          <div class="item-list" id="conversations-list"></div>
+          <button class="add-btn" onclick="addConversation()">+ Add New Conversation</button>
+        </div>
+
+      </div><!-- /editor-content -->
+    </div><!-- /editor-main -->
+  </div><!-- /editor-wrap -->
+</div>
+

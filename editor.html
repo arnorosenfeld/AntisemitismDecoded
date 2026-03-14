@@ -256,6 +256,7 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
         <button class="nav-item" onclick="showPanel('gazette', this)">📰 Jewish Gazette</button>
         <button class="nav-item" onclick="showPanel('breaking', this)">🚨 Breaking News</button>
         <button class="nav-item" onclick="showPanel('coalitions', this)">🤝 Coalitions</button>
+        <button class="nav-item" onclick="showPanel('investments', this)">💰 Investments</button>
       </nav>
       <div class="sidebar-footer">
         <button class="sf-publish-btn" id="publish-btn" onclick="saveToGithub()">🚀 Publish to GitHub</button>
@@ -363,6 +364,10 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
               <div class="form-group"><label>Op Cost / Round</label><input type="number" id="cfg-bc-operatingCostPerRound" min="0" /></div>
               <div class="form-group"><label>Base Income / Round</label><input type="number" id="cfg-bc-baseIncomePerRound" min="0" /></div>
               <div class="form-group"><label>Fundraising Multiplier</label><input type="number" id="cfg-bc-fundraisingIncomeMultiplier" min="0" step="0.01" /></div>
+            </div>
+            <div class="form-row three" style="margin-top:8px">
+              <div class="form-group"><label>Investments Per Year (local)</label><input type="number" id="cfg-investmentsPerYear" min="0" /><div class="form-hint">How many investments local orgs can make per round</div></div>
+              <div class="form-group"><label>Investments Per Year (national)</label><input type="number" id="cfg-nationalInvestmentsPerYear" min="0" /><div class="form-hint">How many investments national orgs can make per round</div></div>
             </div>
           </div>
 
@@ -662,6 +667,13 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
           <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Branching conversations with characters and advisors. These fire before or after scenarios, at round start, or standalone. Each conversation is a node tree where player responses affect disposition, leading to different outcomes.</p>
           <div class="item-list" id="conversations-list"></div>
           <button class="add-btn" onclick="addConversation()">+ Add New Conversation</button>
+        </div>
+
+        <!-- INVESTMENTS PANEL -->
+        <div id="panel-investments" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Budget investments that players can purchase during rounds. Each has a cost, stat effects, and optional budget return over time.</p>
+          <div class="item-list" id="investments-list"></div>
+          <button class="add-btn" onclick="addInvestment()">+ Add Investment</button>
         </div>
 
       </div><!-- /editor-content -->
@@ -5467,10 +5479,10 @@ function showToast(msg, type) {
 const PANEL_TITLES = {
   github: 'GitHub / Save', config: 'Global Config', traits: 'Character Traits', avatars: 'Emoji Avatars',
   orgs: 'Local Organizations', 'nat-orgs': 'National Organizations', missions: 'Missions',
-  actions: 'Actions', scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios',
-  scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration',
+  actions: 'Actions', scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios', segments: 'Segments',
+  scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration', politics: 'Political Mechanics',
   advisors: 'Advisor Pool', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
-  conversations: 'Conversations'
+  investments: 'Investments', conversations: 'Conversations'
 };
 function showPanel(id, navEl) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -5514,6 +5526,10 @@ function populateConfig() {
   document.getElementById('cfg-bc-operatingCostPerRound').value = bc.operatingCostPerRound || 8;
   document.getElementById('cfg-bc-baseIncomePerRound').value = bc.baseIncomePerRound || 5;
   document.getElementById('cfg-bc-fundraisingIncomeMultiplier').value = bc.fundraisingIncomeMultiplier || 0.12;
+  var invPYEl = document.getElementById('cfg-investmentsPerYear');
+  if(invPYEl) invPYEl.value = c.investmentsPerYear || 1;
+  var natInvPYEl = document.getElementById('cfg-nationalInvestmentsPerYear');
+  if(natInvPYEl) natInvPYEl.value = c.nationalInvestmentsPerYear || 2;
   const w = c.scoreWeights || {};
   const swEl = document.getElementById('score-weights-inputs');
   if(swEl) {
@@ -5572,6 +5588,8 @@ function saveConfig() {
   c.budgetConfig.operatingCostPerRound = parseInt(document.getElementById('cfg-bc-operatingCostPerRound').value) || 8;
   c.budgetConfig.baseIncomePerRound = parseInt(document.getElementById('cfg-bc-baseIncomePerRound').value) || 5;
   c.budgetConfig.fundraisingIncomeMultiplier = parseFloat(document.getElementById('cfg-bc-fundraisingIncomeMultiplier').value) || 0.12;
+  c.investmentsPerYear = parseInt(document.getElementById('cfg-investmentsPerYear')?.value) || 1;
+  c.nationalInvestmentsPerYear = parseInt(document.getElementById('cfg-nationalInvestmentsPerYear')?.value) || 2;
   // Score weights
   c.scoreWeights = {};
   (GD.stats||[]).forEach(s => {
@@ -5853,6 +5871,7 @@ function renderScenarioForm(s, i, prefix) {
       <label class="checkbox-item" style="font-weight:700"><input type="checkbox" id="${prefix}-polrel-${i}" ${s.politicallyRelevant!==false?'checked':''} style="accent-color:#6366f1" /> ⚖️ Politically Relevant</label>
       <span style="font-size:10px;color:var(--muted);font-style:italic">When checked, political effectiveness modifies stat outcomes for this scenario</span>
     </div>
+    ${renderConsensusField(s, i, prefix)}
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
     <div class="choices-editor" id="${prefix}-choices-${i}">${(s.choices||[]).map((c,ci)=>renderChoiceEditor(c,i,ci,prefix)).join('')}</div>
     <button class="add-btn" style="margin-top:8px" onclick="addChoice(${i},'${prefix}')">+ Add Choice</button>
@@ -5894,6 +5913,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
     <label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px">Outcomes (${outcomes.length})</label>
     ${outcomes.map((o,oi)=>renderOutcomeEditor(si,ci,oi,o,prefix)).join('')}
     <button class="add-btn" style="padding:6px;font-size:11px;margin-top:4px" onclick="addOutcome(${si},${ci},'${prefix}')">+ Add Outcome</button>
+    ${renderSegOverrides(c, si, ci, prefix)}
   </div>`;
 }
 function renderOutcomeEditor(si, ci, oi, o, prefix) {
@@ -5907,27 +5927,27 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
   </div>`;
 }
 function addOutcome(si, ci, prefix) {
-  const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  const list = getListForPrefix(prefix);
   const c = list[si].choices[ci];
   if(!c.outcomes) c.outcomes=[{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
   c.outcomes.push({text:'',effects:{},weight:50,conditions:[],contextNote:''});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
-  prefix==='sc'?populateScenarios():populateInbox();
+  repopulateForPrefix(prefix);
 }
 function deleteOutcome(si,ci,oi,prefix) {
-  const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  const list = getListForPrefix(prefix);
   if((list[si].choices[ci].outcomes||[]).length<=1) return;
   list[si].choices[ci].outcomes.splice(oi,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));
-  prefix==='sc'?populateScenarios():populateInbox();
+  repopulateForPrefix(prefix);
 }
 function editConditions(si,ci,oi,prefix) {
-  const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  const list = getListForPrefix(prefix);
   const o = (list[si].choices[ci].outcomes||[])[oi];
   if(!o) return;
   const input = prompt('Conditions JSON:\n[{"type":"stat","stat":"morale","operator":"above","threshold":80,"modifier":15}]\nor [{"type":"missionStars","perStar":5}]\nCurrent: '+JSON.stringify(o.conditions||[]));
   if(input===null) return;
-  try { o.conditions=JSON.parse(input); localStorage.setItem('gd_cache',JSON.stringify(GD)); prefix==='sc'?populateScenarios():populateInbox(); }
+  try { o.conditions=JSON.parse(input); localStorage.setItem('gd_cache',JSON.stringify(GD)); repopulateForPrefix(prefix); }
   catch(e) { alert('Invalid JSON'); }
 }
 function saveScenario(i, prefix) {
@@ -5946,6 +5966,9 @@ function saveScenario(i, prefix) {
   // Political relevance flag
   var polRelEl = document.getElementById(prefix+'-polrel-'+i);
   s.politicallyRelevant = polRelEl ? polRelEl.checked : true;
+  // Community consensus
+  var consensusEl = document.getElementById(prefix+'-consensus-'+i);
+  if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
   const missions = GD.missions||[];
   s.choices = [];
   let ci=0;
@@ -5972,7 +5995,8 @@ function saveScenario(i, prefix) {
       outcomes.push({text:document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById(prefix+'-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById(prefix+'-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]});
       oi++;
     }
-    s.choices.push({id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined});
+    var segOv = readSegOverrides(prefix, i, ci);
+    s.choices.push({id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
     ci++;
   }
   // Save advisor quotes with recommendation fields
@@ -5982,17 +6006,28 @@ function saveScenario(i, prefix) {
   s.highStakes = hsCheck ? hsCheck.checked : !!s.highStakes;
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success');
 }
+function getListForPrefix(prefix){
+  if(prefix==='sc') return GD.scenarios;
+  if(prefix==='ib') return GD.inboxScenarios;
+  if(prefix==='bn') return GD.breakingNews;
+  return GD.scenarios;
+}
+function repopulateForPrefix(prefix){
+  if(prefix==='sc') populateScenarios();
+  else if(prefix==='ib') populateInbox();
+  else if(prefix==='bn') populateBreaking();
+}
 function addChoice(si, prefix) {
-  const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  const list = getListForPrefix(prefix);
   list[si].choices.push({id:'c'+list[si].choices.length,text:'',requiresUnlock:null,missionAligned:[],missionOpposed:[],outcomes:[{text:'',effects:{},weight:100,conditions:[],contextNote:''}]});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
-  prefix==='sc'?populateScenarios():populateInbox();
+  repopulateForPrefix(prefix);
 }
 function deleteChoice(si,ci,prefix) {
-  const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  const list = getListForPrefix(prefix);
   list[si].choices.splice(ci,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));
-  prefix==='sc'?populateScenarios():populateInbox();
+  repopulateForPrefix(prefix);
 }
 function deleteScenario(i,prefix) {
   if(!confirm('Delete?'))return;
@@ -6021,6 +6056,10 @@ function renderInboxCard(s, i) {
 function renderInboxForm(s, i) {
   const allCats = ['all','progressive','centrist','conservative','apolitical'];
   const cats = s.categories||['all'];
+  const allOrgs = (GD.organizations||[]).concat(GD.nationalOrganizations||[]);
+  const appOrgs = s.applicableOrgs||[];
+  const stats = GD.stats||[];
+  const expOut = s.expiredOutcome||{};
   return `<div class="item-edit-form" id="ib-form-${i}" style="display:none">
     <div class="form-row three">
       <div class="form-group"><label>ID</label><input id="ib-id-${i}" value="${esc(s.id)}" /></div>
@@ -6034,10 +6073,20 @@ function renderInboxForm(s, i) {
       <div class="form-group"><label>Org Level</label><select id="ib-lvl-${i}"><option value="both" ${(s.orgLevel||'both')==='both'?'selected':''}>Both</option><option value="local" ${s.orgLevel==='local'?'selected':''}>Local</option><option value="national" ${s.orgLevel==='national'?'selected':''}>National</option></select></div>
       <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="ib-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /></div>
     </div>
+    <div class="form-group" style="margin-bottom:8px"><label>Applicable Organizations</label><div class="checkbox-grid">${allOrgs.map(o=>`<label class="checkbox-item"><input type="checkbox" id="ib-apporg-${i}-${o.id}" ${appOrgs.includes(o.id)?'checked':''} />${esc(o.name)}</label>`).join('')}</div><div class="form-hint">If none checked, available to all orgs</div></div>
+    <div class="form-row three">
+      <div class="form-group"><label>Expires In (rounds, 0=never)</label><input type="number" id="ib-expires-${i}" value="${s.expiresIn||0}" min="0" /></div>
+    </div>
+    <details style="margin:8px 0;border:1px solid var(--border);padding:8px;background:#fdf8f0"><summary style="font-size:11px;font-weight:700;cursor:pointer;color:var(--gold)">Expired Outcome (if player ignores this inbox item)</summary>
+      <div class="form-group" style="margin:8px 0 6px"><label>Expired Text</label><textarea id="ib-exptext-${i}" rows="2">${esc(expOut.text||'')}</textarea></div>
+      <div class="stat-inputs cols-4" style="margin-bottom:6px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="ib-expfx-${i}-${s.id}" value="${(expOut.effects||{})[s.id]||0}" /></div>`).join('')}</div>
+      <div class="form-group"><label>Context Note</label><input id="ib-expnote-${i}" value="${esc(expOut.contextNote||'')}" /></div>
+    </details>
     <div style="margin:8px 0;padding:6px 10px;background:#f8f5ff;border:1px solid #e0d8f0;display:flex;align-items:center;gap:10px">
       <label class="checkbox-item" style="font-weight:700"><input type="checkbox" id="ib-polrel-${i}" ${s.politicallyRelevant!==false?'checked':''} style="accent-color:#6366f1" /> ⚖️ Politically Relevant</label>
       <span style="font-size:10px;color:var(--muted);font-style:italic">When checked, political effectiveness modifies stat outcomes</span>
     </div>
+    ${renderConsensusField(s, i, 'ib')}
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
     <div class="choices-editor">${(s.choices||[]).map((c,ci)=>renderChoiceEditor(c,i,ci,'ib')).join('')}</div>
     <button class="add-btn" style="margin-top:8px" onclick="addChoice(${i},'ib')">+ Add Choice</button>
@@ -6057,9 +6106,29 @@ function saveInbox(i) {
   if(!s.categories.length) s.categories=['all'];
   s.orgLevel = document.getElementById('ib-lvl-'+i)?.value||'both';
   s.complexity = parseInt(document.getElementById('ib-cplx-'+i)?.value)||3;
+  // Applicable orgs
+  var allOrgs = (GD.organizations||[]).concat(GD.nationalOrganizations||[]);
+  var appOrgs = allOrgs.filter(function(o){return document.getElementById('ib-apporg-'+i+'-'+o.id)?.checked}).map(function(o){return o.id});
+  if(appOrgs.length) s.applicableOrgs = appOrgs; else delete s.applicableOrgs;
+  // Expiration
+  var expiresIn = parseInt(document.getElementById('ib-expires-'+i)?.value)||0;
+  if(expiresIn > 0){
+    s.expiresIn = expiresIn;
+    var expEffects = {};
+    (GD.stats||[]).forEach(function(st){var v=parseInt(document.getElementById('ib-expfx-'+i+'-'+st.id)?.value)||0;if(v)expEffects[st.id]=v;});
+    var expText = document.getElementById('ib-exptext-'+i)?.value||'';
+    var expNote = document.getElementById('ib-expnote-'+i)?.value||'';
+    if(expText || Object.keys(expEffects).length) s.expiredOutcome = {text:expText,effects:expEffects,contextNote:expNote};
+    else delete s.expiredOutcome;
+  } else {
+    delete s.expiresIn; delete s.expiredOutcome;
+  }
   // Political relevance
   var polRelEl = document.getElementById('ib-polrel-'+i);
   s.politicallyRelevant = polRelEl ? polRelEl.checked : true;
+  // Community consensus
+  var consensusEl = document.getElementById('ib-consensus-'+i);
+  if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
   const missions = GD.missions||[];
   s.choices = [];
   let ci=0;
@@ -6083,7 +6152,8 @@ function saveInbox(i) {
       outcomes.push({text:document.getElementById('ib-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById('ib-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById('ib-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]});
       oi++;
     }
-    s.choices.push({id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined});
+    var segOv = readSegOverrides('ib', i, ci);
+    s.choices.push({id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
     ci++;
   }
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Inbox saved.','success');
@@ -6503,27 +6573,98 @@ function populateBreaking(){
   if(!list) return;
   var items = GD.breakingNews || [];
   list.innerHTML = items.map(function(bn,i){
-    return '<div class="item-card"><div class="item-header"><span>🚨 <strong>'+esc(bn.title)+'</strong></span><div><button class="edit-btn" onclick="editBreaking('+i+')">Edit</button><button class="del-btn" onclick="deleteBreaking('+i+')">✕</button></div></div><div class="item-detail">Prob: '+bn.probability+'% · Rounds '+bn.minRound+'-'+bn.maxRound+' · '+(bn.once?'Once':'Repeatable')+' · '+bn.choices.length+' choices</div></div>';
+    return renderBreakingCard(bn,i) + renderBreakingForm(bn,i);
   }).join('');
 }
-function editBreaking(i){
-  var bn = (GD.breakingNews||[])[i]; if(!bn) return;
-  var title = prompt('Title:', bn.title); if(title===null) return; bn.title = title;
-  var body = prompt('Body:', bn.body); if(body!==null) bn.body = body;
-  var prob = prompt('Probability (0-100):', bn.probability); if(prob!==null) bn.probability = parseInt(prob)||10;
-  var minR = prompt('Min round:', bn.minRound); if(minR!==null) bn.minRound = parseInt(minR)||1;
-  var maxR = prompt('Max round:', bn.maxRound); if(maxR!==null) bn.maxRound = parseInt(maxR)||6;
-  bn.once = confirm('Fire only once per game?');
-  populateBreaking(); setDirty();
+function renderBreakingCard(bn,i){
+  return '<div class="item-card" id="bn-card-'+i+'" onclick="toggleEdit(\'bn\','+i+')"><div class="item-header"><span class="expand-icon" id="bn-exp-'+i+'">▸</span><span>🚨 <strong>'+esc(bn.title)+'</strong></span><div><button class="del-btn" onclick="event.stopPropagation();deleteBreaking('+i+')">✕</button></div></div><div class="item-detail">Prob: '+bn.probability+'% · Rounds '+bn.minRound+'-'+bn.maxRound+' · '+(bn.once?'Once':'Repeatable')+' · '+(bn.choices||[]).length+' choices</div></div>';
+}
+function renderBreakingForm(bn,i){
+  var allCats=['all','progressive','centrist','conservative','apolitical'];
+  var cats=bn.categories||['all'];
+  return '<div class="item-edit-form" id="bn-form-'+i+'" style="display:none">'+
+    '<div class="form-row three">'+
+      '<div class="form-group"><label>ID</label><input id="bn-id-'+i+'" value="'+esc(bn.id)+'" /></div>'+
+      '<div class="form-group"><label>Tag</label><input id="bn-tag-'+i+'" value="'+esc(bn.tag||'BREAKING')+'" /></div>'+
+      '<div class="form-group"><label>Trigger</label><input id="bn-trigger-'+i+'" value="'+esc(bn.trigger||'any')+'" /></div>'+
+    '</div>'+
+    '<div class="form-group" style="margin-bottom:8px"><label>Title</label><input id="bn-title-'+i+'" value="'+esc(bn.title||'')+'" /></div>'+
+    '<div class="form-group" style="margin-bottom:8px"><label>Body</label><textarea id="bn-body-'+i+'" rows="3">'+esc(bn.body||'')+'</textarea></div>'+
+    '<div class="form-row three">'+
+      '<div class="form-group"><label>Probability (%)</label><input type="number" id="bn-prob-'+i+'" value="'+(bn.probability||10)+'" min="0" max="100" /></div>'+
+      '<div class="form-group"><label>Min Round</label><input type="number" id="bn-minr-'+i+'" value="'+(bn.minRound||1)+'" min="1" /></div>'+
+      '<div class="form-group"><label>Max Round</label><input type="number" id="bn-maxr-'+i+'" value="'+(bn.maxRound||6)+'" min="1" /></div>'+
+    '</div>'+
+    '<div class="form-row three">'+
+      '<div class="form-group"><label>Categories</label><div class="checkbox-grid">'+allCats.map(function(c){return '<label class="checkbox-item"><input type="checkbox" id="bn-cat-'+i+'-'+c+'" '+(cats.includes(c)?'checked':'')+' />'+c+'</label>'}).join('')+'</div></div>'+
+      '<div class="form-group"><label>Org Level</label><select id="bn-lvl-'+i+'"><option value="both" '+((bn.orgLevel||'both')==='both'?'selected':'')+'>Both</option><option value="local" '+(bn.orgLevel==='local'?'selected':'')+'>Local</option><option value="national" '+(bn.orgLevel==='national'?'selected':'')+'>National</option></select></div>'+
+      '<div class="form-group"><label>Complexity (1-5)</label><input type="number" id="bn-cplx-'+i+'" value="'+(bn.complexity||3)+'" min="1" max="5" /></div>'+
+    '</div>'+
+    '<div style="margin:8px 0;display:flex;gap:16px">'+
+      '<label class="checkbox-item"><input type="checkbox" id="bn-once-'+i+'" '+(bn.once?'checked':'')+' /> Fire only once per game</label>'+
+    '</div>'+
+    renderConsensusField(bn, i, 'bn')+
+    '<h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>'+
+    '<div class="choices-editor" id="bn-choices-'+i+'">'+(bn.choices||[]).map(function(c,ci){return renderChoiceEditor(c,i,ci,'bn')}).join('')+'</div>'+
+    '<button class="add-btn" style="margin-top:8px" onclick="addChoice('+i+',\'bn\')">+ Add Choice</button>'+
+    '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveBreaking('+i+')">Save Breaking News</button></div>'+
+  '</div>';
+}
+function saveBreaking(i){
+  var bn = GD.breakingNews[i];
+  bn.id = document.getElementById('bn-id-'+i)?.value||bn.id;
+  bn.tag = document.getElementById('bn-tag-'+i)?.value||'BREAKING';
+  bn.trigger = document.getElementById('bn-trigger-'+i)?.value||'any';
+  bn.title = document.getElementById('bn-title-'+i)?.value||bn.title;
+  bn.body = document.getElementById('bn-body-'+i)?.value||'';
+  bn.probability = parseInt(document.getElementById('bn-prob-'+i)?.value)||10;
+  bn.minRound = parseInt(document.getElementById('bn-minr-'+i)?.value)||1;
+  bn.maxRound = parseInt(document.getElementById('bn-maxr-'+i)?.value)||6;
+  var allCats=['all','progressive','centrist','conservative','apolitical'];
+  bn.categories = allCats.filter(function(c){return document.getElementById('bn-cat-'+i+'-'+c)?.checked});
+  if(!bn.categories.length) bn.categories=['all'];
+  bn.orgLevel = document.getElementById('bn-lvl-'+i)?.value||'both';
+  bn.complexity = parseInt(document.getElementById('bn-cplx-'+i)?.value)||3;
+  bn.once = !!document.getElementById('bn-once-'+i)?.checked;
+  var consensusEl = document.getElementById('bn-consensus-'+i);
+  if(consensusEl) bn.communityConsensus = parseFloat(consensusEl.value);
+  // Save choices using same logic as scenarios
+  var missions = GD.missions||[];
+  bn.choices = [];
+  var ci=0;
+  while(document.getElementById('bn-ctext-'+i+'-'+ci)) {
+    var text = document.getElementById('bn-ctext-'+i+'-'+ci).value;
+    var unlock = document.getElementById('bn-cunlock-'+i+'-'+ci)?.value||null;
+    var aligned=[],opposed=[];
+    missions.forEach(function(m){var v=document.getElementById('bn-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
+    var polLean = parseInt(document.getElementById('bn-cpollean-'+i+'-'+ci)?.value)||0;
+    var polClout = parseInt(document.getElementById('bn-cpolclout-'+i+'-'+ci)?.value)||0;
+    var polMinClout = parseInt(document.getElementById('bn-cpolminclout-'+i+'-'+ci)?.value)||0;
+    var polReq = {};
+    if(polMinClout > 0) polReq.minClout = polMinClout;
+    var outcomes=[];
+    var oi=0;
+    while(document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi)) {
+      var effects={};
+      (GD.stats||[]).forEach(function(st){var v=parseInt(document.getElementById('bn-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
+      var existingO=(GD.breakingNews[i]?.choices?.[ci]?.outcomes||[])[oi];
+      outcomes.push({text:document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi).value,effects:effects,weight:parseInt(document.getElementById('bn-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById('bn-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]});
+      oi++;
+    }
+    var segOv = readSegOverrides('bn', i, ci);
+    bn.choices.push({id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:parseInt(document.getElementById('bn-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
+    ci++;
+  }
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Breaking news saved.','success');
 }
 function addBreakingNews(){
   if(!GD.breakingNews) GD.breakingNews = [];
   GD.breakingNews.push({id:'bn_'+Date.now(),tag:'BREAKING',title:'New Breaking Event',body:'Description...',trigger:'any',probability:10,minRound:1,maxRound:6,once:true,categories:['all'],orgLevel:'both',complexity:3,choices:[]});
-  populateBreaking(); setDirty();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateBreaking();
 }
 function deleteBreaking(i){
   if(!confirm('Delete this breaking news event?')) return;
-  GD.breakingNews.splice(i,1); populateBreaking(); setDirty();
+  GD.breakingNews.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateBreaking();
 }
 
 // ═══ COALITIONS PANEL ═══
@@ -6532,27 +6673,147 @@ function populateCoalitions(){
   if(!list) return;
   var items = GD.coalitionOffers || [];
   list.innerHTML = items.map(function(co,i){
-    var benefitStr = Object.entries(co.benefits.perRound||{}).map(function(e){return '+'+e[1]+' '+e[0]}).join(', ');
-    var constraintStr = (co.constraints||[]).map(function(c){return c.description}).join('; ');
-    return '<div class="item-card"><div class="item-header"><span>🤝 <strong>'+esc(co.name)+'</strong></span><div><button class="edit-btn" onclick="editCoalition('+i+')">Edit</button><button class="del-btn" onclick="deleteCoalition('+i+')">✕</button></div></div><div class="item-detail">Benefits: '+esc(benefitStr)+' · Constraint: '+esc(constraintStr).substring(0,60)+'<br>Offered by round '+co.offeredByRound+' · Duration: '+(co.duration||'permanent')+'</div></div>';
+    return renderCoalitionCard(co,i) + renderCoalitionForm(co,i);
   }).join('');
 }
-function editCoalition(i){
-  var co = (GD.coalitionOffers||[])[i]; if(!co) return;
-  var name = prompt('Name:', co.name); if(name===null) return; co.name = name;
-  var desc = prompt('Description:', co.description); if(desc!==null) co.description = desc;
-  var round = prompt('Offered by round:', co.offeredByRound); if(round!==null) co.offeredByRound = parseInt(round)||1;
-  var dur = prompt('Duration (rounds, 0=permanent):', co.duration||0); if(dur!==null) co.duration = parseInt(dur)||0;
-  populateCoalitions(); setDirty();
+function renderCoalitionCard(co,i){
+  var benefitStr = Object.entries((co.benefits||{}).perRound||{}).map(function(e){return '+'+e[1]+' '+e[0]}).join(', ');
+  var constraintStr = (co.constraints||[]).map(function(c){return c.description}).join('; ');
+  return '<div class="item-card" id="coal-card-'+i+'" onclick="toggleEdit(\'coal\','+i+')"><div class="item-header"><span class="expand-icon" id="coal-exp-'+i+'">▸</span><span>🤝 <strong>'+esc(co.name)+'</strong></span><div><button class="del-btn" onclick="event.stopPropagation();deleteCoalition('+i+')">✕</button></div></div><div class="item-detail">Benefits: '+esc(benefitStr)+' · Constraint: '+esc(constraintStr).substring(0,80)+'<br>Offered by round '+co.offeredByRound+' · Duration: '+(co.duration?co.duration+' rounds':'permanent')+'</div></div>';
+}
+function renderCoalitionForm(co,i){
+  var stats = GD.stats||[];
+  var benefits = (co.benefits||{}).perRound||{};
+  var budgetPR = (co.benefits||{}).budgetPerRound||0;
+  var vp = co.violationPenalty||{effects:{},text:''};
+  var dp = co.declinePenalty||{effects:{},text:''};
+  var constraintsJSON = JSON.stringify(co.constraints||[], null, 2);
+  return '<div class="item-edit-form" id="coal-form-'+i+'" style="display:none">'+
+    '<div class="form-row three">'+
+      '<div class="form-group"><label>ID</label><input id="coal-id-'+i+'" value="'+esc(co.id)+'" /></div>'+
+      '<div class="form-group"><label>Name</label><input id="coal-name-'+i+'" value="'+esc(co.name)+'" /></div>'+
+      '<div class="form-group"><label>Offered by Round</label><input type="number" id="coal-round-'+i+'" value="'+(co.offeredByRound||1)+'" min="1" /></div>'+
+    '</div>'+
+    '<div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="coal-desc-'+i+'" rows="3">'+esc(co.description||'')+'</textarea></div>'+
+    '<div class="form-row three">'+
+      '<div class="form-group"><label>Duration (0=permanent)</label><input type="number" id="coal-dur-'+i+'" value="'+(co.duration||0)+'" min="0" /></div>'+
+      '<div class="form-group"><label>Political Lean</label><input type="number" id="coal-pollean-'+i+'" value="'+(co.politicalLean||0)+'" min="-10" max="10" /><div class="form-hint">-10=left, +10=right</div></div>'+
+      '<div class="form-group"><label>Accept Clout</label><input type="number" id="coal-aclout-'+i+'" value="'+(co.acceptClout||0)+'" /></div>'+
+    '</div>'+
+    '<div class="form-group" style="margin-bottom:8px"><label>Break Clout Penalty</label><input type="number" id="coal-bclout-'+i+'" value="'+(co.breakCloutPenalty||0)+'" /></div>'+
+    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Benefits per Round</label>'+
+    '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-ben-'+i+'-'+s.id+'" value="'+(benefits[s.id]||0)+'" /></div>'}).join('')+
+    '<div class="stat-input-group"><label>Budget/round</label><input type="number" id="coal-benbudget-'+i+'" value="'+budgetPR+'" /></div></div>'+
+    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Constraints (JSON)</label>'+
+    '<textarea id="coal-constraints-'+i+'" rows="4" style="font-family:monospace;font-size:11px">'+esc(constraintsJSON)+'</textarea>'+
+    '<div class="form-hint" style="margin-bottom:10px">Types: "avoidMission" (with missionIds array), "maintainStat" (with stat, above). Each needs a "description".</div>'+
+    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Violation Penalty</label>'+
+    '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-vptext-'+i+'" rows="2">'+esc(vp.text||'')+'</textarea></div>'+
+    '<div class="stat-inputs cols-4" style="margin-bottom:6px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-vpfx-'+i+'-'+s.id+'" value="'+((vp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
+    '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-vpbudget-'+i+'" value="'+(vp.budgetEffect||0)+'" /></div>'+
+    '<div class="stat-input-group"><label>Clout</label><input type="number" id="coal-vpclout-'+i+'" value="'+(vp.cloutEffect||0)+'" /></div></div>'+
+    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Decline Penalty</label>'+
+    '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-dptext-'+i+'" rows="2">'+esc(dp.text||'')+'</textarea></div>'+
+    '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-dpfx-'+i+'-'+s.id+'" value="'+((dp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
+    '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-dpbudget-'+i+'" value="'+(dp.budgetEffect||0)+'" /></div></div>'+
+    '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveCoalition('+i+')">Save Coalition</button></div>'+
+  '</div>';
+}
+function saveCoalition(i){
+  var co = GD.coalitionOffers[i];
+  co.id = document.getElementById('coal-id-'+i)?.value||co.id;
+  co.name = document.getElementById('coal-name-'+i)?.value||co.name;
+  co.description = document.getElementById('coal-desc-'+i)?.value||'';
+  co.offeredByRound = parseInt(document.getElementById('coal-round-'+i)?.value)||1;
+  co.duration = parseInt(document.getElementById('coal-dur-'+i)?.value)||0;
+  co.politicalLean = parseInt(document.getElementById('coal-pollean-'+i)?.value)||0;
+  co.acceptClout = parseInt(document.getElementById('coal-aclout-'+i)?.value)||0;
+  co.breakCloutPenalty = parseInt(document.getElementById('coal-bclout-'+i)?.value)||0;
+  // Benefits
+  var perRound = {};
+  (GD.stats||[]).forEach(function(s){var v=parseInt(document.getElementById('coal-ben-'+i+'-'+s.id)?.value)||0;if(v)perRound[s.id]=v;});
+  var budgetPR = parseInt(document.getElementById('coal-benbudget-'+i)?.value)||0;
+  co.benefits = {perRound: perRound};
+  if(budgetPR) co.benefits.budgetPerRound = budgetPR;
+  // Constraints
+  try { co.constraints = JSON.parse(document.getElementById('coal-constraints-'+i)?.value||'[]'); }
+  catch(e) { alert('Invalid constraints JSON'); return; }
+  // Violation penalty
+  var vpEffects = {};
+  (GD.stats||[]).forEach(function(s){var v=parseInt(document.getElementById('coal-vpfx-'+i+'-'+s.id)?.value)||0;if(v)vpEffects[s.id]=v;});
+  co.violationPenalty = {
+    effects: vpEffects,
+    text: document.getElementById('coal-vptext-'+i)?.value||'',
+    budgetEffect: parseInt(document.getElementById('coal-vpbudget-'+i)?.value)||0,
+    cloutEffect: parseInt(document.getElementById('coal-vpclout-'+i)?.value)||0
+  };
+  if(!co.violationPenalty.budgetEffect) delete co.violationPenalty.budgetEffect;
+  // Decline penalty
+  var dpEffects = {};
+  (GD.stats||[]).forEach(function(s){var v=parseInt(document.getElementById('coal-dpfx-'+i+'-'+s.id)?.value)||0;if(v)dpEffects[s.id]=v;});
+  co.declinePenalty = {
+    effects: dpEffects,
+    text: document.getElementById('coal-dptext-'+i)?.value||'',
+    budgetEffect: parseInt(document.getElementById('coal-dpbudget-'+i)?.value)||0
+  };
+  if(!co.declinePenalty.budgetEffect) delete co.declinePenalty.budgetEffect;
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Coalition saved.','success');
 }
 function addCoalition(){
   if(!GD.coalitionOffers) GD.coalitionOffers = [];
-  GD.coalitionOffers.push({id:'coal_'+Date.now(),name:'New Coalition',description:'Description...',offeredByRound:1,benefits:{perRound:{trust:2}},constraints:[{type:'maintainStat',stat:'trust',above:40,description:'Must maintain trust above 40'}],violationPenalty:{effects:{trust:-5},text:'The coalition has ended.'},duration:0});
-  populateCoalitions(); setDirty();
+  GD.coalitionOffers.push({id:'coal_'+Date.now(),name:'New Coalition',description:'Description...',offeredByRound:1,benefits:{perRound:{trust:2}},constraints:[{type:'maintainStat',stat:'trust',above:40,description:'Must maintain trust above 40'}],violationPenalty:{effects:{trust:-5},text:'The coalition has ended.'},declinePenalty:{effects:{},text:''},duration:0,politicalLean:0,acceptClout:0,breakCloutPenalty:0});
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateCoalitions();
 }
 function deleteCoalition(i){
   if(!confirm('Delete this coalition offer?')) return;
-  GD.coalitionOffers.splice(i,1); populateCoalitions(); setDirty();
+  GD.coalitionOffers.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateCoalitions();
+}
+
+// ═══ INVESTMENTS ═══
+function populateInvestments(){
+  var list = document.getElementById('investments-list');
+  if(!list) return;
+  if(!GD.investments) GD.investments = [];
+  list.innerHTML = GD.investments.map(function(inv,i){
+    return renderInvestmentCard(inv,i) + renderInvestmentForm(inv,i);
+  }).join('');
+}
+function renderInvestmentCard(inv,i){
+  var effs = Object.entries(inv.effects||{}).map(function(e){return (e[1]>0?'+':'')+e[1]+' '+e[0]}).join(', ');
+  return '<div class="item-card" id="inv-card-'+i+'" onclick="toggleEdit(\'inv\','+i+')"><div class="item-header"><span class="expand-icon" id="inv-exp-'+i+'">▸</span><span>'+esc(inv.icon||'')+' <strong>'+esc(inv.name)+'</strong> — Cost: '+inv.budgetCost+'</span><div><button class="del-btn" onclick="event.stopPropagation();deleteInvestment('+i+')">✕</button></div></div><div class="item-detail">'+esc(inv.description||'')+'<br>Effects: '+(effs||'none')+' · Max uses: '+(inv.maxUses===-1?'unlimited':inv.maxUses)+'</div></div>';
+}
+function renderInvestmentForm(inv,i){
+  var stats = GD.stats||[];
+  var retDelay = inv.budgetReturnDelay||0;
+  var retAmt = inv.budgetReturn||0;
+  return '<div class="item-edit-form" id="inv-form-'+i+'" style="display:none"><div class="form-row three"><div class="form-group"><label>ID</label><input id="inv-id-'+i+'" value="'+esc(inv.id)+'" /></div><div class="form-group"><label>Name</label><input id="inv-name-'+i+'" value="'+esc(inv.name)+'" /></div><div class="form-group"><label>Icon (emoji)</label><input id="inv-icon-'+i+'" value="'+esc(inv.icon||'')+'" /></div></div><div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="inv-desc-'+i+'" rows="2">'+esc(inv.description||'')+'</textarea></div><div class="form-group" style="margin-bottom:8px"><label>Outcome Text</label><textarea id="inv-outcome-'+i+'" rows="2">'+esc(inv.outcomeText||'')+'</textarea></div><div class="form-row three"><div class="form-group"><label>Budget Cost</label><input type="number" id="inv-cost-'+i+'" value="'+(inv.budgetCost||0)+'" min="0" /></div><div class="form-group"><label>Max Uses (-1=unlimited)</label><input type="number" id="inv-max-'+i+'" value="'+(inv.maxUses===undefined?1:inv.maxUses)+'" min="-1" /></div><div class="form-group"><label>Budget Return</label><input type="number" id="inv-return-'+i+'" value="'+retAmt+'" min="0" /><div class="form-hint">Budget refunded after delay (0=none)</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Budget Return Delay (rounds)</label><input type="number" id="inv-retdelay-'+i+'" value="'+retDelay+'" min="0" /><div class="form-hint">Rounds before budget return is received</div></div><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px">Stat Effects</label><div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="inv-fx-'+i+'-'+s.id+'" value="'+((inv.effects||{})[s.id]||0)+'" /></div>'}).join('')+'</div><div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveInvestment('+i+')">Save Investment</button></div></div>';
+}
+function saveInvestment(i){
+  var inv = GD.investments[i];
+  inv.id = document.getElementById('inv-id-'+i)?.value||inv.id;
+  inv.name = document.getElementById('inv-name-'+i)?.value||inv.name;
+  inv.icon = document.getElementById('inv-icon-'+i)?.value||'';
+  inv.description = document.getElementById('inv-desc-'+i)?.value||'';
+  inv.outcomeText = document.getElementById('inv-outcome-'+i)?.value||'';
+  inv.budgetCost = parseInt(document.getElementById('inv-cost-'+i)?.value)||0;
+  inv.maxUses = parseInt(document.getElementById('inv-max-'+i)?.value);
+  if(isNaN(inv.maxUses)) inv.maxUses = 1;
+  inv.budgetReturn = parseInt(document.getElementById('inv-return-'+i)?.value)||0;
+  inv.budgetReturnDelay = parseInt(document.getElementById('inv-retdelay-'+i)?.value)||0;
+  if(!inv.budgetReturn){ delete inv.budgetReturn; delete inv.budgetReturnDelay; }
+  var effects = {};
+  (GD.stats||[]).forEach(function(s){var v=parseInt(document.getElementById('inv-fx-'+i+'-'+s.id)?.value)||0;if(v)effects[s.id]=v;});
+  inv.effects = effects;
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Investment saved.','success');
+}
+function addInvestment(){
+  if(!GD.investments) GD.investments=[];
+  GD.investments.push({id:'inv_'+Date.now(),name:'New Investment',icon:'💡',description:'',budgetCost:10,effects:{},outcomeText:'',maxUses:1});
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateInvestments();
+}
+function deleteInvestment(i){
+  if(!confirm('Delete this investment?')) return;
+  GD.investments.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateInvestments();
 }
 
 // ═══ ADVISOR QUOTES ON SCENARIO FORMS ═══
@@ -7027,6 +7288,7 @@ function populateAllPanelsV2(){
   populateGazette();
   populateBreaking();
   populateCoalitions();
+  populateInvestments();
   populateConversations();
 }
 // Override the populate call
@@ -7039,6 +7301,7 @@ if(typeof populateAllPanels === 'function'){
     populateGazette();
     populateBreaking();
     populateCoalitions();
+    populateInvestments();
     populateConversations();
   };
 }

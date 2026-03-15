@@ -406,6 +406,8 @@ function lpPickChoice(idx) {
   ['lp-reveal','lp-depth','lp-headlines','lp-bottom'].forEach(function(id,i) {
     setTimeout(function() { document.getElementById(id).classList.add('revealed'); }, 1800 + i*400);
   });
+  // Mark that the player has seen the cold open
+  try { localStorage.setItem('ad_intro_seen', '1'); } catch(e) {}
   // Update CTA button text
   setTimeout(function() {
     document.getElementById('lp-cta-btn').textContent = pt.ctaButtonPost || 'Begin \u2192';
@@ -418,6 +420,19 @@ function lpPickChoice(idx) {
 function initIntro() {
   var pt = GAME_DATA.config.pageText?.introScreen;
   if (!pt) return;
+  // Check if returning player — skip cold open, show reveal immediately
+  var introSeen = false;
+  try { introSeen = localStorage.getItem('ad_intro_seen') === '1'; } catch(e) {}
+  if (introSeen) {
+    var header = document.getElementById('landing-header');
+    var coldWrap = document.querySelector('.cold-open-wrap');
+    if (header) header.style.display = 'none';
+    if (coldWrap) coldWrap.style.display = 'none';
+    ['lp-reveal','lp-depth','lp-headlines','lp-bottom'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) { el.classList.add('revealed'); el.style.animation = 'none'; }
+    });
+  }
   // Header
   var k = document.getElementById('lp-kicker'); if(k) k.textContent = pt.kicker || '';
   var t = document.getElementById('lp-title'); if(t) t.textContent = pt.title || '';

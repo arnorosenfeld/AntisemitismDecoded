@@ -13104,6 +13104,7 @@ function saveOrg(i, prefix) {
   if(startCoals.length) o.startingCoalitions = startCoals; else delete o.startingCoalitions;
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Org saved.','success');
   if(prefix==='org') populateOrgs(); else populateNatOrgs();
+  refreshDependentPanels('orgs');
 }
 
 // ═══ NAT ORGS ═══
@@ -13114,15 +13115,16 @@ function deleteOrg(i, prefix) {
   if(!confirm('Delete this organization?')) return;
   if(prefix==='org') { GD.organizations.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateOrgs(); }
   else if(prefix==='norg') { GD.nationalOrganizations.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateNatOrgs(); }
+  refreshDependentPanels('orgs');
 }
 function deleteNatOrg(i) { deleteOrg(i,'norg'); }
 function addLocalOrg() {
   GD.organizations.push({id:'org_'+Date.now(),name:'New Organization',badge:'Local',badgeClass:'badge-center',description:'',traits:[],statModifiers:{},allowedMissions:[],politicalTilt:['center'],scenarioCategories:['centrist'],startingBudget:500000,orgLevel:'local',promotionEligible:[],segmentWeights:{},allocationPoints:10});
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateOrgs();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateOrgs(); refreshDependentPanels('orgs');
 }
 function addNatOrg() {
   GD.nationalOrganizations.push({id:'nat_'+Date.now(),name:'New Nat Org',badge:'National',badgeClass:'badge-center',description:'',traits:[],statModifiers:{},allowedMissions:[],politicalTilt:['center'],scenarioCategories:['centrist'],startingBudget:2000000,orgLevel:'national'});
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateNatOrgs();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateNatOrgs(); refreshDependentPanels('orgs');
 }
 
 // ═══ MISSIONS ═══
@@ -13156,12 +13158,12 @@ function saveMission(i) {
   m.availableTo = document.getElementById('mis-avail-'+i).value.split(',').map(s=>s.trim()).filter(Boolean);
   m.statBonus = {};
   (GD.stats||[]).forEach(s => { const v = parseInt(document.getElementById('mis-fx-'+i+'-'+s.id)?.value)||0; if(v!==0) m.statBonus[s.id]=v; });
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Mission saved.','success'); populateMissions();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Mission saved.','success'); populateMissions(); refreshDependentPanels('missions');
 }
-function deleteMission(i) { if(!confirm('Delete?'))return; GD.missions.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateMissions(); }
+function deleteMission(i) { if(!confirm('Delete?'))return; GD.missions.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateMissions(); refreshDependentPanels('missions'); }
 function addMission() {
   GD.missions.push({id:'mission_'+Date.now(),name:'New Mission',description:'',availableTo:[],statBonus:{}});
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateMissions();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateMissions(); refreshDependentPanels('missions');
 }
 
 // ═══ ACTIONS ═══ (#1: add/delete)
@@ -13376,7 +13378,7 @@ function saveScenario(i, prefix) {
   // Save highStakes from the checkbox
   var hsCheck = document.querySelector('#'+prefix+'-form-'+i+' .hs-check');
   s.highStakes = hsCheck ? hsCheck.checked : !!s.highStakes;
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success');
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success'); refreshDependentPanels('scenarios');
 }
 function getListForPrefix(prefix){
   if(prefix==='sc') return GD.scenarios;
@@ -13406,10 +13408,11 @@ function deleteScenario(i,prefix) {
   const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
   list.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD));
   prefix==='sc'?populateScenarios():populateInbox();
+  refreshDependentPanels('scenarios');
 }
 function addScenario() {
   GD.scenarios.push({id:'sc_'+Date.now(),tag:'Event',trigger:'community',title:'New Scenario',body:'',categories:['all'],orgLevel:'both',complexity:3,choices:[]});
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateScenarios();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateScenarios(); refreshDependentPanels('scenarios');
 }
 
 // ═══ INBOX ═══
@@ -13892,7 +13895,7 @@ function saveAdvisor(i){
     var el = document.getElementById('adv-exp-'+i+'-'+e);
     return el && el.checked;
   });
-  setDirty(); setStatus('Advisor saved.','success'); populateAdvisors();
+  setDirty(); setStatus('Advisor saved.','success'); populateAdvisors(); refreshDependentPanels('advisors');
 }
 
 function addAdvisor(){
@@ -13900,13 +13903,13 @@ function addAdvisor(){
   GD.advisorPool.push({id:'adv_'+Date.now(),name:'New Advisor',role:'Role',emoji:'👤',
     personality:'cautious',type:'internal',bio:'',
     statModifiers:{},politicalLean:0,cloutBonus:0,expertise:[],budgetBonus:0});
-  setDirty(); populateAdvisors();
+  setDirty(); populateAdvisors(); refreshDependentPanels('advisors');
 }
 
 function deleteAdvisor(i){
   if(!confirm('Delete this advisor?')) return;
   (GD.advisorPool||[]).splice(i,1);
-  setDirty(); populateAdvisors();
+  setDirty(); populateAdvisors(); refreshDependentPanels('advisors');
 }
 
 // ═══ GAZETTE PANEL ═══
@@ -14151,16 +14154,16 @@ function saveCoalition(i){
     budgetEffect: parseInt(document.getElementById('coal-dpbudget-'+i)?.value)||0
   };
   if(!co.declinePenalty.budgetEffect) delete co.declinePenalty.budgetEffect;
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Coalition saved.','success');
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Coalition saved.','success'); refreshDependentPanels('coalitions');
 }
 function addCoalition(){
   if(!GD.coalitionOffers) GD.coalitionOffers = [];
   GD.coalitionOffers.push({id:'coal_'+Date.now(),name:'New Coalition',description:'Description...',offeredByRound:1,benefits:{perRound:{trust:2}},constraints:[{type:'maintainStat',stat:'trust',above:40,description:'Must maintain trust above 40'}],violationPenalty:{effects:{trust:-5},text:'The coalition has ended.'},declinePenalty:{effects:{},text:''},duration:0,politicalLean:0,acceptClout:0,breakCloutPenalty:0});
-  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateCoalitions();
+  localStorage.setItem('gd_cache',JSON.stringify(GD)); populateCoalitions(); refreshDependentPanels('coalitions');
 }
 function deleteCoalition(i){
   if(!confirm('Delete this coalition offer?')) return;
-  GD.coalitionOffers.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateCoalitions();
+  GD.coalitionOffers.splice(i,1); localStorage.setItem('gd_cache',JSON.stringify(GD)); populateCoalitions(); refreshDependentPanels('coalitions');
 }
 
 // ═══ INVESTMENTS ═══
@@ -14674,6 +14677,36 @@ function deleteConvOutcome(ci, oi){
   setDirty(); populateConversations();
 }
 
+// ═══ REFRESH DEPENDENT PANELS ═══
+// When reference data changes (missions, orgs, coalitions, advisors, scenarios, segments),
+// re-render panels that reference that data in dropdowns/checkboxes.
+function refreshDependentPanels(changedType) {
+  // Missions affect: scenario/inbox/breaking choice alignment dropdowns
+  if (changedType === 'missions') {
+    populateScenarios(); populateInbox(); populateBreaking();
+  }
+  // Orgs affect: coalition/inbox applicableOrgs, conversation applicableOrgs
+  if (changedType === 'orgs') {
+    populateCoalitions(); populateInbox(); populateConversations();
+  }
+  // Coalitions affect: org starting coalitions
+  if (changedType === 'coalitions') {
+    populateOrgs(); populateNatOrgs();
+  }
+  // Advisors affect: scenario advisor quotes, conversation advisor links
+  if (changedType === 'advisors') {
+    populateScenarios(); populateConversations();
+  }
+  // Scenarios affect: conversation/coalition trigger dropdowns
+  if (changedType === 'scenarios') {
+    populateConversations(); populateCoalitions();
+  }
+  // Segments affect: org segment weights, choice segment overrides
+  if (changedType === 'segments') {
+    populateOrgs(); populateNatOrgs(); populateScenarios(); populateInbox(); populateBreaking();
+  }
+}
+
 // ═══ POPULATE ALL (override) ═══
 function populateAllPanelsV2(){
   if(origPopulateAll) origPopulateAll();
@@ -14755,19 +14788,19 @@ function saveSegments() {
     if (fc.length === 2) { seg.floor = parseInt(fc[0])||5; seg.ceiling = parseInt(fc[1])||30; }
   });
   localStorage.setItem('gd_cache', JSON.stringify(GD));
-  setStatus('Segment config saved', 'success'); populateSegments();
+  setStatus('Segment config saved', 'success'); populateSegments(); refreshDependentPanels('segments');
 }
 
 function addSegment() {
   if(!GD.config.segments) GD.config.segments = [];
   GD.config.segments.push({id:'seg_'+Date.now(),name:'New Segment',populationBaseline:10,politicalCenter:50,comfortRange:20,baseStartApproval:50,donationRate:0.1,floor:5,ceiling:30});
-  localStorage.setItem('gd_cache', JSON.stringify(GD)); populateSegments();
+  localStorage.setItem('gd_cache', JSON.stringify(GD)); populateSegments(); refreshDependentPanels('segments');
 }
 
 function deleteSegment(i) {
   if(!confirm('Delete segment "'+((GD.config.segments||[])[i]||{}).name+'"? This may break segment overrides that reference it.')) return;
   GD.config.segments.splice(i,1);
-  localStorage.setItem('gd_cache', JSON.stringify(GD)); populateSegments();
+  localStorage.setItem('gd_cache', JSON.stringify(GD)); populateSegments(); refreshDependentPanels('segments');
 }
 
 // Add segment weight editor to org forms

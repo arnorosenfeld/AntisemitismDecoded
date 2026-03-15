@@ -2175,25 +2175,28 @@ function renderInvestStrip() {
   }).join('');
   
   el.innerHTML = '<span class="invest-strip-label">Investments (' + remaining + ')</span>' + pills;
-  // Show scroll arrow and fade if content overflows
+  // Show scroll fade and arrow if content overflows
   var strip = document.getElementById('invest-strip');
   if(strip) {
-    var oldArrow = el.querySelector('.invest-scroll-arrow');
-    if(oldArrow) oldArrow.remove();
+    // Ensure fade and arrow elements exist (create once)
+    if(!strip.querySelector('.invest-strip-fade')) {
+      var fade = document.createElement('div');
+      fade.className = 'invest-strip-fade';
+      strip.appendChild(fade);
+      var arrow = document.createElement('span');
+      arrow.className = 'invest-scroll-arrow';
+      arrow.textContent = '›';
+      strip.appendChild(arrow);
+    }
     strip.classList.remove('has-overflow');
     setTimeout(function(){
       if(el.scrollWidth > el.clientWidth) {
         strip.classList.add('has-overflow');
-        var arrow = document.createElement('span');
-        arrow.className = 'invest-scroll-arrow';
-        arrow.textContent = '›';
-        el.appendChild(arrow);
-        // Hide arrow and fade when scrolled to end
-        el.addEventListener('scroll', function() {
+        // Hide fade/arrow when scrolled to end
+        el.onscroll = function() {
           var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
-          arrow.style.display = atEnd ? 'none' : '';
           strip.classList.toggle('has-overflow', !atEnd);
-        });
+        };
       }
     }, 50);
   }

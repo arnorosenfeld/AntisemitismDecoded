@@ -12678,14 +12678,16 @@ function updateGhStatusLine() {
   }
 }
 function toggleGhSettings() {
-  const panel = document.getElementById('gh-settings-panel');
-  panel.classList.toggle('open');
-  // Load config values when opening
-  if (panel.classList.contains('open')) {
-    document.getElementById('gh-username').value = ghConfig.username || '';
-    document.getElementById('gh-repo').value = ghConfig.repo || '';
-    document.getElementById('gh-token').value = ghConfig.token || '';
-  }
+  // Navigate to dashboard where GitHub settings now live
+  var navBtn = document.querySelector('.nav-item');
+  showPanel('github', navBtn);
+  // Populate the fields
+  document.getElementById('gh-username').value = ghConfig.username || '';
+  document.getElementById('gh-repo').value = ghConfig.repo || '';
+  document.getElementById('gh-token').value = ghConfig.token || '';
+  // Scroll to the GitHub Connection section
+  var section = document.getElementById('gh-username');
+  if (section) section.scrollIntoView({behavior:'smooth', block:'center'});
 }
 function clearGithubConfig() {
   if (!confirm('Clear all GitHub settings?')) return;
@@ -12770,7 +12772,8 @@ function updateDashboardStats() {
 // ═══ AUTO-PULL ON LOGIN ═══
 async function tryAutoPull() {
   if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) {
-    // Not connected to GitHub
+    // Not connected to GitHub — show setup prompt
+    setStatus('Set up GitHub connection on the Dashboard to sync your data.', 'saving');
     updateDashboardStats();
     return;
   }
@@ -12778,12 +12781,13 @@ async function tryAutoPull() {
   var lastPull = localStorage.getItem('gd_last_pull');
   if (cached && !lastPull) {
     // Has local edits but never pulled — ask user
-    if (!confirm('You have local edits that have not been published. Pull latest from GitHub (overwrites local) or Cancel to continue with local edits?')) {
+    if (!confirm('You have local edits that have not been published.\n\nOK = Pull latest from GitHub (overwrites local)\nCancel = Continue with local edits')) {
       setStatus('Using local edits. Remember to publish when done.', 'saving');
       updateDashboardStats();
       return;
     }
   }
+  setStatus('Pulling latest data from GitHub...', 'saving');
   await loadFromGithub();
   updateDashboardStats();
 }

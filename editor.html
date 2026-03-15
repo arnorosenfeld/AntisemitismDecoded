@@ -307,7 +307,8 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
       </nav>
       <div class="sidebar-footer">
         <button class="sf-publish-btn" id="publish-btn" onclick="saveToGithub()">🚀 Publish to GitHub</button>
-        <button class="sf-secondary" onclick="exportCodeOnly()">⬇ Export Code Only</button>
+        <button class="sf-secondary" onclick="loadFromGithub()">⬇ Pull from GitHub</button>
+        <button class="sf-secondary" onclick="exportCodeOnly()" style="margin-top:0">⬇ Export Code Only</button>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.7rem">
           <span class="sf-status" id="sf-status-line">No saved data yet</span>
           <span class="sf-save-indicator" id="save-indicator">✓ Saved</span>
@@ -325,6 +326,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <h1 id="panel-title">GitHub / Save</h1>
         <div class="topbar-actions">
           <span id="status-msg" class="status-msg"></span>
+          <button class="btn btn-ghost" onclick="loadFromGithub()">Pull from GitHub</button>
           <button class="btn btn-gold" onclick="saveToGithub()">Save & Push to GitHub →</button>
         </div>
       </div>
@@ -12752,12 +12754,29 @@ async function loadFromGithub() {
 }
 
 function extractGameData(html) {
-  const match = html.match(/\/\* GAME_DATA_START \*\/([\s\S]*?)\/\* GAME_DATA_END \*\//);
-  if (!match) return null;
-  const jsStr = match[1].replace(/^\s*const GAME_DATA\s*=\s*/, '').replace(/;\s*$/, '').trim();
-  try { return JSON.parse(jsStr); } catch(e) {
-    try { return (new Function('return ' + jsStr))(); } catch(e2) { return null; }
+  // Try marked format first
+  var match = html.match(/\/\* GAME_DATA_START \*\/([\s\S]*?)\/\* GAME_DATA_END \*\//);
+  if (match) {
+    var jsStr = match[1].replace(/^\s*(?:const|var)\s+GAME_DATA\s*=\s*/, '').replace(/;\s*$/, '').trim();
+    try { return JSON.parse(jsStr); } catch(e) {
+      try { return (new Function('return ' + jsStr))(); } catch(e2) {}
+    }
   }
+  // Fallback: find "var GAME_DATA =" and parse the JSON block
+  var varMatch = html.match(/var\s+GAME_DATA\s*=\s*\n/);
+  if (!varMatch) return null;
+  var startIdx = html.indexOf(varMatch[0]) + varMatch[0].length;
+  var braceStart = html.indexOf('{', startIdx);
+  if (braceStart < 0 || braceStart - startIdx > 10) return null;
+  var depth = 0;
+  for (var i = braceStart; i < html.length; i++) {
+    if (html[i] === '{') depth++;
+    else if (html[i] === '}') depth--;
+    if (depth === 0) {
+      try { return JSON.parse(html.substring(braceStart, i + 1)); } catch(e) { return null; }
+    }
+  }
+  return null;
 }
 
 async function saveToGithub() {
@@ -12774,8 +12793,26 @@ async function saveToGithub() {
     const fileData = await getRes.json();
     const sha = fileData.sha;
     const currentContent = atob(fileData.content.replace(/\n/g,''));
-    const newDataBlock = `/* GAME_DATA_START */\nconst GAME_DATA = ${JSON.stringify(GD, null, 2)};\n/* GAME_DATA_END */`;
-    const newContent = currentContent.replace(/\/\* GAME_DATA_START \*\/[\s\S]*?\/\* GAME_DATA_END \*\//, newDataBlock);
+    var newContent;
+    // Try marked format first
+    if (currentContent.indexOf('/* GAME_DATA_START */') >= 0) {
+      var newDataBlock = '/* GAME_DATA_START */\nconst GAME_DATA = ' + JSON.stringify(GD, null, 2) + ';\n/* GAME_DATA_END */';
+      newContent = currentContent.replace(/\/\* GAME_DATA_START \*\/[\s\S]*?\/\* GAME_DATA_END \*\//, newDataBlock);
+    } else {
+      // Fallback: replace "var GAME_DATA = \n{...}" block
+      var varMatch = currentContent.match(/var\s+GAME_DATA\s*=\s*\n/);
+      if (!varMatch) throw new Error('Could not find GAME_DATA block in index.html');
+      var blockStart = currentContent.indexOf(varMatch[0]);
+      var jsonStart = currentContent.indexOf('{', blockStart + varMatch[0].length);
+      var depth = 0;
+      var jsonEnd = jsonStart;
+      for (var ci = jsonStart; ci < currentContent.length; ci++) {
+        if (currentContent[ci] === '{') depth++;
+        else if (currentContent[ci] === '}') depth--;
+        if (depth === 0) { jsonEnd = ci + 1; break; }
+      }
+      newContent = currentContent.substring(0, jsonStart) + JSON.stringify(GD, null, 2) + currentContent.substring(jsonEnd);
+    }
     const putRes = await fetch(url, {
       method: 'PUT',
       headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },

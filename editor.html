@@ -332,57 +332,60 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
       </div>
       <div class="editor-content">
 
-        <!-- GITHUB / DASHBOARD PANEL -->
+        <!-- DASHBOARD PANEL -->
         <div id="panel-github" class="panel active">
 
-          <!-- GitHub Settings Panel (collapsible, shown in main area) -->
-          <div class="gh-panel" id="gh-settings-panel">
-            <h3>⚙ GitHub Publish Settings</h3>
-            <div class="gh-grid-3">
-              <div>
-                <label>GitHub Username</label>
-                <input type="text" id="gh-username" placeholder="your-username" />
+          <!-- Welcome / Status -->
+          <div class="form-section">
+            <h3>Welcome to Mission Critical</h3>
+            <p style="font-size:14px;color:var(--ink);line-height:1.7;margin-bottom:16px">This is the content editor for <strong>Antisemitism Decoded: The Game</strong>. Use the sidebar to navigate between sections — scenarios, organizations, coalitions, and all other game content.</p>
+            <div id="dash-status-box" style="border:1.5px solid var(--border);padding:16px;background:var(--white);margin-bottom:16px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Data Source</span>
+                <span id="dash-data-source" style="font-size:12px;font-weight:700;color:var(--gold)">Loading...</span>
               </div>
-              <div>
-                <label>Repository Name</label>
-                <input type="text" id="gh-repo" placeholder="mission-critical-game" />
-              </div>
-              <div>
-                <label>Personal Access Token</label>
-                <input type="password" id="gh-token" placeholder="ghp_..." />
-              </div>
+              <div id="dash-data-stats" style="font-size:12px;color:var(--muted);line-height:1.8"></div>
             </div>
-            <div class="gh-actions-row">
-              <button class="gh-btn gh-btn-save" onclick="saveGithubConfig()">Save Settings</button>
-              <button class="gh-btn gh-btn-clear" onclick="clearGithubConfig()">Clear</button>
-            </div>
-            <div id="gh-save-status" class="gh-status" style="display:none"></div>
-
-            <hr class="gh-divider" />
-
-            <h3 style="margin-bottom:.7rem">🔑 Change Editor Password</h3>
-            <div class="gh-grid-2">
-              <div>
-                <label>New Password</label>
-                <input type="password" id="gh-pw-new" placeholder="Enter new password" />
-              </div>
-              <div>
-                <label>Confirm Password</label>
-                <input type="password" id="gh-pw-confirm" placeholder="Confirm new password" />
-              </div>
-            </div>
-            <div class="gh-actions-row">
-              <button class="gh-btn gh-btn-save" onclick="updatePassword()">Update Password</button>
-            </div>
-            <div class="gh-pw-success" id="gh-pw-success">✓ Password updated in GitHub. Reload the editor from GitHub Pages to use the new password.</div>
-
-            <div class="gh-note">
-              Create a token at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
-              → Generate new token (classic) → check <code>repo</code> scope.<br>
-              The game file must be named <code>index.html</code> in the root of your repo.<br>
-              <strong>Security note:</strong> Your token and password are stored in this browser's localStorage only.
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-ghost" onclick="loadFromGithub()">Pull from GitHub</button>
+              <button class="btn btn-gold" onclick="saveToGithub()">Publish to GitHub</button>
+              <button class="btn btn-ghost" onclick="resetToDefaults()">Reset to Defaults</button>
             </div>
           </div>
+
+          <!-- GitHub Connection -->
+          <div class="form-section">
+            <h3>GitHub Connection</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Connect to your GitHub repository to pull and publish game data. Your credentials are stored in this browser's localStorage only.</p>
+            <div class="form-row three">
+              <div class="form-group"><label>GitHub Username</label><input type="text" id="gh-username" placeholder="your-username" /></div>
+              <div class="form-group"><label>Repository Name</label><input type="text" id="gh-repo" placeholder="AntisemitismDecoded" /></div>
+              <div class="form-group"><label>Personal Access Token</label><input type="password" id="gh-token" placeholder="ghp_..." /></div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" onclick="saveGithubConfig()">Save Settings</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearGithubConfig()">Clear</button>
+              <span id="gh-save-status" style="font-size:12px"></span>
+            </div>
+            <div class="form-hint" style="margin-top:12px">
+              Create a token at <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color:var(--gold)">github.com/settings/tokens</a>
+              — select your repo, grant <strong>Contents: Read and write</strong> permission.
+            </div>
+          </div>
+
+          <!-- Change Password -->
+          <div class="form-section">
+            <h3>Editor Password</h3>
+            <div class="form-row">
+              <div class="form-group"><label>New Password</label><input type="password" id="gh-pw-new" placeholder="Enter new password" /></div>
+              <div class="form-group"><label>Confirm Password</label><input type="password" id="gh-pw-confirm" placeholder="Confirm new password" /></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="updatePassword()">Update Password</button>
+            <div class="gh-pw-success" id="gh-pw-success">Password updated. Publish to GitHub for the change to take effect.</div>
+          </div>
+
+          <!-- Hidden legacy panel for toggle compatibility -->
+          <div class="gh-panel" id="gh-settings-panel" style="display:none"></div>
 
         </div>
 
@@ -12632,9 +12635,11 @@ function doLogin() {
       catch(e) { GD = JSON.parse(JSON.stringify(DEFAULT_GD)); }
     } else {
       GD = JSON.parse(JSON.stringify(DEFAULT_GD));
-      setTimeout(() => setStatus('Loaded game data. Use the Dashboard to connect to GitHub for saving changes.', 'saving'), 100);
     }
     populateAllPanels();
+    updateDashboardStats();
+    // Auto-pull from GitHub if connected
+    setTimeout(function(){ tryAutoPull(); }, 300);
   } else {
     document.getElementById('login-error').textContent = 'Incorrect password.';
   }
@@ -12734,6 +12739,55 @@ function saveGithubConfig() {
 }
 
 // ═══ GITHUB API ═══
+// ═══ DASHBOARD STATS ═══
+function updateDashboardStats() {
+  var src = document.getElementById('dash-data-source');
+  var stats = document.getElementById('dash-data-stats');
+  if (!src || !stats || !GD) return;
+  var lastPull = localStorage.getItem('gd_last_pull');
+  if (lastPull) {
+    src.textContent = 'GitHub (pulled ' + lastPull + ')';
+    src.style.color = 'var(--good)';
+  } else if (localStorage.getItem('gd_cache')) {
+    src.textContent = 'Local cache';
+    src.style.color = 'var(--gold)';
+  } else {
+    src.textContent = 'Embedded defaults';
+    src.style.color = 'var(--muted)';
+  }
+  stats.innerHTML =
+    '<strong>' + (GD.scenarios||[]).length + '</strong> scenarios · ' +
+    '<strong>' + (GD.inboxScenarios||[]).length + '</strong> inbox · ' +
+    '<strong>' + (GD.breakingNews||[]).length + '</strong> breaking news · ' +
+    '<strong>' + (GD.conversations||[]).length + '</strong> conversations<br>' +
+    '<strong>' + (GD.organizations||[]).length + '</strong> local orgs · ' +
+    '<strong>' + (GD.nationalOrganizations||[]).length + '</strong> national orgs · ' +
+    '<strong>' + (GD.coalitionOffers||[]).length + '</strong> coalitions · ' +
+    '<strong>' + (GD.investments||[]).length + '</strong> investments · ' +
+    '<strong>' + (GD.advisorPool||[]).length + '</strong> advisors';
+}
+
+// ═══ AUTO-PULL ON LOGIN ═══
+async function tryAutoPull() {
+  if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) {
+    // Not connected to GitHub
+    updateDashboardStats();
+    return;
+  }
+  var cached = localStorage.getItem('gd_cache');
+  var lastPull = localStorage.getItem('gd_last_pull');
+  if (cached && !lastPull) {
+    // Has local edits but never pulled — ask user
+    if (!confirm('You have local edits that have not been published. Pull latest from GitHub (overwrites local) or Cancel to continue with local edits?')) {
+      setStatus('Using local edits. Remember to publish when done.', 'saving');
+      updateDashboardStats();
+      return;
+    }
+  }
+  await loadFromGithub();
+  updateDashboardStats();
+}
+
 async function loadFromGithub() {
   if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) { setStatus('Fill in GitHub config first.', 'error'); return; }
   setStatus('Pulling from GitHub...', 'saving');
@@ -12748,7 +12802,9 @@ async function loadFromGithub() {
     sessionPassword = GD.config.editorPassword || sessionPassword;
     if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
     localStorage.setItem('gd_cache', JSON.stringify(GD));
+    localStorage.setItem('gd_last_pull', new Date().toLocaleString());
     populateAllPanels();
+    updateDashboardStats();
     setStatus('Loaded from GitHub ✓', 'success');
   } catch(e) { setStatus('Error: ' + e.message, 'error'); }
 }
@@ -12820,7 +12876,9 @@ async function saveToGithub() {
     });
     if (!putRes.ok) { const e = await putRes.json(); throw new Error(`Push error: ${putRes.status} — ${e.message}`); }
     localStorage.setItem('gd_cache', JSON.stringify(GD));
+    localStorage.setItem('gd_last_pull', new Date().toLocaleString());
     setStatus('✓ Published! Live in ~60s.', 'success');
+    updateDashboardStats();
     const sfLine = document.getElementById('sf-status-line');
     if (sfLine) sfLine.textContent = 'Published: ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   } catch(e) { setStatus('Error: ' + e.message, 'error'); } finally {
@@ -12857,7 +12915,7 @@ function showToast(msg, type) {
 
 // ═══ PANEL NAVIGATION ═══
 const PANEL_TITLES = {
-  github: 'GitHub / Save', config: 'Global Config', traits: 'Character Traits', avatars: 'Emoji Avatars',
+  github: 'Dashboard', config: 'Global Config', traits: 'Character Traits', avatars: 'Emoji Avatars',
   orgs: 'Local Organizations', 'nat-orgs': 'National Organizations', missions: 'Missions',
   actions: 'Actions', scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios', segments: 'Segments',
   scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration', politics: 'Political Mechanics',

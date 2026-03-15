@@ -642,6 +642,17 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div class="form-group" style="margin-bottom:14px"><label>Warning Box Text</label><textarea id="txt-budWarning" rows="2"></textarea><div class="form-hint">Red warning shown above the allocation grid (e.g., game-over threshold reminder). Leave blank to hide.</div></div>
           </div>
           <div class="form-section">
+            <h3>Briefing Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-brfStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-brfHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="txt-brfDesc" rows="2"></textarea></div>
+            <div class="form-row"><div class="form-group"><label>Advisor Name</label><input id="txt-brfAdvName" /></div><div class="form-group"><label>Advisor Role</label><input id="txt-brfAdvRole" /></div></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Opening Quote</label><textarea id="txt-brfOpenQuote" rows="2"></textarea><div class="form-hint">Shown as the advisor's first message on the briefing screen</div></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Closing Quote (shown in-game)</label><textarea id="txt-brfCloseQuote" rows="2"></textarea><div class="form-hint">Delivered as a coaching message at the start of Round 1</div></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Help Button Label</label><input id="txt-brfHelpLabel" /><div class="form-hint">Text shown on the in-game help panel title</div></div>
+            <div id="briefing-items-editor"></div>
+            <button class="add-btn" style="margin-top:8px" onclick="addBriefingItem()">+ Add Briefing Item</button>
+          </div>
+          <div class="form-section">
             <h3>Gameplay Screen</h3>
             <div class="form-row"><div class="form-group"><label>Action Heading</label><input id="txt-gameActionH" /></div><div class="form-group"><label>End Round Button</label><input id="txt-gameEndBtn" /></div></div>
             <div class="form-group" style="margin-bottom:14px"><label>No AP Message</label><input id="txt-gameNoAP" /></div>
@@ -13724,6 +13735,17 @@ function populateText() {
   document.getElementById('txt-endYear').value=en.anotherYearTitle||'';
   document.getElementById('txt-endPromo').value=en.promotionTitle||'';
   document.getElementById('txt-endRetire').value=en.retirementTitle||'';
+  // Briefing screen
+  var brf = pt.briefingScreen || {};
+  document.getElementById('txt-brfStepLabel').value = brf.stepLabel || '';
+  document.getElementById('txt-brfHeading').value = brf.heading || '';
+  document.getElementById('txt-brfDesc').value = brf.description || '';
+  document.getElementById('txt-brfAdvName').value = brf.advisorName || '';
+  document.getElementById('txt-brfAdvRole').value = brf.advisorRole || '';
+  document.getElementById('txt-brfOpenQuote').value = brf.openingQuote || '';
+  document.getElementById('txt-brfCloseQuote').value = brf.closingQuote || '';
+  document.getElementById('txt-brfHelpLabel').value = brf.helpButtonLabel || '';
+  populateBriefingItems(brf.items || []);
 }
 
 // ─── Landing page choices editor ───
@@ -13775,6 +13797,52 @@ function renderLpHeadlinesEditor(items) {
 }
 function addLpHeadline() { _lpHeadlines.push({pub:'New Publication',text:'New Headline'}); renderLpHeadlinesEditor(_lpHeadlines); }
 
+function populateBriefingItems(items) {
+  var el = document.getElementById('briefing-items-editor');
+  if (!el) return;
+  el.innerHTML = items.map(function(item, i) {
+    return '<div class="outcome-card" style="margin-bottom:8px">' +
+      '<div class="outcome-card-header"><span class="outcome-card-title">Item ' + (i+1) + '</span><button class="btn btn-danger btn-sm" onclick="deleteBriefingItem(' + i + ')">×</button></div>' +
+      '<div class="form-row three">' +
+        '<div class="form-group"><label>Icon</label><input id="brf-icon-' + i + '" value="' + esc(item.icon||'') + '" /></div>' +
+        '<div class="form-group"><label>Title</label><input id="brf-title-' + i + '" value="' + esc(item.title||'') + '" /></div>' +
+        '<div class="form-group"><label>Style</label><select id="brf-style-' + i + '"><option value="default"' + (item.style==='default'?' selected':'') + '>Default</option><option value="danger"' + (item.style==='danger'?' selected':'') + '>Danger (red)</option><option value="success"' + (item.style==='success'?' selected':'') + '>Success (green)</option></select></div>' +
+      '</div>' +
+      '<div class="form-group"><label>Text</label><textarea id="brf-text-' + i + '" rows="2">' + esc(item.text||'') + '</textarea></div>' +
+    '</div>';
+  }).join('');
+}
+
+function readBriefingItems() {
+  var items = [];
+  var i = 0;
+  while (document.getElementById('brf-title-' + i)) {
+    items.push({
+      icon: document.getElementById('brf-icon-' + i).value,
+      title: document.getElementById('brf-title-' + i).value,
+      text: document.getElementById('brf-text-' + i).value,
+      style: document.getElementById('brf-style-' + i).value
+    });
+    i++;
+  }
+  return items;
+}
+
+function addBriefingItem() {
+  var pt = GD.config.pageText || {};
+  if (!pt.briefingScreen) pt.briefingScreen = {};
+  if (!pt.briefingScreen.items) pt.briefingScreen.items = [];
+  pt.briefingScreen.items.push({icon:'', title:'New Item', text:'', style:'default'});
+  populateBriefingItems(pt.briefingScreen.items);
+}
+
+function deleteBriefingItem(i) {
+  var pt = GD.config.pageText || {};
+  if (!pt.briefingScreen || !pt.briefingScreen.items) return;
+  pt.briefingScreen.items.splice(i, 1);
+  populateBriefingItems(pt.briefingScreen.items);
+}
+
 function saveText() {
   if(!GD.config.pageText) GD.config.pageText={};
   const pt=GD.config.pageText;
@@ -13808,6 +13876,17 @@ function saveText() {
   pt.budgetScreen={stepLabel:document.getElementById('txt-budStepLabel').value,heading:document.getElementById('txt-budHeading').value,description:document.getElementById('txt-budDesc').value,warningText:document.getElementById('txt-budWarning').value};
   pt.gameScreen={actionHeading:document.getElementById('txt-gameActionH').value,endRoundButton:document.getElementById('txt-gameEndBtn').value,noApMessage:document.getElementById('txt-gameNoAP').value};
   pt.endScreen={failureTitle:document.getElementById('txt-endFail').value,anotherYearTitle:document.getElementById('txt-endYear').value,promotionTitle:document.getElementById('txt-endPromo').value,retirementTitle:document.getElementById('txt-endRetire').value};
+  pt.briefingScreen = {
+    stepLabel: document.getElementById('txt-brfStepLabel').value,
+    heading: document.getElementById('txt-brfHeading').value,
+    description: document.getElementById('txt-brfDesc').value,
+    advisorName: document.getElementById('txt-brfAdvName').value,
+    advisorRole: document.getElementById('txt-brfAdvRole').value,
+    openingQuote: document.getElementById('txt-brfOpenQuote').value,
+    closingQuote: document.getElementById('txt-brfCloseQuote').value,
+    helpButtonLabel: document.getElementById('txt-brfHelpLabel').value,
+    items: readBriefingItems()
+  };
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('All page text saved.','success');
 }
 

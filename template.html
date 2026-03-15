@@ -187,50 +187,16 @@
 <div id="briefing-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 6 of 6 — Your Briefing</span>
-      <h2>Before You Begin</h2>
-      <p>The outgoing executive director pulls you aside for one last conversation.</p>
+      <span class="step-ind" id="briefing-step"></span>
+      <h2 id="briefing-heading"></h2>
+      <p id="briefing-desc"></p>
     </div>
     <div style="max-width:640px;margin:0 auto;font-family:'Merriweather Sans',sans-serif;line-height:1.8;color:#3d3425">
-      <div style="background:#f9f6f0;border-left:4px solid #b8860b;padding:16px 20px;border-radius:6px;margin-bottom:20px;font-size:14px">
-        <div style="font-weight:700;margin-bottom:6px">👨‍💼 Avi Rosen <span style="font-weight:400;opacity:0.7;font-size:12px">· Outgoing Executive Director</span></div>
-        <div style="font-style:italic">"Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching."</div>
+      <div id="briefing-opening-quote" style="background:#f9f6f0;border-left:4px solid #b8860b;padding:16px 20px;border-radius:6px;margin-bottom:24px;font-size:14px">
+        <div id="briefing-advisor-line" style="font-weight:700;margin-bottom:6px"></div>
+        <div id="briefing-opening-text" style="font-style:italic"></div>
       </div>
-
-      <div style="margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">📊 Your Stats Are Your Lifeline</div>
-        <div style="font-size:13px">You're managing three core metrics: <strong>Community Trust</strong>, <strong>Staff Morale</strong>, and <strong>Donor Confidence</strong>. Every decision you make affects them — sometimes in ways you don't expect.</div>
-      </div>
-
-      <div style="background:#fdf2f2;border-radius:8px;padding:14px 18px;margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:#8b1a1a">🚨 How You Get Fired</div>
-        <div style="font-size:13px">If <strong>any stat drops to 20 or below</strong>, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit you hardest.</div>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">⏳ Entropy Is Real</div>
-        <div style="font-size:13px">Every round, your stats <strong>naturally decay by 2–4 points</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. Progress requires constant effort.</div>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">👥 You Can't Please Everyone</div>
-        <div style="font-size:13px">"Community Trust" isn't one number — it's the <strong>weighted average</strong> of how different groups feel about you: Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another. Watch the segment breakdown carefully.</div>
-      </div>
-
-      <div style="background:#f0f7f0;border-radius:8px;padding:14px 18px;margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:#1a5c1a">🏆 How You Win</div>
-        <div style="font-size:13px">At year's end, the board evaluates your overall performance. Score <strong>above 80</strong> and you'll be offered a promotion to lead a national organization. Score <strong>below 40</strong> and your contract won't be renewed. In between? You survived — but just barely.</div>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#1a1510">⭐ Mission Matters</div>
-        <div style="font-size:13px">Your mission stars reflect how consistently you've stayed true to your stated priorities. Lose all your stars and the board loses confidence in your direction. Earn bonus stars through mission-aligned decisions and they'll boost your year-end score.</div>
-      </div>
-
-      <div style="background:#f9f6f0;border-left:4px solid #b8860b;padding:16px 20px;border-radius:6px;margin-bottom:24px;font-size:14px">
-        <div style="font-weight:700;margin-bottom:6px">👨‍💼 Avi Rosen</div>
-        <div style="font-style:italic">"One more thing — there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford."</div>
-      </div>
+      <div id="briefing-items"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-secondary btn-sm" onclick="showScreen('budget-screen')">← Back</button>
@@ -246,6 +212,7 @@
       <span class="hud-char-name" id="hud-char-name"></span>
       <span class="hud-org-label">—</span>
       <span class="hud-org-label" id="hud-org-name" style="color:#d4a843"></span>
+      <button class="hud-help-btn" id="hud-help-btn" onclick="toggleHelpPanel()">?</button>
     </div>
   </div>
   <div class="hud" id="hud-el" style="display:none">
@@ -350,6 +317,15 @@
       <span class="inbox-strip-label" onclick="toggleInbox()">📬 Inbox</span>
       <div class="inbox-strip-items" id="inbox-strip-items"></div>
     </div>
+  </div>
+  <!-- HELP PANEL -->
+  <div class="help-overlay" id="help-overlay" style="display:none" onclick="toggleHelpPanel()"></div>
+  <div class="help-panel" id="help-panel" style="display:none">
+    <div class="help-panel-header">
+      <span class="help-panel-title" id="help-panel-title">How to Play</span>
+      <button class="help-close" onclick="toggleHelpPanel()">✕</button>
+    </div>
+    <div class="help-panel-body" id="help-panel-body"></div>
   </div>
   <!-- NEWS TICKER -->
   <div class="news-ticker-wrap" id="news-ticker">

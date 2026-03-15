@@ -922,7 +922,60 @@ function goToBriefing() {
     checkPriorityFloors();
     return;
   }
+  initBriefing();
   showScreen('briefing-screen');
+}
+
+function initBriefing() {
+  var bs = GAME_DATA.config.pageText?.briefingScreen;
+  if (!bs) return;
+  var el;
+  el = document.getElementById('briefing-step'); if(el) el.textContent = bs.stepLabel || '';
+  el = document.getElementById('briefing-heading'); if(el) el.textContent = bs.heading || '';
+  el = document.getElementById('briefing-desc'); if(el) el.textContent = bs.description || '';
+  var advLine = document.getElementById('briefing-advisor-line');
+  if(advLine) advLine.innerHTML = (bs.advisorName ? '👨‍💼 ' + esc(bs.advisorName) : '') + (bs.advisorRole ? ' <span style="font-weight:400;opacity:0.7;font-size:12px">· ' + esc(bs.advisorRole) + '</span>' : '');
+  el = document.getElementById('briefing-opening-text'); if(el) el.textContent = '"' + (bs.openingQuote || '') + '"';
+  var itemsEl = document.getElementById('briefing-items');
+  if(itemsEl && bs.items) {
+    itemsEl.innerHTML = bs.items.map(function(item) {
+      var bgStyle = item.style === 'danger' ? 'background:#fdf2f2;border-radius:8px;padding:14px 18px;margin-bottom:20px' :
+                    item.style === 'success' ? 'background:#f0f7f0;border-radius:8px;padding:14px 18px;margin-bottom:20px' :
+                    'margin-bottom:20px';
+      var titleColor = item.style === 'danger' ? 'color:#8b1a1a' :
+                       item.style === 'success' ? 'color:#1a5c1a' : 'color:#1a1510';
+      return '<div style="' + bgStyle + '">' +
+        '<div style="font-weight:700;font-size:15px;margin-bottom:8px;' + titleColor + '">' + (item.icon || '') + ' ' + esc(item.title) + '</div>' +
+        '<div style="font-size:13px">' + esc(item.text) + '</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+function toggleHelpPanel() {
+  var panel = document.getElementById('help-panel');
+  var overlay = document.getElementById('help-overlay');
+  if (!panel || !overlay) return;
+  var isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  overlay.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    // Populate help content from briefing data
+    var bs = GAME_DATA.config.pageText?.briefingScreen;
+    var body = document.getElementById('help-panel-body');
+    var title = document.getElementById('help-panel-title');
+    if (title && bs && bs.helpButtonLabel) title.textContent = bs.helpButtonLabel;
+    if (body && bs && bs.items) {
+      body.innerHTML = bs.items.map(function(item) {
+        return '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">' + (item.icon||'') + ' ' + esc(item.title) + '</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">' + esc(item.text) + '</div></div>';
+      }).join('') +
+      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">' +
+        '<strong>Segments:</strong> Community Trust is the weighted average of how different groups feel about you. Watch the breakdown when it changes.<br>' +
+        '<strong>Mission Stars:</strong> Stay true to your mission to earn stars. They boost your year-end score.<br>' +
+        '<strong>Political Capital:</strong> Your position affects which coalitions and options are available.' +
+      '</div>';
+    }
+  }
 }
 
 // ═══════════════ IN-GAME COACHING WARNINGS ═══════════════
@@ -983,7 +1036,16 @@ function checkCoachingWarnings() {
   if (!G._coachWarningsLifetime) G._coachWarningsLifetime = {};
   // Per-round cooldown so we don't spam multiple warnings per action within a round
   if (!G._coachWarningsThisRound) G._coachWarningsThisRound = {};
-  
+
+  // Avi's closing advice — fires once at the start of round 1
+  if (G.round === 1 && !G._coachWarningsLifetime['avi_closing']) {
+    var bs = GAME_DATA.config.pageText?.briefingScreen;
+    if (bs && bs.closingQuote) {
+      G._coachWarningsLifetime['avi_closing'] = true;
+      setTimeout(function() { showCoachingWarning('"' + bs.closingQuote + '"', 'info'); }, 1500);
+    }
+  }
+
   var totalRounds = GAME_DATA.config.totalRounds || 6;
   var isFinalRound = G.round >= totalRounds;
   var isPenultimate = G.round >= totalRounds - 1;

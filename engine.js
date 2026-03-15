@@ -2175,17 +2175,25 @@ function renderInvestStrip() {
   }).join('');
   
   el.innerHTML = '<span class="invest-strip-label">Investments (' + remaining + ')</span>' + pills;
-  // Show scroll arrow if content overflows
+  // Show scroll arrow and fade if content overflows
   var strip = document.getElementById('invest-strip');
   if(strip) {
     var oldArrow = strip.querySelector('.invest-scroll-arrow');
     if(oldArrow) oldArrow.remove();
+    strip.classList.remove('has-overflow');
     setTimeout(function(){
       if(el.scrollWidth > el.clientWidth) {
+        strip.classList.add('has-overflow');
         var arrow = document.createElement('span');
         arrow.className = 'invest-scroll-arrow';
         arrow.textContent = '›';
         strip.appendChild(arrow);
+        // Hide arrow and fade when scrolled to end
+        el.addEventListener('scroll', function() {
+          var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
+          arrow.style.display = atEnd ? 'none' : '';
+          strip.classList.toggle('has-overflow', !atEnd);
+        });
       }
     }, 50);
   }
@@ -3168,12 +3176,12 @@ function updateInboxStrip() {
   items.innerHTML = msgs.map(function(msg) {
     var sc = msg.scenario;
     var icon = sc.tag === 'Email' ? '📧' : '💬';
-    var from = (sc.from||'').split(' ')[0].split('<')[0].trim(); // short name
-    if(from.length > 15) from = from.substring(0,14) + '…';
-    var urgent = msg.timerRemaining !== null ? '<span class="pill-urgent"> — URGENT</span>' : '';
+    var subj = sc.subject || sc.from || 'Message';
+    if(subj.length > 35) subj = subj.substring(0,34) + '…';
+    var urgent = msg.timerRemaining !== null ? '<span class="pill-urgent"> URGENT</span>' : '';
     var cls = msg.unread ? ' unread' : '';
     return '<div class="inbox-strip-pill' + cls + '" onclick="openInboxMessage(\'' + msg.id + '\')">' +
-      '<span class="pill-icon">' + icon + '</span>' + esc(from) + urgent + '</div>';
+      '<span class="pill-icon">' + icon + '</span>' + esc(subj) + urgent + '</div>';
   }).join('');
 }
 

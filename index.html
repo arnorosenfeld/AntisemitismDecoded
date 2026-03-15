@@ -320,7 +320,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* INVESTMENT STRIP - below HUD */
 .invest-strip { background: #283248; padding: 7px 20px; position: relative; left: 0; right: 0; z-index: 1; border-top: 1px solid rgba(255,255,255,0.06); }
-.invest-strip-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.invest-strip-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; position: relative; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
 .invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 4px; }
 .invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
@@ -983,9 +983,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ═══ FIX #16: INVESTMENT STRIP SCROLL INDICATOR ═══ */
 .invest-strip { position: relative; }
-.invest-strip::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: none; z-index: 1; display: none; }
-.invest-strip.has-overflow::after { display: block; }
-.invest-scroll-arrow { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #a0aab8; font-size: 16px; z-index: 2; pointer-events: none; animation: scrollHint 1.5s ease-in-out infinite; }
+.invest-strip-inner::after { content: ''; position: sticky; right: 0; top: 0; bottom: 0; min-width: 48px; min-height: 100%; background: linear-gradient(to right, transparent, #283248); pointer-events: none; z-index: 1; display: none; flex-shrink: 0; }
+.invest-strip.has-overflow .invest-strip-inner::after { display: block; }
+.invest-scroll-arrow { position: sticky; right: 0; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 2; pointer-events: none; animation: scrollHint 1.5s ease-in-out infinite; flex-shrink: 0; margin-left: -24px; }
 @keyframes scrollHint { 0%,100%{ transform: translateY(-50%) translateX(0); } 50%{ transform: translateY(-50%) translateX(3px); } }
 
 /* ═══ FIX #18: ROUND PROGRESS INDICATOR ═══ */
@@ -1728,7 +1728,38 @@ var GAME_DATA =
       "budgetScreen": {
         "stepLabel": "Step 4 of 6 — Priorities",
         "heading": "Set Your Priorities",
-        "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out."
+        "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out.",
+        "warningText": "If any stat drops to 20 or below during the game, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit hardest."
+      },
+      "briefingScreen": {
+        "stepLabel": "Step 6 of 6 — Your Briefing",
+        "heading": "Before You Begin",
+        "description": "The outgoing executive director pulls you aside for one last conversation.",
+        "advisorName": "Avi Rosen",
+        "advisorRole": "Outgoing Executive Director",
+        "openingQuote": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching.",
+        "items": [
+          {
+            "icon": "🚨",
+            "title": "How You Get Fired",
+            "text": "If any stat drops to 20 or below, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit you hardest.",
+            "style": "danger"
+          },
+          {
+            "icon": "⏳",
+            "title": "Entropy Is Real",
+            "text": "Every round, your stats naturally decay by 2–4 points as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place.",
+            "style": "default"
+          },
+          {
+            "icon": "🏆",
+            "title": "How You Win",
+            "text": "At year's end, the board evaluates your overall performance. Score above 80 and you'll be offered a promotion. Score below 40 and your contract won't be renewed.",
+            "style": "success"
+          }
+        ],
+        "closingQuote": "One more thing — there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.",
+        "helpButtonLabel": "How to Play"
       },
       "gameScreen": {
         "actionHeading": "Choose Your Next Action",
@@ -13287,6 +13318,7 @@ var GAME_DATA =
     }
   ]
 }
+
 ;
 function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -13361,11 +13393,11 @@ function shuffle(arr) {
   return a;
 }
 function barColor(v) {
-  if(v>=80) return '#b8860b';
-  if(v>=60) return '#1a6b3a';
-  if(v>=40) return '#1a4a8b';
-  if(v>=25) return '#d4821a';
-  return '#c0392b';
+  if(v>=80) return '#d4a843';
+  if(v>=60) return '#4ade80';
+  if(v>=40) return '#60a5fa';
+  if(v>=25) return '#f59e0b';
+  return '#ef4444';
 }
 
 
@@ -15468,7 +15500,7 @@ function renderInvestStrip() {
   // Show scroll arrow and fade if content overflows
   var strip = document.getElementById('invest-strip');
   if(strip) {
-    var oldArrow = strip.querySelector('.invest-scroll-arrow');
+    var oldArrow = el.querySelector('.invest-scroll-arrow');
     if(oldArrow) oldArrow.remove();
     strip.classList.remove('has-overflow');
     setTimeout(function(){
@@ -15477,7 +15509,7 @@ function renderInvestStrip() {
         var arrow = document.createElement('span');
         arrow.className = 'invest-scroll-arrow';
         arrow.textContent = '›';
-        strip.appendChild(arrow);
+        el.appendChild(arrow);
         // Hide arrow and fade when scrolled to end
         el.addEventListener('scroll', function() {
           var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;

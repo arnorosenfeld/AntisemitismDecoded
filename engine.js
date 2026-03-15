@@ -71,11 +71,11 @@ function shuffle(arr) {
   return a;
 }
 function barColor(v) {
-  if(v>=80) return '#b8860b';
-  if(v>=60) return '#1a6b3a';
-  if(v>=40) return '#1a4a8b';
-  if(v>=25) return '#d4821a';
-  return '#c0392b';
+  if(v>=80) return '#d4a843';
+  if(v>=60) return '#4ade80';
+  if(v>=40) return '#60a5fa';
+  if(v>=25) return '#f59e0b';
+  return '#ef4444';
 }
 
 
@@ -2178,7 +2178,7 @@ function renderInvestStrip() {
   // Show scroll arrow and fade if content overflows
   var strip = document.getElementById('invest-strip');
   if(strip) {
-    var oldArrow = strip.querySelector('.invest-scroll-arrow');
+    var oldArrow = el.querySelector('.invest-scroll-arrow');
     if(oldArrow) oldArrow.remove();
     strip.classList.remove('has-overflow');
     setTimeout(function(){
@@ -2187,7 +2187,7 @@ function renderInvestStrip() {
         var arrow = document.createElement('span');
         arrow.className = 'invest-scroll-arrow';
         arrow.textContent = '›';
-        strip.appendChild(arrow);
+        el.appendChild(arrow);
         // Hide arrow and fade when scrolled to end
         el.addEventListener('scroll', function() {
           var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;

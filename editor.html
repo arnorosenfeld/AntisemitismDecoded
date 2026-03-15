@@ -40,7 +40,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 /* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);background:var(--ink);color:var(--white);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
 .sidebar-logo{padding:1.4rem 1.2rem .9rem;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-logo h2{font-family:'Merriweather',Georgia,serif;font-size:1.3rem;font-weight:900;color:var(--white)}
+.sidebar-logo h2{font-family:'Merriweather',Georgia,serif;font-size:1.4rem;font-weight:900;color:var(--white)}
 .sidebar-logo h2 span{color:var(--gold)}
 .sidebar-logo span{font-family:'Merriweather Sans',sans-serif;font-size:12px;color:#8899bb;font-style:italic;display:block;margin-top:.3rem}
 .sidebar-nav{flex:1;padding:.8rem 0}
@@ -267,7 +267,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
     <div class="sidebar">
       <div class="sidebar-logo">
         <h2><span style="color:var(--white)">Mission</span> <span style="color:var(--gold)">Critical</span></h2>
-        <span>Antisemitism Decoded</span>
+        <span>Antisemitism Decoded — Content Editor</span>
       </div>
       <nav class="sidebar-nav">
         <div class="nav-section">Overview</div>
@@ -358,8 +358,8 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <h3>GitHub Connection</h3>
             <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Connect to your GitHub repository to pull and publish game data. Your credentials are stored in this browser's localStorage only.</p>
             <div class="form-row three">
-              <div class="form-group"><label>GitHub Username</label><input type="text" id="gh-username" placeholder="your-username" /></div>
-              <div class="form-group"><label>Repository Name</label><input type="text" id="gh-repo" placeholder="AntisemitismDecoded" /></div>
+              <div class="form-group"><label>GitHub Username</label><input type="text" id="gh-username" value="arnorosenfeld" /></div>
+              <div class="form-group"><label>Repository Name</label><input type="text" id="gh-repo" value="AntisemitismDecoded" /></div>
               <div class="form-group"><label>Personal Access Token</label><input type="password" id="gh-token" placeholder="ghp_..." /></div>
             </div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -12615,7 +12615,7 @@ var EDITOR_DATA =
 
 ;
 // ═══ GITHUB CONFIG ═══
-let ghConfig = { username:'', repo:'', token:'', branch:'main', filename:'index.html', password:'' };
+let ghConfig = { username:'arnorosenfeld', repo:'AntisemitismDecoded', token:'', branch:'main', filename:'index.html', password:'' };
 let GD = null;
 let sessionPassword = 'admin1234';
 
@@ -12690,14 +12690,14 @@ function toggleGhSettings() {
   if (section) section.scrollIntoView({behavior:'smooth', block:'center'});
 }
 function clearGithubConfig() {
-  if (!confirm('Clear all GitHub settings?')) return;
-  ghConfig = { username:'', repo:'', token:'', branch:'main', filename:'index.html', password:'' };
+  if (!confirm('Clear GitHub token?')) return;
+  ghConfig = { username:'arnorosenfeld', repo:'AntisemitismDecoded', token:'', branch:'main', filename:'index.html', password:'' };
   localStorage.removeItem('gh_config');
-  document.getElementById('gh-username').value = '';
-  document.getElementById('gh-repo').value = '';
+  document.getElementById('gh-username').value = ghConfig.username;
+  document.getElementById('gh-repo').value = ghConfig.repo;
   document.getElementById('gh-token').value = '';
   updateGhStatusLine();
-  setStatus('GitHub config cleared.', 'success');
+  setStatus('GitHub token cleared.', 'success');
 }
 function updatePassword() {
   const np = document.getElementById('gh-pw-new').value;

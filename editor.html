@@ -4,48 +4,54 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mission Critical – Antisemitism Decoded</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Merriweather+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:#1c1c1e;--paper:#f7f3eb;--aged:#ede7d4;
-  --gold:#c9a227;--gold-light:#d4a843;--navy:#1b2a4a;--muted:#6b6560;
-  --border:#c4b9a8;--white:#faf8f4;
-  --good:#2d6a4f;--danger:#c0392b;
-  --sidebar-w:230px;
+  --cream:#e8e0d0;
+  --ink:#1a1a2e;
+  --gold:#b8860b;
+  --gold-light:#d4a843;
+  --muted:#5a5248;
+  --border:#c4b9a8;
+  --white:#faf8f4;
+  --good:#2d6a4f;
+  --danger:#c0392b;
+  --sidebar-w:240px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:var(--ink);font-size:14px}
+body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--cream);color:var(--ink);line-height:1.6}
 
 /* ── PASSWORD GATE ── */
-#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999}
-.login-box{background:var(--paper);border:3px solid var(--gold);padding:2.5rem 2.8rem;max-width:380px;width:90%;text-align:center}
+#login-screen{position:fixed;inset:0;background:var(--ink);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:var(--cream);border:3px solid var(--gold);padding:2.5rem 2.8rem;max-width:380px;width:90%;text-align:center}
 .login-box h1{font-family:'Merriweather',Georgia,serif;font-size:1.4rem;font-weight:900;margin-bottom:.3rem}
 .login-box h1 span{color:var(--gold)}
 .login-box p{font-family:'Merriweather Sans',sans-serif;color:var(--muted);font-size:.83rem;margin-bottom:1.2rem;font-style:italic}
 .login-box input{width:100%;border:2px solid var(--ink);padding:.55rem .75rem;font-size:1rem;font-family:'Merriweather Sans',sans-serif;margin-bottom:.75rem;background:white;letter-spacing:.1em}
 .login-box input:focus{outline:none;border-color:var(--gold)}
 .login-error{color:var(--danger);font-size:.8rem;margin-top:.35rem;min-height:1.1em}
-.login-box .btn-primary{width:100%;background:var(--navy);color:var(--paper);border:none;padding:.65rem;font-family:'Merriweather',Georgia,serif;font-size:.95rem;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase}
-.login-box .btn-primary:hover{background:var(--gold);color:var(--navy)}
+.login-box .btn-primary{width:100%;background:var(--ink);color:var(--white);border:none;padding:.65rem;font-family:'Merriweather Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1.8px;text-transform:uppercase}
+.login-box .btn-primary:hover{background:#2a2a40}
 
 /* ── EDITOR LAYOUT ── */
 #editor-screen{display:none}
 .editor-wrap{display:flex;min-height:100vh}
 
 /* ── SIDEBAR ── */
-.sidebar{width:var(--sidebar-w);background:var(--navy);color:var(--paper);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
+.sidebar{width:var(--sidebar-w);background:var(--ink);color:var(--white);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
 .sidebar-logo{padding:1.4rem 1.2rem .9rem;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-logo h2{font-family:'Merriweather',Georgia,serif;font-size:1.35rem;font-weight:900;color:var(--paper)}
+.sidebar-logo h2{font-family:'Merriweather',Georgia,serif;font-size:1.3rem;font-weight:900;color:var(--white)}
 .sidebar-logo h2 span{color:var(--gold)}
-.sidebar-logo span{font-family:'Merriweather Sans',sans-serif;font-size:.85rem;color:#8899bb;font-style:italic;display:block;margin-top:.3rem}
+.sidebar-logo span{font-family:'Merriweather Sans',sans-serif;font-size:12px;color:#8899bb;font-style:italic;display:block;margin-top:.3rem}
 .sidebar-nav{flex:1;padding:.8rem 0}
-.nav-section{font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:.8rem 1.1rem .4rem}
-.nav-item{display:block;padding:.45rem 1.1rem;font-size:.83rem;color:#ccc;cursor:pointer;transition:all .13s;border:none;background:none;width:100%;text-align:left;font-family:'Merriweather',Georgia,serif}
+.nav-section{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:.8rem 1.1rem .4rem}
+.nav-item{display:block;padding:.45rem 1.1rem;font-size:13px;color:#ccc;cursor:pointer;transition:all .13s;border:none;background:none;width:100%;text-align:left;font-family:'Merriweather',Georgia,serif}
 .nav-item:hover{background:rgba(255,255,255,.07);color:white}
-.nav-item.active{background:var(--gold);color:var(--navy);font-weight:600}
+.nav-item.active{background:var(--gold);color:var(--ink);font-weight:600}
 
 /* ── SIDEBAR FOOTER ── */
 .sidebar-footer{margin-top:auto;padding:.9rem 1.1rem;border-top:1px solid rgba(255,255,255,.08)}
-.sf-publish-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:.65rem;font-family:'Merriweather',Georgia,serif;font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .13s}
+.sf-publish-btn{width:100%;background:var(--gold);color:var(--ink);border:none;padding:.65rem;font-family:'Merriweather',Georgia,serif;font-size:.88rem;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .13s}
 .sf-publish-btn:hover{background:#a07d10;color:white}
 .sf-publish-btn:disabled{background:#3d4450;color:#666;cursor:not-allowed}
 .sf-secondary{margin-top:.4rem;width:100%;background:rgba(255,255,255,.08);color:#ccc;border:none;font-size:.75rem;padding:.45rem;cursor:pointer;font-family:'Merriweather',Georgia,serif;letter-spacing:1px;text-transform:uppercase;transition:all .13s}
@@ -57,9 +63,9 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 
 /* ── MAIN ── */
 .editor-main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
-.editor-topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:var(--white)}
-.editor-topbar h1{font-family:'Merriweather',Georgia,serif;font-size:1.4rem;font-weight:900;color:var(--ink);margin:0}
-.editor-content{padding:2rem 2.4rem;flex:1;max-width:880px}
+.editor-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--white)}
+.editor-topbar h1{font-family:'Merriweather',Georgia,serif;font-size:20px;font-weight:900;color:var(--ink);margin:0}
+.editor-content{padding:32px;flex:1;max-width:880px}
 
 /* ── GITHUB PANEL (in main content area) ── */
 .gh-panel{background:#0d1117;color:#e6edf3;border:2px solid #30363d;padding:1.2rem 1.4rem;margin-bottom:1.5rem;font-family:'Merriweather Sans',sans-serif;display:none}
@@ -96,37 +102,37 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 
 /* ── FORMS ── */
 .form-section{margin-bottom:32px}
-.form-section h3{font-family:'Merriweather',Georgia,serif;font-size:15px;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:13px}
+.form-section h3{font-family:'Merriweather',Georgia,serif;font-size:16px;font-weight:700;margin-bottom:24px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .form-row.full{grid-template-columns:1fr}
 .form-row.three{grid-template-columns:1fr 1fr 1fr}
 .form-row.four{grid-template-columns:1fr 1fr 1fr 1fr}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
-.form-group input,.form-group textarea,.form-group select{padding:9px 11px;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:var(--ink);outline:none}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.form-group input,.form-group textarea,.form-group select{padding:10px 12px;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:var(--ink);outline:none}
 .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--gold)}
 .form-group textarea{resize:vertical;min-height:72px}
-.form-hint{font-size:11px;color:var(--muted);font-style:italic;margin-top:3px}
+.form-hint{font-size:10px;color:var(--muted);font-style:italic;margin-top:4px}
 
 /* ── BUTTONS ── */
-.btn{display:inline-block;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 22px;cursor:pointer;border:none;transition:all .14s}
-.btn-primary{background:var(--ink);color:var(--paper)}
-.btn-primary:hover{background:var(--gold);color:var(--navy)}
+.btn{display:inline-block;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.8px;text-transform:uppercase;padding:12px 28px;cursor:pointer;border:none;transition:all .14s}
+.btn-primary{background:var(--ink);color:var(--white)}
+.btn-primary:hover{background:#2a2a40}
 .btn-gold{background:var(--gold);color:var(--white)}
 .btn-gold:hover{background:var(--gold-light)}
 .btn-danger{background:var(--danger);color:white}
 .btn-danger:hover{opacity:.85}
 .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
 .btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
-.btn-sm{padding:5px 13px;font-size:11px}
+.btn-sm{padding:8px 16px;font-size:11px}
 .status-msg{font-size:12px;font-weight:600;padding:4px 12px}
 .status-success{color:var(--good)}
 .status-error{color:var(--danger)}
 .status-saving{color:var(--gold)}
 
 /* ── ITEM LIST ── */
-.item-list{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
-.item-card{background:white;border:1.5px solid var(--border);padding:14px 16px;display:flex;align-items:flex-start;gap:13px;cursor:pointer;transition:all .14s}
+.item-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.item-card{background:white;border:1.5px solid var(--border);padding:16px 18px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all .14s}
 .item-card:hover{border-color:var(--gold)}
 .item-card.open{border-color:var(--gold);border-width:2px}
 .item-card-info{flex:1}
@@ -135,7 +141,7 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 .item-card-actions{display:flex;gap:7px;flex-shrink:0}
 .expand-icon{font-size:16px;color:var(--muted);flex-shrink:0;transition:transform .18s}
 .item-card.open .expand-icon{transform:rotate(90deg)}
-.item-edit-form{background:#fffdf5;border:1.5px solid var(--gold);border-top:none;padding:18px;margin-bottom:9px}
+.item-edit-form{background:var(--white);border:1.5px solid var(--gold);border-top:none;padding:24px;margin-top:-2px;margin-bottom:9px}
 
 /* ── STAT INPUTS GRID ── */
 .stat-inputs{display:grid;gap:9px}
@@ -143,7 +149,7 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 .stat-inputs.cols-5{grid-template-columns:repeat(5,1fr)}
 .stat-input-group{display:flex;flex-direction:column;gap:4px}
 .stat-input-group label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
-.stat-input-group input{padding:7px 9px;text-align:center;border:1.5px solid var(--border);background:white;font-family:'Merriweather',serif;font-weight:700;font-size:14px;outline:none}
+.stat-input-group input{padding:7px 9px;text-align:center;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:14px;outline:none}
 .stat-input-group input:focus{border-color:var(--gold)}
 
 /* ── CHECKBOX ── */
@@ -152,8 +158,8 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 .checkbox-item input{cursor:pointer;accent-color:var(--gold);width:14px;height:14px}
 
 /* ── CHOICES EDITOR ── */
-.choices-editor{display:flex;flex-direction:column;gap:11px;margin-top:11px}
-.choice-editor{background:var(--paper);border:1px solid var(--border);padding:13px;position:relative}
+.choices-editor{display:flex;flex-direction:column;gap:12px;margin-top:11px}
+.choice-editor{background:var(--white);border:1px solid var(--border);padding:16px;position:relative}
 .choice-editor-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
 .choice-letter{font-family:'Merriweather',Georgia,serif;font-weight:900;font-size:17px;color:var(--gold)}
 
@@ -190,14 +196,54 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 .seg-weight-total { font-size: 12px; font-weight: 700; padding: 4px 8px; text-align: right; }
 .seg-weight-total.valid { color: #1a6b3a; }
 .seg-weight-total.invalid { color: #c0392b; }
-.seg-config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.seg-config-card { border: 1px solid var(--border); padding: 12px; background: var(--white); }
+.seg-config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.seg-config-card { border: 1.5px solid var(--border); padding: 16px; background: var(--white); }
 .seg-config-card h4 { font-size: 13px; margin-bottom: 8px; }
-.seg-override-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
-.seg-override-grid label { font-size: 9px; color: var(--muted); }
-.seg-override-grid input { width: 100%; padding: 3px 6px; border: 1px solid var(--border); font-size: 12px; }
+.seg-override-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+.seg-override-grid label { font-size: 10px; color: var(--muted); }
+.seg-override-grid input { width: 100%; padding: 6px 8px; border: 1px solid var(--border); font-size: 12px; }
 .consensus-slider { width: 100%; }
 .consensus-val { font-weight: 700; color: var(--gold); }
+
+/* ── SECTION LABEL (used in forms for sub-section headings) ── */
+.section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin:16px 0 8px}
+
+/* ── OUTCOME CARD ── */
+.outcome-card{background:var(--white);border:1.5px solid var(--border);padding:12px 16px;margin-bottom:8px}
+.outcome-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.outcome-card-title{font-size:11px;font-weight:700;color:var(--gold)}
+
+/* ── POLITICAL IMPACT BOX ── */
+.pol-impact-box{margin-bottom:12px;padding:12px;border:1.5px solid var(--border);background:var(--white)}
+.pol-impact-box.active{border-color:var(--gold);background:#f8f6ff}
+.pol-impact-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer}
+
+/* ── MISSION ALIGNMENT SECTION ── */
+.mission-align-section{margin-bottom:12px}
+.mission-align-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0}
+.mission-align-row span{width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mission-align-row select{font-size:11px;padding:4px 8px;border:1px solid var(--border);background:var(--white)}
+
+/* ── CONVERSATION NODE ── */
+.conv-node{border:1.5px solid var(--border);padding:16px;margin-bottom:12px;background:var(--white)}
+.conv-node-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.conv-node-title{font-family:'Merriweather',serif;font-weight:900;font-size:14px;color:var(--gold)}
+
+/* ── RESPONSE CARD ── */
+.response-card{border:1.5px dashed var(--border);padding:12px;margin-bottom:8px;background:var(--cream)}
+.response-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.response-card-title{font-size:11px;font-weight:700;color:var(--gold)}
+
+/* ── COALITION SECTION ── */
+.coal-section{border:1.5px solid var(--border);padding:16px;margin:12px 0;background:var(--white)}
+.coal-section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+
+/* ── DETAILS/COLLAPSIBLE ── */
+.editor-details{margin:12px 0;border:1.5px solid var(--border);padding:12px 16px;background:var(--white)}
+.editor-details summary{font-size:11px;font-weight:700;cursor:pointer;color:var(--gold)}
+
+/* ── TOPBAR ACTIONS ── */
+.topbar-actions{display:flex;align-items:center;gap:12px}
 </style>
 </head>
 <body>
@@ -220,7 +266,7 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
     <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <h2><span style="color:var(--paper)">Mission</span> <span style="color:var(--gold)">Critical</span></h2>
+        <h2><span style="color:var(--white)">Mission</span> <span style="color:var(--gold)">Critical</span></h2>
         <span>Antisemitism Decoded</span>
       </div>
       <nav class="sidebar-nav">
@@ -346,14 +392,14 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
               <div class="form-group"><label>Game Title</label><input type="text" id="cfg-gameTitle" /></div>
             </div>
             <div class="form-row four">
-              <div class="form-group"><label>Total Rounds</label><input type="number" id="cfg-totalRounds" min="1" max="24" /></div>
-              <div class="form-group"><label>Action Points / Round</label><input type="number" id="cfg-actionPointsPerRound" min="1" max="10" /></div>
+              <div class="form-group"><label>Total Rounds</label><input type="number" id="cfg-totalRounds" min="1" max="24" /><div class="form-hint">Number of rounds in a full game year</div></div>
+              <div class="form-group"><label>Action Points / Round</label><input type="number" id="cfg-actionPointsPerRound" min="1" max="10" /><div class="form-hint">Action points the player gets each round to spend on scenarios</div></div>
               <div class="form-group"><label>Starting Budget ($)</label><input type="number" id="cfg-startingBudget" min="0" /></div>
-              <div class="form-group"><label>Traits to Select</label><input type="number" id="cfg-traitsToSelect" min="1" max="5" /></div>
+              <div class="form-group"><label>Traits to Select</label><input type="number" id="cfg-traitsToSelect" min="1" max="5" /><div class="form-hint">How many character traits the player picks at game start</div></div>
             </div>
             <div class="form-row four">
-              <div class="form-group"><label>Inbox Events / Round</label><input type="number" id="cfg-inboxPerRound" min="0" max="5" /></div>
-              <div class="form-group"><label>Pts Per Mission Star</label><input type="number" id="cfg-missionStarPoints" min="0" max="25" /><div style="font-size:10px;color:var(--muted);margin-top:3px">Added to score. 0 stars = auto-loss.</div></div>
+              <div class="form-group"><label>Inbox Events / Round</label><input type="number" id="cfg-inboxPerRound" min="0" max="5" /><div class="form-hint">New inbox messages delivered each round</div></div>
+              <div class="form-group"><label>Pts Per Mission Star</label><input type="number" id="cfg-missionStarPoints" min="0" max="25" /><div class="form-hint">Score bonus per mission star at year-end</div></div>
             </div>
           </div>
 
@@ -361,10 +407,10 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
             <h3>Budget System (Abstract Units)</h3>
             <p class="section-note">The budget system uses abstract units (not dollars). Income each round = base income + (fundraising stat × multiplier). Operating costs are deducted automatically.</p>
             <div class="form-row four">
-              <div class="form-group"><label>Starting Budget</label><input type="number" id="cfg-bc-startingBudget" min="0" /></div>
-              <div class="form-group"><label>Op Cost / Round</label><input type="number" id="cfg-bc-operatingCostPerRound" min="0" /></div>
-              <div class="form-group"><label>Base Income / Round</label><input type="number" id="cfg-bc-baseIncomePerRound" min="0" /></div>
-              <div class="form-group"><label>Fundraising Multiplier</label><input type="number" id="cfg-bc-fundraisingIncomeMultiplier" min="0" step="0.01" /></div>
+              <div class="form-group"><label>Starting Budget</label><input type="number" id="cfg-bc-startingBudget" min="0" /><div class="form-hint">Abstract budget units the org starts with</div></div>
+              <div class="form-group"><label>Op Cost / Round</label><input type="number" id="cfg-bc-operatingCostPerRound" min="0" /><div class="form-hint">Budget units deducted automatically each round</div></div>
+              <div class="form-group"><label>Base Income / Round</label><input type="number" id="cfg-bc-baseIncomePerRound" min="0" /><div class="form-hint">Guaranteed budget income each round before fundraising bonus</div></div>
+              <div class="form-group"><label>Fundraising Multiplier</label><input type="number" id="cfg-bc-fundraisingIncomeMultiplier" min="0" step="0.01" /><div class="form-hint">Formula: round income = base income + (donor stat x this multiplier)</div></div>
             </div>
             <div class="form-row three" style="margin-top:8px">
               <div class="form-group"><label>Investments Per Year (local)</label><input type="number" id="cfg-investmentsPerYear" min="0" /><div class="form-hint">How many investments local orgs can make per round</div></div>
@@ -376,9 +422,9 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
             <h3>Stat Momentum</h3>
             <p class="section-note">When a stat trends in the same direction for consecutive rounds, momentum kicks in — bonuses for rising stats, penalties for falling ones.</p>
             <div class="form-row three">
-              <div class="form-group"><label>Momentum Window (rounds)</label><input type="number" id="cfg-momentumWindow" min="1" max="5" /></div>
-              <div class="form-group"><label>Momentum Bonus</label><input type="number" id="cfg-momentumBonus" min="0" max="10" /></div>
-              <div class="form-group"><label>Momentum Penalty</label><input type="number" id="cfg-momentumPenalty" min="0" max="10" /></div>
+              <div class="form-group"><label>Momentum Window (rounds)</label><input type="number" id="cfg-momentumWindow" min="1" max="5" /><div class="form-hint">Consecutive rounds a stat must trend before momentum kicks in</div></div>
+              <div class="form-group"><label>Momentum Bonus</label><input type="number" id="cfg-momentumBonus" min="0" max="10" /><div class="form-hint">Extra points added when a stat has positive momentum</div></div>
+              <div class="form-group"><label>Momentum Penalty</label><input type="number" id="cfg-momentumPenalty" min="0" max="10" /><div class="form-hint">Extra points lost when a stat has negative momentum</div></div>
             </div>
           </div>
 
@@ -429,6 +475,7 @@ body{font-family:'Merriweather Sans',sans-serif;background:var(--paper);color:va
 
           <div class="form-section">
             <h3>Score Weights <span style="font-size:12px;font-weight:400;color:var(--muted)">— must add up to 1.0</span></h3>
+            <div class="form-hint" style="margin-bottom:8px">How much each stat contributes to the final year-end score (should sum to ~1.0)</div>
             <div class="stat-inputs cols-4" id="score-weights-inputs"></div>
           </div>
 
@@ -12978,19 +13025,20 @@ function renderOrgForm(o, i, prefix) {
   const scats = o.scenarioCategories || [];
   return `<div class="item-edit-form" id="${prefix}-form-${i}" style="display:none">
     <div class="form-row three">
-      <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(o.id)}" /></div>
+      <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(o.id)}" /><div class="form-hint">Unique identifier used to reference this org in scenarios, missions, and code</div></div>
       <div class="form-group"><label>Name</label><input id="${prefix}-name-${i}" value="${esc(o.name)}" /></div>
-      <div class="form-group"><label>Badge</label><input id="${prefix}-badge-${i}" value="${esc(o.badge)}" /></div>
+      <div class="form-group"><label>Badge</label><input id="${prefix}-badge-${i}" value="${esc(o.badge)}" /><div class="form-hint">Short label shown on the org card (e.g., 'Progressive', 'Centrist')</div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Description</label><textarea id="${prefix}-desc-${i}" rows="2">${esc(o.description)}</textarea></div>
-    <div class="form-group" style="margin-bottom:11px"><label>Traits (one per line)</label><textarea id="${prefix}-traits-${i}" rows="2">${(o.traits||[]).join('\n')}</textarea></div>
+    <div class="form-group" style="margin-bottom:11px"><label>Traits (one per line)</label><textarea id="${prefix}-traits-${i}" rows="2">${(o.traits||[]).join('\n')}</textarea><div class="form-hint">Org personality traits shown to players during selection</div></div>
     <div class="form-row">
       <div class="form-group"><label>Political Tilt</label>
         <select id="${prefix}-tilt-${i}"><option value="left" ${tilt==='left'?'selected':''}>Left</option><option value="center" ${tilt==='center'?'selected':''}>Center</option><option value="right" ${tilt==='right'?'selected':''}>Right</option><option value="apolitical" ${tilt==='apolitical'?'selected':''}>Apolitical</option></select>
+        <div class="form-hint">Determines which scenario categories this org encounters</div>
       </div>
-      <div class="form-group"><label>Badge Class</label><input id="${prefix}-badgeClass-${i}" value="${esc(o.badgeClass||'')}" /></div>
+      <div class="form-group"><label>Badge Class</label><input id="${prefix}-badgeClass-${i}" value="${esc(o.badgeClass||'')}" /><div class="form-hint">CSS class for badge color: badge-left (green), badge-right (red), badge-center (blue), badge-apolitical (tan)</div></div>
     </div>
-    <div class="form-group" style="margin-bottom:11px"><label>Scenario Categories</label>
+    <div class="form-group" style="margin-bottom:11px"><label>Scenario Categories</label><div class="form-hint">Which political categories of scenarios this org will see</div>
       <div class="checkbox-grid">
         <label class="checkbox-item"><input type="checkbox" id="${prefix}-scat-${i}-progressive" ${scats.includes('progressive')?'checked':''} />Progressive</label>
         <label class="checkbox-item"><input type="checkbox" id="${prefix}-scat-${i}-centrist" ${scats.includes('centrist')?'checked':''} />Centrist</label>
@@ -12998,14 +13046,15 @@ function renderOrgForm(o, i, prefix) {
         <label class="checkbox-item"><input type="checkbox" id="${prefix}-scat-${i}-apolitical" ${scats.includes('apolitical')?'checked':''} />Apolitical</label>
       </div>
     </div>
-    <div class="form-row"><div class="form-group"><label>Starting Budget</label><input type="number" id="${prefix}-budget-${i}" value="${o.startingBudget||500000}" /></div>
-    <div class="form-group"><label>Promo Eligible (comma-sep)</label><input id="${prefix}-promo-${i}" value="${(o.promotionEligible||[]).join(',')}" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Starting Budget</label><input type="number" id="${prefix}-budget-${i}" value="${o.startingBudget||500000}" /><div class="form-hint">Initial funding level displayed to players (cosmetic — actual budget uses abstract units in config)</div></div>
+    <div class="form-group"><label>Promo Eligible (comma-sep)</label><input id="${prefix}-promo-${i}" value="${(o.promotionEligible||[]).join(',')}" /><div class="form-hint">IDs of national orgs this org can be promoted to (e.g., nat_aipac,nat_adl)</div></div></div>
     <div class="form-row three" style="margin-bottom:11px">
-      <div class="form-group"><label>Budget Override: Starting</label><input type="number" id="${prefix}-bo-start-${i}" value="${(o.budgetOverrides||{}).startingBudget||''}" placeholder="Default: 100" /></div>
-      <div class="form-group"><label>Budget Override: Op Cost/Rnd</label><input type="number" id="${prefix}-bo-opcost-${i}" value="${(o.budgetOverrides||{}).operatingCost||''}" placeholder="Default: 8" /></div>
-      <div class="form-group"><label>Budget Override: Base Income</label><input type="number" id="${prefix}-bo-income-${i}" value="${(o.budgetOverrides||{}).baseIncome||''}" placeholder="Default: 5" /></div>
+      <div class="form-group"><label>Budget Override: Starting</label><input type="number" id="${prefix}-bo-start-${i}" value="${(o.budgetOverrides||{}).startingBudget||''}" placeholder="Default: 100" /><div class="form-hint">Override the global starting budget for this org (leave blank for default)</div></div>
+      <div class="form-group"><label>Budget Override: Op Cost/Rnd</label><input type="number" id="${prefix}-bo-opcost-${i}" value="${(o.budgetOverrides||{}).operatingCost||''}" placeholder="Default: 8" /><div class="form-hint">Override operating cost per round for this org</div></div>
+      <div class="form-group"><label>Budget Override: Base Income</label><input type="number" id="${prefix}-bo-income-${i}" value="${(o.budgetOverrides||{}).baseIncome||''}" placeholder="Default: 5" /><div class="form-hint">Override base income per round for this org</div></div>
     </div>
-    <div class="form-group" style="margin-bottom:11px"><label>Allowed Missions (comma-sep IDs)</label><input id="${prefix}-missions-${i}" value="${(o.allowedMissions||[]).join(',')}" /></div>
+    <div class="form-group" style="margin-bottom:11px"><label>Allowed Missions (comma-sep IDs)</label><input id="${prefix}-missions-${i}" value="${(o.allowedMissions||[]).join(',')}" /><div class="form-hint">Mission IDs this org can select (e.g., antisemitism_all,community_hub)</div></div>
+    <label class="section-label">Stat Modifiers</label><div class="form-hint" style="margin-bottom:6px">Starting stat bonuses/penalties when player picks this org</div>
     <div class="stat-inputs cols-4" style="margin-bottom:11px">
       ${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-fx-${i}-${s.id}" value="${(o.statModifiers||{})[s.id]||0}" /></div>`).join('')}
     </div>
@@ -13018,7 +13067,7 @@ function renderStartingCoalitions(org, idx, prefix) {
   var coalitions = GD.coalitionOffers||[];
   if(!coalitions.length) return '';
   var starting = org.startingCoalitions||[];
-  var html = '<div style="margin:10px 0"><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Starting Coalitions (org begins game as member)</label>';
+  var html = '<div style="margin:10px 0"><label class="section-label">Starting Coalitions (org begins game as member)</label>';
   html += '<div class="checkbox-grid">';
   coalitions.forEach(function(co){
     html += '<label class="checkbox-item"><input type="checkbox" id="'+prefix+'-startcoal-'+idx+'-'+co.id+'" '+(starting.includes(co.id)?'checked':'')+' />'+esc(co.name)+'</label>';
@@ -13179,16 +13228,16 @@ function renderScenarioForm(s, i, prefix) {
   const cats = s.categories || ['all'];
   return `<div class="item-edit-form" id="${prefix}-form-${i}" style="display:none">
     <div class="form-row three">
-      <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /></div>
-      <div class="form-group"><label>Tag</label><input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" /></div>
-      <div class="form-group"><label>Trigger</label><input id="${prefix}-trigger-${i}" value="${esc(s.trigger||'')}" /></div>
+      <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Unique identifier — used in triggers, conversations, and coalition links</div></div>
+      <div class="form-group"><label>Tag</label><input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label shown above the scenario (e.g., 'Crisis', 'Opportunity', 'Dilemma')</div></div>
+      <div class="form-group"><label>Trigger</label><input id="${prefix}-trigger-${i}" value="${esc(s.trigger||'')}" /><div class="form-hint">What causes this scenario to appear (e.g., 'community', 'donor', 'staff', 'any')</div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Title</label><input id="${prefix}-title-${i}" value="${esc(s.title||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="${prefix}-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
     <div class="form-row three">
-      <div class="form-group"><label>Categories</label><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cat-${i}-${c}" ${cats.includes(c)?'checked':''} />${c}</label>`).join('')}</div></div>
-      <div class="form-group"><label>Org Level</label><select id="${prefix}-lvl-${i}"><option value="both" ${(s.orgLevel||'both')==='both'?'selected':''}>Both</option><option value="local" ${s.orgLevel==='local'?'selected':''}>Local</option><option value="national" ${s.orgLevel==='national'?'selected':''}>National</option></select></div>
-      <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /></div>
+      <div class="form-group"><label>Categories</label><div class="form-hint">Political filters — scenario only appears for orgs matching these categories</div><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cat-${i}-${c}" ${cats.includes(c)?'checked':''} />${c}</label>`).join('')}</div></div>
+      <div class="form-group"><label>Org Level</label><select id="${prefix}-lvl-${i}"><option value="both" ${(s.orgLevel||'both')==='both'?'selected':''}>Both</option><option value="local" ${s.orgLevel==='local'?'selected':''}>Local</option><option value="national" ${s.orgLevel==='national'?'selected':''}>National</option></select><div class="form-hint">Whether this scenario appears for local orgs, national orgs, or both</div></div>
+      <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /><div class="form-hint">1-5 rating affecting when scenarios appear — higher complexity appears in later rounds</div></div>
     </div>
     <div style="margin:8px 0;padding:6px 10px;background:#f8f5ff;border:1px solid #e0d8f0;display:flex;align-items:center;gap:10px">
       <label class="checkbox-item" style="font-weight:700"><input type="checkbox" id="${prefix}-polrel-${i}" ${s.politicallyRelevant!==false?'checked':''} style="accent-color:#6366f1" /> ⚖️ Politically Relevant</label>
@@ -13209,15 +13258,15 @@ function renderChoiceEditor(c, si, ci, prefix) {
   const outcomes = c.outcomes || [{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
   var hasPol = (c.politicalLean !== undefined && c.politicalLean !== 0) || (c.cloutEffect !== undefined && c.cloutEffect !== 0);
   return `<div class="choice-editor" id="${prefix}-choice-${si}-${ci}">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <span style="font-family:'Merriweather',serif;font-weight:900;font-size:17px;color:var(--gold)">${String.fromCharCode(65+ci)}</span>
+    <div class="choice-editor-header">
+      <span class="choice-letter">${String.fromCharCode(65+ci)}</span>
       <button class="btn btn-danger btn-sm" onclick="deleteChoice(${si},${ci},'${prefix}')">Delete</button>
     </div>
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Requires Unlock</label><input id="${prefix}-cunlock-${si}-${ci}" value="${esc(c.requiresUnlock||'')}" placeholder="blank = always available" /></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Budget Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /></div>
-    <div style="margin-bottom:8px;padding:8px;background:${hasPol?'#f0f0ff':'#f8f8f8'};border:1px solid ${hasPol?'#6366f1':'var(--border)'}">
-      <label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:6px;cursor:pointer" onclick="togglePolFields('${prefix}',${si},${ci})">
+    <div class="form-group" style="margin-bottom:6px"><label>Requires Unlock</label><input id="${prefix}-cunlock-${si}-${ci}" value="${esc(c.requiresUnlock||'')}" placeholder="blank = always available" /><div class="form-hint">Trait ID or condition that must be met to see this choice (blank = always available)</div></div>
+    <div class="form-group" style="margin-bottom:6px"><label>Budget Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Budget units spent if player picks this choice</div></div>
+    <div class="pol-impact-box${hasPol?' active':''}">
+      <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
         <input type="checkbox" id="${prefix}-cpol-${si}-${ci}" ${hasPol?'checked':''} style="accent-color:#6366f1" /> ⚖️ Political Impact
       </label>
       <div id="${prefix}-polfields-${si}-${ci}" style="display:${hasPol?'block':'none'}">
@@ -13228,12 +13277,12 @@ function renderChoiceEditor(c, si, ci, prefix) {
         </div>
       </div>
     </div>
-    <div style="margin-bottom:8px"><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px">Mission Alignment</label>
+    <div class="mission-align-section"><label class="section-label" style="margin-top:0">Mission Alignment</label>
     <div style="display:flex;flex-direction:column;gap:2px">${missions.map(m=>{
       const st = aligned.includes(m.id)?'aligned':opposed.includes(m.id)?'opposed':'neutral';
-      return `<div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.name)}</span><select id="${prefix}-calign-${si}-${ci}-${m.id}" style="font-size:11px;padding:2px"><option value="neutral" ${st==='neutral'?'selected':''}>Neutral</option><option value="aligned" ${st==='aligned'?'selected':''}>✓ Aligned</option><option value="opposed" ${st==='opposed'?'selected':''}>✗ Opposed</option></select></div>`;
+      return `<div class="mission-align-row"><span>${esc(m.name)}</span><select id="${prefix}-calign-${si}-${ci}-${m.id}"><option value="neutral" ${st==='neutral'?'selected':''}>Neutral</option><option value="aligned" ${st==='aligned'?'selected':''}>✓ Aligned</option><option value="opposed" ${st==='opposed'?'selected':''}>✗ Opposed</option></select></div>`;
     }).join('')}</div></div>
-    <label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px">Outcomes (${outcomes.length})</label>
+    <label class="section-label">Outcomes (${outcomes.length})</label>
     ${outcomes.map((o,oi)=>renderOutcomeEditor(si,ci,oi,o,prefix)).join('')}
     <button class="add-btn" style="padding:6px;font-size:11px;margin-top:4px" onclick="addOutcome(${si},${ci},'${prefix}')">+ Add Outcome</button>
     ${renderSegOverrides(c, si, ci, prefix)}
@@ -13241,12 +13290,12 @@ function renderChoiceEditor(c, si, ci, prefix) {
 }
 function renderOutcomeEditor(si, ci, oi, o, prefix) {
   const stats = GD.stats || [];
-  return `<div style="background:#f8f5ee;border:1px solid var(--border);padding:9px;margin-bottom:4px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><span style="font-size:11px;font-weight:700;color:var(--gold)">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:9px" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
+  return `<div class="outcome-card">
+    <div class="outcome-card-header"><span class="outcome-card-title">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
-    <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /></div><div class="form-group"><label>Context Note</label><input id="${prefix}-onote-${si}-${ci}-${oi}" value="${esc(o.contextNote||'')}" placeholder="optional info box" /></div></div>
+    <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /><div class="form-hint">Probability weight — higher weight = more likely when multiple outcomes exist</div></div><div class="form-group"><label>Context Note</label><input id="${prefix}-onote-${si}-${ci}-${oi}" value="${esc(o.contextNote||'')}" placeholder="optional info box" /><div class="form-hint">Optional info box shown to the player explaining deeper implications</div></div></div>
     <div class="stat-inputs cols-4" style="margin-bottom:5px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-ofx-${si}-${ci}-${oi}-${s.id}" value="${(o.effects||{})[s.id]||0}" /></div>`).join('')}</div>
-    <div style="font-size:10px;color:var(--muted)">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:8px">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
   </div>`;
 }
 function addOutcome(si, ci, prefix) {
@@ -13386,8 +13435,8 @@ function renderInboxForm(s, i) {
   return `<div class="item-edit-form" id="ib-form-${i}" style="display:none">
     <div class="form-row three">
       <div class="form-group"><label>ID</label><input id="ib-id-${i}" value="${esc(s.id)}" /></div>
-      <div class="form-group"><label>Tag</label><input id="ib-tag-${i}" value="${esc(s.tag||'')}" /></div>
-      <div class="form-group"><label>From</label><input id="ib-from-${i}" value="${esc(s.from||'')}" /></div>
+      <div class="form-group"><label>Tag</label><input id="ib-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label (e.g., 'Email', 'Message', 'Urgent')</div></div>
+      <div class="form-group"><label>From</label><input id="ib-from-${i}" value="${esc(s.from||'')}" /><div class="form-hint">Sender name shown in the inbox (e.g., 'Board Chair', 'Staff Slack')</div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Subject</label><input id="ib-subj-${i}" value="${esc(s.subject||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="ib-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
@@ -13398,7 +13447,7 @@ function renderInboxForm(s, i) {
     </div>
     <div class="form-group" style="margin-bottom:8px"><label>Applicable Organizations</label><div class="checkbox-grid">${allOrgs.map(o=>`<label class="checkbox-item"><input type="checkbox" id="ib-apporg-${i}-${o.id}" ${appOrgs.includes(o.id)?'checked':''} />${esc(o.name)}</label>`).join('')}</div><div class="form-hint">If none checked, available to all orgs</div></div>
     <div class="form-row three">
-      <div class="form-group"><label>Expires In (rounds, 0=never)</label><input type="number" id="ib-expires-${i}" value="${s.expiresIn||0}" min="0" /></div>
+      <div class="form-group"><label>Expires In (rounds, 0=never)</label><input type="number" id="ib-expires-${i}" value="${s.expiresIn||0}" min="0" /><div class="form-hint">Rounds before this inbox item auto-resolves with the expired outcome (0 = never)</div></div>
     </div>
     <details style="margin:8px 0;border:1px solid var(--border);padding:8px;background:#fdf8f0"><summary style="font-size:11px;font-weight:700;cursor:pointer;color:var(--gold)">Expired Outcome (if player ignores this inbox item)</summary>
       <div class="form-group" style="margin:8px 0 6px"><label>Expired Text</label><textarea id="ib-exptext-${i}" rows="2">${esc(expOut.text||'')}</textarea></div>
@@ -13804,7 +13853,7 @@ function renderAdvisorForm(a, i){
       '<div class="form-group"><label>Personality</label><select id="adv-pers-'+i+'">'+ADV_PERSONALITIES.map(function(p){return '<option value="'+p+'"'+(a.personality===p?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div>'+
       '<div class="form-group"><label>ID</label><input id="adv-id-'+i+'" value="'+esc(a.id)+'" /></div>'+
     '</div>'+
-    '<div class="form-section" style="margin-top:12px;margin-bottom:12px"><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Stat Modifiers</label>'+
+    '<div class="form-section" style="margin-top:12px;margin-bottom:12px"><label class="section-label">Stat Modifiers</label>'+
     '<div class="stat-inputs cols-4">'+stats.map(function(s){
       return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="adv-mod-'+i+'-'+s.id+'" value="'+((a.statModifiers||{})[s.id]||0)+'" /></div>';
     }).join('')+'</div></div>'+
@@ -13813,7 +13862,7 @@ function renderAdvisorForm(a, i){
       '<div class="form-group"><label>Clout Bonus</label><input type="number" id="adv-clout-'+i+'" value="'+(a.cloutBonus||0)+'" min="0" max="15" /></div>'+
       '<div class="form-group"><label>Budget Bonus</label><input type="number" id="adv-budget-'+i+'" value="'+(a.budgetBonus||0)+'" min="0" max="10" /></div>'+
     '</div>'+
-    '<div style="margin:12px 0"><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Expertise</label>'+
+    '<div style="margin:12px 0"><label class="section-label">Expertise</label>'+
     '<div class="checkbox-grid">'+ADV_EXPERTISE_OPTS.map(function(e){
       return '<label class="checkbox-item"><input type="checkbox" id="adv-exp-'+i+'-'+e+'" '+(expertise.includes(e)?'checked':'')+' />'+e+'</label>';
     }).join('')+'</div></div>'+
@@ -13907,16 +13956,16 @@ function renderBreakingForm(bn,i){
   var cats=bn.categories||['all'];
   return '<div class="item-edit-form" id="bn-form-'+i+'" style="display:none">'+
     '<div class="form-row three">'+
-      '<div class="form-group"><label>ID</label><input id="bn-id-'+i+'" value="'+esc(bn.id)+'" /></div>'+
-      '<div class="form-group"><label>Tag</label><input id="bn-tag-'+i+'" value="'+esc(bn.tag||'BREAKING')+'" /></div>'+
-      '<div class="form-group"><label>Trigger</label><input id="bn-trigger-'+i+'" value="'+esc(bn.trigger||'any')+'" /></div>'+
+      '<div class="form-group"><label>ID</label><input id="bn-id-'+i+'" value="'+esc(bn.id)+'" /><div class="form-hint">Unique identifier for this breaking news event</div></div>'+
+      '<div class="form-group"><label>Tag</label><input id="bn-tag-'+i+'" value="'+esc(bn.tag||'BREAKING')+'" /><div class="form-hint">Display label (usually \'BREAKING\')</div></div>'+
+      '<div class="form-group"><label>Trigger</label><input id="bn-trigger-'+i+'" value="'+esc(bn.trigger||'any')+'" /><div class="form-hint">What can trigger this event (e.g., \'any\' = after any action)</div></div>'+
     '</div>'+
     '<div class="form-group" style="margin-bottom:8px"><label>Title</label><input id="bn-title-'+i+'" value="'+esc(bn.title||'')+'" /></div>'+
     '<div class="form-group" style="margin-bottom:8px"><label>Body</label><textarea id="bn-body-'+i+'" rows="3">'+esc(bn.body||'')+'</textarea></div>'+
     '<div class="form-row three">'+
-      '<div class="form-group"><label>Probability (%)</label><input type="number" id="bn-prob-'+i+'" value="'+(bn.probability||10)+'" min="0" max="100" /></div>'+
-      '<div class="form-group"><label>Min Round</label><input type="number" id="bn-minr-'+i+'" value="'+(bn.minRound||1)+'" min="1" /></div>'+
-      '<div class="form-group"><label>Max Round</label><input type="number" id="bn-maxr-'+i+'" value="'+(bn.maxRound||6)+'" min="1" /></div>'+
+      '<div class="form-group"><label>Probability (%)</label><input type="number" id="bn-prob-'+i+'" value="'+(bn.probability||10)+'" min="0" max="100" /><div class="form-hint">Chance (0-100%) this fires after each eligible action</div></div>'+
+      '<div class="form-group"><label>Min Round</label><input type="number" id="bn-minr-'+i+'" value="'+(bn.minRound||1)+'" min="1" /><div class="form-hint">Round window when this event can appear</div></div>'+
+      '<div class="form-group"><label>Max Round</label><input type="number" id="bn-maxr-'+i+'" value="'+(bn.maxRound||6)+'" min="1" /><div class="form-hint">Round window when this event can appear</div></div>'+
     '</div>'+
     '<div class="form-row three">'+
       '<div class="form-group"><label>Categories</label><div class="checkbox-grid">'+allCats.map(function(c){return '<label class="checkbox-item"><input type="checkbox" id="bn-cat-'+i+'-'+c+'" '+(cats.includes(c)?'checked':'')+' />'+c+'</label>'}).join('')+'</div></div>'+
@@ -14019,37 +14068,37 @@ function renderCoalitionForm(co,i){
     '<div class="form-row three">'+
       '<div class="form-group"><label>ID</label><input id="coal-id-'+i+'" value="'+esc(co.id)+'" /></div>'+
       '<div class="form-group"><label>Name</label><input id="coal-name-'+i+'" value="'+esc(co.name)+'" /></div>'+
-      '<div class="form-group"><label>Offered by Round (0=trigger only)</label><input type="number" id="coal-round-'+i+'" value="'+(co.offeredByRound||0)+'" min="0" /></div>'+
+      '<div class="form-group"><label>Offered by Round (0=trigger only)</label><input type="number" id="coal-round-'+i+'" value="'+(co.offeredByRound||0)+'" min="0" /><div class="form-hint">Which round this coalition is offered (0 = only offered via scenario trigger)</div></div>'+
     '</div>'+
     '<div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="coal-desc-'+i+'" rows="3">'+esc(co.description||'')+'</textarea></div>'+
     '<div class="form-group" style="margin-bottom:8px"><label>Available to Organizations</label><div class="checkbox-grid">'+allOrgs.map(function(o){return '<label class="checkbox-item"><input type="checkbox" id="coal-apporg-'+i+'-'+o.id+'" '+(appOrgs.length===0||appOrgs.includes(o.id)?'checked':'')+' />'+esc(o.name)+'</label>'}).join('')+'</div><div class="form-hint">If all checked, available to everyone. Uncheck to restrict.</div></div>'+
-    '<details style="margin:8px 0;border:1px solid var(--border);padding:8px;background:#f5f5ff"><summary style="font-size:11px;font-weight:700;cursor:pointer;color:#6366f1">Scenario Trigger (optional — offer coalition after a specific event outcome)</summary>'+
+    '<details class="editor-details"><summary>Scenario Trigger (optional — offer coalition after a specific event outcome)</summary>'+
       '<div class="form-row three" style="margin-top:8px">'+
         '<div class="form-group"><label>Trigger Scenario</label><select id="coal-trigscn-'+i+'"><option value="">— None (use round) —</option>'+scenarios.map(function(s){return '<option value="'+s.id+'"'+(trig.scenarioId===s.id?' selected':'')+'>'+esc(s.id)+' — '+esc((s.title||'').substring(0,40))+'</option>'}).join('')+'</select></div>'+
         '<div class="form-group"><label>Choice Index</label><input type="number" id="coal-trigci-'+i+'" value="'+(trig.choiceIndex!=null?trig.choiceIndex:'')+'" placeholder="blank = any" min="0" max="10" /><div class="form-hint">Which choice triggers offer (blank=any)</div></div>'+
       '</div>'+
     '</details>'+
     '<div class="form-row three">'+
-      '<div class="form-group"><label>Duration (0=permanent)</label><input type="number" id="coal-dur-'+i+'" value="'+(co.duration||0)+'" min="0" /></div>'+
+      '<div class="form-group"><label>Duration (0=permanent)</label><input type="number" id="coal-dur-'+i+'" value="'+(co.duration||0)+'" min="0" /><div class="form-hint">How many rounds the coalition lasts (0 = permanent until broken)</div></div>'+
       '<div class="form-group"><label>Political Lean</label><input type="number" id="coal-pollean-'+i+'" value="'+(co.politicalLean||0)+'" min="-10" max="10" /><div class="form-hint">-10=left, +10=right</div></div>'+
-      '<div class="form-group"><label>Accept Clout</label><input type="number" id="coal-aclout-'+i+'" value="'+(co.acceptClout||0)+'" /></div>'+
+      '<div class="form-group"><label>Accept Clout</label><input type="number" id="coal-aclout-'+i+'" value="'+(co.acceptClout||0)+'" /><div class="form-hint">Political clout gained when player accepts this coalition</div></div>'+
     '</div>'+
-    '<div class="form-group" style="margin-bottom:8px"><label>Break Clout Penalty</label><input type="number" id="coal-bclout-'+i+'" value="'+(co.breakCloutPenalty||0)+'" /></div>'+
-    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Benefits per Round</label>'+
+    '<div class="form-group" style="margin-bottom:8px"><label>Break Clout Penalty</label><input type="number" id="coal-bclout-'+i+'" value="'+(co.breakCloutPenalty||0)+'" /><div class="form-hint">Political clout lost if player breaks the coalition</div></div>'+
+    '<label class="section-label">Benefits per Round</label><div class="form-hint" style="margin-bottom:6px">Stat bonuses applied automatically each round while active</div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-ben-'+i+'-'+s.id+'" value="'+(benefits[s.id]||0)+'" /></div>'}).join('')+
-    '<div class="stat-input-group"><label>Budget/round</label><input type="number" id="coal-benbudget-'+i+'" value="'+budgetPR+'" /></div></div>'+
-    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Constraints (JSON)</label>'+
+    '<div class="stat-input-group"><label>Budget/round</label><input type="number" id="coal-benbudget-'+i+'" value="'+budgetPR+'" /><div class="form-hint">Budget units gained each round while active</div></div></div>'+
+    '<label class="section-label">Constraints (JSON)</label>'+
     '<textarea id="coal-constraints-'+i+'" rows="4" style="font-family:monospace;font-size:11px">'+esc(constraintsJSON)+'</textarea>'+
     '<div class="form-hint" style="margin-bottom:10px">Types: "avoidMission" (with missionIds array), "maintainStat" (with stat, above). Each needs a "description".</div>'+
-    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Violation Penalty</label>'+
+    '<div class="coal-section"><div class="coal-section-title">Violation Penalty</div><div class="form-hint" style="margin-bottom:6px">Applied when the player violates a constraint</div>'+
     '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-vptext-'+i+'" rows="2">'+esc(vp.text||'')+'</textarea></div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:6px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-vpfx-'+i+'-'+s.id+'" value="'+((vp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
     '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-vpbudget-'+i+'" value="'+(vp.budgetEffect||0)+'" /></div>'+
-    '<div class="stat-input-group"><label>Clout</label><input type="number" id="coal-vpclout-'+i+'" value="'+(vp.cloutEffect||0)+'" /></div></div>'+
-    '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin:10px 0 5px">Decline Penalty</label>'+
+    '<div class="stat-input-group"><label>Clout</label><input type="number" id="coal-vpclout-'+i+'" value="'+(vp.cloutEffect||0)+'" /></div></div></div>'+
+    '<div class="coal-section"><div class="coal-section-title">Decline Penalty</div><div class="form-hint" style="margin-bottom:6px">Applied when the player declines the offer</div>'+
     '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-dptext-'+i+'" rows="2">'+esc(dp.text||'')+'</textarea></div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-dpfx-'+i+'-'+s.id+'" value="'+((dp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
-    '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-dpbudget-'+i+'" value="'+(dp.budgetEffect||0)+'" /></div></div>'+
+    '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-dpbudget-'+i+'" value="'+(dp.budgetEffect||0)+'" /></div></div></div>'+
     '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveCoalition('+i+')">Save Coalition</button></div>'+
   '</div>';
 }
@@ -14131,7 +14180,7 @@ function renderInvestmentForm(inv,i){
   var stats = GD.stats||[];
   var retDelay = inv.budgetReturnDelay||0;
   var retAmt = inv.budgetReturn||0;
-  return '<div class="item-edit-form" id="inv-form-'+i+'" style="display:none"><div class="form-row three"><div class="form-group"><label>ID</label><input id="inv-id-'+i+'" value="'+esc(inv.id)+'" /></div><div class="form-group"><label>Name</label><input id="inv-name-'+i+'" value="'+esc(inv.name)+'" /></div><div class="form-group"><label>Icon (emoji)</label><input id="inv-icon-'+i+'" value="'+esc(inv.icon||'')+'" /></div></div><div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="inv-desc-'+i+'" rows="2">'+esc(inv.description||'')+'</textarea></div><div class="form-group" style="margin-bottom:8px"><label>Outcome Text</label><textarea id="inv-outcome-'+i+'" rows="2">'+esc(inv.outcomeText||'')+'</textarea></div><div class="form-row three"><div class="form-group"><label>Budget Cost</label><input type="number" id="inv-cost-'+i+'" value="'+(inv.budgetCost||0)+'" min="0" /></div><div class="form-group"><label>Max Uses (-1=unlimited)</label><input type="number" id="inv-max-'+i+'" value="'+(inv.maxUses===undefined?1:inv.maxUses)+'" min="-1" /></div><div class="form-group"><label>Budget Return</label><input type="number" id="inv-return-'+i+'" value="'+retAmt+'" min="0" /><div class="form-hint">Budget refunded after delay (0=none)</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Budget Return Delay (rounds)</label><input type="number" id="inv-retdelay-'+i+'" value="'+retDelay+'" min="0" /><div class="form-hint">Rounds before budget return is received</div></div><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px">Stat Effects</label><div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="inv-fx-'+i+'-'+s.id+'" value="'+((inv.effects||{})[s.id]||0)+'" /></div>'}).join('')+'</div><div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveInvestment('+i+')">Save Investment</button></div></div>';
+  return '<div class="item-edit-form" id="inv-form-'+i+'" style="display:none"><div class="form-row three"><div class="form-group"><label>ID</label><input id="inv-id-'+i+'" value="'+esc(inv.id)+'" /></div><div class="form-group"><label>Name</label><input id="inv-name-'+i+'" value="'+esc(inv.name)+'" /></div><div class="form-group"><label>Icon (emoji)</label><input id="inv-icon-'+i+'" value="'+esc(inv.icon||'')+'" /><div class="form-hint">Emoji displayed on the investment card</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="inv-desc-'+i+'" rows="2">'+esc(inv.description||'')+'</textarea></div><div class="form-group" style="margin-bottom:8px"><label>Outcome Text</label><textarea id="inv-outcome-'+i+'" rows="2">'+esc(inv.outcomeText||'')+'</textarea><div class="form-hint">Narrative text shown to player after purchasing</div></div><div class="form-row three"><div class="form-group"><label>Budget Cost</label><input type="number" id="inv-cost-'+i+'" value="'+(inv.budgetCost||0)+'" min="0" /><div class="form-hint">Budget units required to purchase</div></div><div class="form-group"><label>Max Uses (-1=unlimited)</label><input type="number" id="inv-max-'+i+'" value="'+(inv.maxUses===undefined?1:inv.maxUses)+'" min="-1" /><div class="form-hint">How many times this can be purchased (-1 = unlimited)</div></div><div class="form-group"><label>Budget Return</label><input type="number" id="inv-return-'+i+'" value="'+retAmt+'" min="0" /><div class="form-hint">Budget refunded after delay (0=none)</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Budget Return Delay (rounds)</label><input type="number" id="inv-retdelay-'+i+'" value="'+retDelay+'" min="0" /><div class="form-hint">Rounds before budget return is received</div></div><label class="section-label">Stat Effects</label><div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="inv-fx-'+i+'-'+s.id+'" value="'+((inv.effects||{})[s.id]||0)+'" /></div>'}).join('')+'</div><div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveInvestment('+i+')">Save Investment</button></div></div>';
 }
 function saveInvestment(i){
   var inv = GD.investments[i];
@@ -14189,11 +14238,11 @@ function renderAdvisorQuotesEditor(scenario, si, prefix){
     html += '<div class="form-group"><label>Recommends Choice</label><select id="'+prefix+'-aqrec-'+si+'-'+qi+'" style="font-size:12px">';
     html += '<option value=""'+(q.recommendsChoice==null?' selected':'')+'>None</option>';
     choices.forEach(function(c,ci){ html += '<option value="'+ci+'"'+(q.recommendsChoice===ci?' selected':'')+'>'+String.fromCharCode(65+ci)+': '+esc((c.text||'').substring(0,35))+'</option>'; });
-    html += '</select></div>';
-    html += '<div class="form-group"><label>Explicit?</label><select id="'+prefix+'-aqexpl-'+si+'-'+qi+'" style="font-size:12px"><option value="true"'+(q.explicit!==false?' selected':'')+'>Yes — show badge</option><option value="false"'+(q.explicit===false?' selected':'')+'>No — hidden</option></select></div>';
+    html += '</select><div class="form-hint">Which choice letter this advisor recommends — shown as a highlight</div></div>';
+    html += '<div class="form-group"><label>Explicit?</label><select id="'+prefix+'-aqexpl-'+si+'-'+qi+'" style="font-size:12px"><option value="true"'+(q.explicit!==false?' selected':'')+'>Yes — show badge</option><option value="false"'+(q.explicit===false?' selected':'')+'>No — hidden</option></select><div class="form-hint">If yes, advisor explicitly tells the player which choice they recommend</div></div>';
     html += '</div>';
     // Row 4: effect modifier per stat
-    html += '<div style="margin-top:4px"><label style="font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Effect Modifier (bonus when player picks recommended choice)</label>';
+    html += '<div style="margin-top:4px"><label class="section-label">Effect Modifier (bonus when player picks recommended choice)</label><div class="form-hint" style="margin-bottom:4px">Stat bonus/penalty applied when player follows this advisor\'s recommendation</div>';
     html += '<div class="stat-inputs cols-4" style="margin-bottom:0">'+stats.map(function(s){
       return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="'+prefix+'-aqefx-'+si+'-'+qi+'-'+s.id+'" value="'+((q.effectModifier||{})[s.id]||0)+'" style="font-size:12px;padding:5px" /></div>';
     }).join('')+'</div>';
@@ -14300,11 +14349,11 @@ function renderConversationForm(c, i){
   html += '<option value="character"'+(c.type==='character'?' selected':'')+'>Character</option>';
   html += '<option value="advisor"'+(c.type==='advisor'?' selected':'')+'>Advisor</option>';
   html += '</select></div>';
-  html += '<div class="form-group"><label>Start Disposition (0-100)</label><input type="number" id="conv-startdisp-'+i+'" value="'+(c.startDisposition||50)+'" min="0" max="100" /></div>';
+  html += '<div class="form-group"><label>Start Disposition (0-100)</label><input type="number" id="conv-startdisp-'+i+'" value="'+(c.startDisposition||50)+'" min="0" max="100" /><div class="form-hint">Initial attitude (0=hostile, 50=neutral, 100=friendly)</div></div>';
   html += '</div>';
 
   // ── Applicable Orgs ──
-  html += '<div style="margin-bottom:10px"><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Applicable Orgs</label>';
+  html += '<div style="margin-bottom:10px"><label class="section-label">Applicable Orgs</label>';
   html += '<div class="checkbox-grid">';
   orgs.forEach(function(o){
     html += '<label class="checkbox-item"><input type="checkbox" id="conv-org-'+i+'-'+o.id+'" '+(applicableOrgs.includes(o.id)?'checked':'')+' />'+esc(o.name||o.id)+'</label>';
@@ -14313,7 +14362,7 @@ function renderConversationForm(c, i){
 
   // ── Character Info (shown when type=character) ──
   html += '<div id="conv-charblock-'+i+'" style="display:'+(c.type==='character'?'block':'none')+';border:1px solid var(--border);padding:10px;margin-bottom:10px;background:#f9f8f5">';
-  html += '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Character Info</label>';
+  html += '<label class="section-label">Character Info</label>';
   html += '<div class="form-row four">';
   html += '<div class="form-group"><label>Name</label><input id="conv-charname-'+i+'" value="'+esc(char.name||'')+'" /></div>';
   html += '<div class="form-group"><label>Emoji</label><input id="conv-charemoji-'+i+'" value="'+esc(char.emoji||'')+'" style="font-size:18px" /></div>';
@@ -14333,20 +14382,20 @@ function renderConversationForm(c, i){
 
   // ── Trigger Config ──
   html += '<div style="border:1px solid var(--border);padding:10px;margin-bottom:10px;background:#f5f5ff">';
-  html += '<label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Trigger</label>';
+  html += '<label class="section-label">Trigger</label>';
   html += '<div class="form-row three">';
-  html += '<div class="form-group"><label>Type</label><select id="conv-trigtype-'+i+'">';
+  html += '<div class="form-group"><label>Trigger Type</label><select id="conv-trigtype-'+i+'">';
   ['afterScenario','beforeScenario','roundStart','standalone'].forEach(function(t){
     html += '<option value="'+t+'"'+(trig.type===t?' selected':'')+'>'+t+'</option>';
   });
-  html += '</select></div>';
+  html += '</select><div class="form-hint">When this conversation fires: afterScenario, beforeScenario, roundStart, or standalone</div></div>';
   html += '<div class="form-group"><label>Scenario ID</label><select id="conv-trigscn-'+i+'">';
   html += '<option value="">— None —</option>';
   scenarios.forEach(function(s){
     html += '<option value="'+s.id+'"'+(trig.scenarioId===s.id?' selected':'')+'>'+esc(s.id)+' ('+esc(s.title||'')+')</option>';
   });
   html += '</select></div>';
-  html += '<div class="form-group"><label>Choice Index</label><input type="number" id="conv-trigci-'+i+'" value="'+(trig.choiceIndex!=null?trig.choiceIndex:'')+'" placeholder="blank = any" min="0" max="10" /></div>';
+  html += '<div class="form-group"><label>Choice Index</label><input type="number" id="conv-trigci-'+i+'" value="'+(trig.choiceIndex!=null?trig.choiceIndex:'')+'" placeholder="blank = any" min="0" max="10" /><div class="form-hint">Which specific choice triggers this conversation (blank = any choice)</div></div>';
   html += '</div></div>';
 
   // ── Node Editor ──
@@ -14375,32 +14424,32 @@ function renderConversationForm(c, i){
 
 function renderConvNodeEditor(ci, ni, nodeId, node, allNodeIds){
   var responses = node.responses||[];
-  var html = '<div style="border:1px solid var(--border);padding:10px;margin-bottom:8px;background:var(--white)">';
-  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-  html += '<span style="font-family:\'Merriweather\',serif;font-weight:900;font-size:14px;color:var(--gold)">Node '+ni+'</span>';
-  html += '<button class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:10px" onclick="deleteConvNode('+ci+','+ni+')">✕ Delete Node</button>';
+  var html = '<div class="conv-node">';
+  html += '<div class="conv-node-header">';
+  html += '<span class="conv-node-title">Node '+ni+'</span>';
+  html += '<button class="btn btn-danger btn-sm" onclick="deleteConvNode('+ci+','+ni+')">✕ Delete Node</button>';
   html += '</div>';
-  html += '<div class="form-group" style="margin-bottom:6px"><label>Node ID</label><input id="conv-nid-'+ci+'-'+ni+'" value="'+esc(nodeId)+'" style="font-family:monospace;font-size:12px" /></div>';
-  html += '<div class="form-group" style="margin-bottom:8px"><label>Character Line</label><textarea id="conv-nline-'+ci+'-'+ni+'" rows="3" style="font-size:12px">'+esc(node.characterLine||'')+'</textarea></div>';
+  html += '<div class="form-group" style="margin-bottom:6px"><label>Node ID</label><input id="conv-nid-'+ci+'-'+ni+'" value="'+esc(nodeId)+'" style="font-family:monospace;font-size:12px" /><div class="form-hint">Unique key for this node — used in Next Node dropdowns to link the tree</div></div>';
+  html += '<div class="form-group" style="margin-bottom:8px"><label>Character Line</label><textarea id="conv-nline-'+ci+'-'+ni+'" rows="3" style="font-size:12px">'+esc(node.characterLine||'')+'</textarea><div class="form-hint">What the NPC says to the player at this point in the conversation</div></div>';
 
   // Responses
-  html += '<label style="font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Responses ('+responses.length+')</label>';
+  html += '<label class="section-label">Responses ('+responses.length+')</label>';
   responses.forEach(function(r, ri){
-    html += '<div style="border:1px dashed var(--border);padding:8px;margin-bottom:6px;background:#fafaf7">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
-    html += '<span style="font-size:11px;font-weight:700;color:var(--gold)">Response '+String.fromCharCode(65+ri)+'</span>';
-    html += '<button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:9px" onclick="deleteConvResponse('+ci+','+ni+','+ri+')">✕</button>';
+    html += '<div class="response-card">';
+    html += '<div class="response-card-header">';
+    html += '<span class="response-card-title">Response '+String.fromCharCode(65+ri)+'</span>';
+    html += '<button class="btn btn-danger btn-sm" onclick="deleteConvResponse('+ci+','+ni+','+ri+')">✕</button>';
     html += '</div>';
     html += '<div class="form-group" style="margin-bottom:4px"><label>Text</label><textarea id="conv-rtext-'+ci+'-'+ni+'-'+ri+'" rows="2" style="font-size:12px">'+esc(r.text||'')+'</textarea></div>';
     html += '<div class="form-row three">';
-    html += '<div class="form-group"><label>Approach</label><input id="conv-rappr-'+ci+'-'+ni+'-'+ri+'" value="'+esc(r.approach||'')+'" style="font-size:12px" /></div>';
-    html += '<div class="form-group"><label>Disposition Δ</label><input type="number" id="conv-rdelta-'+ci+'-'+ni+'-'+ri+'" value="'+(r.dispositionDelta||0)+'" style="font-size:12px" /></div>';
+    html += '<div class="form-group"><label>Approach</label><input id="conv-rappr-'+ci+'-'+ni+'-'+ri+'" value="'+esc(r.approach||'')+'" style="font-size:12px" /><div class="form-hint">Label describing the tone/strategy of this response</div></div>';
+    html += '<div class="form-group"><label>Disposition Δ</label><input type="number" id="conv-rdelta-'+ci+'-'+ni+'-'+ri+'" value="'+(r.dispositionDelta||0)+'" style="font-size:12px" /><div class="form-hint">How much this shifts NPC disposition (positive = warmer, negative = cooler)</div></div>';
     html += '<div class="form-group"><label>Next Node</label><select id="conv-rnext-'+ci+'-'+ni+'-'+ri+'" style="font-size:12px">';
     html += '<option value="end"'+(r.next==='end'?' selected':'')+'>— end —</option>';
     allNodeIds.forEach(function(nid){
       html += '<option value="'+nid+'"'+(r.next===nid?' selected':'')+'>'+esc(nid)+'</option>';
     });
-    html += '</select></div>';
+    html += '</select><div class="form-hint">Which node to go to after this response (\'end\' = conversation ends)</div></div>';
     html += '</div>';
     html += '</div>';
   });
@@ -14411,25 +14460,25 @@ function renderConvNodeEditor(ci, ni, nodeId, node, allNodeIds){
 
 function renderConvOutcomeEditor(ci, oi, o, convType){
   var stats = GD.stats||[];
-  var html = '<div style="border:1px solid var(--border);padding:10px;margin-bottom:6px;background:#f8f5ee">';
-  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-  html += '<span style="font-size:11px;font-weight:700;color:var(--gold)">Outcome '+(oi+1)+'</span>';
-  html += '<button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:9px" onclick="deleteConvOutcome('+ci+','+oi+')">✕</button>';
+  var html = '<div class="outcome-card">';
+  html += '<div class="outcome-card-header">';
+  html += '<span class="outcome-card-title">Outcome '+(oi+1)+'</span>';
+  html += '<button class="btn btn-danger btn-sm" onclick="deleteConvOutcome('+ci+','+oi+')">✕</button>';
   html += '</div>';
   html += '<div class="form-row three" style="margin-bottom:6px">';
-  html += '<div class="form-group"><label>Min Disposition</label><input type="number" id="conv-omin-'+ci+'-'+oi+'" value="'+(o.minDisposition||0)+'" min="0" max="100" /></div>';
+  html += '<div class="form-group"><label>Min Disposition</label><input type="number" id="conv-omin-'+ci+'-'+oi+'" value="'+(o.minDisposition||0)+'" min="0" max="100" /><div class="form-hint">Minimum disposition required — outcomes are checked highest-first</div></div>';
   html += '<div class="form-group"><label>Heading</label><input id="conv-ohead-'+ci+'-'+oi+'" value="'+esc(o.heading||'')+'" /></div>';
-  html += '<div class="form-group"><label>Budget Effect</label><input type="number" id="conv-obudget-'+ci+'-'+oi+'" value="'+(o.budgetEffect||0)+'" /></div>';
+  html += '<div class="form-group"><label>Budget Effect</label><input type="number" id="conv-obudget-'+ci+'-'+oi+'" value="'+(o.budgetEffect||0)+'" /><div class="form-hint">Budget units gained/lost from this outcome</div></div>';
   html += '</div>';
   html += '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="conv-otext-'+ci+'-'+oi+'" rows="2" style="font-size:12px">'+esc(o.text||'')+'</textarea></div>';
   // Stat effects
-  html += '<div style="margin-bottom:6px"><label style="font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Stat Effects</label>';
+  html += '<div style="margin-bottom:6px"><label class="section-label">Stat Effects</label>';
   html += '<div class="stat-inputs cols-4">'+stats.map(function(s){
     return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="conv-oefx-'+ci+'-'+oi+'-'+s.id+'" value="'+((o.effects||{})[s.id]||0)+'" style="font-size:12px;padding:5px" /></div>';
   }).join('')+'</div></div>';
   // Advisor bonus multiplier (only for advisor type)
   html += '<div id="conv-oadvmod-wrap-'+ci+'-'+oi+'" style="display:'+(convType==='advisor'?'block':'none')+'">';
-  html += '<div class="form-group"><label>Modifies Advisor Bonus (multiplier)</label><input type="number" step="0.5" id="conv-oadvmod-'+ci+'-'+oi+'" value="'+(o.modifiesAdvisorBonus!=null?o.modifiesAdvisorBonus:'')+'" placeholder="e.g. 1.5" /></div>';
+  html += '<div class="form-group"><label>Modifies Advisor Bonus (multiplier)</label><input type="number" step="0.5" id="conv-oadvmod-'+ci+'-'+oi+'" value="'+(o.modifiesAdvisorBonus!=null?o.modifiesAdvisorBonus:'')+'" placeholder="e.g. 1.5" /><div class="form-hint">Multiplier applied to this advisor\'s bonus for the rest of the game (e.g., 1.5 = 50% stronger)</div></div>';
   html += '</div>';
   html += '</div>';
   return html;
@@ -14679,14 +14728,14 @@ function populateSegments() {
       '<button class="btn btn-danger btn-sm" style="margin-left:10px;margin-top:14px" onclick="deleteSegment('+i+')">✕</button>' +
       '</div>' +
       '<div class="form-row three">' +
-      '<div class="form-group"><label>Pop Baseline %</label><input type="number" id="seg-pop-'+i+'" value="'+seg.populationBaseline+'" min="1" max="50" /></div>' +
-      '<div class="form-group"><label>Political Center</label><input type="number" id="seg-pol-'+i+'" value="'+seg.politicalCenter+'" min="0" max="100" /></div>' +
-      '<div class="form-group"><label>Comfort Range</label><input type="number" id="seg-comfort-'+i+'" value="'+(seg.comfortRange||20)+'" min="5" max="50" /></div>' +
+      '<div class="form-group"><label>Pop Baseline %</label><input type="number" id="seg-pop-'+i+'" value="'+seg.populationBaseline+'" min="1" max="50" /><div class="form-hint">Relative population weight of this segment in the community</div></div>' +
+      '<div class="form-group"><label>Political Center</label><input type="number" id="seg-pol-'+i+'" value="'+seg.politicalCenter+'" min="0" max="100" /><div class="form-hint">Where this segment sits politically (0=far left, 50=center, 100=far right)</div></div>' +
+      '<div class="form-group"><label>Comfort Range</label><input type="number" id="seg-comfort-'+i+'" value="'+(seg.comfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their political center before approval drops sharply</div></div>' +
       '</div>' +
       '<div class="form-row three">' +
-      '<div class="form-group"><label>Base Start Approval</label><input type="number" id="seg-base-'+i+'" value="'+seg.baseStartApproval+'" min="20" max="80" /></div>' +
-      '<div class="form-group"><label>Donation Rate</label><input type="number" step="0.01" id="seg-don-'+i+'" value="'+seg.donationRate+'" min="0" max="1" /></div>' +
-      '<div class="form-group"><label>Floor / Ceiling</label><input id="seg-fc-'+i+'" value="'+seg.floor+'/'+seg.ceiling+'" /></div>' +
+      '<div class="form-group"><label>Base Start Approval</label><input type="number" id="seg-base-'+i+'" value="'+seg.baseStartApproval+'" min="20" max="80" /><div class="form-hint">Default approval rating at game start before political alignment adjustments</div></div>' +
+      '<div class="form-group"><label>Donation Rate</label><input type="number" step="0.01" id="seg-don-'+i+'" value="'+seg.donationRate+'" min="0" max="1" /><div class="form-hint">Multiplier for this segment\'s contribution to donor stat income</div></div>' +
+      '<div class="form-group"><label>Floor / Ceiling</label><input id="seg-fc-'+i+'" value="'+seg.floor+'/'+seg.ceiling+'" /><div class="form-hint">Min/max percentage this segment can be weighted in org segment weights</div></div>' +
       '</div>' +
       '</div>';
   }).join('');
@@ -14725,7 +14774,7 @@ function deleteSegment(i) {
 function renderSegWeightsEditor(orgObj, orgIdx, prefix) {
   var segs = GD.config.segments || [];
   var weights = orgObj.segmentWeights || {};
-  var html = '<div style="margin-top:10px;margin-bottom:10px"><label style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Segment Weights (must sum to 100%)</label>';
+  var html = '<div style="margin-top:10px;margin-bottom:10px"><label class="section-label">Segment Weights (must sum to 100%)</label>';
   html += '<div class="seg-weights-grid">';
   segs.forEach(function(seg) {
     var v = weights[seg.id] || Math.round(100 / segs.length);
@@ -14777,7 +14826,7 @@ function renderSegOverrides(choice, si, ci, prefix) {
   var segs = GD.config.segments || [];
   var overrides = choice.segmentOverrides || {};
   var hasAny = Object.keys(overrides).length > 0;
-  var html = '<details style="margin-top:6px"><summary style="font-size:10px;font-weight:600;cursor:pointer;color:var(--gold)">Segment Overrides (optional' + (hasAny ? ' — ' + Object.keys(overrides).length + ' set' : '') + ')</summary>';
+  var html = '<details class="editor-details" style="margin-top:6px"><summary>Segment Overrides (optional' + (hasAny ? ' — ' + Object.keys(overrides).length + ' set' : '') + ')</summary>';
   html += '<div class="seg-override-grid">';
   segs.forEach(function(seg) {
     var v = overrides[seg.id] !== undefined ? overrides[seg.id] : '';

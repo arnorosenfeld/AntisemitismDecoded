@@ -12630,7 +12630,7 @@ function doLogin() {
       catch(e) { GD = JSON.parse(JSON.stringify(DEFAULT_GD)); }
     } else {
       GD = JSON.parse(JSON.stringify(DEFAULT_GD));
-      setTimeout(() => setStatus('Loaded default data. Pull from GitHub to edit live data.', 'saving'), 100);
+      setTimeout(() => setStatus('Loaded game data. Use the Dashboard to connect to GitHub for saving changes.', 'saving'), 100);
     }
     populateAllPanels();
   } else {

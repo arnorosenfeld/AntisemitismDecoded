@@ -609,6 +609,16 @@ function initBudget(promo=false){
   const poolId=promo?'promo-pool-display':'pool-display';
   const px=promo?'pp':'p';
 
+  // Show warning box if configured
+  if (!promo) {
+    var warnBox = document.getElementById('pri-warning-box');
+    var warnText = (GAME_DATA.config.pageText?.budgetScreen?.warningText) || '';
+    if (warnBox) {
+      if (warnText) { warnBox.innerHTML = '<strong>Warning:</strong> ' + esc(warnText); warnBox.style.display = 'block'; }
+      else { warnBox.style.display = 'none'; }
+    }
+  }
+
   // Calculate baselines from org + traits + mission + advisors
   const allOrgs=[...GAME_DATA.organizations,...GAME_DATA.nationalOrganizations];
   const org=allOrgs.find(o=>o.id===G.orgId);

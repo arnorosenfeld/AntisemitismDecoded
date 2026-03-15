@@ -638,7 +638,8 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
           <div class="form-section">
             <h3>Priorities Screen</h3>
             <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-budStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-budHeading" /></div></div>
-            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-budDesc" rows="2"></textarea></div>
+            <div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="txt-budDesc" rows="2"></textarea></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Warning Box Text</label><textarea id="txt-budWarning" rows="2"></textarea><div class="form-hint">Red warning shown above the allocation grid (e.g., game-over threshold reminder). Leave blank to hide.</div></div>
           </div>
           <div class="form-section">
             <h3>Gameplay Screen</h3>
@@ -13713,6 +13714,7 @@ function populateText() {
   document.getElementById('txt-budStepLabel').value=bd.stepLabel||'';
   document.getElementById('txt-budHeading').value=bd.heading||'';
   document.getElementById('txt-budDesc').value=bd.description||'';
+  document.getElementById('txt-budWarning').value=bd.warningText||'';
   const gm=pt.gameScreen||{};
   document.getElementById('txt-gameActionH').value=gm.actionHeading||'';
   document.getElementById('txt-gameEndBtn').value=gm.endRoundButton||'';
@@ -13803,7 +13805,7 @@ function saveText() {
   pt.charScreen={stepLabel:document.getElementById('txt-charStepLabel').value,heading:document.getElementById('txt-charHeading').value,description:document.getElementById('txt-charDesc').value};
   pt.orgScreen={stepLabel:document.getElementById('txt-orgStepLabel').value,heading:document.getElementById('txt-orgHeading').value,description:document.getElementById('txt-orgDesc').value};
   pt.missionScreen={stepLabel:document.getElementById('txt-misStepLabel').value,heading:document.getElementById('txt-misHeading').value,description:document.getElementById('txt-misDesc').value};
-  pt.budgetScreen={stepLabel:document.getElementById('txt-budStepLabel').value,heading:document.getElementById('txt-budHeading').value,description:document.getElementById('txt-budDesc').value};
+  pt.budgetScreen={stepLabel:document.getElementById('txt-budStepLabel').value,heading:document.getElementById('txt-budHeading').value,description:document.getElementById('txt-budDesc').value,warningText:document.getElementById('txt-budWarning').value};
   pt.gameScreen={actionHeading:document.getElementById('txt-gameActionH').value,endRoundButton:document.getElementById('txt-gameEndBtn').value,noApMessage:document.getElementById('txt-gameNoAP').value};
   pt.endScreen={failureTitle:document.getElementById('txt-endFail').value,anotherYearTitle:document.getElementById('txt-endYear').value,promotionTitle:document.getElementById('txt-endPromo').value,retirementTitle:document.getElementById('txt-endRetire').value};
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('All page text saved.','success');

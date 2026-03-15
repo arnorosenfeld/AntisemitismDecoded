@@ -311,7 +311,8 @@
       "budgetScreen": {
         "stepLabel": "Step 4 of 6 — Priorities",
         "heading": "Set Your Priorities",
-        "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out."
+        "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out.",
+        "warningText": "If any stat drops to 20 or below during the game, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit hardest."
       },
       "gameScreen": {
         "actionHeading": "Choose Your Next Action",

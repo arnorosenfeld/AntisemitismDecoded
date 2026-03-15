@@ -118,6 +118,10 @@ body {
 .lp-ticker-hl { display: inline-block; padding: 0 22px; font-size: 10px; font-weight: 600; line-height: 28px; color: #d4a843; }
 .lp-ticker-sep { display: inline-block; color: var(--gold); padding: 0 4px; opacity: 0.3; font-size: 8px; }
 
+/* SKIP LINK */
+.lp-skip-link { position: fixed; top: 14px; right: 20px; font-family: 'Merriweather Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--muted); text-decoration: none; letter-spacing: 0.5px; z-index: 150; transition: color 0.18s, opacity 0.18s; opacity: 0.7; cursor: pointer; }
+.lp-skip-link:hover { color: var(--gold); opacity: 1; }
+
 /* LAYOUT */
 .container { max-width: 820px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 44px); width: 100%; }
 .page-pad { padding-top: 40px; padding-bottom: 64px; }

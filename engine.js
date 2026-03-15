@@ -969,10 +969,11 @@ function toggleHelpPanel() {
       body.innerHTML = bs.items.map(function(item) {
         return '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">' + (item.icon||'') + ' ' + esc(item.title) + '</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">' + esc(item.text) + '</div></div>';
       }).join('') +
-      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">' +
-        '<strong>Segments:</strong> Community Trust is the weighted average of how different groups feel about you. Watch the breakdown when it changes.<br>' +
-        '<strong>Mission Stars:</strong> Stay true to your mission to earn stars. They boost your year-end score.<br>' +
-        '<strong>Political Capital:</strong> Your position affects which coalitions and options are available.' +
+      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
+        '<div style="margin-bottom:10px"><strong>⭐ Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. Lose all your stars and the board loses confidence. Earn bonus stars through mission-aligned decisions — they boost your year-end score.</div>' +
+        '<div style="margin-bottom:10px"><strong>💰 Budget:</strong> You earn budget each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices and crises cost budget. Running out limits your options.</div>' +
+        '<div style="margin-bottom:10px"><strong>👥 Segments:</strong> Community Trust is the weighted average of how different groups feel about you — Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another.</div>' +
+        '<div><strong>⚖️ Political Capital:</strong> Your political position (left to right) and clout affect which coalitions, allies, and choices are available to you.</div>' +
       '</div>';
     }
   }
@@ -2177,16 +2178,17 @@ function renderInvestStrip() {
   el.innerHTML = '<span class="invest-strip-label">Investments (' + remaining + ')</span>' + pills;
   // Show scroll fade and arrow if content overflows
   var strip = document.getElementById('invest-strip');
-  if(strip) {
+  var wrap = strip ? strip.querySelector('.invest-strip-wrap') : null;
+  if(strip && wrap) {
     // Ensure fade and arrow elements exist (create once)
-    if(!strip.querySelector('.invest-strip-fade')) {
+    if(!wrap.querySelector('.invest-strip-fade')) {
       var fade = document.createElement('div');
       fade.className = 'invest-strip-fade';
-      strip.appendChild(fade);
+      wrap.appendChild(fade);
       var arrow = document.createElement('span');
       arrow.className = 'invest-scroll-arrow';
       arrow.textContent = '›';
-      strip.appendChild(arrow);
+      wrap.appendChild(arrow);
     }
     strip.classList.remove('has-overflow');
     setTimeout(function(){

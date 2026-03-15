@@ -212,9 +212,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 /* Hoverable trust chip with segment tooltip */
 .chip-hover-wrap { position: relative; display: inline-block; }
-.chip-hover-wrap .chip { cursor: help; border-bottom: 1px dashed currentColor; }
-.chip-hover-tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 8px 10px; min-width: 180px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); white-space: nowrap; }
-.chip-hover-tooltip::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #1a1a2e; border-right: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(255,255,255,0.15); }
+.chip-hover-wrap .chip { cursor: help; outline: 1px dashed currentColor; outline-offset: 1px; }
+.chip-hover-tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #2e3a52; border: 1px solid rgba(255,255,255,0.2); padding: 8px 10px; min-width: 180px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); white-space: nowrap; }
+.chip-hover-tooltip::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #2e3a52; border-right: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); }
 .chip-hover-wrap:hover .chip-hover-tooltip { display: flex; flex-wrap: wrap; gap: 4px; }
 
 /* CHARACTER */
@@ -319,8 +319,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Round info removed from HUD - now in AP bar */
 
 /* INVESTMENT STRIP - below HUD */
-.invest-strip { background: #283248; padding: 7px 20px; position: relative; left: 0; right: 0; z-index: 1; border-top: 1px solid rgba(255,255,255,0.06); }
-.invest-strip-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.invest-strip { background: #283248; padding: 7px 20px; left: 0; right: 0; z-index: 1; border-top: 1px solid rgba(255,255,255,0.06); }
+.invest-strip-wrap { max-width: 820px; margin: 0 auto; position: relative; }
+.invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
 .invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 4px; }
 .invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
@@ -545,16 +546,18 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ═══ COALITION ═══ */
 .coalition-offer-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:8500;display:flex;align-items:center;justify-content:center}
-.coalition-card{background:#faf6ee;max-width:480px;width:90%;border:2px solid var(--gold,#b08d3e);padding:24px;font-family:'Merriweather',Georgia,serif}
-.coalition-card h2{color:var(--gold,#b08d3e);font-size:18px;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
-.coalition-card h3{font-size:15px;margin:0 0 10px;color:#1a1a2e}
-.coalition-card p{font-size:13px;line-height:1.5;color:#3a3226}
-.coalition-benefit{background:#e8f5e9;border:1px solid #81c784;padding:8px 12px;margin:10px 0;font-size:12px;color:#2e7d32}
-.coalition-constraint{background:#fff3e0;border:1px solid #ffb74d;padding:8px 12px;margin:10px 0;font-size:12px;color:#e65100}
-.coalition-btns{display:flex;gap:10px;margin-top:16px}
-.coalition-btns button{flex:1;padding:10px;font-family:'Merriweather',serif;font-weight:700;cursor:pointer;border:2px solid;font-size:13px}
-.coalition-accept{background:#1a1a2e;color:#faf6ee;border-color:#1a1a2e}
-.coalition-decline{background:transparent;color:#1a1a2e;border-color:#1a1a2e}
+.coalition-card{background:var(--white);max-width:480px;width:90%;border:2px solid var(--gold);padding:28px;font-family:'Merriweather Sans',sans-serif}
+.coalition-card h2{color:var(--gold);font-family:'Merriweather',serif;font-size:16px;font-weight:900;margin:0 0 4px;text-transform:uppercase;letter-spacing:1.5px}
+.coalition-card h3{font-family:'Merriweather',serif;font-size:18px;font-weight:700;margin:0 0 12px;color:var(--ink)}
+.coalition-card p{font-size:14px;line-height:1.75;color:var(--muted);margin-bottom:16px}
+.coalition-benefit{background:#e8f5e9;border:1px solid #81c784;padding:10px 14px;margin:0 0 10px;font-size:13px;line-height:1.6;color:#2e7d32}
+.coalition-constraint{background:#fff3e0;border:1px solid #ffb74d;padding:10px 14px;margin:0 0 10px;font-size:13px;line-height:1.6;color:#e65100}
+.coalition-btns{display:flex;gap:10px;margin-top:20px}
+.coalition-btns button{flex:1;padding:12px;font-family:'Merriweather Sans',sans-serif;font-weight:700;cursor:pointer;border:2px solid;font-size:12px;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
+.coalition-accept{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.coalition-accept:hover{background:#2a2a40}
+.coalition-decline{background:transparent;color:var(--ink);border-color:var(--ink)}
+.coalition-decline:hover{background:var(--cream)}
 .active-coalitions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 /* Coalition strip - below investments */
 .coalition-strip{background:#1a1a30;padding:7px 20px;position:relative;left:0;right:0;z-index:1;border-top:1px solid rgba(255,255,255,0.05)}
@@ -1276,7 +1279,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   </div>
   <div class="hud-spacer" id="hud-spacer"></div>
   <div class="invest-strip" id="invest-strip">
-    <div class="invest-strip-inner" id="invest-strip-inner"></div>
+    <div class="invest-strip-wrap">
+      <div class="invest-strip-inner" id="invest-strip-inner"></div>
+    </div>
   </div>
   <div class="coalition-strip" id="coalition-strip" style="display:none">
     <div class="coalition-strip-inner" id="coalition-strip-inner"></div>
@@ -14292,10 +14297,11 @@ function toggleHelpPanel() {
       body.innerHTML = bs.items.map(function(item) {
         return '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">' + (item.icon||'') + ' ' + esc(item.title) + '</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">' + esc(item.text) + '</div></div>';
       }).join('') +
-      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">' +
-        '<strong>Segments:</strong> Community Trust is the weighted average of how different groups feel about you. Watch the breakdown when it changes.<br>' +
-        '<strong>Mission Stars:</strong> Stay true to your mission to earn stars. They boost your year-end score.<br>' +
-        '<strong>Political Capital:</strong> Your position affects which coalitions and options are available.' +
+      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
+        '<div style="margin-bottom:10px"><strong>⭐ Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. Lose all your stars and the board loses confidence. Earn bonus stars through mission-aligned decisions — they boost your year-end score.</div>' +
+        '<div style="margin-bottom:10px"><strong>💰 Budget:</strong> You earn budget each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices and crises cost budget. Running out limits your options.</div>' +
+        '<div style="margin-bottom:10px"><strong>👥 Segments:</strong> Community Trust is the weighted average of how different groups feel about you — Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another.</div>' +
+        '<div><strong>⚖️ Political Capital:</strong> Your political position (left to right) and clout affect which coalitions, allies, and choices are available to you.</div>' +
       '</div>';
     }
   }
@@ -15500,16 +15506,17 @@ function renderInvestStrip() {
   el.innerHTML = '<span class="invest-strip-label">Investments (' + remaining + ')</span>' + pills;
   // Show scroll fade and arrow if content overflows
   var strip = document.getElementById('invest-strip');
-  if(strip) {
+  var wrap = strip ? strip.querySelector('.invest-strip-wrap') : null;
+  if(strip && wrap) {
     // Ensure fade and arrow elements exist (create once)
-    if(!strip.querySelector('.invest-strip-fade')) {
+    if(!wrap.querySelector('.invest-strip-fade')) {
       var fade = document.createElement('div');
       fade.className = 'invest-strip-fade';
-      strip.appendChild(fade);
+      wrap.appendChild(fade);
       var arrow = document.createElement('span');
       arrow.className = 'invest-scroll-arrow';
       arrow.textContent = '›';
-      strip.appendChild(arrow);
+      wrap.appendChild(arrow);
     }
     strip.classList.remove('has-overflow');
     setTimeout(function(){

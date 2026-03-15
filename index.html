@@ -1172,14 +1172,17 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
     <div class="section-header">
       <span class="step-ind">Step 5 of 6 — Priority Allocation</span>
       <h2>Set Your Priorities</h2>
-      <p>Your organization, traits, mission, and advisors give you a starting baseline in each area. Now allocate your remaining priority points to shape where your organization is strongest.</p>
+      <p>Your organization, traits, mission, and advisors give you a starting baseline in each area. Each stat has been brought to a minimum of 25 — now allocate your remaining points to shape where your organization is strongest.</p>
+    </div>
+    <div style="background:#fdf2f2;border-left:3px solid #c0392b;padding:12px 16px;margin-bottom:18px;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:#5a2020;line-height:1.7">
+      <strong>Warning:</strong> If any stat drops to 20 or below during the game, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit hardest.
     </div>
     <div class="pool-box">
       <div>
         <div class="label" style="margin:0 0 2px">Points to Allocate</div>
         <div class="pool-num ok" id="pool-display">0</div>
       </div>
-      <div style="font-size:12px;color:var(--muted);max-width:220px;text-align:right;font-style:italic">Use + and − to distribute your priority points across stats.</div>
+      <div style="font-size:12px;color:var(--muted);max-width:220px;text-align:right;font-style:italic">Use + and − to distribute your remaining priority points across stats.</div>
     </div>
     <div class="pri-grid" id="pri-grid"></div>
     <div id="pri-floor-warning" style="display:none;background:#fdf2f2;border:1px solid #e8a0a0;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:#8b1a1a;line-height:1.6"></div>
@@ -13943,14 +13946,28 @@ function initBudget(promo=false){
 
   // Allocation points from org
   var allocPoints = (org && org.allocationPoints) || 50;
+  G._baselines = baselines;
+
+  // Pre-fill allocations so every stat starts at least at MIN_START (25)
+  var MIN_START = 25;
+  G.priorities = {};
+  var usedForFloor = 0;
+  GAME_DATA.stats.forEach(function(s){
+    var base = baselines[s.id] || 0;
+    if (base < MIN_START) {
+      var needed = MIN_START - base;
+      // Round up to nearest 5 for clean UI
+      needed = Math.ceil(needed / 5) * 5;
+      G.priorities[s.id] = needed;
+      usedForFloor += needed;
+    } else {
+      G.priorities[s.id] = 0;
+    }
+  });
+  var discretionary = allocPoints - usedForFloor;
   G._allocBudget = allocPoints;
   G._allocMin = 0;
   G._allocMax = allocPoints;
-  G._baselines = baselines;
-
-  // Initialize allocations to 0
-  G.priorities = {};
-  GAME_DATA.stats.forEach(function(s){ G.priorities[s.id] = 0; });
 
   // Scale for display: max bar represents ~80 (baseline + max possible allocation)
   var maxDisplay = 80;

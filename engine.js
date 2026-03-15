@@ -642,14 +642,28 @@ function initBudget(promo=false){
 
   // Allocation points from org
   var allocPoints = (org && org.allocationPoints) || 50;
+  G._baselines = baselines;
+
+  // Pre-fill allocations so every stat starts at least at MIN_START (25)
+  var MIN_START = 25;
+  G.priorities = {};
+  var usedForFloor = 0;
+  GAME_DATA.stats.forEach(function(s){
+    var base = baselines[s.id] || 0;
+    if (base < MIN_START) {
+      var needed = MIN_START - base;
+      // Round up to nearest 5 for clean UI
+      needed = Math.ceil(needed / 5) * 5;
+      G.priorities[s.id] = needed;
+      usedForFloor += needed;
+    } else {
+      G.priorities[s.id] = 0;
+    }
+  });
+  var discretionary = allocPoints - usedForFloor;
   G._allocBudget = allocPoints;
   G._allocMin = 0;
   G._allocMax = allocPoints;
-  G._baselines = baselines;
-
-  // Initialize allocations to 0
-  G.priorities = {};
-  GAME_DATA.stats.forEach(function(s){ G.priorities[s.id] = 0; });
 
   // Scale for display: max bar represents ~80 (baseline + max possible allocation)
   var maxDisplay = 80;

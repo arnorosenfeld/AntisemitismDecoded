@@ -1006,10 +1006,15 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .ticker-item a:hover { text-decoration: underline; }
 
 /* ═══ INBOX STRIP (above news ticker) ═══ */
-.inbox-strip{position:fixed;bottom:32px;left:0;width:100%;background:#334058;z-index:199;border-top:1px solid rgba(255,255,255,0.1);height:34px;display:none;align-items:center;padding:0 4px}
+.inbox-strip{position:fixed;bottom:32px;left:0;width:100%;background:#334058;z-index:199;border-top:1px solid rgba(255,255,255,0.1);height:34px;display:none;align-items:center;padding:0 20px}
 .inbox-strip.active{display:flex}
-.inbox-strip-inner{max-width:100%;width:100%;display:flex;align-items:center;padding:0 16px;gap:10px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.inbox-strip-wrap{max-width:820px;margin:0 auto;position:relative;width:100%}
+.inbox-strip-inner{display:flex;align-items:center;gap:10px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .inbox-strip-inner::-webkit-scrollbar{display:none}
+.inbox-strip-fade{display:none;position:absolute;top:0;bottom:0;right:0;width:50px;background:linear-gradient(to right,transparent,#334058);pointer-events:none;z-index:2}
+.inbox-strip.has-overflow .inbox-strip-fade{display:block}
+.inbox-scroll-arrow{display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);color:#d4a843;font-size:16px;font-weight:700;z-index:3;pointer-events:none;animation:scrollHint 1.5s ease-in-out infinite}
+.inbox-strip.has-overflow .inbox-scroll-arrow{display:block}
 .inbox-strip-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#d4a843;white-space:nowrap;cursor:pointer;padding:4px 0;flex-shrink:0;transition:opacity 0.15s}
 .inbox-strip-label:hover{opacity:0.8}
 .inbox-strip-items{display:flex;gap:10px;align-items:center;overflow-x:auto;scrollbar-width:none;padding:0 4px}
@@ -1340,9 +1345,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   </div>
   <!-- INBOX STRIP (above news ticker) -->
   <div class="inbox-strip" id="inbox-strip" style="display:none">
-    <div class="inbox-strip-inner">
-      <span class="inbox-strip-label" onclick="toggleInbox()">📬 Inbox</span>
-      <div class="inbox-strip-items" id="inbox-strip-items"></div>
+    <div class="inbox-strip-wrap">
+      <div class="inbox-strip-inner">
+        <span class="inbox-strip-label" onclick="toggleInbox()">📬 Inbox</span>
+        <div class="inbox-strip-items" id="inbox-strip-items"></div>
+      </div>
     </div>
   </div>
   <!-- HELP PANEL -->
@@ -16516,6 +16523,29 @@ function updateInboxStrip() {
     return '<div class="inbox-strip-pill' + cls + '" onclick="openInboxMessage(\'' + msg.id + '\')">' +
       '<span class="pill-icon">' + icon + '</span>' + esc(subj) + urgent + '</div>';
   }).join('');
+  // Overflow fade/arrow
+  var wrap = strip.querySelector('.inbox-strip-wrap');
+  if(wrap) {
+    if(!wrap.querySelector('.inbox-strip-fade')) {
+      var fade = document.createElement('div');
+      fade.className = 'inbox-strip-fade';
+      wrap.appendChild(fade);
+      var arrow = document.createElement('span');
+      arrow.className = 'inbox-scroll-arrow';
+      arrow.textContent = '›';
+      wrap.appendChild(arrow);
+    }
+    strip.classList.remove('has-overflow');
+    setTimeout(function(){
+      if(items.scrollWidth > items.clientWidth) {
+        strip.classList.add('has-overflow');
+        items.onscroll = function() {
+          var atEnd = items.scrollLeft + items.clientWidth >= items.scrollWidth - 10;
+          strip.classList.toggle('has-overflow', !atEnd);
+        };
+      }
+    }, 50);
+  }
 }
 
 function showInboxToast(sc) {

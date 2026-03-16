@@ -3188,6 +3188,29 @@ function updateInboxStrip() {
     return '<div class="inbox-strip-pill' + cls + '" onclick="openInboxMessage(\'' + msg.id + '\')">' +
       '<span class="pill-icon">' + icon + '</span>' + esc(subj) + urgent + '</div>';
   }).join('');
+  // Overflow fade/arrow
+  var wrap = strip.querySelector('.inbox-strip-wrap');
+  if(wrap) {
+    if(!wrap.querySelector('.inbox-strip-fade')) {
+      var fade = document.createElement('div');
+      fade.className = 'inbox-strip-fade';
+      wrap.appendChild(fade);
+      var arrow = document.createElement('span');
+      arrow.className = 'inbox-scroll-arrow';
+      arrow.textContent = '›';
+      wrap.appendChild(arrow);
+    }
+    strip.classList.remove('has-overflow');
+    setTimeout(function(){
+      if(items.scrollWidth > items.clientWidth) {
+        strip.classList.add('has-overflow');
+        items.onscroll = function() {
+          var atEnd = items.scrollLeft + items.clientWidth >= items.scrollWidth - 10;
+          strip.classList.toggle('has-overflow', !atEnd);
+        };
+      }
+    }, 50);
+  }
 }
 
 function showInboxToast(sc) {

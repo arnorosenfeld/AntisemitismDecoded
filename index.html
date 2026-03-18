@@ -1407,7 +1407,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       <div class="meters" id="hud-meters"></div>
       <div class="hud-budget-mission">
         <div class="hud-budget" id="hud-budget">
-          <span class="hud-budget-label">Budget</span>
+          <span class="hud-budget-label">Gelt</span>
           <div class="hud-budget-bags" id="hud-budget-bags"></div>
           <span class="hud-budget-val" id="hud-budget-val">0</span>
         </div>
@@ -14586,7 +14586,7 @@ function toggleHelpPanel() {
       }).join('') +
       '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
         '<div style="margin-bottom:10px"><strong>⭐ Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. Lose all your stars and the board loses confidence. Earn bonus stars through mission-aligned decisions — they boost your year-end score.</div>' +
-        '<div style="margin-bottom:10px"><strong>💰 Budget:</strong> You earn budget each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices and crises cost budget. Running out limits your options.</div>' +
+        '<div style="margin-bottom:10px"><strong>💰 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices and crises cost gelt. Running out limits your options.</div>' +
         '<div style="margin-bottom:10px"><strong>👥 Segments:</strong> Community Trust is the weighted average of how different groups feel about you — Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another.</div>' +
         '<div><strong>⚖️ Political Capital:</strong> Your political position (left to right) and clout affect which coalitions, allies, and choices are available to you.</div>' +
       '</div>';
@@ -14671,7 +14671,7 @@ var ONBOARDING_STEPS = [
   },
   {
     mood: 'neutral',
-    msg: 'You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost actions but they do cost money.',
+    msg: 'You have a <strong>gelt</strong> (budget) you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost actions but they do cost money.',
     label: 'One more thing?'
   },
   {
@@ -15016,7 +15016,7 @@ function beginRound(){
     } else if(G.budget <= 10) {
       var div = document.createElement('div');
       div.className = 'game-notification notif-warning';
-      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">⚠️ Budget Crisis</div><div style="font-size:12px;opacity:0.9">Your budget is critically low. Some choices may be unavailable until finances improve.</div>';
+      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">⚠️ Gelt Crisis</div><div style="font-size:12px;opacity:0.9">Your gelt is critically low. Some choices may be unavailable until finances improve.</div>';
       div.onclick = function(){div.remove()};
       document.body.appendChild(div);
       positionNotification(div);
@@ -15249,7 +15249,7 @@ function renderMain(){
   // --- Monitor screen (static desktop atmosphere) ---
   var monScreen = '<div class="desk-mon-desktop">'
     + '<div class="desk-mon-win" style="top:8%;left:5%;width:55%;height:50%">'
-    + '<div class="desk-mon-win-bar desk-mon-win-bar-green"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Budget — Q' + G.round + '</span></div>'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-green"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Gelt — Q' + G.round + '</span></div>'
     + '<div class="desk-mon-win-body"><div class="desk-mon-chart">'
     + '<div class="desk-mon-chart-bar" style="height:40%;background:#6aa84f"></div>'
     + '<div class="desk-mon-chart-bar" style="height:65%;background:#6aa84f"></div>'
@@ -15264,7 +15264,7 @@ function renderMain(){
     + '<div class="desk-mon-win-bar desk-mon-win-bar-gray"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Email Draft</span></div>'
     + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:90%;background:#ccc"></div><div class="desk-mon-win-line" style="width:45%;background:#ccc"></div></div></div>'
     + '</div>'
-    + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Budget</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
+    + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Gelt</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
 
   el.innerHTML = ''
     + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue.</div>' : '')
@@ -15396,9 +15396,9 @@ function doAction(actionId){
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
   const chips=applyEffects(action.baseEffects);
   var budgetChip = '';
-  if(budgetCost > 0) budgetChip += '<span class="chip chip-neg">-' + budgetCost + ' Budget</span>';
-  if(bfx > 0) budgetChip += '<span class="chip chip-pos">+' + bfx + ' Budget</span>';
-  else if(bfx < 0) budgetChip += '<span class="chip chip-neg">' + bfx + ' Budget</span>';
+  if(budgetCost > 0) budgetChip += '<span class="chip chip-neg">-' + budgetCost + ' Gelt</span>';
+  if(bfx > 0) budgetChip += '<span class="chip chip-pos">+' + bfx + ' Gelt</span>';
+  else if(bfx < 0) budgetChip += '<span class="chip chip-neg">' + bfx + ' Gelt</span>';
   G.apRemaining-=action.cost;
   G.actionsThisRound++;
   G.roundActions.push({icon:action.icon,name:action.name,outcomeText:action.outcomeText,chips:chips+budgetChip});
@@ -15467,7 +15467,7 @@ function renderScenario(s){
         ${valid.map((c,i)=>{
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
-          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' budget'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
           var isLocked = lockBudget || lockPolitical;
@@ -15498,8 +15498,8 @@ function chooseScenario(sid,idx){
   var bCost = c.budgetCost || 0;
   if(bCost > G.budget) return;
   if(bCost > 0) { G.budget -= bCost; G.budgetSpentThisYear += bCost; }
-  var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Budget</span>' : '';
-  
+  var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Gelt</span>' : '';
+
   // #6: Pick from weighted outcomes
   const outcome = pickOutcome(c);
   
@@ -15536,11 +15536,11 @@ function chooseScenario(sid,idx){
   
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
-  if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Budget</span>'; }
-  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Budget</span>'; }
+  if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
+  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
-  
+
   // #2: Three-tier mission alignment
   const alignment = getMissionAlignment(c);
   const maxS=GAME_DATA.config.missionMaxStars||5;
@@ -15603,7 +15603,7 @@ function renderInbox(s){
         ${valid.map((c,i)=>{
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
-          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' budget'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
           var isLocked = lockBudget || lockPolitical;
@@ -15632,10 +15632,10 @@ function chooseInbox(sid,idx){
   var bCost = c.budgetCost || 0;
   if(bCost > G.budget) return;
   if(bCost > 0) { G.budget -= bCost; G.budgetSpentThisYear += bCost; }
-  var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Budget</span>' : '';
-  
+  var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Gelt</span>' : '';
+
   const outcome = pickOutcome(c);
-  
+
   // Apply political effectiveness modifier (only if politically relevant)
   var modifiedEffects = Object.assign({}, outcome.effects);
   var isPolitical = s.politicallyRelevant !== false;
@@ -15666,11 +15666,11 @@ function chooseInbox(sid,idx){
   
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
-  if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Budget</span>'; }
-  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Budget</span>'; }
+  if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
+  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
-  
+
   const alignment = getMissionAlignment(c);
   const maxS=GAME_DATA.config.missionMaxStars||5;
   let sc='';
@@ -15858,7 +15858,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   document.getElementById('end-meters').innerHTML=GAME_DATA.stats.map(s=>{
     const v=Math.round(G.stats[s.id]||0);
     return `<div><span class="end-m-label">${s.label}</span><span class="end-m-val" style="color:${barColor(v)}">${v}</span></div>`;
-  }).join('')+`<div><span class="end-m-label">Budget</span><span class="end-m-val" style="color:${G.budget>=40?'#b8860b':G.budget>=20?'#e67e22':'#c0392b'}"><img src="art/coins.png" style="width:16px;vertical-align:middle"> ${Math.round(G.budget)}</span></div>`+`<div><span class="end-m-label">Politics</span><span class="end-m-val" style="color:#6b7280;font-size:14px">${getPositionLabel(G.politicalPosition)}</span></div>`+`<div><span class="end-m-label">Clout</span><span class="end-m-val" style="color:#b8860b">⚡${Math.round(G.politicalClout)}</span></div>`+`<div><span class="end-m-label">Mission</span><span class="end-m-val" style="color:var(--gold)">${Array.from({length:GAME_DATA.config.missionMaxStars||5},(_, i)=>i<G.missionStars?'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle">':'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">').join('')}</span></div>`+`<div class="budget-summary" style="grid-column:1/-1"><strong>Budget Summary:</strong> Income this year: +${G.budgetIncomeThisYear} · Spent: -${G.budgetSpentThisYear} · Net: ${G.budgetIncomeThisYear - G.budgetSpentThisYear >= 0 ? '+' : ''}${G.budgetIncomeThisYear - G.budgetSpentThisYear} · Investments made: ${G.investmentsUsed||0} · <strong>Political:</strong> ${getPositionLabel(G.politicalPosition)} with ${Math.round(G.politicalClout)} clout (${getEffectivenessDesc().label} effectiveness)</div>`;
+  }).join('')+`<div><span class="end-m-label">Gelt</span><span class="end-m-val" style="color:${G.budget>=40?'#b8860b':G.budget>=20?'#e67e22':'#c0392b'}"><img src="art/coins.png" style="width:16px;vertical-align:middle"> ${Math.round(G.budget)}</span></div>`+`<div><span class="end-m-label">Politics</span><span class="end-m-val" style="color:#6b7280;font-size:14px">${getPositionLabel(G.politicalPosition)}</span></div>`+`<div><span class="end-m-label">Clout</span><span class="end-m-val" style="color:#b8860b">⚡${Math.round(G.politicalClout)}</span></div>`+`<div><span class="end-m-label">Mission</span><span class="end-m-val" style="color:var(--gold)">${Array.from({length:GAME_DATA.config.missionMaxStars||5},(_, i)=>i<G.missionStars?'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle">':'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">').join('')}</span></div>`+`<div class="budget-summary" style="grid-column:1/-1"><strong>Gelt Summary:</strong> Income this year: +${G.budgetIncomeThisYear} · Spent: -${G.budgetSpentThisYear} · Net: ${G.budgetIncomeThisYear - G.budgetSpentThisYear >= 0 ? '+' : ''}${G.budgetIncomeThisYear - G.budgetSpentThisYear} · Investments made: ${G.investmentsUsed||0} · <strong>Political:</strong> ${getPositionLabel(G.politicalPosition)} with ${Math.round(G.politicalClout)} clout (${getEffectivenessDesc().label} effectiveness)</div>`;
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';
@@ -16150,7 +16150,7 @@ function renderInvestmentContent() {
         '<span class="invest-icon">' + inv.icon + '</span>' +
         '<div class="invest-name">' + inv.name + '</div>' +
         '<div class="invest-desc">' + inv.description + '</div>' +
-        '<div class="invest-cost' + costClass + '">💰 ' + inv.budgetCost + ' budget' + disabledReason + '</div>' +
+        '<div class="invest-cost' + costClass + '">💰 ' + inv.budgetCost + ' gelt' + disabledReason + '</div>' +
         '<div class="invest-effects">' + investEffectChips(inv.effects) + '</div>' +
         usesLabel +
       '</div>';
@@ -16180,7 +16180,7 @@ function makeInvestment(invId) {
   
   // Apply stat effects
   var chips = applyEffects(inv.effects);
-  var budgetChip = '<span class="chip chip-neg">-' + inv.budgetCost + ' Budget</span>';
+  var budgetChip = '<span class="chip chip-neg">-' + inv.budgetCost + ' Gelt</span>';
   
   // Handle delayed budget return (e.g. reserves)
   if(inv.budgetReturn && inv.budgetReturnDelay) {
@@ -16853,7 +16853,7 @@ function resolveConversation() {
   }
   if (outcome.budgetEffect) {
     var bsign = outcome.budgetEffect > 0 ? '+' : '';
-    chipHtml += '<span class="chip ' + (outcome.budgetEffect > 0 ? 'chip-pos' : 'chip-neg') + '">' + bsign + outcome.budgetEffect + ' Budget</span>';
+    chipHtml += '<span class="chip ' + (outcome.budgetEffect > 0 ? 'chip-pos' : 'chip-neg') + '">' + bsign + outcome.budgetEffect + ' Gelt</span>';
   }
   
   outcomeDiv.innerHTML = '<div class="conv-outcome-heading">' + esc(heading) + '</div>' +
@@ -17382,7 +17382,7 @@ function showBreakingNews(bn) {
     var coalWarn = renderCoalitionWarnings(c);
     var polTag = renderPoliticalTag(c);
     var choiceAdv = renderChoiceAdvisorQuote(c);
-    var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' budget' + (cantAfford?' (insufficient)':'') + '</span>' : '';
+    var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' gelt' + (cantAfford?' (insufficient)':'') + '</span>' : '';
     return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + badge + coalWarn + polTag + costTag + esc(c.text) + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
   }).join('');
   screen.innerHTML =
@@ -17405,7 +17405,7 @@ function pickBreakingChoice(ci) {
   var bCost = choice.budgetCost || 0;
   if(bCost > G.budget) return;
   if(bCost > 0) { G.budget -= bCost; G.budgetSpentThisYear += bCost; }
-  var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Budget</span>' : '';
+  var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Gelt</span>' : '';
   var outcome = pickOutcome(choice);
   // Apply political effectiveness modifier
   var modifiedEffects = Object.assign({}, outcome.effects);
@@ -17432,8 +17432,8 @@ function pickBreakingChoice(ci) {
   var polFlavor = politicalOutcomeModifier(outcome);
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
-  if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Budget</span>'; }
-  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Budget</span>'; }
+  if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
+  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
   recordEvent('choiceMade', {scenarioId:bn.id, choiceIndex:ci});
@@ -17511,7 +17511,7 @@ function showCoalitionOffer(co) {
   var breakParts = [];
   if (breakClout) breakParts.push(breakClout + ' Clout');
   Object.entries(breakFx).forEach(function(e) { if(e[1] < 0) breakParts.push(e[1] + ' ' + e[0]); });
-  if (breakBudget < 0) breakParts.push(breakBudget + ' budget');
+  if (breakBudget < 0) breakParts.push(breakBudget + ' gelt');
   if (breakParts.length) breakText = breakParts.join(', ');
   
   // Decline penalty
@@ -17520,7 +17520,7 @@ function showCoalitionOffer(co) {
     var dp = co.declinePenalty;
     var dpParts = [];
     Object.entries(dp.effects||{}).forEach(function(e){ if(e[1] < 0) dpParts.push(e[1] + ' ' + e[0]); });
-    if (dp.budgetEffect && dp.budgetEffect < 0) dpParts.push(dp.budgetEffect + ' budget');
+    if (dp.budgetEffect && dp.budgetEffect < 0) dpParts.push(dp.budgetEffect + ' gelt');
     if (dpParts.length) declineText = dpParts.join(', ');
   }
 

@@ -740,7 +740,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- INVESTMENTS PANEL -->
         <div id="panel-investments" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Budget investments that players can purchase during rounds. Each has a cost, stat effects, and optional budget return over time.</p>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Gelt investments that players can purchase during rounds. Each has a cost, stat effects, and optional gelt return over time.</p>
           <div class="item-list" id="investments-list"></div>
           <button class="add-btn" onclick="addInvestment()">+ Add Investment</button>
         </div>
@@ -13320,7 +13320,7 @@ function renderActionForm(a, i) {
   const stats = GD.stats || [];
   return `<div class="item-edit-form" id="act-form-${i}" style="display:none">
     <div class="form-row three"><div class="form-group"><label>Name</label><input id="act-name-${i}" value="${esc(a.name)}" /></div><div class="form-group"><label>Icon</label><input id="act-icon-${i}" value="${esc(a.icon)}" /></div><div class="form-group"><label>AP Cost</label><input type="number" id="act-cost-${i}" value="${a.cost||1}" min="1" max="5" /></div></div>
-    <div class="form-group" style="margin-bottom:11px"><label>Budget Cost (0 = free)</label><input type="number" id="act-bcost-${i}" value="${a.budgetCost||0}" min="0" /></div>
+    <div class="form-group" style="margin-bottom:11px"><label>Gelt Cost (0 = free)</label><input type="number" id="act-bcost-${i}" value="${a.budgetCost||0}" min="0" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Description</label><textarea id="act-desc-${i}" rows="2">${esc(a.description)}</textarea></div>
     <div class="form-group" style="margin-bottom:11px"><label>Outcome Text</label><textarea id="act-outcome-${i}" rows="2">${esc(a.outcomeText||'')}</textarea></div>
     <div class="form-group" style="margin-bottom:11px"><label>Triggers Event Type</label><input id="act-trigger-${i}" value="${esc(a.triggersEventType||'community')}" /></div>
@@ -13413,7 +13413,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
     </div>
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
     <div class="form-group" style="margin-bottom:6px"><label>Requires Unlock</label><input id="${prefix}-cunlock-${si}-${ci}" value="${esc(c.requiresUnlock||'')}" placeholder="blank = always available" /><div class="form-hint">Trait ID or condition that must be met to see this choice (blank = always available)</div></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Budget Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Budget units spent if player picks this choice</div></div>
+    <div class="form-group" style="margin-bottom:6px"><label>Gelt Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Gelt units spent if player picks this choice</div></div>
     <div class="pol-impact-box${hasPol?' active':''}">
       <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
         <input type="checkbox" id="${prefix}-cpol-${si}-${ci}" ${hasPol?'checked':''} style="accent-color:#6366f1" /> ⚖️ Political Impact
@@ -14134,7 +14134,7 @@ function renderAdvisorForm(a, i){
     '<div class="form-row four">'+
       '<div class="form-group"><label>Political Lean</label><input type="number" id="adv-lean-'+i+'" value="'+(a.politicalLean||0)+'" min="-10" max="10" /><div class="form-hint">-10 left, +10 right</div></div>'+
       '<div class="form-group"><label>Clout Bonus</label><input type="number" id="adv-clout-'+i+'" value="'+(a.cloutBonus||0)+'" min="0" max="15" /></div>'+
-      '<div class="form-group"><label>Budget Bonus</label><input type="number" id="adv-budget-'+i+'" value="'+(a.budgetBonus||0)+'" min="0" max="10" /></div>'+
+      '<div class="form-group"><label>Gelt Bonus</label><input type="number" id="adv-budget-'+i+'" value="'+(a.budgetBonus||0)+'" min="0" max="10" /></div>'+
     '</div>'+
     '<div style="margin:12px 0"><label class="section-label">Expertise</label>'+
     '<div class="checkbox-grid">'+ADV_EXPERTISE_OPTS.map(function(e){
@@ -14362,19 +14362,19 @@ function renderCoalitionForm(co,i){
     '<div class="form-group" style="margin-bottom:8px"><label>Break Clout Penalty</label><input type="number" id="coal-bclout-'+i+'" value="'+(co.breakCloutPenalty||0)+'" /><div class="form-hint">Political clout lost if player breaks the coalition</div></div>'+
     '<label class="section-label">Benefits per Round</label><div class="form-hint" style="margin-bottom:6px">Stat bonuses applied automatically each round while active</div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-ben-'+i+'-'+s.id+'" value="'+(benefits[s.id]||0)+'" /></div>'}).join('')+
-    '<div class="stat-input-group"><label>Budget/round</label><input type="number" id="coal-benbudget-'+i+'" value="'+budgetPR+'" /><div class="form-hint">Budget units gained each round while active</div></div></div>'+
+    '<div class="stat-input-group"><label>Gelt/round</label><input type="number" id="coal-benbudget-'+i+'" value="'+budgetPR+'" /><div class="form-hint">Gelt units gained each round while active</div></div></div>'+
     '<label class="section-label">Constraints (JSON)</label>'+
     '<textarea id="coal-constraints-'+i+'" rows="4" style="font-family:monospace;font-size:11px">'+esc(constraintsJSON)+'</textarea>'+
     '<div class="form-hint" style="margin-bottom:10px">Types: "avoidMission" (with missionIds array), "maintainStat" (with stat, above). Each needs a "description".</div>'+
     '<div class="coal-section"><div class="coal-section-title">Violation Penalty</div><div class="form-hint" style="margin-bottom:6px">Applied when the player violates a constraint</div>'+
     '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-vptext-'+i+'" rows="2">'+esc(vp.text||'')+'</textarea></div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:6px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-vpfx-'+i+'-'+s.id+'" value="'+((vp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
-    '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-vpbudget-'+i+'" value="'+(vp.budgetEffect||0)+'" /></div>'+
+    '<div class="stat-input-group"><label>Gelt</label><input type="number" id="coal-vpbudget-'+i+'" value="'+(vp.budgetEffect||0)+'" /></div>'+
     '<div class="stat-input-group"><label>Clout</label><input type="number" id="coal-vpclout-'+i+'" value="'+(vp.cloutEffect||0)+'" /></div></div></div>'+
     '<div class="coal-section"><div class="coal-section-title">Decline Penalty</div><div class="form-hint" style="margin-bottom:6px">Applied when the player declines the offer</div>'+
     '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-dptext-'+i+'" rows="2">'+esc(dp.text||'')+'</textarea></div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-dpfx-'+i+'-'+s.id+'" value="'+((dp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
-    '<div class="stat-input-group"><label>Budget</label><input type="number" id="coal-dpbudget-'+i+'" value="'+(dp.budgetEffect||0)+'" /></div></div></div>'+
+    '<div class="stat-input-group"><label>Gelt</label><input type="number" id="coal-dpbudget-'+i+'" value="'+(dp.budgetEffect||0)+'" /></div></div></div>'+
     '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveCoalition('+i+')">Save Coalition</button></div>'+
   '</div>';
 }
@@ -14456,7 +14456,7 @@ function renderInvestmentForm(inv,i){
   var stats = GD.stats||[];
   var retDelay = inv.budgetReturnDelay||0;
   var retAmt = inv.budgetReturn||0;
-  return '<div class="item-edit-form" id="inv-form-'+i+'" style="display:none"><div class="form-row three"><div class="form-group"><label>ID</label><input id="inv-id-'+i+'" value="'+esc(inv.id)+'" /></div><div class="form-group"><label>Name</label><input id="inv-name-'+i+'" value="'+esc(inv.name)+'" /></div><div class="form-group"><label>Icon (emoji)</label><input id="inv-icon-'+i+'" value="'+esc(inv.icon||'')+'" /><div class="form-hint">Emoji displayed on the investment card</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="inv-desc-'+i+'" rows="2">'+esc(inv.description||'')+'</textarea></div><div class="form-group" style="margin-bottom:8px"><label>Outcome Text</label><textarea id="inv-outcome-'+i+'" rows="2">'+esc(inv.outcomeText||'')+'</textarea><div class="form-hint">Narrative text shown to player after purchasing</div></div><div class="form-row three"><div class="form-group"><label>Budget Cost</label><input type="number" id="inv-cost-'+i+'" value="'+(inv.budgetCost||0)+'" min="0" /><div class="form-hint">Budget units required to purchase</div></div><div class="form-group"><label>Max Uses (-1=unlimited)</label><input type="number" id="inv-max-'+i+'" value="'+(inv.maxUses===undefined?1:inv.maxUses)+'" min="-1" /><div class="form-hint">How many times this can be purchased (-1 = unlimited)</div></div><div class="form-group"><label>Budget Return</label><input type="number" id="inv-return-'+i+'" value="'+retAmt+'" min="0" /><div class="form-hint">Budget refunded after delay (0=none)</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Budget Return Delay (rounds)</label><input type="number" id="inv-retdelay-'+i+'" value="'+retDelay+'" min="0" /><div class="form-hint">Rounds before budget return is received</div></div><label class="section-label">Stat Effects</label><div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="inv-fx-'+i+'-'+s.id+'" value="'+((inv.effects||{})[s.id]||0)+'" /></div>'}).join('')+'</div><div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveInvestment('+i+')">Save Investment</button></div></div>';
+  return '<div class="item-edit-form" id="inv-form-'+i+'" style="display:none"><div class="form-row three"><div class="form-group"><label>ID</label><input id="inv-id-'+i+'" value="'+esc(inv.id)+'" /></div><div class="form-group"><label>Name</label><input id="inv-name-'+i+'" value="'+esc(inv.name)+'" /></div><div class="form-group"><label>Icon (emoji)</label><input id="inv-icon-'+i+'" value="'+esc(inv.icon||'')+'" /><div class="form-hint">Emoji displayed on the investment card</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="inv-desc-'+i+'" rows="2">'+esc(inv.description||'')+'</textarea></div><div class="form-group" style="margin-bottom:8px"><label>Outcome Text</label><textarea id="inv-outcome-'+i+'" rows="2">'+esc(inv.outcomeText||'')+'</textarea><div class="form-hint">Narrative text shown to player after purchasing</div></div><div class="form-row three"><div class="form-group"><label>Gelt Cost</label><input type="number" id="inv-cost-'+i+'" value="'+(inv.budgetCost||0)+'" min="0" /><div class="form-hint">Gelt units required to purchase</div></div><div class="form-group"><label>Max Uses (-1=unlimited)</label><input type="number" id="inv-max-'+i+'" value="'+(inv.maxUses===undefined?1:inv.maxUses)+'" min="-1" /><div class="form-hint">How many times this can be purchased (-1 = unlimited)</div></div><div class="form-group"><label>Gelt Return</label><input type="number" id="inv-return-'+i+'" value="'+retAmt+'" min="0" /><div class="form-hint">Gelt refunded after delay (0=none)</div></div></div><div class="form-group" style="margin-bottom:8px"><label>Gelt Return Delay (rounds)</label><input type="number" id="inv-retdelay-'+i+'" value="'+retDelay+'" min="0" /><div class="form-hint">Rounds before gelt return is received</div></div><label class="section-label">Stat Effects</label><div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="inv-fx-'+i+'-'+s.id+'" value="'+((inv.effects||{})[s.id]||0)+'" /></div>'}).join('')+'</div><div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveInvestment('+i+')">Save Investment</button></div></div>';
 }
 function saveInvestment(i){
   var inv = GD.investments[i];
@@ -14766,7 +14766,7 @@ function renderConvOutcomeEditor(ci, oi, o, convType){
   html += '<div class="form-row three" style="margin-bottom:6px">';
   html += '<div class="form-group"><label>Min Disposition</label><input type="number" id="conv-omin-'+ci+'-'+oi+'" value="'+(o.minDisposition||0)+'" min="0" max="100" /><div class="form-hint">Minimum disposition required — outcomes are checked highest-first</div></div>';
   html += '<div class="form-group"><label>Heading</label><input id="conv-ohead-'+ci+'-'+oi+'" value="'+esc(o.heading||'')+'" /></div>';
-  html += '<div class="form-group"><label>Budget Effect</label><input type="number" id="conv-obudget-'+ci+'-'+oi+'" value="'+(o.budgetEffect||0)+'" /><div class="form-hint">Budget units gained/lost from this outcome</div></div>';
+  html += '<div class="form-group"><label>Gelt Effect</label><input type="number" id="conv-obudget-'+ci+'-'+oi+'" value="'+(o.budgetEffect||0)+'" /><div class="form-hint">Gelt units gained/lost from this outcome</div></div>';
   html += '</div>';
   html += '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="conv-otext-'+ci+'-'+oi+'" rows="2" style="font-size:12px">'+esc(o.text||'')+'</textarea></div>';
   // Stat effects

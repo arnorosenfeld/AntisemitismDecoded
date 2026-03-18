@@ -1,7 +1,7 @@
 {
   "config": {
     "gameTitle": "Antisemitism Decoded: The Game",
-    "totalRounds": 6,
+    "totalRounds": 4,
     "actionPointsPerRound": 3,
     "traitsToSelect": 2,
     "missionStartStars": 3,
@@ -19,38 +19,26 @@
       {
         "year": "Year 1",
         "round": "Round 1",
-        "hebrew": "Elul",
-        "english": "September"
+        "hebrew": "Elul–Tishrei",
+        "english": "High Holiday Season"
       },
       {
         "year": "Year 1",
         "round": "Round 2",
-        "hebrew": "Tishrei",
-        "english": "October — High Holidays"
+        "hebrew": "Cheshvan–Kislev",
+        "english": "Hanukkah & Year-End Giving"
       },
       {
         "year": "Year 1",
         "round": "Round 3",
-        "hebrew": "Kislev",
-        "english": "December"
+        "hebrew": "Shevat–Adar",
+        "english": "Winter & Purim"
       },
       {
         "year": "Year 1",
         "round": "Round 4",
-        "hebrew": "Shevat",
-        "english": "February"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 5",
-        "hebrew": "Nisan",
-        "english": "April"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 6",
-        "hebrew": "Sivan",
-        "english": "June"
+        "hebrew": "Nisan–Sivan",
+        "english": "Passover to Year's End"
       }
     ],
     "editorPassword": "admin1234",

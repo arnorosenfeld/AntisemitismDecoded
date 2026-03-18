@@ -12,6 +12,33 @@ function advPortrait(adv, mood, size, shape) {
   return '<span style="font-size:' + size + 'px;line-height:1;vertical-align:middle">' + (adv.emoji || '') + '</span>';
 }
 
+// ═══════════════ SAVE / RESUME ═══════════════
+function saveGame() {
+  try { localStorage.setItem('ad_save', JSON.stringify(G)); } catch(e) {}
+}
+function hasSavedGame() {
+  return !!localStorage.getItem('ad_save');
+}
+function loadSavedGame() {
+  var saved = localStorage.getItem('ad_save');
+  if (!saved) return false;
+  try {
+    G = JSON.parse(saved);
+    showScreen('game-screen');
+    initTicker();
+    renderMain();
+    updateHUD();
+    renderInvestStrip();
+    return true;
+  } catch(e) {
+    localStorage.removeItem('ad_save');
+    return false;
+  }
+}
+function clearSave() {
+  localStorage.removeItem('ad_save');
+}
+
 // ═══════════════ STATE ═══════════════
 let G = {
   charName:'', charEmoji:'', charTraits:[], orgId:null,
@@ -480,6 +507,12 @@ function initIntro() {
   }
   var cb = document.getElementById('lp-cta-btn'); if(cb) cb.textContent = 'Accept the Position \u2192';
   var ctag = document.getElementById('lp-cta-tagline'); if(ctag) ctag.textContent = pt.ctaTagline || '';
+  // Show Continue button if a saved game exists
+  var hasSave = hasSavedGame();
+  var continueBtn = document.getElementById('lp-continue-btn');
+  if (continueBtn) continueBtn.style.display = hasSave ? '' : 'none';
+  var continueBtnBottom = document.getElementById('lp-continue-btn-bottom');
+  if (continueBtnBottom) continueBtnBottom.style.display = hasSave ? '' : 'none';
   // Depth
   var dl = document.getElementById('lp-depth-label'); if(dl) dl.textContent = pt.depthLabel || '';
   var dg = document.getElementById('lp-depth-grid');
@@ -1116,7 +1149,7 @@ var ONBOARDING_STEPS = [
   },
   {
     mood: 'neutral',
-    msg: 'You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don\'t cost action points.',
+    msg: 'You have <strong>3 actions</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don\'t cost actions.',
     label: 'Got it. What am I trying to do?'
   },
   {
@@ -1131,7 +1164,7 @@ var ONBOARDING_STEPS = [
   },
   {
     mood: 'neutral',
-    msg: 'You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost action points but they do cost money.',
+    msg: 'You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost actions but they do cost money.',
     label: 'One more thing?'
   },
   {
@@ -1224,6 +1257,7 @@ function checkCoachingWarnings() {
 }
 
 function startGame(){
+  clearSave();
   const org=GAME_DATA.organizations.find(o=>o.id===G.orgId);
   const mission=GAME_DATA.missions.find(m=>m.id===G.missionId);
   
@@ -1304,6 +1338,7 @@ function startGame(){
 }
 
 function startPromoGame(){
+  clearSave();
   const org=GAME_DATA.nationalOrganizations.find(o=>o.id===G.orgId);
   const orgBudget = getOrgStartingBudget(G.orgId);
   const n = GAME_DATA.stats.length;
@@ -1531,6 +1566,7 @@ function afterCoalitionCheck(){
 
 function endRoundContinue(){
   renderMain();
+  saveGame();
 }
 
 function weightedPickMultiple(scenarios, count) {
@@ -1723,12 +1759,12 @@ function renderMain(){
     + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Budget</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
 
   el.innerHTML = ''
-    + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No action points remaining.</strong> Click "End Round" below to continue.</div>' : '')
+    + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue.</div>' : '')
     + '<div style="margin-bottom:28px">'
     + '<div class="section-header">'
     + '<span class="step-ind">' + roundHeading + '</span>'
     + '<h2>Your Desk</h2>'
-    + '<p>You have <strong>' + G.apRemaining + '</strong> action point' + (G.apRemaining !== 1 ? 's' : '') + ' remaining.</p>'
+    + '<p>You have <strong>' + G.apRemaining + '</strong> action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining.</p>'
     + endRoundHtml
     + '</div>'
     + '<div class="desk-objects">'
@@ -1750,14 +1786,14 @@ function renderMain(){
     + '<img class="desk-monitor-img" src="art/monitor.png" />'
     + '<div class="desk-monitor-screen">' + monScreen + '</div>'
     + '</div>'
-    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '<div class="desk-obj-sub">1 action each</div>'
     + '</div>'
 
     // Folder
     + '<div class="desk-obj desk-obj-folder' + folDisabled + '" onclick="deskAction(\'folder\')">'
     + deskBadge(folQ.length)
     + '<img class="desk-folder-img" src="art/folder.png" />'
-    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '<div class="desk-obj-sub">1 action each</div>'
     + '</div>'
 
     // Keys
@@ -1765,7 +1801,7 @@ function renderMain(){
     + deskBadge(keyQ.length)
     + '<img class="desk-keys-img" src="art/keys.png" />'
     + '<div class="desk-obj-label">Out &amp; About</div>'
-    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '<div class="desk-obj-sub">1 action each</div>'
     + '</div>'
 
     + '</div>'
@@ -2252,6 +2288,7 @@ function endYear(){
 }
 
 function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=false,anotherYear=false){
+  clearSave();
   const titleEl=document.getElementById('end-title');
   const subtitleEl=document.getElementById('end-subtitle');
   titleEl.innerHTML=retirement?"A Distinguished <span>Career</span>":promotion?"You've Been <span>Promoted</span>":anotherYear?"End of <span>Year</span>":"Your Tenure <span>Has Ended</span>";
@@ -2372,6 +2409,7 @@ function selectPromoOrg(id){
 
 // ═══════════════ RESET ═══════════════
 function resetGame(){
+  clearSave();
   G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{}};
   
   var ticker = document.getElementById('news-ticker');
@@ -2567,7 +2605,7 @@ function renderInvestmentContent() {
       '<h3>💰 Investments</h3>' +
       '<span class="invest-pool-tag">' + remaining + ' investment' + (remaining !== 1 ? 's' : '') + ' remaining this year</span>' +
     '</div>' +
-    '<p style="font-size:12px;color:var(--muted);margin-bottom:14px">Spend budget on strategic investments. These don\'t cost action points.</p>' +
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:14px">Spend budget on strategic investments. These don\'t cost actions.</p>' +
     '<div class="invest-cards">' +
     investments.slice().sort(function(a, b) {
       var aEx = (a.maxUses > 0 && ((G.investmentUses||{})[a.id]||0) >= a.maxUses) ? 1 : 0;

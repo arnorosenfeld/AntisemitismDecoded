@@ -521,8 +521,9 @@ function initIntro() {
   var dg = document.getElementById('lp-depth-grid');
   if (dg && pt.depthItems) {
     dg.innerHTML = pt.depthItems.map(function(item) {
+      var iconH = item.icon.indexOf('building') >= 0 ? 56 : 48;
       var iconHtml = item.icon.indexOf('art/') === 0 ?
-        '<img src="' + item.icon + '" style="height:48px;width:auto;display:block;margin:0 auto 8px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
+        '<img src="' + item.icon + '" style="height:' + iconH + 'px;width:auto;display:block;margin:0 auto 8px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
         '<span class="lp-depth-icon">' + item.icon + '</span>';
       return '<div class="lp-depth-item">' + iconHtml + '<div class="lp-depth-title">' + esc(item.title) + '</div><div class="lp-depth-desc">' + esc(item.desc) + '</div></div>';
     }).join('');
@@ -569,14 +570,16 @@ function initIntro() {
     var introScreen = document.getElementById('intro-screen');
     function checkScrollHint() {
       if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
-      var scrollable = document.documentElement.scrollHeight || document.body.scrollHeight;
-      var scrolled = window.scrollY + window.innerHeight;
-      var nearBottom = scrolled >= scrollable - 80;
-      scrollHint.classList.toggle('hidden', nearBottom);
+      // Check if the bottom CTA or ticker is visible — means we're at the bottom
+      var bottomEl = document.getElementById('lp-bottom') || document.getElementById('lp-ticker');
+      if (bottomEl) {
+        var rect = bottomEl.getBoundingClientRect();
+        var visible = rect.top < window.innerHeight;
+        scrollHint.classList.toggle('hidden', visible);
+      }
     }
-    window.addEventListener('scroll', checkScrollHint);
+    window.addEventListener('scroll', checkScrollHint, { passive: true });
     window.addEventListener('resize', checkScrollHint);
-    // Recheck periodically as sections reveal and change page height
     setInterval(checkScrollHint, 500);
     checkScrollHint();
   }

@@ -100,6 +100,20 @@ body {
 .lp-depth-icon { font-size: 22px; margin-bottom: 8px; display: block; }
 .lp-depth-title { font-family: 'Merriweather', serif; font-weight: 700; font-size: 13px; margin-bottom: 4px; }
 .lp-depth-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
+/* Scroll hint arrow */
+.lp-scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; pointer-events: none; animation: scrollHintPulse 2s ease-in-out infinite; transition: opacity 0.4s; }
+.lp-scroll-hint.hidden { opacity: 0; }
+.lp-scroll-arrow { font-size: 32px; color: var(--gold); text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+@keyframes scrollHintPulse { 0%,100%{ opacity: 0.6; transform: translateX(-50%) translateY(0); } 50%{ opacity: 1; transform: translateX(-50%) translateY(6px); } }
+
+/* Advisor preview on landing page */
+.lp-advisors-strip { max-width: 720px; margin: 0 auto 32px; padding: 28px; text-align: center; }
+.lp-advisors-label { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+.lp-advisors-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+.lp-advisor-card { text-align: center; width: 90px; }
+.lp-advisor-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 11px; margin-top: 8px; }
+.lp-advisor-role { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
 .lp-headline-scatter { max-width: 820px; margin: 0 auto 12px; padding: 0 28px; }
 .lp-headline-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; text-align: center; }
 .lp-headline-clippings { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }

@@ -227,17 +227,17 @@
         "depthLabel": "Powered by real data about the Jewish community",
         "depthItems": [
           {
-            "icon": "📊",
+            "icon": "art/building.png",
             "title": "6 Demographic Segments",
             "desc": "Orthodox, Conservative, Reform, Unaffiliated, Young Jews, Older Jews — each with distinct political centers and comfort ranges drawn from communal survey data"
           },
           {
-            "icon": "⚖️",
+            "icon": "art/chart-growth.png",
             "title": "Political Position Engine",
             "desc": "A 100-point left-right spectrum with clout accumulation, bipartisan traps, and effectiveness modifiers that shape which coalitions and outcomes are available"
           },
           {
-            "icon": "🎭",
+            "icon": "art/drama.png",
             "title": "Real-World Dilemmas",
             "desc": "Scenarios drawn from actual crises faced by Jewish communal leaders — from campus antisemitism to donor conflicts to Israel policy, with no easy answers"
           }

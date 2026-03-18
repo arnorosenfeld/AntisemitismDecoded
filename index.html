@@ -108,6 +108,19 @@ body {
 .lp-depth-icon { font-size: 22px; margin-bottom: 8px; display: block; }
 .lp-depth-title { font-family: 'Merriweather', serif; font-weight: 700; font-size: 13px; margin-bottom: 4px; }
 .lp-depth-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
+/* Scroll hint arrow */
+.lp-scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; pointer-events: none; animation: scrollHintPulse 2s ease-in-out infinite; transition: opacity 0.4s; }
+.lp-scroll-hint.hidden { opacity: 0; }
+.lp-scroll-arrow { font-size: 32px; color: var(--gold); text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+@keyframes scrollHintPulse { 0%,100%{ opacity: 0.6; transform: translateX(-50%) translateY(0); } 50%{ opacity: 1; transform: translateX(-50%) translateY(6px); } }
+
+/* Advisor preview on landing page */
+.lp-advisors-strip { max-width: 720px; margin: 0 auto 32px; padding: 28px; text-align: center; }
+.lp-advisors-label { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+.lp-advisors-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+.lp-advisor-card { text-align: center; width: 90px; }
+.lp-advisor-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 11px; margin-top: 8px; }
+.lp-advisor-role { font-size: 10px; color: var(--muted); line-height: 1.4; }
 .lp-headline-scatter { max-width: 820px; margin: 0 auto 12px; padding: 0 28px; }
 .lp-headline-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; text-align: center; }
 .lp-headline-clippings { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
@@ -1153,10 +1166,17 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       </div>
     </div>
   </div>
+  <div class="lp-scroll-hint" id="lp-scroll-hint"><span class="lp-scroll-arrow">&#8964;</span></div>
   <div class="landing-hidden-section" id="lp-depth">
     <div class="lp-depth-strip">
       <div class="lp-depth-label" id="lp-depth-label"></div>
       <div class="lp-depth-grid" id="lp-depth-grid"></div>
+    </div>
+  </div>
+  <div class="landing-hidden-section" id="lp-advisors">
+    <div class="lp-advisors-strip">
+      <div class="lp-advisors-label">Build your advisory team</div>
+      <div class="lp-advisors-grid" id="lp-advisors-grid"></div>
     </div>
   </div>
   <div class="landing-hidden-section" id="lp-headlines">
@@ -1725,17 +1745,17 @@ var GAME_DATA =
         "depthLabel": "Powered by real data about the Jewish community",
         "depthItems": [
           {
-            "icon": "📊",
+            "icon": "art/building.png",
             "title": "6 Demographic Segments",
             "desc": "Orthodox, Conservative, Reform, Unaffiliated, Young Jews, Older Jews — each with distinct political centers and comfort ranges drawn from communal survey data"
           },
           {
-            "icon": "⚖️",
+            "icon": "art/chart-growth.png",
             "title": "Political Position Engine",
             "desc": "A 100-point left-right spectrum with clout accumulation, bipartisan traps, and effectiveness modifiers that shape which coalitions and outcomes are available"
           },
           {
-            "icon": "🎭",
+            "icon": "art/drama.png",
             "title": "Real-World Dilemmas",
             "desc": "Scenarios drawn from actual crises faced by Jewish communal leaders — from campus antisemitism to donor conflicts to Israel policy, with no easy answers"
           }
@@ -13832,8 +13852,14 @@ function lpPickChoice(idx) {
     document.querySelectorAll('.seg-bar-fill-lp').forEach(function(b) { b.style.width = b.getAttribute('data-target') + '%'; });
   }, 250);
   setTimeout(function() { document.getElementById('lp-transition').classList.add('visible'); }, 1200);
-  ['lp-reveal','lp-depth','lp-headlines','lp-bottom'].forEach(function(id,i) {
-    setTimeout(function() { document.getElementById(id).classList.add('revealed'); }, 1800 + i*400);
+  ['lp-reveal','lp-depth','lp-advisors','lp-headlines','lp-bottom'].forEach(function(id,i) {
+    setTimeout(function() {
+      var el = document.getElementById(id);
+      if(el) {
+        el.classList.add('revealed');
+        setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+      }
+    }, 1800 + i*600);
   });
   // Mark that the player has seen the cold open
   try { localStorage.setItem('ad_intro_seen', '1'); } catch(e) {}
@@ -13857,7 +13883,7 @@ function initIntro() {
     var coldWrap = document.querySelector('.cold-open-wrap');
     if (header) header.style.display = 'none';
     if (coldWrap) coldWrap.style.display = 'none';
-    ['lp-reveal','lp-depth','lp-headlines','lp-bottom'].forEach(function(id) {
+    ['lp-reveal','lp-depth','lp-advisors','lp-headlines','lp-bottom'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) { el.classList.add('revealed'); el.style.animation = 'none'; }
     });
@@ -13900,7 +13926,24 @@ function initIntro() {
   var dg = document.getElementById('lp-depth-grid');
   if (dg && pt.depthItems) {
     dg.innerHTML = pt.depthItems.map(function(item) {
-      return '<div class="lp-depth-item"><span class="lp-depth-icon">' + item.icon + '</span><div class="lp-depth-title">' + esc(item.title) + '</div><div class="lp-depth-desc">' + esc(item.desc) + '</div></div>';
+      var iconHtml = item.icon.indexOf('art/') === 0 ?
+        '<img src="' + item.icon + '" style="height:48px;width:auto;display:block;margin:0 auto 8px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
+        '<span class="lp-depth-icon">' + item.icon + '</span>';
+      return '<div class="lp-depth-item">' + iconHtml + '<div class="lp-depth-title">' + esc(item.title) + '</div><div class="lp-depth-desc">' + esc(item.desc) + '</div></div>';
+    }).join('');
+  }
+  // Advisor preview
+  var advPreview = document.getElementById('lp-advisors-grid');
+  if (advPreview) {
+    var pool = GAME_DATA.advisorPool || [];
+    var previewAdvs = pool.slice(0, 4);
+    advPreview.innerHTML = previewAdvs.map(function(adv) {
+      var portraitHtml = adv.portrait ?
+        '<img src="' + adv.portrait + '/neutral.png" style="width:56px;height:64px;object-fit:cover;object-position:top;border-radius:6px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
+        '<span style="font-size:36px">' + adv.emoji + '</span>';
+      return '<div class="lp-advisor-card">' + portraitHtml +
+        '<div class="lp-advisor-name">' + esc(adv.name) + '</div>' +
+        '<div class="lp-advisor-role">' + esc(adv.role) + '</div></div>';
     }).join('');
   }
   // Headlines
@@ -13924,6 +13967,18 @@ function initIntro() {
       return '<span class="lp-ticker-hl">' + esc(h) + '</span><span class="lp-ticker-sep">\u25C6</span>';
     }).join('');
     tc.innerHTML = tickerHtml + tickerHtml; // duplicate for seamless loop
+  }
+  // Scroll hint arrow — hide when user scrolls near bottom or leaves intro screen
+  var scrollHint = document.getElementById('lp-scroll-hint');
+  if (scrollHint) {
+    var introScreen = document.getElementById('intro-screen');
+    function checkScrollHint() {
+      if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
+      var nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
+      scrollHint.classList.toggle('hidden', nearBottom);
+    }
+    window.addEventListener('scroll', checkScrollHint);
+    checkScrollHint();
   }
 }
 

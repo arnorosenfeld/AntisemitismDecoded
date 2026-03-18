@@ -444,8 +444,15 @@ function lpPickChoice(idx) {
     document.querySelectorAll('.seg-bar-fill-lp').forEach(function(b) { b.style.width = b.getAttribute('data-target') + '%'; });
   }, 250);
   setTimeout(function() { document.getElementById('lp-transition').classList.add('visible'); }, 1200);
-  ['lp-reveal','lp-depth','lp-headlines','lp-bottom'].forEach(function(id,i) {
-    setTimeout(function() { document.getElementById(id).classList.add('revealed'); }, 1800 + i*400);
+  ['lp-reveal','lp-depth','lp-advisors','lp-headlines','lp-bottom'].forEach(function(id,i) {
+    setTimeout(function() {
+      var el = document.getElementById(id);
+      if(el) {
+        el.classList.add('revealed');
+        // Auto-scroll to newly revealed section if it's below the fold
+        setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+      }
+    }, 1800 + i*600);
   });
   // Mark that the player has seen the cold open
   try { localStorage.setItem('ad_intro_seen', '1'); } catch(e) {}
@@ -469,7 +476,7 @@ function initIntro() {
     var coldWrap = document.querySelector('.cold-open-wrap');
     if (header) header.style.display = 'none';
     if (coldWrap) coldWrap.style.display = 'none';
-    ['lp-reveal','lp-depth','lp-headlines','lp-bottom'].forEach(function(id) {
+    ['lp-reveal','lp-depth','lp-advisors','lp-headlines','lp-bottom'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) { el.classList.add('revealed'); el.style.animation = 'none'; }
     });
@@ -518,7 +525,24 @@ function initIntro() {
   var dg = document.getElementById('lp-depth-grid');
   if (dg && pt.depthItems) {
     dg.innerHTML = pt.depthItems.map(function(item) {
-      return '<div class="lp-depth-item"><span class="lp-depth-icon">' + item.icon + '</span><div class="lp-depth-title">' + esc(item.title) + '</div><div class="lp-depth-desc">' + esc(item.desc) + '</div></div>';
+      var iconHtml = item.icon.indexOf('art/') === 0 ?
+        '<img src="' + item.icon + '" style="height:48px;width:auto;display:block;margin:0 auto 8px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
+        '<span class="lp-depth-icon">' + item.icon + '</span>';
+      return '<div class="lp-depth-item">' + iconHtml + '<div class="lp-depth-title">' + esc(item.title) + '</div><div class="lp-depth-desc">' + esc(item.desc) + '</div></div>';
+    }).join('');
+  }
+  // Advisor preview
+  var advPreview = document.getElementById('lp-advisors-grid');
+  if (advPreview) {
+    var pool = GAME_DATA.advisorPool || [];
+    var previewAdvs = pool.slice(0, 4);
+    advPreview.innerHTML = previewAdvs.map(function(adv) {
+      var portraitHtml = adv.portrait ?
+        '<img src="' + adv.portrait + '/neutral.png" style="width:56px;height:64px;object-fit:cover;object-position:top;border-radius:6px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
+        '<span style="font-size:36px">' + adv.emoji + '</span>';
+      return '<div class="lp-advisor-card">' + portraitHtml +
+        '<div class="lp-advisor-name">' + esc(adv.name) + '</div>' +
+        '<div class="lp-advisor-role">' + esc(adv.role) + '</div></div>';
     }).join('');
   }
   // Headlines
@@ -538,6 +562,18 @@ function initIntro() {
       return '<span class="lp-ticker-hl">' + esc(h) + '</span><span class="lp-ticker-sep">\u25C6</span>';
     }).join('');
     tc.innerHTML = tickerHtml + tickerHtml; // duplicate for seamless loop
+  }
+  // Scroll hint arrow — hide when user scrolls near bottom or leaves intro screen
+  var scrollHint = document.getElementById('lp-scroll-hint');
+  if (scrollHint) {
+    var introScreen = document.getElementById('intro-screen');
+    function checkScrollHint() {
+      if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
+      var nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
+      scrollHint.classList.toggle('hidden', nearBottom);
+    }
+    window.addEventListener('scroll', checkScrollHint);
+    checkScrollHint();
   }
 }
 

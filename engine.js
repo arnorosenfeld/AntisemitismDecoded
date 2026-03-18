@@ -1,9 +1,14 @@
 function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function advPortrait(adv, mood, size) {
+function advPortrait(adv, mood, size, shape) {
   if (!adv) return '';
   size = size || 36;
   mood = mood || 'neutral';
-  if (adv.portrait) return '<img src="' + adv.portrait + '/' + mood + '.png" style="width:' + size + 'px;height:' + size + 'px;object-fit:cover;border-radius:50%;vertical-align:middle" alt="' + esc(adv.name) + '">';
+  shape = shape || 'circle';
+  if (adv.portrait) {
+    var radius = shape === 'circle' ? '50%' : '6px';
+    var h = shape === 'square' ? Math.round(size * 1.15) : size;
+    return '<img src="' + adv.portrait + '/' + mood + '.png" style="width:' + size + 'px;height:' + h + 'px;object-fit:cover;object-position:top;border-radius:' + radius + ';vertical-align:middle" alt="' + esc(adv.name) + '">';
+  }
   return '<span style="font-size:' + size + 'px;line-height:1;vertical-align:middle">' + (adv.emoji || '') + '</span>';
 }
 
@@ -812,7 +817,7 @@ function renderAdvisorSelection() {
     var budgetText = adv.budgetBonus ? '💰+' + adv.budgetBonus + ' Budget' : '';
     return '<div class="advisor-card" data-advisor-id="' + esc(adv.id) + '" onclick="toggleAdvisorSelection(\'' + esc(adv.id) + '\')">' +
       '<div class="advisor-card-header">' +
-        '<span class="advisor-card-emoji">' + advPortrait(adv, 'neutral', 44) + '</span>' +
+        '<span class="advisor-card-emoji">' + advPortrait(adv, 'neutral', 56, 'square') + '</span>' +
         '<div><div class="advisor-card-name">' + esc(adv.name) + '</div>' +
         '<div class="advisor-card-role">' + esc(adv.role) + '</div></div>' +
       '</div>' +
@@ -2901,7 +2906,7 @@ function renderAdvisorQuotes(scenario) {
         convIcon = '<span class="advisor-talk-icon" onclick="event.stopPropagation();startAdvisorConversation(\'' + esc(conv.id) + '\',\'' + esc(scenario.id) + '\')" title="Talk to ' + esc(adv.name) + '">💬</span>';
       }
       var mood = q.mood || 'neutral';
-      return '<div class="advisor-bubble"><span class="advisor-avatar">' + advPortrait(adv, mood, 36) + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + convIcon + '</span><span class="advisor-text">\u201c' + esc(q.text) + '\u201d</span></div></div>';
+      return '<div class="advisor-bubble"><span class="advisor-avatar">' + advPortrait(adv, mood, 40) + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + convIcon + '</span><span class="advisor-text">\u201c' + esc(q.text) + '\u201d</span></div></div>';
     }).filter(Boolean).join('');
   
   if(!bubbles) return '';
@@ -2915,7 +2920,7 @@ function renderChoiceAdvisorQuote(choice) {
   var adv = pool.find(function(a){return a.id === choice.advisorQuote.advisorId});
   if (!adv) return '';
   var mood = choice.advisorQuote.mood || 'neutral';
-  return '<div class="choice-advisor"><span class="choice-advisor-avatar">' + advPortrait(adv, mood, 28) + '</span><div><span class="choice-advisor-name">' + esc(adv.name) + ':</span> \u201c' + esc(choice.advisorQuote.text) + '\u201d</div></div>';
+  return '<div class="choice-advisor"><span class="choice-advisor-avatar">' + advPortrait(adv, mood, 32) + '</span><div><span class="choice-advisor-name">' + esc(adv.name) + ':</span> \u201c' + esc(choice.advisorQuote.text) + '\u201d</div></div>';
 }
 
 // ═══ ADVISOR RECOMMENDATION BADGES ═══
@@ -3069,7 +3074,7 @@ function showConversation(convId, callback) {
   };
   
   // Populate UI
-  document.getElementById('conv-avatar').innerHTML = advPortrait(charPortraitObj, 'neutral', 48);
+  document.getElementById('conv-avatar').innerHTML = advPortrait(charPortraitObj, 'neutral', 52, 'square');
   document.getElementById('conv-char-name').textContent = charName;
   document.getElementById('conv-char-role').textContent = charRole;
   document.getElementById('conv-context').textContent = charContext;

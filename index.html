@@ -14417,7 +14417,7 @@ function initBriefing() {
   el = document.getElementById('briefing-heading'); if(el) el.textContent = bs.heading || '';
   el = document.getElementById('briefing-desc'); if(el) el.textContent = bs.description || '';
   var advLine = document.getElementById('briefing-advisor-line');
-  if(advLine) advLine.innerHTML = (bs.advisorName ? '👨‍💼 ' + esc(bs.advisorName) : '') + (bs.advisorRole ? ' <span style="font-weight:400;opacity:0.7;font-size:12px">· ' + esc(bs.advisorRole) + '</span>' : '');
+  if(advLine) advLine.innerHTML = (bs.advisorName ? advPortrait(OUTGOING_ED, 'neutral', 36) + ' ' + esc(bs.advisorName) : '') + (bs.advisorRole ? ' <span style="font-weight:400;opacity:0.7;font-size:12px">· ' + esc(bs.advisorRole) + '</span>' : '');
   el = document.getElementById('briefing-opening-text'); if(el) el.textContent = '"' + (bs.openingQuote || '') + '"';
   var itemsEl = document.getElementById('briefing-items');
   if(itemsEl && bs.items) {
@@ -14465,7 +14465,7 @@ function toggleHelpPanel() {
 // ═══════════════ IN-GAME COACHING WARNINGS ═══════════════
 // Each unique warning fires at most once across the entire game.
 // They fire readily in Year 1, and any that haven't fired yet can still fire in later years.
-var OUTGOING_ED = { name: 'Avi Rosen', emoji: '\ud83d\udc68\u200d\ud83d\udcbc' };
+var OUTGOING_ED = { name: 'Avi Rosen', emoji: '\ud83d\udc68\u200d\ud83d\udcbc', portrait: 'art/advisors/avi_rosen' };
 
 var COACHING_MESSAGES = {
   stat_yellow: [
@@ -14507,7 +14507,7 @@ function showCoachingWarning(msg, level) {
   div.style.color = textColor;
   div.style.borderLeft = '4px solid ' + borderColor;
   div.innerHTML = '<button class="notif-close" onclick="event.stopPropagation();this.parentNode.remove()">\u2715</button>' +
-    '<div style="font-weight:700;margin-bottom:4px">' + OUTGOING_ED.emoji + ' ' + OUTGOING_ED.name + '</div>' +
+    '<div style="font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px">' + advPortrait(OUTGOING_ED, 'concerned', 32) + ' ' + OUTGOING_ED.name + '</div>' +
     '<div style="font-size:12px;line-height:1.5">' + msg + '</div>';
   div.onclick = function(){ div.remove(); };
   document.body.appendChild(div);

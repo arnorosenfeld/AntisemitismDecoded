@@ -1615,15 +1615,16 @@ function renderMain(){
   if (activeInbox.length > 0) {
     phoneScreenHtml = '<div class="desk-phone-status"><span>Inbox</span><span>' + activeInbox.length + ' msg</span></div>';
     phoneScreenHtml += '<div class="desk-phone-messages">';
-    activeInbox.slice(0, 4).forEach(function(m) {
+    activeInbox.forEach(function(m) {
       var sc = m.scenario || {};
       var urgent = m.timerRemaining ? '<span class="desk-phone-alert">\u2757</span>' : '';
-      phoneScreenHtml += '<div class="desk-phone-msg" onclick="openInboxMessage(\'' + m.id + '\')">';
+      phoneScreenHtml += '<div class="desk-phone-msg" onclick="event.stopPropagation();openInboxMessage(\'' + m.id + '\')">';
       phoneScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? m.timerRemaining + ' rd' : '') + '</span></div>';
       phoneScreenHtml += '<div class="desk-phone-subj">' + esc(sc.subject || sc.title || '') + '</div>';
       phoneScreenHtml += '</div>';
     });
     phoneScreenHtml += '</div>';
+    phoneScreenHtml += '<div class="desk-phone-fade"></div>';
   } else {
     phoneScreenHtml = '<div class="desk-phone-empty">No messages</div>';
   }
@@ -1673,7 +1674,7 @@ function renderMain(){
     + '<div class="desk-objects">'
 
     // Phone
-    + '<div class="desk-obj desk-obj-phone' + phoneRingClass + '" id="desk-phone">'
+    + '<div class="desk-obj desk-obj-phone' + phoneRingClass + '" id="desk-phone" onclick="toggleInbox()">'
     + phoneBadge
     + '<div class="desk-phone-wrap">'
     + '<img class="desk-phone-img" src="art/phone.png" />'

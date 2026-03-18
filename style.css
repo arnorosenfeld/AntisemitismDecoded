@@ -371,7 +371,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-phone-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.15)); }
 .desk-phone-screen { position: absolute; top: 6.1%; left: 7.3%; right: 6.7%; bottom: 13.1%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
 .desk-phone-status { display: flex; justify-content: space-between; padding: 2px 4px; font-size: 6px; font-weight: 600; color: #666; }
-.desk-phone-messages { flex: 1; overflow: hidden; }
+.desk-phone-messages { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+.desk-phone-messages::-webkit-scrollbar { display: none; }
+.desk-phone-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 25%; background: linear-gradient(to bottom, transparent, #dce8f0); pointer-events: none; }
 .desk-phone-msg { padding: 5px 8px 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
 .desk-phone-msg:hover { background: rgba(0,0,0,0.04); }
 .desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; overflow: hidden; }

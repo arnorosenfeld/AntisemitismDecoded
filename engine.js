@@ -2501,7 +2501,6 @@ function renderInvestStrip() {
     setTimeout(function(){
       if(el.scrollWidth > el.clientWidth) {
         strip.classList.add('has-overflow');
-        // Hide fade/arrow when scrolled to end
         el.onscroll = function() {
           var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
           strip.classList.toggle('has-overflow', !atEnd);

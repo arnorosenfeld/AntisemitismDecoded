@@ -1042,9 +1042,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .inbox-card .advisor-panel { margin: 0; padding: 14px 17px; border-radius: 0; border-left: none; border-right: none; }
 
 /* ═══ FIX #16: INVESTMENT STRIP SCROLL INDICATOR ═══ */
-.invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: none; z-index: 2; }
+.invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: auto; z-index: 2; cursor: pointer; }
 .invest-strip.has-overflow .invest-strip-fade { display: block; }
-.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: none; }
+.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: auto; cursor: pointer; }
 .invest-strip.has-overflow .invest-scroll-arrow { display: block; }
 @keyframes scrollHint { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(3px); } }
 

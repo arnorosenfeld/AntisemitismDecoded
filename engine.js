@@ -2429,10 +2429,12 @@ function renderInvestStrip() {
     if(!wrap.querySelector('.invest-strip-fade')) {
       var fade = document.createElement('div');
       fade.className = 'invest-strip-fade';
+      fade.onclick = function(e){ e.stopPropagation(); scrollInvestStrip(); };
       wrap.appendChild(fade);
       var arrow = document.createElement('span');
       arrow.className = 'invest-scroll-arrow';
       arrow.textContent = '›';
+      arrow.onclick = function(e){ e.stopPropagation(); scrollInvestStrip(); };
       wrap.appendChild(arrow);
     }
     strip.classList.remove('has-overflow');
@@ -2447,6 +2449,12 @@ function renderInvestStrip() {
       }
     }, 50);
   }
+}
+
+function scrollInvestStrip() {
+  var el = document.getElementById('invest-strip-inner');
+  if (!el) return;
+  el.scrollBy({ left: 200, behavior: 'smooth' });
 }
 
 function openInvestModalTo(invId) {

@@ -1051,9 +1051,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ═══ FIX #16: INVESTMENT STRIP SCROLL INDICATOR ═══ */
 .invest-strip { position: relative; }
-.invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: none; z-index: 2; }
+.invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: auto; z-index: 2; cursor: pointer; }
 .invest-strip.has-overflow .invest-strip-fade { display: block; }
-.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: none; }
+.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: auto; cursor: pointer; }
 .invest-strip.has-overflow .invest-scroll-arrow { display: block; }
 @keyframes scrollHint { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(3px); } }
 
@@ -15838,10 +15838,12 @@ function renderInvestStrip() {
     if(!wrap.querySelector('.invest-strip-fade')) {
       var fade = document.createElement('div');
       fade.className = 'invest-strip-fade';
+      fade.onclick = function(e){ e.stopPropagation(); scrollInvestStrip(); };
       wrap.appendChild(fade);
       var arrow = document.createElement('span');
       arrow.className = 'invest-scroll-arrow';
       arrow.textContent = '›';
+      arrow.onclick = function(e){ e.stopPropagation(); scrollInvestStrip(); };
       wrap.appendChild(arrow);
     }
     strip.classList.remove('has-overflow');
@@ -15856,6 +15858,12 @@ function renderInvestStrip() {
       }
     }, 50);
   }
+}
+
+function scrollInvestStrip() {
+  var el = document.getElementById('invest-strip-inner');
+  if (!el) return;
+  el.scrollBy({ left: 200, behavior: 'smooth' });
 }
 
 function openInvestModalTo(invId) {

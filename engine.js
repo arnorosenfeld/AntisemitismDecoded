@@ -1240,6 +1240,7 @@ function showOnboardingStep(idx) {
   div.style.borderLeft = '4px solid #a0b4e8';
   div.style.cursor = 'default';
   div.innerHTML =
+    '<button style="position:absolute;top:6px;right:8px;background:none;border:none;color:#8899bb;font-size:14px;cursor:pointer;padding:2px 6px;line-height:1" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();localStorage.setItem(\'ad_onboarded\',\'1\')" title="Skip tutorial">\u2715</button>' +
     '<div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + advPortrait(OUTGOING_ED, step.mood, 36) + ' ' + OUTGOING_ED.name + '</div>' +
     '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + step.msg + '</div>' +
     '<div style="display:flex;justify-content:space-between;align-items:center">' +
@@ -4007,6 +4008,7 @@ function pickBreakingChoice(ci) {
 }
 
 function closeBreakingNews() {
+  if (G.currentBreakingNews) return; // Don't allow closing while choices are pending
   var overlay = document.getElementById('bn-overlay');
   if (overlay) overlay.classList.remove('active');
   updateHUD();

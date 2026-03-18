@@ -3994,10 +3994,9 @@ function pickBreakingChoice(ci) {
   var screen = document.getElementById('bn-tv-screen');
   if (screen) {
     screen.innerHTML =
-      '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Story resolved \u2014 ' + esc(bn.title) + '</span></div>' +
+      '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Developing story \u2014 details emerging</span></div>' +
       '<div class="bn-screen-inner">' +
         '<div class="bn-tag">Outcome</div>' +
-        '<div class="bn-title">' + esc(bn.title) + '</div>' +
         '<div class="bn-outcome-choice"><span style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#999;display:block;margin-bottom:4px">Your Decision</span>' + esc(choice.text) + '</div>' +
         '<div class="bn-body">' + outcome.text + '</div>' +
         '<div class="chip-row" style="margin-bottom:12px">' + chips+sc+budgetChip+polChips+advisorChips + '</div>' +

@@ -1431,37 +1431,26 @@ function updateHUD(){
     </div>`;
   }).join('');
   
-  // Money bag budget display
+  // Budget display with coins illustration
   var budgetBagsEl = document.getElementById('hud-budget-bags');
   var budgetValEl = document.getElementById('hud-budget-val');
   if(budgetBagsEl) {
-    var maxB = G.budgetMax || 100;
-    var bags = '';
-    for(var bi = 0; bi < 5; bi++) {
-      var bagThreshold = maxB * (bi + 1) / 5;
-      var fillPct = Math.max(0, Math.min(1, (G.budget - maxB * bi / 5) / (maxB / 5)));
-      if(G.budget >= bagThreshold) fillPct = 1;
-      else if(G.budget <= maxB * bi / 5) fillPct = 0;
-      var clipW = Math.round(fillPct * 18);
-      bags += '<span class="money-bag"><span class="money-bag-empty">💰</span><span class="money-bag-fill" style="width:'+clipW+'px">💰</span></span>';
-    }
-    budgetBagsEl.innerHTML = bags;
+    budgetBagsEl.innerHTML = '<img src="art/coins.png" style="width:24px;height:auto;vertical-align:middle"><span style="font-family:\'Merriweather\',serif;font-weight:700;font-size:13px;margin-left:4px;vertical-align:middle">' + Math.round(G.budget) + '</span>';
   }
   if(budgetValEl) {
     budgetValEl.textContent = Math.round(G.budget);
     budgetValEl.className = 'hud-budget-val' + (G.budget >= 40 ? ' budget-ok' : G.budget >= 20 ? ' budget-warn' : ' budget-crit');
   }
 
-  // Mission stars - same character for filled/empty so sizing is consistent
+  // Mission stars with star illustration
   const max=GAME_DATA.config.missionMaxStars||5;
   var starsHtml = '';
   for(var si=0;si<max;si++) {
-    if(si<G.missionStars) starsHtml += '<span class="star">★</span>';
-    else starsHtml += '<span class="star star-empty">★</span>';
+    if(si<G.missionStars) starsHtml += '<img src="art/star.png" style="width:18px;height:18px;vertical-align:middle">';
+    else starsHtml += '<img src="art/star.png" style="width:18px;height:18px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">';
   }
   var starsEl = document.getElementById('hud-stars');
   starsEl.innerHTML = starsHtml;
-  starsEl.style.color=G.missionStars>=Math.ceil(max*0.6)?'#b8860b':'#c0392b';
 
   // AP pips are now rendered inline in renderMain, not here
   
@@ -1996,13 +1985,41 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   }
 
   document.getElementById('end-heading').textContent=heading;
+
+  // Add illustration to end screen
+  var endIllustration = document.getElementById('end-illustration');
+  if (!endIllustration) {
+    endIllustration = document.createElement('img');
+    endIllustration.id = 'end-illustration';
+    endIllustration.style.cssText = 'width:140px;height:auto;display:block;margin:16px auto;filter:drop-shadow(2px 4px 8px rgba(0,0,0,0.1))';
+    var endHeading = document.getElementById('end-heading');
+    if (endHeading) endHeading.parentNode.insertBefore(endIllustration, endHeading);
+  }
+  if (forcedFail) {
+    endIllustration.src = 'art/warning-sign.png';
+    endIllustration.alt = 'Crisis';
+  } else if (retirement) {
+    endIllustration.src = 'art/trophy-chalice.png';
+    endIllustration.alt = 'Retirement';
+  } else if (promotion) {
+    endIllustration.src = 'art/trophy-chalice.png';
+    endIllustration.alt = 'Promotion';
+  } else if (score < 40) {
+    endIllustration.src = 'art/conference-table.png';
+    endIllustration.alt = 'Board Meeting';
+  } else {
+    endIllustration.src = 'art/calendar.png';
+    endIllustration.alt = 'Another Year';
+  }
+  endIllustration.style.display = 'block';
+
   document.getElementById('end-score').textContent=forcedFail?'—':score;
   document.getElementById('end-grade').textContent=grade?'Grade: '+grade:'';
   document.getElementById('end-verdict').textContent=verdict;
   document.getElementById('end-meters').innerHTML=GAME_DATA.stats.map(s=>{
     const v=Math.round(G.stats[s.id]||0);
     return `<div><span class="end-m-label">${s.label}</span><span class="end-m-val" style="color:${barColor(v)}">${v}</span></div>`;
-  }).join('')+`<div><span class="end-m-label">Budget</span><span class="end-m-val" style="color:${G.budget>=40?'#b8860b':G.budget>=20?'#e67e22':'#c0392b'}">💰 ${Math.round(G.budget)}</span></div>`+`<div><span class="end-m-label">Politics</span><span class="end-m-val" style="color:#6b7280;font-size:14px">${getPositionLabel(G.politicalPosition)}</span></div>`+`<div><span class="end-m-label">Clout</span><span class="end-m-val" style="color:#b8860b">⚡${Math.round(G.politicalClout)}</span></div>`+`<div><span class="end-m-label">Mission</span><span class="end-m-val" style="color:var(--gold)">${G.missionStars}★</span></div>`+`<div class="budget-summary" style="grid-column:1/-1"><strong>Budget Summary:</strong> Income this year: +${G.budgetIncomeThisYear} · Spent: -${G.budgetSpentThisYear} · Net: ${G.budgetIncomeThisYear - G.budgetSpentThisYear >= 0 ? '+' : ''}${G.budgetIncomeThisYear - G.budgetSpentThisYear} · Investments made: ${G.investmentsUsed||0} · <strong>Political:</strong> ${getPositionLabel(G.politicalPosition)} with ${Math.round(G.politicalClout)} clout (${getEffectivenessDesc().label} effectiveness)</div>`;
+  }).join('')+`<div><span class="end-m-label">Budget</span><span class="end-m-val" style="color:${G.budget>=40?'#b8860b':G.budget>=20?'#e67e22':'#c0392b'}"><img src="art/coins.png" style="width:16px;vertical-align:middle"> ${Math.round(G.budget)}</span></div>`+`<div><span class="end-m-label">Politics</span><span class="end-m-val" style="color:#6b7280;font-size:14px">${getPositionLabel(G.politicalPosition)}</span></div>`+`<div><span class="end-m-label">Clout</span><span class="end-m-val" style="color:#b8860b">⚡${Math.round(G.politicalClout)}</span></div>`+`<div><span class="end-m-label">Mission</span><span class="end-m-val" style="color:var(--gold)">${Array.from({length:GAME_DATA.config.missionMaxStars||5},(_, i)=>i<G.missionStars?'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle">':'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">').join('')}</span></div>`+`<div class="budget-summary" style="grid-column:1/-1"><strong>Budget Summary:</strong> Income this year: +${G.budgetIncomeThisYear} · Spent: -${G.budgetSpentThisYear} · Net: ${G.budgetIncomeThisYear - G.budgetSpentThisYear >= 0 ? '+' : ''}${G.budgetIncomeThisYear - G.budgetSpentThisYear} · Investments made: ${G.investmentsUsed||0} · <strong>Political:</strong> ${getPositionLabel(G.politicalPosition)} with ${Math.round(G.politicalClout)} clout (${getEffectivenessDesc().label} effectiveness)</div>`;
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';

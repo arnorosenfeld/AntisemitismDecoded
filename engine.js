@@ -1,4 +1,11 @@
 function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function advPortrait(adv, mood, size) {
+  if (!adv) return '';
+  size = size || 36;
+  mood = mood || 'neutral';
+  if (adv.portrait) return '<img src="' + adv.portrait + '/' + mood + '.png" style="width:' + size + 'px;height:' + size + 'px;object-fit:cover;border-radius:50%;vertical-align:middle" alt="' + esc(adv.name) + '">';
+  return '<span style="font-size:' + size + 'px;line-height:1;vertical-align:middle">' + (adv.emoji || '') + '</span>';
+}
 
 // ═══════════════ STATE ═══════════════
 let G = {
@@ -805,7 +812,7 @@ function renderAdvisorSelection() {
     var budgetText = adv.budgetBonus ? '💰+' + adv.budgetBonus + ' Budget' : '';
     return '<div class="advisor-card" data-advisor-id="' + esc(adv.id) + '" onclick="toggleAdvisorSelection(\'' + esc(adv.id) + '\')">' +
       '<div class="advisor-card-header">' +
-        '<span class="advisor-card-emoji">' + adv.emoji + '</span>' +
+        '<span class="advisor-card-emoji">' + advPortrait(adv, 'neutral', 44) + '</span>' +
         '<div><div class="advisor-card-name">' + esc(adv.name) + '</div>' +
         '<div class="advisor-card-role">' + esc(adv.role) + '</div></div>' +
       '</div>' +
@@ -2893,7 +2900,8 @@ function renderAdvisorQuotes(scenario) {
       if (conv) {
         convIcon = '<span class="advisor-talk-icon" onclick="event.stopPropagation();startAdvisorConversation(\'' + esc(conv.id) + '\',\'' + esc(scenario.id) + '\')" title="Talk to ' + esc(adv.name) + '">💬</span>';
       }
-      return '<div class="advisor-bubble"><span class="advisor-avatar">' + adv.emoji + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + convIcon + '</span><span class="advisor-text">\u201c' + esc(q.text) + '\u201d</span></div></div>';
+      var mood = q.mood || 'neutral';
+      return '<div class="advisor-bubble"><span class="advisor-avatar">' + advPortrait(adv, mood, 36) + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + convIcon + '</span><span class="advisor-text">\u201c' + esc(q.text) + '\u201d</span></div></div>';
     }).filter(Boolean).join('');
   
   if(!bubbles) return '';
@@ -2906,7 +2914,8 @@ function renderChoiceAdvisorQuote(choice) {
   var pool = GAME_DATA.advisorPool || GAME_DATA.advisors || [];
   var adv = pool.find(function(a){return a.id === choice.advisorQuote.advisorId});
   if (!adv) return '';
-  return '<div class="choice-advisor"><span class="choice-advisor-avatar">' + adv.emoji + '</span><div><span class="choice-advisor-name">' + esc(adv.name) + ':</span> \u201c' + esc(choice.advisorQuote.text) + '\u201d</div></div>';
+  var mood = choice.advisorQuote.mood || 'neutral';
+  return '<div class="choice-advisor"><span class="choice-advisor-avatar">' + advPortrait(adv, mood, 28) + '</span><div><span class="choice-advisor-name">' + esc(adv.name) + ':</span> \u201c' + esc(choice.advisorQuote.text) + '\u201d</div></div>';
 }
 
 // ═══ ADVISOR RECOMMENDATION BADGES ═══
@@ -2925,7 +2934,7 @@ function getAdvisorRecommendationBadge(scenario, choiceIndex) {
   
   if (recs.length === 0) return '';
   var names = recs.map(function(r) { 
-    return r.adv.emoji + ' ' + r.adv.name.split(' ')[0] + "'s pick"; 
+    return advPortrait(r.adv, 'approving', 16) + ' ' + r.adv.name.split(' ')[0] + "'s pick";
   }).join(', ');
   return '<span class="advisor-rec-wrap">' + names + '</span>';
 }
@@ -3032,6 +3041,7 @@ function showConversation(convId, callback) {
   var pool = GAME_DATA.advisorPool || GAME_DATA.advisors || [];
   var charName, charEmoji, charRole, charContext;
   
+  var charPortraitObj = null;
   if (conv.type === 'advisor') {
     var adv = pool.find(function(a){return a.id === conv.advisorId});
     if (!adv) { if (callback) callback(); return; }
@@ -3039,12 +3049,14 @@ function showConversation(convId, callback) {
     charEmoji = adv.emoji;
     charRole = adv.role;
     charContext = 'Advisor conversation';
+    charPortraitObj = adv;
   } else {
     // character type
     charName = conv.character.name;
     charEmoji = conv.character.emoji;
     charRole = conv.character.role;
     charContext = conv.character.context || '';
+    charPortraitObj = conv.character;
   }
   
   convState = {
@@ -3057,7 +3069,7 @@ function showConversation(convId, callback) {
   };
   
   // Populate UI
-  document.getElementById('conv-avatar').textContent = charEmoji;
+  document.getElementById('conv-avatar').innerHTML = advPortrait(charPortraitObj, 'neutral', 48);
   document.getElementById('conv-char-name').textContent = charName;
   document.getElementById('conv-char-role').textContent = charRole;
   document.getElementById('conv-context').textContent = charContext;

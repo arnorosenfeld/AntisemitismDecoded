@@ -211,7 +211,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-star-dn { background: #ead4d4; color: #4a1a1a; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 /* Hoverable trust chip with segment tooltip */
-.chip-hover-wrap { position: relative; display: inline-block; }
+.chip-hover-wrap { position: relative; display: inline-flex; align-items: center; }
 .chip-hover-wrap .chip { cursor: pointer; animation: chipPulse 2s ease-in-out infinite; }
 @keyframes chipPulse { 0%,100%{ opacity: 1; } 50%{ opacity: 0.7; } }
 .chip-hover-tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #2e3a52; border: 1px solid rgba(255,255,255,0.2); padding: 8px 10px; min-width: 180px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); white-space: nowrap; }

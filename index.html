@@ -1179,7 +1179,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="char-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 1 of 5 — Character Creation</span>
+      <span class="step-ind">Step 1 of 4 — Character Creation</span>
       <h2>Who Are You?</h2>
       <p>Your background and traits shape how the community responds to you — and what options open up when crises hit.</p>
     </div>
@@ -1206,7 +1206,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="org-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 2 of 5 — Organization</span>
+      <span class="step-ind">Step 2 of 4 — Organization</span>
       <h2>Choose Your Organization</h2>
       <p>Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
     </div>
@@ -1222,7 +1222,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="mission-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 3 of 5 — Mission</span>
+      <span class="step-ind">Step 3 of 4 — Mission</span>
       <h2>What Is Your Mission?</h2>
       <p>Your mission defines what your organization stands for. Every decision you make will be flagged as <strong>Mission Aligned ✓</strong> or <strong>Mission Opposed ✗</strong> — and you'll see it before you choose.</p>
     </div>
@@ -1238,7 +1238,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="advisor-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 4 of 5 — Advisory Team</span>
+      <span class="step-ind">Step 4 of 4 — Advisory Team</span>
       <h2>Build Your Advisory Team</h2>
       <p>Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.</p>
     </div>
@@ -1247,7 +1247,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
     <div id="advisor-err" class="err-msg"></div>
     <div class="btn-row">
       <button class="btn btn-secondary btn-sm" onclick="showScreen('mission-screen')">← Back</button>
-      <button class="btn btn-primary" onclick="goToBudget()">Next: Your Briefing →</button>
+      <button class="btn btn-primary" onclick="goToBudget()">Begin Your Tenure →</button>
     </div>
   </div>
 </div>
@@ -1790,22 +1790,22 @@ var GAME_DATA =
         ]
       },
       "charScreen": {
-        "stepLabel": "Step 1 of 5 — Character Creation",
+        "stepLabel": "Step 1 of 4 — Character Creation",
         "heading": "Who Are You?",
         "description": "Your background and traits shape how the community responds to you — and what options open up when crises hit."
       },
       "orgScreen": {
-        "stepLabel": "Step 2 of 5 — Organization",
+        "stepLabel": "Step 2 of 4 — Organization",
         "heading": "Choose Your Organization",
         "description": "Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
       },
       "missionScreen": {
-        "stepLabel": "Step 3 of 5 — Mission",
+        "stepLabel": "Step 3 of 4 — Mission",
         "heading": "What Is Your Mission?",
         "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned ✓, Mission Opposed ✗, or neutral — and you'll see it before you choose."
       },
       "budgetScreen": {
-        "stepLabel": "Step 4 of 5 — Priorities",
+        "stepLabel": "Step 4 of 4 — Priorities",
         "heading": "Set Your Priorities",
         "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out.",
         "warningText": "If any stat drops to 20 or below during the game, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit hardest."
@@ -1858,7 +1858,7 @@ var GAME_DATA =
         "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
       },
       "advisorScreen": {
-        "stepLabel": "Step 4 of 5 — Advisory Team",
+        "stepLabel": "Step 4 of 4 — Advisory Team",
         "heading": "Build Your Advisory Team",
         "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
       }
@@ -14297,8 +14297,7 @@ function goToBudget() {
   if (!validateAdvisorSelection()) return;
   // Auto-allocate stats: compute baselines, distribute evenly, enforce floor of 30
   autoAllocateStats();
-  initBriefing();
-  showScreen('briefing-screen');
+  startGame();
 }
 
 function autoAllocateStats() {
@@ -14517,20 +14516,79 @@ function showCoachingWarning(msg, level) {
   setTimeout(function(){ if(div.parentNode) div.remove(); }, 8000);
 }
 
+// ═══════════════ ONBOARDING TUTORIAL ═══════════════
+var ONBOARDING_STEPS = [
+  {
+    mood: 'neutral',
+    msg: 'Let me be honest with you about what you\'re walking into. This job is a balancing act \u2014 and the board is always watching.',
+    label: 'What do I need to know?'
+  },
+  {
+    mood: 'neutral',
+    msg: 'You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don\'t cost action points.',
+    label: 'Got it. What am I trying to do?'
+  },
+  {
+    mood: 'concerned',
+    msg: 'Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 20 or below, the board calls an emergency meeting and your tenure ends immediately.',
+    label: 'How do I win?'
+  },
+  {
+    mood: 'approving',
+    msg: 'At year\'s end, the board evaluates your overall performance. Score above <strong>80</strong> and you\'ll be offered a promotion to a national organization. Stay above <strong>40</strong> and you keep your job. Below that\u2026 well, don\'t go below that.',
+    label: 'Any other advice?'
+  },
+  {
+    mood: 'neutral',
+    msg: 'You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost action points but they do cost money.',
+    label: 'One more thing?'
+  },
+  {
+    mood: 'concerned',
+    msg: 'One more thing \u2014 every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
+    label: 'Let\'s do this \u2192'
+  }
+];
+
+function isFirstPlay() {
+  return !localStorage.getItem('ad_onboarded');
+}
+
+function showOnboarding() {
+  if (!isFirstPlay()) return;
+  showOnboardingStep(0);
+}
+
+function showOnboardingStep(idx) {
+  if (idx >= ONBOARDING_STEPS.length) {
+    localStorage.setItem('ad_onboarded', '1');
+    return;
+  }
+  var step = ONBOARDING_STEPS[idx];
+  var div = document.createElement('div');
+  div.className = 'game-notification onboarding-notif';
+  div.style.background = '#f0f4ff';
+  div.style.color = '#1a3a6b';
+  div.style.borderLeft = '4px solid #a0b4e8';
+  div.style.cursor = 'default';
+  div.innerHTML =
+    '<div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + advPortrait(OUTGOING_ED, step.mood, 36) + ' ' + OUTGOING_ED.name + '</div>' +
+    '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + step.msg + '</div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center">' +
+      '<span style="font-size:10px;color:#8899bb">' + (idx + 1) + ' of ' + ONBOARDING_STEPS.length + '</span>' +
+      '<button style="background:#1a1a2e;color:#faf8f4;border:none;padding:6px 14px;font-family:\'Merriweather Sans\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.5px" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();showOnboardingStep(' + (idx + 1) + ')">' + step.label + '</button>' +
+    '</div>';
+  document.body.appendChild(div);
+  positionNotification(div);
+}
+
 function checkCoachingWarnings() {
   // Lifetime tracking: each unique warning fires at most once across the whole game
   if (!G._coachWarningsLifetime) G._coachWarningsLifetime = {};
   // Per-round cooldown so we don't spam multiple warnings per action within a round
   if (!G._coachWarningsThisRound) G._coachWarningsThisRound = {};
 
-  // Avi's closing advice — fires once at the start of round 1
-  if (G.round === 1 && !G._coachWarningsLifetime['avi_closing']) {
-    var bs = GAME_DATA.config.pageText?.briefingScreen;
-    if (bs && bs.closingQuote) {
-      G._coachWarningsLifetime['avi_closing'] = true;
-      setTimeout(function() { showCoachingWarning('"' + bs.closingQuote + '"', 'info'); }, 1500);
-    }
-  }
+  // Avi's onboarding replaces the old closing advice for first-time players
 
   var totalRounds = GAME_DATA.config.totalRounds || 6;
   var isFinalRound = G.round >= totalRounds;
@@ -14646,10 +14704,12 @@ function startGame(){
   // Initialize constituency segments
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
-  
+
   showScreen('game-screen');
   initTicker();
   beginRound();
+  // Show onboarding tutorial for first-time players
+  setTimeout(showOnboarding, 600);
 }
 
 function startPromoGame(){

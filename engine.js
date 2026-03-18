@@ -888,8 +888,7 @@ function goToBudget() {
   if (!validateAdvisorSelection()) return;
   // Auto-allocate stats: compute baselines, distribute evenly, enforce floor of 30
   autoAllocateStats();
-  initBriefing();
-  showScreen('briefing-screen');
+  startGame();
 }
 
 function autoAllocateStats() {
@@ -1108,20 +1107,79 @@ function showCoachingWarning(msg, level) {
   setTimeout(function(){ if(div.parentNode) div.remove(); }, 8000);
 }
 
+// ═══════════════ ONBOARDING TUTORIAL ═══════════════
+var ONBOARDING_STEPS = [
+  {
+    mood: 'neutral',
+    msg: 'Let me be honest with you about what you\'re walking into. This job is a balancing act \u2014 and the board is always watching.',
+    label: 'What do I need to know?'
+  },
+  {
+    mood: 'neutral',
+    msg: 'You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don\'t cost action points.',
+    label: 'Got it. What am I trying to do?'
+  },
+  {
+    mood: 'concerned',
+    msg: 'Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 20 or below, the board calls an emergency meeting and your tenure ends immediately.',
+    label: 'How do I win?'
+  },
+  {
+    mood: 'approving',
+    msg: 'At year\'s end, the board evaluates your overall performance. Score above <strong>80</strong> and you\'ll be offered a promotion to a national organization. Stay above <strong>40</strong> and you keep your job. Below that\u2026 well, don\'t go below that.',
+    label: 'Any other advice?'
+  },
+  {
+    mood: 'neutral',
+    msg: 'You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost action points but they do cost money.',
+    label: 'One more thing?'
+  },
+  {
+    mood: 'concerned',
+    msg: 'One more thing \u2014 every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
+    label: 'Let\'s do this \u2192'
+  }
+];
+
+function isFirstPlay() {
+  return !localStorage.getItem('ad_onboarded');
+}
+
+function showOnboarding() {
+  if (!isFirstPlay()) return;
+  showOnboardingStep(0);
+}
+
+function showOnboardingStep(idx) {
+  if (idx >= ONBOARDING_STEPS.length) {
+    localStorage.setItem('ad_onboarded', '1');
+    return;
+  }
+  var step = ONBOARDING_STEPS[idx];
+  var div = document.createElement('div');
+  div.className = 'game-notification onboarding-notif';
+  div.style.background = '#f0f4ff';
+  div.style.color = '#1a3a6b';
+  div.style.borderLeft = '4px solid #a0b4e8';
+  div.style.cursor = 'default';
+  div.innerHTML =
+    '<div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + advPortrait(OUTGOING_ED, step.mood, 36) + ' ' + OUTGOING_ED.name + '</div>' +
+    '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + step.msg + '</div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center">' +
+      '<span style="font-size:10px;color:#8899bb">' + (idx + 1) + ' of ' + ONBOARDING_STEPS.length + '</span>' +
+      '<button style="background:#1a1a2e;color:#faf8f4;border:none;padding:6px 14px;font-family:\'Merriweather Sans\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.5px" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();showOnboardingStep(' + (idx + 1) + ')">' + step.label + '</button>' +
+    '</div>';
+  document.body.appendChild(div);
+  positionNotification(div);
+}
+
 function checkCoachingWarnings() {
   // Lifetime tracking: each unique warning fires at most once across the whole game
   if (!G._coachWarningsLifetime) G._coachWarningsLifetime = {};
   // Per-round cooldown so we don't spam multiple warnings per action within a round
   if (!G._coachWarningsThisRound) G._coachWarningsThisRound = {};
 
-  // Avi's closing advice — fires once at the start of round 1
-  if (G.round === 1 && !G._coachWarningsLifetime['avi_closing']) {
-    var bs = GAME_DATA.config.pageText?.briefingScreen;
-    if (bs && bs.closingQuote) {
-      G._coachWarningsLifetime['avi_closing'] = true;
-      setTimeout(function() { showCoachingWarning('"' + bs.closingQuote + '"', 'info'); }, 1500);
-    }
-  }
+  // Avi's onboarding replaces the old closing advice for first-time players
 
   var totalRounds = GAME_DATA.config.totalRounds || 6;
   var isFinalRound = G.round >= totalRounds;
@@ -1237,10 +1295,12 @@ function startGame(){
   // Initialize constituency segments
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
-  
+
   showScreen('game-screen');
   initTicker();
   beginRound();
+  // Show onboarding tutorial for first-time players
+  setTimeout(showOnboarding, 600);
 }
 
 function startPromoGame(){

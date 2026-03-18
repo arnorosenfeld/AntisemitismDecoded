@@ -14046,15 +14046,67 @@ function populateAdvisors(){
   }).join('');
 }
 
+var PORTRAIT_CHARS = [];
+for(var _ci=1;_ci<=17;_ci++) PORTRAIT_CHARS.push('char'+(_ci<10?'0':'')+_ci);
+// Also include named advisor folders
+var PORTRAIT_NAMED = ['rachel_steinberg','avi_kessler','miriam_gold','rabbi_friedman','sarah_feld','tali_navarro','leonard_katz','noa_berman','avi_rosen'];
+
+function renderPortraitPicker(a, i){
+  var current = a.portrait || '';
+  var previewHtml = current ?
+    '<img src="'+esc(current)+'/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">' :
+    '<span style="font-size:36px">'+esc(a.emoji||'👤')+'</span>';
+  var gridHtml = PORTRAIT_CHARS.map(function(cid){
+    var path = 'art/advisors/'+cid;
+    var sel = current === path ? ' style="outline:3px solid var(--gold);outline-offset:-2px;border-radius:4px"' : '';
+    return '<img src="'+path+'/neutral.png" onclick="selectPortrait('+i+',\''+path+'\')" style="width:40px;height:46px;object-fit:cover;object-position:top;border-radius:4px;cursor:pointer;border:1px solid #ddd"'+sel+' title="'+cid+'">';
+  }).join('');
+  return '<div class="form-group" style="margin-bottom:14px"><label>Portrait</label>'+
+    '<div style="display:flex;align-items:flex-start;gap:14px">'+
+      '<div id="adv-portrait-preview-'+i+'">'+previewHtml+'</div>'+
+      '<div style="flex:1">'+
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px" id="adv-portrait-grid-'+i+'">'+gridHtml+'</div>'+
+        '<input type="hidden" id="adv-portrait-'+i+'" value="'+esc(current)+'" />'+
+        '<button class="btn btn-sm" style="font-size:10px" onclick="selectPortrait('+i+',\'\')">Clear portrait (use emoji)</button>'+
+      '</div>'+
+    '</div></div>';
+}
+
+function selectPortrait(i, path){
+  document.getElementById('adv-portrait-'+i).value = path;
+  // Update preview
+  var previewEl = document.getElementById('adv-portrait-preview-'+i);
+  if(path) {
+    previewEl.innerHTML = '<img src="'+path+'/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">';
+  } else {
+    var emoji = document.getElementById('adv-emoji-'+i)?.value || '👤';
+    previewEl.innerHTML = '<span style="font-size:36px">'+emoji+'</span>';
+  }
+  // Update grid selection highlights
+  var grid = document.getElementById('adv-portrait-grid-'+i);
+  if(grid) {
+    grid.querySelectorAll('img').forEach(function(img){
+      if(path && img.src.indexOf(path) >= 0) {
+        img.style.outline = '3px solid var(--gold)';
+        img.style.outlineOffset = '-2px';
+      } else {
+        img.style.outline = '';
+        img.style.outlineOffset = '';
+      }
+    });
+  }
+}
+
 function renderAdvisorCard(a, i){
   var typeBadge = a.type === 'external' ? '<span class="tag tag-blue">External</span>' : '<span class="tag tag-green">Internal</span>';
   var modChips = Object.entries(a.statModifiers||{}).map(function(e){
     var s = (GD.stats||[]).find(function(st){return st.id===e[0]});
     return '<span class="tag tag-gold">+'+e[1]+' '+(s?s.label:e[0])+'</span>';
   }).join('');
+  var portraitHtml = a.portrait ? '<img src="'+esc(a.portrait)+'/neutral.png" style="width:32px;height:32px;object-fit:cover;object-position:top;border-radius:4px;vertical-align:middle;margin-right:6px">' : esc(a.emoji)+' ';
   return '<div class="item-card" id="adv-card-'+i+'" onclick="toggleEdit(\'adv\','+i+')">'+
     '<span class="expand-icon" id="adv-exp-'+i+'">▸</span>'+
-    '<div class="item-card-info"><div class="item-card-name">'+esc(a.emoji)+' '+esc(a.name)+' — '+esc(a.role)+'</div>'+
+    '<div class="item-card-info"><div class="item-card-name">'+portraitHtml+esc(a.name)+' — '+esc(a.role)+'</div>'+
     '<div class="item-card-desc">'+typeBadge+' '+modChips+' · '+esc(a.personality)+' · Lean: '+a.politicalLean+' · Clout: '+a.cloutBonus+'</div></div>'+
     '<div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteAdvisor('+i+')">Delete</button></div></div>';
 }
@@ -14068,6 +14120,7 @@ function renderAdvisorForm(a, i){
       '<div class="form-group"><label>Role</label><input id="adv-role-'+i+'" value="'+esc(a.role)+'" /></div>'+
       '<div class="form-group"><label>Emoji</label><input id="adv-emoji-'+i+'" value="'+esc(a.emoji)+'" style="font-size:18px" /></div>'+
     '</div>'+
+    renderPortraitPicker(a, i)+
     '<div class="form-group" style="margin-bottom:11px"><label>Bio</label><textarea id="adv-bio-'+i+'" rows="2">'+esc(a.bio||'')+'</textarea></div>'+
     '<div class="form-row three">'+
       '<div class="form-group"><label>Type</label><select id="adv-type-'+i+'"><option value="internal"'+(a.type==='internal'?' selected':'')+'>Internal</option><option value="external"'+(a.type==='external'?' selected':'')+'>External</option></select></div>'+
@@ -14098,6 +14151,8 @@ function saveAdvisor(i){
   a.name = document.getElementById('adv-name-'+i).value;
   a.role = document.getElementById('adv-role-'+i).value;
   a.emoji = document.getElementById('adv-emoji-'+i).value;
+  var portraitVal = document.getElementById('adv-portrait-'+i)?.value || '';
+  if(portraitVal) a.portrait = portraitVal; else delete a.portrait;
   a.bio = document.getElementById('adv-bio-'+i).value;
   a.type = document.getElementById('adv-type-'+i).value;
   a.personality = document.getElementById('adv-pers-'+i).value;

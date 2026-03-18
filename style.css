@@ -196,7 +196,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .card-mods { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 
 /* CHIPS */
-.chip { font-size: 10px; font-weight: 700; padding: 2px 6px; }
+.chip { font-size: 10px; font-weight: 700; padding: 3px 6px; display: inline-flex; align-items: center; line-height: 1; }
 .chip-pos { background: #d4ead4; color: #1a4a1a; }
 .chip-neg { background: #ead4d4; color: #4a1a1a; }
 .chip-star-up { background: #fef3d0; color: #7a5800; }
@@ -204,7 +204,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 /* Hoverable trust chip with segment tooltip */
 .chip-hover-wrap { position: relative; display: inline-block; }
-.chip-hover-wrap .chip { cursor: help; outline: 1px dashed currentColor; outline-offset: 1px; }
+.chip-hover-wrap .chip { cursor: pointer; animation: chipPulse 2s ease-in-out infinite; }
+@keyframes chipPulse { 0%,100%{ opacity: 1; } 50%{ opacity: 0.7; } }
 .chip-hover-tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #2e3a52; border: 1px solid rgba(255,255,255,0.2); padding: 8px 10px; min-width: 180px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); white-space: nowrap; }
 .chip-hover-tooltip::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #2e3a52; border-right: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); }
 .chip-hover-wrap:hover .chip-hover-tooltip { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -368,21 +369,21 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Phone */
 .desk-phone-wrap { position: relative; }
 .desk-phone-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.15)); }
-.desk-phone-screen { position: absolute; top: 6.4%; left: 7.4%; right: 7.1%; bottom: 13.4%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
+.desk-phone-screen { position: absolute; top: 6.4%; left: 7.4%; right: 8.5%; bottom: 13.4%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
 .desk-phone-status { display: flex; justify-content: space-between; padding: 2px 4px; font-size: 6px; font-weight: 600; color: #666; }
 .desk-phone-messages { flex: 1; overflow: hidden; }
-.desk-phone-msg { padding: 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
+.desk-phone-msg { padding: 5px 8px 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
 .desk-phone-msg:hover { background: rgba(0,0,0,0.04); }
-.desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; }
+.desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; overflow: hidden; }
 .desk-phone-time { font-weight: 400; color: #999; margin-left: auto; text-align: right; }
-.desk-phone-subj { font-size: 8px; color: #888; margin-top: 1px; line-height: 1.3; }
+.desk-phone-subj { font-size: 8px; color: #888; margin-top: 1px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .desk-phone-alert { color: #ef4444; margin-right: 2px; }
 .desk-phone-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #999; }
 
 /* Monitor */
 .desk-monitor-wrap { position: relative; }
 .desk-monitor-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.12)); }
-.desk-monitor-screen { position: absolute; top: 8.5%; left: 7.2%; right: 6.0%; bottom: 26.7%; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; border-radius: 0; }
+.desk-monitor-screen { position: absolute; top: 8.5%; left: 7.2%; right: 7.5%; bottom: 26.7%; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; border-radius: 0; }
 .desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
 .desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
 .desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
@@ -507,7 +508,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ═══ BUDGET SYSTEM ═══ */
 /* Budget styles moved to hud-budget-mission section above */
-.hud-budget-val{font-family:'Merriweather',serif;font-weight:700;font-size:12px;color:#ffffff}
+.hud-budget-val{display:none}
 .hud-budget-val.budget-ok{color:#d4a843}
 .hud-budget-val.budget-warn{color:#e67e22}
 .hud-budget-val.budget-crit{color:#e74c3c}
@@ -1041,7 +1042,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* ═══ FIX #16: INVESTMENT STRIP SCROLL INDICATOR ═══ */
 .invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: none; z-index: 2; }
 .invest-strip.has-overflow .invest-strip-fade { display: block; }
-.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: none; animation: scrollHint 1.5s ease-in-out infinite; }
+.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: none; }
 .invest-strip.has-overflow .invest-scroll-arrow { display: block; }
 @keyframes scrollHint { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(3px); } }
 

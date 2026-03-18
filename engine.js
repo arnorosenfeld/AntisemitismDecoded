@@ -59,7 +59,7 @@ function showScreen(id) {
   if(strip) strip.style.display = isGame ? '' : 'none';
   if(bannerEl) bannerEl.style.display = isGame ? '' : 'none';
   if(hudEl) hudEl.style.display = isGame ? '' : 'none';
-  if(inboxStrip) inboxStrip.style.display = isGame ? '' : 'none';
+  if(inboxStrip) inboxStrip.style.display = 'none';
   if(lpTicker) lpTicker.style.display = isIntro ? '' : 'none';
   if(isGame) setTimeout(function(){ updateHUD(); }, 10);
   if (id === 'advisor-screen') renderAdvisorSelection();
@@ -874,7 +874,69 @@ function validateAdvisorSelection() {
 
 function goToBudget() {
   if (!validateAdvisorSelection()) return;
-  showScreen('budget-screen');
+  // Auto-allocate stats: compute baselines, distribute evenly, enforce floor of 30
+  autoAllocateStats();
+  initBriefing();
+  showScreen('briefing-screen');
+}
+
+function autoAllocateStats() {
+  var allOrgs = [...GAME_DATA.organizations, ...GAME_DATA.nationalOrganizations];
+  var org = allOrgs.find(function(o){ return o.id === G.orgId; });
+  var mission = GAME_DATA.missions.find(function(m){ return m.id === G.missionId; });
+  var pool = GAME_DATA.advisorPool || [];
+  var FLOOR = 30;
+
+  // Compute baselines from org + traits + mission + advisors
+  var baselines = {};
+  GAME_DATA.stats.forEach(function(s) {
+    baselines[s.id] = 0;
+    var orgMod = (org && org.statModifiers && org.statModifiers[s.id]) || 0;
+    baselines[s.id] += orgMod;
+    var misMod = (mission && mission.statBonus && mission.statBonus[s.id]) || 0;
+    baselines[s.id] += misMod;
+    (G.charTraits || []).forEach(function(tid) {
+      var t = GAME_DATA.characterTraits.find(function(t){ return t.id === tid; });
+      var traitMod = (t && t.statModifiers && t.statModifiers[s.id]) || 0;
+      baselines[s.id] += traitMod;
+    });
+    (G.selectedAdvisors || []).forEach(function(advId) {
+      var adv = pool.find(function(a){ return a.id === advId; });
+      var advMod = (adv && adv.statModifiers && adv.statModifiers[s.id]) || 0;
+      baselines[s.id] += advMod;
+    });
+  });
+
+  G._baselines = baselines;
+
+  // Get allocation points from org
+  var allocPoints = (org && org.allocationPoints) || 50;
+
+  // First pass: bring any stat below FLOOR up to FLOOR
+  var priorities = {};
+  var usedForFloor = 0;
+  GAME_DATA.stats.forEach(function(s) {
+    var base = baselines[s.id] || 0;
+    if (base < FLOOR) {
+      priorities[s.id] = FLOOR - base;
+      usedForFloor += priorities[s.id];
+    } else {
+      priorities[s.id] = 0;
+    }
+  });
+
+  // Distribute remaining points evenly across all stats
+  var remaining = Math.max(0, allocPoints - usedForFloor);
+  var statCount = GAME_DATA.stats.length;
+  var perStat = Math.floor(remaining / statCount);
+  var leftover = remaining - (perStat * statCount);
+  GAME_DATA.stats.forEach(function(s, i) {
+    priorities[s.id] += perStat;
+    if (i < leftover) priorities[s.id] += 1;
+  });
+
+  G.priorities = priorities;
+  G._allocBudget = allocPoints;
 }
 
 // ═══════════════ START GAME ═══════════════
@@ -1441,8 +1503,7 @@ function updateHUD(){
     budgetBagsEl.innerHTML = '<img src="art/coins.png" style="width:24px;height:auto;vertical-align:middle"><span style="font-family:\'Merriweather\',serif;font-weight:700;font-size:13px;margin-left:4px;vertical-align:middle">' + Math.round(G.budget) + '</span>';
   }
   if(budgetValEl) {
-    budgetValEl.textContent = Math.round(G.budget);
-    budgetValEl.className = 'hud-budget-val' + (G.budget >= 40 ? ' budget-ok' : G.budget >= 20 ? ' budget-warn' : ' budget-crit');
+    budgetValEl.style.display = 'none';
   }
 
   // Mission stars with star illustration
@@ -2232,8 +2293,8 @@ function showPromoScreen(){
 
 function selectPromoOrg(id){
   G.orgId=id;
-  initBudget(true);
-  showScreen('promo-budget-screen');
+  autoAllocateStats();
+  startPromoGame();
 }
 
 // ═══════════════ RESET ═══════════════
@@ -3340,7 +3401,10 @@ function toggleInbox() {
 }
 
 function updateInboxStrip() {
+  // Inbox strip removed — inbox is now accessed via the phone desk object
   var strip = document.getElementById('inbox-strip');
+  if(strip) strip.classList.remove('active');
+  return;
   var items = document.getElementById('inbox-strip-items');
   if(!strip || !items) return;
   var msgs = (G.inboxMessages||[]).filter(function(m){return !m.expired});

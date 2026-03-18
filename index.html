@@ -204,7 +204,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .card-mods { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 
 /* CHIPS */
-.chip { font-size: 10px; font-weight: 700; padding: 2px 6px; }
+.chip { font-size: 10px; font-weight: 700; padding: 3px 6px; display: inline-flex; align-items: center; line-height: 1; }
 .chip-pos { background: #d4ead4; color: #1a4a1a; }
 .chip-neg { background: #ead4d4; color: #4a1a1a; }
 .chip-star-up { background: #fef3d0; color: #7a5800; }
@@ -212,7 +212,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 /* Hoverable trust chip with segment tooltip */
 .chip-hover-wrap { position: relative; display: inline-block; }
-.chip-hover-wrap .chip { cursor: help; outline: 1px dashed currentColor; outline-offset: 1px; }
+.chip-hover-wrap .chip { cursor: pointer; animation: chipPulse 2s ease-in-out infinite; }
+@keyframes chipPulse { 0%,100%{ opacity: 1; } 50%{ opacity: 0.7; } }
 .chip-hover-tooltip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #2e3a52; border: 1px solid rgba(255,255,255,0.2); padding: 8px 10px; min-width: 180px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); white-space: nowrap; }
 .chip-hover-tooltip::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #2e3a52; border-right: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); }
 .chip-hover-wrap:hover .chip-hover-tooltip { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -376,21 +377,21 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Phone */
 .desk-phone-wrap { position: relative; }
 .desk-phone-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.15)); }
-.desk-phone-screen { position: absolute; top: 6.4%; left: 7.4%; right: 7.1%; bottom: 13.4%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
+.desk-phone-screen { position: absolute; top: 6.4%; left: 7.4%; right: 8.5%; bottom: 13.4%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
 .desk-phone-status { display: flex; justify-content: space-between; padding: 2px 4px; font-size: 6px; font-weight: 600; color: #666; }
 .desk-phone-messages { flex: 1; overflow: hidden; }
-.desk-phone-msg { padding: 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
+.desk-phone-msg { padding: 5px 8px 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
 .desk-phone-msg:hover { background: rgba(0,0,0,0.04); }
-.desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; }
+.desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; overflow: hidden; }
 .desk-phone-time { font-weight: 400; color: #999; margin-left: auto; text-align: right; }
-.desk-phone-subj { font-size: 8px; color: #888; margin-top: 1px; line-height: 1.3; }
+.desk-phone-subj { font-size: 8px; color: #888; margin-top: 1px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .desk-phone-alert { color: #ef4444; margin-right: 2px; }
 .desk-phone-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #999; }
 
 /* Monitor */
 .desk-monitor-wrap { position: relative; }
 .desk-monitor-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.12)); }
-.desk-monitor-screen { position: absolute; top: 8.5%; left: 7.2%; right: 6.0%; bottom: 26.7%; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; border-radius: 0; }
+.desk-monitor-screen { position: absolute; top: 8.5%; left: 7.2%; right: 7.5%; bottom: 26.7%; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; border-radius: 0; }
 .desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
 .desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
 .desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
@@ -515,7 +516,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ═══ BUDGET SYSTEM ═══ */
 /* Budget styles moved to hud-budget-mission section above */
-.hud-budget-val{font-family:'Merriweather',serif;font-weight:700;font-size:12px;color:#ffffff}
+.hud-budget-val{display:none}
 .hud-budget-val.budget-ok{color:#d4a843}
 .hud-budget-val.budget-warn{color:#e67e22}
 .hud-budget-val.budget-crit{color:#e74c3c}
@@ -1050,7 +1051,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .invest-strip { position: relative; }
 .invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: none; z-index: 2; }
 .invest-strip.has-overflow .invest-strip-fade { display: block; }
-.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: none; animation: scrollHint 1.5s ease-in-out infinite; }
+.invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: none; }
 .invest-strip.has-overflow .invest-scroll-arrow { display: block; }
 @keyframes scrollHint { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(3px); } }
 
@@ -1176,7 +1177,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="char-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 1 of 6 — Character Creation</span>
+      <span class="step-ind">Step 1 of 5 — Character Creation</span>
       <h2>Who Are You?</h2>
       <p>Your background and traits shape how the community responds to you — and what options open up when crises hit.</p>
     </div>
@@ -1203,7 +1204,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="org-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 2 of 6 — Organization</span>
+      <span class="step-ind">Step 2 of 5 — Organization</span>
       <h2>Choose Your Organization</h2>
       <p>Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
     </div>
@@ -1219,7 +1220,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="mission-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 3 of 6 — Mission</span>
+      <span class="step-ind">Step 3 of 5 — Mission</span>
       <h2>What Is Your Mission?</h2>
       <p>Your mission defines what your organization stands for. Every decision you make will be flagged as <strong>Mission Aligned ✓</strong> or <strong>Mission Opposed ✗</strong> — and you'll see it before you choose.</p>
     </div>
@@ -1235,7 +1236,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="advisor-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 4 of 6 — Advisory Team</span>
+      <span class="step-ind">Step 4 of 5 — Advisory Team</span>
       <h2>Build Your Advisory Team</h2>
       <p>Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.</p>
     </div>
@@ -1244,7 +1245,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
     <div id="advisor-err" class="err-msg"></div>
     <div class="btn-row">
       <button class="btn btn-secondary btn-sm" onclick="showScreen('mission-screen')">← Back</button>
-      <button class="btn btn-primary" onclick="goToBudget()">Next: Allocate Priorities →</button>
+      <button class="btn btn-primary" onclick="goToBudget()">Next: Your Briefing →</button>
     </div>
   </div>
 </div>
@@ -1291,7 +1292,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       <div id="briefing-items"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-sm" onclick="showScreen('budget-screen')">← Back</button>
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('advisor-screen')">← Back</button>
       <button class="btn btn-primary" onclick="startGame()">Begin Your Tenure →</button>
     </div>
   </div>
@@ -1425,6 +1426,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   </div>
   <!-- NEWS TICKER -->
   <div class="news-ticker-wrap" id="news-ticker">
+    <div class="news-ticker-label">News</div>
     <div class="news-ticker-track">
       <div class="news-ticker-content" id="ticker-content"></div>
     </div>
@@ -1786,28 +1788,28 @@ var GAME_DATA =
         ]
       },
       "charScreen": {
-        "stepLabel": "Step 1 of 6 — Character Creation",
+        "stepLabel": "Step 1 of 5 — Character Creation",
         "heading": "Who Are You?",
         "description": "Your background and traits shape how the community responds to you — and what options open up when crises hit."
       },
       "orgScreen": {
-        "stepLabel": "Step 2 of 6 — Organization",
+        "stepLabel": "Step 2 of 5 — Organization",
         "heading": "Choose Your Organization",
         "description": "Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
       },
       "missionScreen": {
-        "stepLabel": "Step 3 of 6 — Mission",
+        "stepLabel": "Step 3 of 5 — Mission",
         "heading": "What Is Your Mission?",
         "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned ✓, Mission Opposed ✗, or neutral — and you'll see it before you choose."
       },
       "budgetScreen": {
-        "stepLabel": "Step 4 of 6 — Priorities",
+        "stepLabel": "Step 4 of 5 — Priorities",
         "heading": "Set Your Priorities",
         "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out.",
         "warningText": "If any stat drops to 20 or below during the game, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit hardest."
       },
       "briefingScreen": {
-        "stepLabel": "Step 6 of 6 — Your Briefing",
+        "stepLabel": "Step 5 of 5 — Your Briefing",
         "heading": "Before You Begin",
         "description": "The outgoing executive director pulls you aside for one last conversation.",
         "advisorName": "Avi Rosen",
@@ -1854,7 +1856,7 @@ var GAME_DATA =
         "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
       },
       "advisorScreen": {
-        "stepLabel": "Step 5 of 6 — Advisory Team",
+        "stepLabel": "Step 4 of 5 — Advisory Team",
         "heading": "Build Your Advisory Team",
         "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
       }
@@ -13456,7 +13458,7 @@ function showScreen(id) {
   if(strip) strip.style.display = isGame ? '' : 'none';
   if(bannerEl) bannerEl.style.display = isGame ? '' : 'none';
   if(hudEl) hudEl.style.display = isGame ? '' : 'none';
-  if(inboxStrip) inboxStrip.style.display = isGame ? '' : 'none';
+  if(inboxStrip) inboxStrip.style.display = 'none';
   if(lpTicker) lpTicker.style.display = isIntro ? '' : 'none';
   if(isGame) setTimeout(function(){ updateHUD(); }, 10);
   if (id === 'advisor-screen') renderAdvisorSelection();
@@ -14271,7 +14273,69 @@ function validateAdvisorSelection() {
 
 function goToBudget() {
   if (!validateAdvisorSelection()) return;
-  showScreen('budget-screen');
+  // Auto-allocate stats: compute baselines, distribute evenly, enforce floor of 30
+  autoAllocateStats();
+  initBriefing();
+  showScreen('briefing-screen');
+}
+
+function autoAllocateStats() {
+  var allOrgs = [...GAME_DATA.organizations, ...GAME_DATA.nationalOrganizations];
+  var org = allOrgs.find(function(o){ return o.id === G.orgId; });
+  var mission = GAME_DATA.missions.find(function(m){ return m.id === G.missionId; });
+  var pool = GAME_DATA.advisorPool || [];
+  var FLOOR = 30;
+
+  // Compute baselines from org + traits + mission + advisors
+  var baselines = {};
+  GAME_DATA.stats.forEach(function(s) {
+    baselines[s.id] = 0;
+    var orgMod = (org && org.statModifiers && org.statModifiers[s.id]) || 0;
+    baselines[s.id] += orgMod;
+    var misMod = (mission && mission.statBonus && mission.statBonus[s.id]) || 0;
+    baselines[s.id] += misMod;
+    (G.charTraits || []).forEach(function(tid) {
+      var t = GAME_DATA.characterTraits.find(function(t){ return t.id === tid; });
+      var traitMod = (t && t.statModifiers && t.statModifiers[s.id]) || 0;
+      baselines[s.id] += traitMod;
+    });
+    (G.selectedAdvisors || []).forEach(function(advId) {
+      var adv = pool.find(function(a){ return a.id === advId; });
+      var advMod = (adv && adv.statModifiers && adv.statModifiers[s.id]) || 0;
+      baselines[s.id] += advMod;
+    });
+  });
+
+  G._baselines = baselines;
+
+  // Get allocation points from org
+  var allocPoints = (org && org.allocationPoints) || 50;
+
+  // First pass: bring any stat below FLOOR up to FLOOR
+  var priorities = {};
+  var usedForFloor = 0;
+  GAME_DATA.stats.forEach(function(s) {
+    var base = baselines[s.id] || 0;
+    if (base < FLOOR) {
+      priorities[s.id] = FLOOR - base;
+      usedForFloor += priorities[s.id];
+    } else {
+      priorities[s.id] = 0;
+    }
+  });
+
+  // Distribute remaining points evenly across all stats
+  var remaining = Math.max(0, allocPoints - usedForFloor);
+  var statCount = GAME_DATA.stats.length;
+  var perStat = Math.floor(remaining / statCount);
+  var leftover = remaining - (perStat * statCount);
+  GAME_DATA.stats.forEach(function(s, i) {
+    priorities[s.id] += perStat;
+    if (i < leftover) priorities[s.id] += 1;
+  });
+
+  G.priorities = priorities;
+  G._allocBudget = allocPoints;
 }
 
 // ═══════════════ START GAME ═══════════════
@@ -14838,8 +14902,7 @@ function updateHUD(){
     budgetBagsEl.innerHTML = '<img src="art/coins.png" style="width:24px;height:auto;vertical-align:middle"><span style="font-family:\'Merriweather\',serif;font-weight:700;font-size:13px;margin-left:4px;vertical-align:middle">' + Math.round(G.budget) + '</span>';
   }
   if(budgetValEl) {
-    budgetValEl.textContent = Math.round(G.budget);
-    budgetValEl.className = 'hud-budget-val' + (G.budget >= 40 ? ' budget-ok' : G.budget >= 20 ? ' budget-warn' : ' budget-crit');
+    budgetValEl.style.display = 'none';
   }
 
   // Mission stars with star illustration
@@ -15629,8 +15692,8 @@ function showPromoScreen(){
 
 function selectPromoOrg(id){
   G.orgId=id;
-  initBudget(true);
-  showScreen('promo-budget-screen');
+  autoAllocateStats();
+  startPromoGame();
 }
 
 // ═══════════════ RESET ═══════════════
@@ -16737,7 +16800,10 @@ function toggleInbox() {
 }
 
 function updateInboxStrip() {
+  // Inbox strip removed — inbox is now accessed via the phone desk object
   var strip = document.getElementById('inbox-strip');
+  if(strip) strip.classList.remove('active');
+  return;
   var items = document.getElementById('inbox-strip-items');
   if(!strip || !items) return;
   var msgs = (G.inboxMessages||[]).filter(function(m){return !m.expired});

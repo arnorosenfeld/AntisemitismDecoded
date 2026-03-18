@@ -12938,22 +12938,50 @@ const PANEL_TITLES = {
   advisors: 'Advisor Pool', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
   investments: 'Investments', conversations: 'Conversations'
 };
+var _populatedPanels = {};
+var _currentPanelId = 'github';
+var PANEL_POPULATORS = {
+  config: function(){ populateConfig(); },
+  traits: function(){ populateTraits(); },
+  avatars: function(){ populateAvatars(); },
+  orgs: function(){ populateOrgs(); },
+  'nat-orgs': function(){ populateNatOrgs(); },
+  missions: function(){ populateMissions(); },
+  actions: function(){ populateActions(); },
+  scenarios: function(){ populateScenarios(); },
+  inbox: function(){ populateInbox(); },
+  scoring: function(){ populateScoring(); },
+  text: function(){ populateText(); },
+  stats: function(){ populateStats(); },
+  segments: function(){ if(typeof populateSegments==='function') populateSegments(); },
+  advisors: function(){ if(typeof populateAdvisors==='function') populateAdvisors(); },
+  gazette: function(){ if(typeof populateGazette==='function') populateGazette(); },
+  breaking: function(){ if(typeof populateBreaking==='function') populateBreaking(); },
+  coalitions: function(){ if(typeof populateCoalitions==='function') populateCoalitions(); },
+  investments: function(){ if(typeof populateInvestments==='function') populateInvestments(); },
+  conversations: function(){ if(typeof populateConversations==='function') populateConversations(); },
+  politics: function(){ if(typeof populateMomentumConfig==='function') populateMomentumConfig(); }
+};
+function _ensurePanelPopulated(id) {
+  if (_populatedPanels[id]) return;
+  var fn = PANEL_POPULATORS[id];
+  if (fn) { fn(); _populatedPanels[id] = true; }
+}
 function showPanel(id, navEl) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
   if (navEl) navEl.classList.add('active');
   document.getElementById('panel-title').textContent = PANEL_TITLES[id] || id;
+  _currentPanelId = id;
+  _ensurePanelPopulated(id);
 }
 
 // ═══ POPULATE ALL ═══
-
-// ═══ POPULATE ALL ═══
 function populateAllPanels() {
-  populateConfig(); populateTraits(); populateAvatars();
-  populateOrgs(); populateNatOrgs(); populateMissions();
-  populateActions(); populateScenarios(); populateInbox();
-  populateScoring(); populateText(); populateStats();
+  _populatedPanels = {};
+  // Only populate the currently visible panel; others populate on navigation
+  _ensurePanelPopulated(_currentPanelId);
 }
 
 // ═══ CONFIG ═══
@@ -14870,60 +14898,45 @@ function deleteConvOutcome(ci, oi){
 // ═══ REFRESH DEPENDENT PANELS ═══
 // When reference data changes (missions, orgs, coalitions, advisors, scenarios, segments),
 // re-render panels that reference that data in dropdowns/checkboxes.
+function _invalidateAndRefresh(panelIds) {
+  panelIds.forEach(function(pid) {
+    _populatedPanels[pid] = false;
+  });
+  // Re-populate the current panel if it was invalidated
+  if (panelIds.indexOf(_currentPanelId) >= 0) {
+    _ensurePanelPopulated(_currentPanelId);
+  }
+}
 function refreshDependentPanels(changedType) {
   // Missions affect: scenario/inbox/breaking choice alignment dropdowns
   if (changedType === 'missions') {
-    populateScenarios(); populateInbox(); populateBreaking();
+    _invalidateAndRefresh(['scenarios', 'inbox', 'breaking']);
   }
   // Orgs affect: coalition/inbox applicableOrgs, conversation applicableOrgs
   if (changedType === 'orgs') {
-    populateCoalitions(); populateInbox(); populateConversations();
+    _invalidateAndRefresh(['coalitions', 'inbox', 'conversations']);
   }
   // Coalitions affect: org starting coalitions
   if (changedType === 'coalitions') {
-    populateOrgs(); populateNatOrgs();
+    _invalidateAndRefresh(['orgs', 'nat-orgs']);
   }
   // Advisors affect: scenario advisor quotes, conversation advisor links
   if (changedType === 'advisors') {
-    populateScenarios(); populateConversations();
+    _invalidateAndRefresh(['scenarios', 'conversations']);
   }
   // Scenarios affect: conversation/coalition trigger dropdowns
   if (changedType === 'scenarios') {
-    populateConversations(); populateCoalitions();
+    _invalidateAndRefresh(['conversations', 'coalitions']);
   }
   // Segments affect: org segment weights, choice segment overrides
   if (changedType === 'segments') {
-    populateOrgs(); populateNatOrgs(); populateScenarios(); populateInbox(); populateBreaking();
+    _invalidateAndRefresh(['orgs', 'nat-orgs', 'scenarios', 'inbox', 'breaking']);
   }
 }
 
 // ═══ POPULATE ALL (override) ═══
-function populateAllPanelsV2(){
-  if(origPopulateAll) origPopulateAll();
-  populateMomentumConfig();
-  populateAdvisors();
-  populateGazette();
-  populateBreaking();
-  populateCoalitions();
-  populateInvestments();
-  populateConversations();
-  populateSegments();
-}
-// Override the populate call
-if(typeof populateAllPanels === 'function'){
-  var _origPop = populateAllPanels;
-  populateAllPanels = function(){
-    _origPop();
-    populateMomentumConfig();
-    populateAdvisors();
-    populateGazette();
-    populateBreaking();
-    populateCoalitions();
-    populateInvestments();
-    populateConversations();
-    populateSegments();
-  };
-}
+// V2 panel populators are registered in PANEL_POPULATORS; no override needed.
+// populateAllPanels() now lazy-loads all panels including V2 ones.
 
 // ═══ SAVE CONFIG HOOK ═══
 var origSaveConfig = typeof saveConfig === 'function' ? saveConfig : null;

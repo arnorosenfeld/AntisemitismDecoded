@@ -84,7 +84,7 @@
 <div id="char-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 1 of 6 — Character Creation</span>
+      <span class="step-ind">Step 1 of 5 — Character Creation</span>
       <h2>Who Are You?</h2>
       <p>Your background and traits shape how the community responds to you — and what options open up when crises hit.</p>
     </div>
@@ -111,7 +111,7 @@
 <div id="org-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 2 of 6 — Organization</span>
+      <span class="step-ind">Step 2 of 5 — Organization</span>
       <h2>Choose Your Organization</h2>
       <p>Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
     </div>
@@ -127,7 +127,7 @@
 <div id="mission-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 3 of 6 — Mission</span>
+      <span class="step-ind">Step 3 of 5 — Mission</span>
       <h2>What Is Your Mission?</h2>
       <p>Your mission defines what your organization stands for. Every decision you make will be flagged as <strong>Mission Aligned ✓</strong> or <strong>Mission Opposed ✗</strong> — and you'll see it before you choose.</p>
     </div>
@@ -143,7 +143,7 @@
 <div id="advisor-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 4 of 6 — Advisory Team</span>
+      <span class="step-ind">Step 4 of 5 — Advisory Team</span>
       <h2>Build Your Advisory Team</h2>
       <p>Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.</p>
     </div>
@@ -152,7 +152,7 @@
     <div id="advisor-err" class="err-msg"></div>
     <div class="btn-row">
       <button class="btn btn-secondary btn-sm" onclick="showScreen('mission-screen')">← Back</button>
-      <button class="btn btn-primary" onclick="goToBudget()">Next: Allocate Priorities →</button>
+      <button class="btn btn-primary" onclick="goToBudget()">Next: Your Briefing →</button>
     </div>
   </div>
 </div>
@@ -199,7 +199,7 @@
       <div id="briefing-items"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-sm" onclick="showScreen('budget-screen')">← Back</button>
+      <button class="btn btn-secondary btn-sm" onclick="showScreen('advisor-screen')">← Back</button>
       <button class="btn btn-primary" onclick="startGame()">Begin Your Tenure →</button>
     </div>
   </div>
@@ -333,6 +333,7 @@
   </div>
   <!-- NEWS TICKER -->
   <div class="news-ticker-wrap" id="news-ticker">
+    <div class="news-ticker-label">News</div>
     <div class="news-ticker-track">
       <div class="news-ticker-content" id="ticker-content"></div>
     </div>

@@ -294,28 +294,28 @@
         ]
       },
       "charScreen": {
-        "stepLabel": "Step 1 of 6 — Character Creation",
+        "stepLabel": "Step 1 of 5 — Character Creation",
         "heading": "Who Are You?",
         "description": "Your background and traits shape how the community responds to you — and what options open up when crises hit."
       },
       "orgScreen": {
-        "stepLabel": "Step 2 of 6 — Organization",
+        "stepLabel": "Step 2 of 5 — Organization",
         "heading": "Choose Your Organization",
         "description": "Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
       },
       "missionScreen": {
-        "stepLabel": "Step 3 of 6 — Mission",
+        "stepLabel": "Step 3 of 5 — Mission",
         "heading": "What Is Your Mission?",
         "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned ✓, Mission Opposed ✗, or neutral — and you'll see it before you choose."
       },
       "budgetScreen": {
-        "stepLabel": "Step 4 of 6 — Priorities",
+        "stepLabel": "Step 4 of 5 — Priorities",
         "heading": "Set Your Priorities",
         "description": "You have a limited pool of priority points to allocate across your four organizational areas. Trade-offs are required — you cannot max everything out.",
         "warningText": "If any stat drops to 20 or below during the game, the board calls an emergency meeting and your tenure ends immediately. Watch your weakest stat — that's where crises will hit hardest."
       },
       "briefingScreen": {
-        "stepLabel": "Step 6 of 6 — Your Briefing",
+        "stepLabel": "Step 5 of 5 — Your Briefing",
         "heading": "Before You Begin",
         "description": "The outgoing executive director pulls you aside for one last conversation.",
         "advisorName": "Avi Rosen",
@@ -362,7 +362,7 @@
         "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
       },
       "advisorScreen": {
-        "stepLabel": "Step 5 of 6 — Advisory Team",
+        "stepLabel": "Step 4 of 5 — Advisory Team",
         "heading": "Build Your Advisory Team",
         "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
       }

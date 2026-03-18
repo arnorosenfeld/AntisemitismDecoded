@@ -13352,6 +13352,14 @@ function renderScenarioForm(s, i, prefix) {
       <div class="form-group"><label>Org Level</label><select id="${prefix}-lvl-${i}"><option value="both" ${(s.orgLevel||'both')==='both'?'selected':''}>Both</option><option value="local" ${s.orgLevel==='local'?'selected':''}>Local</option><option value="national" ${s.orgLevel==='national'?'selected':''}>National</option></select><div class="form-hint">Whether this scenario appears for local orgs, national orgs, or both</div></div>
       <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /><div class="form-hint">1-5 rating affecting when scenarios appear — higher complexity appears in later rounds</div></div>
     </div>
+    <div class="form-row three" style="margin-top:8px">
+      <div class="form-group"><label>Channel</label><select id="${prefix}-channel-${i}">
+        <option value="any" ${(s.channel||'any')==='any'?'selected':''}>Any</option>
+        <option value="monitor" ${s.channel==='monitor'?'selected':''}>Monitor (Digital)</option>
+        <option value="folder" ${s.channel==='folder'?'selected':''}>Folder (Memos)</option>
+        <option value="keys" ${s.channel==='keys'?'selected':''}>Keys (In-Person)</option>
+      </select><div class="form-hint">Which desk object this scenario appears in (default: any)</div></div>
+    </div>
     <div style="margin:8px 0;padding:6px 10px;background:#f8f5ff;border:1px solid #e0d8f0;display:flex;align-items:center;gap:10px">
       <label class="checkbox-item" style="font-weight:700"><input type="checkbox" id="${prefix}-polrel-${i}" ${s.politicallyRelevant!==false?'checked':''} style="accent-color:#6366f1" /> ⚖️ Politically Relevant</label>
       <span style="font-size:10px;color:var(--muted);font-style:italic">When checked, political effectiveness modifies stat outcomes for this scenario</span>
@@ -13448,6 +13456,8 @@ function saveScenario(i, prefix) {
   if(!s.categories.length) s.categories=['all'];
   s.orgLevel = document.getElementById(prefix+'-lvl-'+i)?.value||'both';
   s.complexity = parseInt(document.getElementById(prefix+'-cplx-'+i)?.value)||3;
+  s.channel = document.getElementById(prefix+'-channel-'+i)?.value || 'any';
+  if(s.channel === 'any') delete s.channel; // keep data clean
   // Political relevance flag
   var polRelEl = document.getElementById(prefix+'-polrel-'+i);
   s.politicallyRelevant = polRelEl ? polRelEl.checked : true;

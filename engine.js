@@ -6,6 +6,8 @@ let G = {
   missionId:null, priorities:{}, stats:{}, missionStars:0,
   round:0, apRemaining:0, history:[], pendingQueue:[],
   roundActions:[], usedScenarioIds:[], usedInboxIds:[],
+  channelQueues: { monitor: [], folder: [], keys: [] },
+  phoneMessages: [],
   activeUnlocks:[], promotionLevel:0,
   actionsThisRound:0, inboxDelivered:0,
   roundInboxQueue:[], pendingInbox:[],
@@ -1350,6 +1352,7 @@ function beginRound(){
   
   G.apRemaining=GAME_DATA.config.actionPointsPerRound;
   G.roundActions=[]; G.pendingQueue=[];
+  G.channelQueues = null; // Reset so distributeScenarios re-picks
   G._coachWarningsThisRound = {}; // Reset coaching warning cooldown
   G.actionsThisRound=0; G.inboxDelivered=0;
   // #7: Pick inbox scenarios using category system
@@ -1478,71 +1481,222 @@ function updateHUD(){
   updatePoliticsHUD();
 }
 
+// ═══════════════ DESK / CHANNEL DISTRIBUTION ═══════════════
+function distributeScenarios() {
+  // Pre-pick scenarios for this round and split across desk objects
+  var channels = ['monitor', 'folder', 'keys'];
+  G.channelQueues = { monitor: [], folder: [], keys: [] };
+
+  // How many scenarios to pre-pick (one per AP remaining + a couple extra)
+  var needed = (G.apRemaining || 0) + 2;
+  var picked = [];
+  for (var i = 0; i < needed; i++) {
+    var eligible = GAME_DATA.scenarios.filter(function(s) {
+      return !G.usedScenarioIds.includes(s.id) && !picked.includes(s.id) && scenarioApplies(s);
+    });
+    if (eligible.length === 0) break;
+    var sc = weightedPick(eligible);
+    if (sc) picked.push(sc.id);
+  }
+
+  // Distribute picked scenarios across channels
+  picked.forEach(function(scenarioId) {
+    var sc = GAME_DATA.scenarios.find(function(s) { return s.id === scenarioId; });
+    if (!sc) return;
+    var ch = sc.channel || 'any';
+    if (ch !== 'any' && G.channelQueues[ch]) {
+      G.channelQueues[ch].push(scenarioId);
+    } else {
+      // Distribute to channel with fewest items
+      var min = channels.reduce(function(a, b) {
+        return G.channelQueues[a].length <= G.channelQueues[b].length ? a : b;
+      });
+      G.channelQueues[min].push(scenarioId);
+    }
+  });
+}
+
 // ═══════════════ MAIN RENDER ═══════════════
 function renderMain(){
-  const el=document.getElementById('game-inner');
-  const disabled=G.apRemaining<=0;
-  
-  // #9: Show stat effects on action cards
-  function effectChips(fx) {
-    return Object.entries(fx||{}).map(([k,v]) => {
-      if(v===0) return '';
-      const lbl = GAME_DATA.stats.find(s=>s.id===k)?.label || k;
-      return `<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${lbl}</span>`;
-    }).filter(Boolean).join('');
-  }
-  
-  // Round info - simplified
+  var el=document.getElementById('game-inner');
+  var disabled=G.apRemaining<=0;
+
+  // Ensure channel queues are populated
+  if (!G.channelQueues || !G.channelQueues.monitor) distributeScenarios();
+
+  // Round info
   var ri = GAME_DATA.config.roundNames[G.round-1]||{year:'',round:'',hebrew:'',english:''};
   var totalRounds = GAME_DATA.config.totalRounds || 6;
   var roundHeading = 'Round ' + G.round + ' of ' + totalRounds + ' — ' + ri.year;
   if (ri.hebrew) roundHeading += ' — ' + ri.hebrew + ' / ' + ri.english;
 
   // End round button (only when AP = 0)
-  var endRoundHtml = disabled ? '<button class="btn btn-sm btn-primary ap-end" onclick="endRound()" style="margin-top:12px">End Round →</button>' : '';
+  var endRoundHtml = disabled ? '<button class="btn btn-sm btn-primary ap-end" onclick="endRound()" style="margin-top:12px">End Round \u2192</button>' : '';
 
-  el.innerHTML=`
-    ${disabled?`<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No action points remaining.</strong> Click "End Round" below to continue.</div>`:''}
-    <div style="margin-bottom:28px">
-      <div class="section-header">
-        <span class="step-ind">${roundHeading}</span>
-        <h2>Choose Your Next Action</h2>
-        <p style="margin-top:8px">You have <strong>${G.apRemaining}</strong> action point${G.apRemaining!==1?'s':''} remaining. Each action triggers a scenario requiring your decision.</p>
-        ${endRoundHtml}
-      </div>
-      <div class="action-cards">
-        ${GAME_DATA.actions.map(a=>{
-          var budgetCost = a.budgetCost || 0;
-          var canAfford = budgetCost <= G.budget;
-          var isDisabled = disabled || (!canAfford && budgetCost > 0);
-          var costLabel = budgetCost > 0 ? `<div class="act-budget-cost${!canAfford?' unaffordable':''}">💰 ${budgetCost} budget${!canAfford?' (insufficient)':''}</div>` : '';
-          var budgetFx = a.budgetEffect ? `<span class="chip ${a.budgetEffect>0?'chip-pos':'chip-neg'}">${a.budgetEffect>0?'+':''}${a.budgetEffect} Budget</span>` : '';
-          return `
-          <div class="action-card ${isDisabled?'disabled':''}" onclick="${isDisabled?'':` doAction('${a.id}')`}">
-            <span class="act-icon">${a.icon}</span>
-            <div class="act-name">${a.name}</div>
-            <div class="act-desc">${a.description}</div>
-            <div class="act-effects">${effectChips(a.baseEffects)}${budgetFx}</div>
-            ${costLabel}
-            <div class="act-cost">${a.cost} action point</div>
-          </div>`;}).join('')}
-      </div>
-    </div>
-    <div class="invest-toggle-bar">
-      ${G.roundActions.length > 0 ? '<button class="log-toggle-btn" onclick="toggleActionLog()">📋 Action Log <span class="log-btn-count">' + G.roundActions.length + '</span></button>' : ''}
-    </div>
-    <div class="action-log-panel" id="action-log-panel">
-      ${G.roundActions.map(a=>`
-        <div class="act-result">
-          <div class="act-result-title">${a.icon} ${a.name}</div>
-          <div class="act-result-text">${a.outcomeText}</div>
-          <div class="chip-row">${a.chips}</div>
-        </div>`).join('')}
-    </div>
-`;
+  // --- Phone (inbox) ---
+  var activeInbox = (G.inboxMessages||[]).filter(function(m){ return !m.expired; });
+  var phoneBadge = activeInbox.length > 0 ? '<div class="desk-obj-badge desk-obj-badge-red">' + activeInbox.length + '</div>' : '';
+  var phoneRingClass = activeInbox.some(function(m){ return m.unread; }) ? ' desk-ring-once' : '';
+
+  var phoneScreenHtml = '';
+  if (activeInbox.length > 0) {
+    phoneScreenHtml = '<div class="desk-phone-status"><span>Inbox</span><span>' + activeInbox.length + ' msg</span></div>';
+    phoneScreenHtml += '<div class="desk-phone-messages">';
+    activeInbox.slice(0, 4).forEach(function(m) {
+      var sc = m.scenario || {};
+      var urgent = m.timerRemaining ? '<span class="desk-phone-alert">\u2757</span>' : '';
+      phoneScreenHtml += '<div class="desk-phone-msg" onclick="openInboxMessage(\'' + m.id + '\')">';
+      phoneScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? m.timerRemaining + ' rd' : '') + '</span></div>';
+      phoneScreenHtml += '<div class="desk-phone-subj">' + esc(sc.subject || sc.title || '') + '</div>';
+      phoneScreenHtml += '</div>';
+    });
+    phoneScreenHtml += '</div>';
+  } else {
+    phoneScreenHtml = '<div class="desk-phone-empty">No messages</div>';
+  }
+
+  // --- Monitor / Folder / Keys badges & disabled state ---
+  var monQ = G.channelQueues.monitor || [];
+  var folQ = G.channelQueues.folder || [];
+  var keyQ = G.channelQueues.keys || [];
+
+  function deskBadge(count) {
+    return count > 0 ? '<div class="desk-obj-badge">' + count + '</div>' : '';
+  }
+
+  var monDisabled = (disabled || monQ.length === 0) ? ' disabled' : '';
+  var folDisabled = (disabled || folQ.length === 0) ? ' disabled' : '';
+  var keyDisabled = (disabled || keyQ.length === 0) ? ' disabled' : '';
+
+  // --- Monitor screen (static desktop atmosphere) ---
+  var monScreen = '<div class="desk-mon-desktop">'
+    + '<div class="desk-mon-win" style="top:8%;left:5%;width:55%;height:50%">'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-green"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Budget — Q' + G.round + '</span></div>'
+    + '<div class="desk-mon-win-body"><div class="desk-mon-chart">'
+    + '<div class="desk-mon-chart-bar" style="height:40%;background:#6aa84f"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:65%;background:#6aa84f"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:50%;background:#e69138"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:80%;background:#6aa84f"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:35%;background:#e69138"></div>'
+    + '</div></div></div>'
+    + '<div class="desk-mon-win" style="top:15%;left:35%;width:58%;height:45%">'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-purple"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">The Forward</span></div>'
+    + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:80%;background:#999"></div><div class="desk-mon-win-line" style="width:60%;background:#bbb"></div><div class="desk-mon-win-line" style="width:70%;background:#bbb"></div></div></div>'
+    + '<div class="desk-mon-win" style="top:50%;left:10%;width:50%;height:35%">'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-gray"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Email Draft</span></div>'
+    + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:90%;background:#ccc"></div><div class="desk-mon-win-line" style="width:45%;background:#ccc"></div></div></div>'
+    + '</div>'
+    + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Budget</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
+
+  el.innerHTML = ''
+    + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No action points remaining.</strong> Click "End Round" below to continue.</div>' : '')
+    + '<div style="margin-bottom:28px">'
+    + '<div class="section-header">'
+    + '<span class="step-ind">' + roundHeading + '</span>'
+    + '<h2>Your Desk</h2>'
+    + '<p>You have <strong>' + G.apRemaining + '</strong> action point' + (G.apRemaining !== 1 ? 's' : '') + ' remaining.</p>'
+    + endRoundHtml
+    + '</div>'
+    + '<div class="desk-objects">'
+
+    // Phone
+    + '<div class="desk-obj desk-obj-phone' + phoneRingClass + '" id="desk-phone">'
+    + phoneBadge
+    + '<div class="desk-phone-wrap">'
+    + '<img class="desk-phone-img" src="art/phone.png" />'
+    + '<div class="desk-phone-screen">' + phoneScreenHtml + '</div>'
+    + '</div>'
+    + '<div class="desk-obj-sub">Free to answer</div>'
+    + '</div>'
+
+    // Monitor
+    + '<div class="desk-obj desk-obj-monitor' + monDisabled + '" onclick="deskAction(\'monitor\')">'
+    + deskBadge(monQ.length)
+    + '<div class="desk-monitor-wrap">'
+    + '<img class="desk-monitor-img" src="art/monitor.png" />'
+    + '<div class="desk-monitor-screen">' + monScreen + '</div>'
+    + '</div>'
+    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '</div>'
+
+    // Folder
+    + '<div class="desk-obj desk-obj-folder' + folDisabled + '" onclick="deskAction(\'folder\')">'
+    + deskBadge(folQ.length)
+    + '<img class="desk-folder-img" src="art/folder.png" />'
+    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '</div>'
+
+    // Keys
+    + '<div class="desk-obj desk-obj-keys' + keyDisabled + '" onclick="deskAction(\'keys\')">'
+    + deskBadge(keyQ.length)
+    + '<img class="desk-keys-img" src="art/keys.png" />'
+    + '<div class="desk-obj-label">Out &amp; About</div>'
+    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '</div>'
+
+    + '</div>'
+    + '</div>'
+
+    // Action log
+    + '<div class="invest-toggle-bar">'
+    + (G.roundActions.length > 0 ? '<button class="log-toggle-btn" onclick="toggleActionLog()">\uD83D\uDCCB Action Log <span class="log-btn-count">' + G.roundActions.length + '</span></button>' : '')
+    + '</div>'
+    + '<div class="action-log-panel" id="action-log-panel">'
+    + G.roundActions.map(function(a) {
+        return '<div class="act-result">'
+          + '<div class="act-result-title">' + a.icon + ' ' + a.name + '</div>'
+          + '<div class="act-result-text">' + a.outcomeText + '</div>'
+          + '<div class="chip-row">' + a.chips + '</div>'
+          + '</div>';
+      }).join('')
+    + '</div>';
 }
 
-// ═══════════════ ACTION ═══════════════
+// ═══════════════ DESK ACTION ═══════════════
+function deskAction(channel) {
+  if (G.apRemaining <= 0) return;
+  var queue = G.channelQueues[channel];
+  if (!queue || queue.length === 0) return;
+
+  // Pull next scenario from this channel's queue
+  var scenarioId = queue.shift();
+  G.apRemaining--;
+  G.actionsThisRound++;
+
+  // Tick persistent inbox timers
+  tickInboxTimers();
+
+  // Show deferred inbox toasts after first action
+  (G.inboxMessages||[]).forEach(function(msg) {
+    if(!msg.toastShown && !msg.expired) {
+      showInboxToast(msg.scenario);
+      msg.toastShown = true;
+    }
+  });
+
+  updateHUD();
+  updateInboxPanel();
+  if(checkFailure()) return;
+
+  // Find and execute the scenario
+  var sc = GAME_DATA.scenarios.find(function(s) { return s.id === scenarioId; });
+  if (!sc) { renderMain(); return; }
+
+  G.usedScenarioIds.push(sc.id);
+  G.history.push('Round ' + G.round + ' — Desk: ' + channel);
+
+  // Check for breaking news BEFORE normal scenario
+  var bn = checkBreakingNews();
+  if (bn) {
+    G.pendingQueue = ['scenario:' + sc.id];
+    showBreakingNews(bn);
+    return;
+  }
+
+  renderScenario(sc);
+}
+
+// ═══════════════ ACTION (legacy) ═══════════════
 function doAction(actionId){
   if(G.apRemaining<=0) return;
   const action=GAME_DATA.actions.find(a=>a.id===actionId);

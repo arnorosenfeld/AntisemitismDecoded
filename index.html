@@ -359,6 +359,67 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .act-cost { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-top: 7px; }
 .act-effects { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
+/* ── DESK OBJECTS ── */
+.desk-objects { display: flex; gap: 36px; align-items: center; justify-content: center; }
+.desk-obj { cursor: pointer; transition: all 0.2s ease; position: relative; text-align: center; }
+.desk-obj:hover { transform: translateY(-4px); }
+.desk-obj.disabled { opacity: 0.35; pointer-events: none; cursor: not-allowed; }
+.desk-obj-phone { width: 120px; flex-shrink: 0; }
+.desk-obj-monitor { width: 220px; flex-shrink: 0; }
+.desk-obj-folder { width: 150px; flex-shrink: 0; }
+.desk-obj-keys { width: 140px; flex-shrink: 0; }
+.desk-obj-badge { position: absolute; top: -8px; right: -8px; background: var(--gold); color: white; font-size: 11px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(184,134,11,0.4); z-index: 10; }
+.desk-obj-badge-red { background: #ef4444; box-shadow: 0 2px 6px rgba(239,68,68,0.4); }
+.desk-obj-sub { margin-top: 6px; font-size: 11px; color: var(--muted); opacity: 0.7; }
+.desk-obj-label { margin-top: 8px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+/* Phone */
+.desk-phone-wrap { position: relative; }
+.desk-phone-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.15)); }
+.desk-phone-screen { position: absolute; top: 6.4%; left: 7.4%; right: 7.1%; bottom: 13.4%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
+.desk-phone-status { display: flex; justify-content: space-between; padding: 2px 4px; font-size: 6px; font-weight: 600; color: #666; }
+.desk-phone-messages { flex: 1; overflow: hidden; }
+.desk-phone-msg { padding: 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
+.desk-phone-msg:hover { background: rgba(0,0,0,0.04); }
+.desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; }
+.desk-phone-time { font-weight: 400; color: #999; margin-left: auto; text-align: right; }
+.desk-phone-subj { font-size: 8px; color: #888; margin-top: 1px; line-height: 1.3; }
+.desk-phone-alert { color: #ef4444; margin-right: 2px; }
+.desk-phone-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #999; }
+
+/* Monitor */
+.desk-monitor-wrap { position: relative; }
+.desk-monitor-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.12)); }
+.desk-monitor-screen { position: absolute; top: 8.5%; left: 7.2%; right: 6.0%; bottom: 26.7%; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; border-radius: 0; }
+.desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
+.desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
+.desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
+.desk-mon-win-bar-green { background: #dce8dc; }
+.desk-mon-win-bar-purple { background: #e0dce8; }
+.desk-mon-win-bar-gray { background: #e0e0e0; }
+.desk-mon-dot { width: 3px; height: 3px; border-radius: 50%; }
+.desk-mon-dot-r { background: #ff5f57; }
+.desk-mon-dot-y { background: #febc2e; }
+.desk-mon-dot-g { background: #28c840; }
+.desk-mon-win-title { font-size: 3px; color: #888; margin-left: 3px; font-weight: 600; }
+.desk-mon-win-body { padding: 3px; }
+.desk-mon-win-line { height: 2px; border-radius: 1px; margin-bottom: 2px; }
+.desk-mon-chart { display: flex; align-items: flex-end; gap: 1px; height: 22px; padding: 2px 2px 0; }
+.desk-mon-chart-bar { flex: 1; border-radius: 1px 1px 0 0; min-width: 3px; }
+.desk-mon-taskbar { height: 10%; background: #1e2a3a; display: flex; align-items: center; padding: 0 4px; gap: 3px; }
+.desk-mon-taskbar-item { height: 60%; padding: 0 4px; border-radius: 1px; font-size: 4px; font-weight: 600; color: #aab; display: flex; align-items: center; }
+.desk-mon-taskbar-item.active { background: rgba(255,255,255,0.12); }
+
+/* Folder */
+.desk-folder-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.12)); }
+
+/* Keys */
+.desk-keys-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15)); }
+
+/* Ring once animation */
+@keyframes deskRingOnce { 0%{transform:rotate(0)} 5%{transform:rotate(-5deg)} 10%{transform:rotate(5deg)} 15%{transform:rotate(-3deg)} 20%{transform:rotate(3deg)} 25%,100%{transform:rotate(0)} }
+.desk-ring-once .desk-phone-wrap { animation: deskRingOnce 1.2s ease-in-out 1; }
+
 /* ACTION RESULT */
 .act-result { border-left: 3px solid var(--gold); padding: 11px 15px; background: var(--white); margin-bottom: 9px; animation: slideIn 0.2s ease; }
 @keyframes slideIn { from { opacity:0; transform:translateX(-5px); } to { opacity:1; transform:none; } }
@@ -13333,6 +13394,7 @@ var GAME_DATA =
   ]
 }
 
+
 ;
 function esc(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -13345,6 +13407,7 @@ let G = {
   activeUnlocks:[], promotionLevel:0,
   actionsThisRound:0, inboxDelivered:0,
   roundInboxQueue:[], pendingInbox:[],
+  channelQueues: null, phoneMessages: [],
   // Persistent inbox
   inboxMessages:[], // {id, scenario, unread, expired, timerRemaining}
   // Coalition strikes
@@ -14686,6 +14749,7 @@ function beginRound(){
   
   G.apRemaining=GAME_DATA.config.actionPointsPerRound;
   G.roundActions=[]; G.pendingQueue=[];
+  G.channelQueues = null; // Reset so distributeScenarios re-picks
   G._coachWarningsThisRound = {}; // Reset coaching warning cooldown
   G.actionsThisRound=0; G.inboxDelivered=0;
   // #7: Pick inbox scenarios using category system
@@ -14814,68 +14878,219 @@ function updateHUD(){
   updatePoliticsHUD();
 }
 
+// ═══════════════ DESK / CHANNEL DISTRIBUTION ═══════════════
+function distributeScenarios() {
+  // Pre-pick scenarios for this round and split across desk objects
+  var channels = ['monitor', 'folder', 'keys'];
+  G.channelQueues = { monitor: [], folder: [], keys: [] };
+
+  // How many scenarios to pre-pick (one per AP remaining + a couple extra)
+  var needed = (G.apRemaining || 0) + 2;
+  var picked = [];
+  for (var i = 0; i < needed; i++) {
+    var eligible = GAME_DATA.scenarios.filter(function(s) {
+      return !G.usedScenarioIds.includes(s.id) && !picked.includes(s.id) && scenarioApplies(s);
+    });
+    if (eligible.length === 0) break;
+    var sc = weightedPick(eligible);
+    if (sc) picked.push(sc.id);
+  }
+
+  // Distribute picked scenarios across channels
+  picked.forEach(function(scenarioId) {
+    var sc = GAME_DATA.scenarios.find(function(s) { return s.id === scenarioId; });
+    if (!sc) return;
+    var ch = sc.channel || 'any';
+    if (ch !== 'any' && G.channelQueues[ch]) {
+      G.channelQueues[ch].push(scenarioId);
+    } else {
+      // Distribute to channel with fewest items
+      var min = channels.reduce(function(a, b) {
+        return G.channelQueues[a].length <= G.channelQueues[b].length ? a : b;
+      });
+      G.channelQueues[min].push(scenarioId);
+    }
+  });
+}
+
 // ═══════════════ MAIN RENDER ═══════════════
 function renderMain(){
-  const el=document.getElementById('game-inner');
-  const disabled=G.apRemaining<=0;
-  
-  // #9: Show stat effects on action cards
-  function effectChips(fx) {
-    return Object.entries(fx||{}).map(([k,v]) => {
-      if(v===0) return '';
-      const lbl = GAME_DATA.stats.find(s=>s.id===k)?.label || k;
-      return `<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${lbl}</span>`;
-    }).filter(Boolean).join('');
-  }
-  
-  // Round info - simplified
+  var el=document.getElementById('game-inner');
+  var disabled=G.apRemaining<=0;
+
+  // Ensure channel queues are populated
+  if (!G.channelQueues || !G.channelQueues.monitor) distributeScenarios();
+
+  // Round info
   var ri = GAME_DATA.config.roundNames[G.round-1]||{year:'',round:'',hebrew:'',english:''};
   var totalRounds = GAME_DATA.config.totalRounds || 6;
   var roundHeading = 'Round ' + G.round + ' of ' + totalRounds + ' — ' + ri.year;
   if (ri.hebrew) roundHeading += ' — ' + ri.hebrew + ' / ' + ri.english;
 
   // End round button (only when AP = 0)
-  var endRoundHtml = disabled ? '<button class="btn btn-sm btn-primary ap-end" onclick="endRound()" style="margin-top:12px">End Round →</button>' : '';
+  var endRoundHtml = disabled ? '<button class="btn btn-sm btn-primary ap-end" onclick="endRound()" style="margin-top:12px">End Round \u2192</button>' : '';
 
-  el.innerHTML=`
-    ${disabled?`<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No action points remaining.</strong> Click "End Round" below to continue.</div>`:''}
-    <div style="margin-bottom:28px">
-      <div class="section-header">
-        <span class="step-ind">${roundHeading}</span>
-        <h2>Choose Your Next Action</h2>
-        <p style="margin-top:8px">You have <strong>${G.apRemaining}</strong> action point${G.apRemaining!==1?'s':''} remaining. Each action triggers a scenario requiring your decision.</p>
-        ${endRoundHtml}
-      </div>
-      <div class="action-cards">
-        ${GAME_DATA.actions.map(a=>{
-          var budgetCost = a.budgetCost || 0;
-          var canAfford = budgetCost <= G.budget;
-          var isDisabled = disabled || (!canAfford && budgetCost > 0);
-          var costLabel = budgetCost > 0 ? `<div class="act-budget-cost${!canAfford?' unaffordable':''}">💰 ${budgetCost} budget${!canAfford?' (insufficient)':''}</div>` : '';
-          var budgetFx = a.budgetEffect ? `<span class="chip ${a.budgetEffect>0?'chip-pos':'chip-neg'}">${a.budgetEffect>0?'+':''}${a.budgetEffect} Budget</span>` : '';
-          return `
-          <div class="action-card ${isDisabled?'disabled':''}" onclick="${isDisabled?'':` doAction('${a.id}')`}">
-            <span class="act-icon">${a.icon}</span>
-            <div class="act-name">${a.name}</div>
-            <div class="act-desc">${a.description}</div>
-            <div class="act-effects">${effectChips(a.baseEffects)}${budgetFx}</div>
-            ${costLabel}
-            <div class="act-cost">${a.cost} action point</div>
-          </div>`;}).join('')}
-      </div>
-    </div>
-    <div class="invest-toggle-bar">
-      ${G.roundActions.length > 0 ? '<button class="log-toggle-btn" onclick="toggleActionLog()">📋 Action Log <span class="log-btn-count">' + G.roundActions.length + '</span></button>' : ''}
-    </div>
-    <div class="action-log-panel" id="action-log-panel">
-      ${G.roundActions.map(a=>`
-        <div class="act-result">
-          <div class="act-result-title">${a.icon} ${a.name}</div>
-          <div class="act-result-text">${a.outcomeText}</div>
-          <div class="chip-row">${a.chips}</div>
-        </div>`).join('')}
-    </div>
-`;
+  // --- Phone (inbox) ---
+  var activeInbox = (G.inboxMessages||[]).filter(function(m){ return !m.expired; });
+  var phoneBadge = activeInbox.length > 0 ? '<div class="desk-obj-badge desk-obj-badge-red">' + activeInbox.length + '</div>' : '';
+  var phoneRingClass = activeInbox.some(function(m){ return m.unread; }) ? ' desk-ring-once' : '';
+
+  var phoneScreenHtml = '';
+  if (activeInbox.length > 0) {
+    phoneScreenHtml = '<div class="desk-phone-status"><span>Inbox</span><span>' + activeInbox.length + ' msg</span></div>';
+    phoneScreenHtml += '<div class="desk-phone-messages">';
+    activeInbox.slice(0, 4).forEach(function(m) {
+      var sc = m.scenario || {};
+      var urgent = m.timerRemaining ? '<span class="desk-phone-alert">\u2757</span>' : '';
+      phoneScreenHtml += '<div class="desk-phone-msg" onclick="openInboxMessage(\'' + m.id + '\')">';
+      phoneScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? m.timerRemaining + ' rd' : '') + '</span></div>';
+      phoneScreenHtml += '<div class="desk-phone-subj">' + esc(sc.subject || sc.title || '') + '</div>';
+      phoneScreenHtml += '</div>';
+    });
+    phoneScreenHtml += '</div>';
+  } else {
+    phoneScreenHtml = '<div class="desk-phone-empty">No messages</div>';
+  }
+
+  // --- Monitor / Folder / Keys badges & disabled state ---
+  var monQ = G.channelQueues.monitor || [];
+  var folQ = G.channelQueues.folder || [];
+  var keyQ = G.channelQueues.keys || [];
+
+  function deskBadge(count) {
+    return count > 0 ? '<div class="desk-obj-badge">' + count + '</div>' : '';
+  }
+
+  var monDisabled = (disabled || monQ.length === 0) ? ' disabled' : '';
+  var folDisabled = (disabled || folQ.length === 0) ? ' disabled' : '';
+  var keyDisabled = (disabled || keyQ.length === 0) ? ' disabled' : '';
+
+  // --- Monitor screen (static desktop atmosphere) ---
+  var monScreen = '<div class="desk-mon-desktop">'
+    + '<div class="desk-mon-win" style="top:8%;left:5%;width:55%;height:50%">'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-green"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Budget — Q' + G.round + '</span></div>'
+    + '<div class="desk-mon-win-body"><div class="desk-mon-chart">'
+    + '<div class="desk-mon-chart-bar" style="height:40%;background:#6aa84f"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:65%;background:#6aa84f"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:50%;background:#e69138"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:80%;background:#6aa84f"></div>'
+    + '<div class="desk-mon-chart-bar" style="height:35%;background:#e69138"></div>'
+    + '</div></div></div>'
+    + '<div class="desk-mon-win" style="top:15%;left:35%;width:58%;height:45%">'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-purple"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">The Forward</span></div>'
+    + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:80%;background:#999"></div><div class="desk-mon-win-line" style="width:60%;background:#bbb"></div><div class="desk-mon-win-line" style="width:70%;background:#bbb"></div></div></div>'
+    + '<div class="desk-mon-win" style="top:50%;left:10%;width:50%;height:35%">'
+    + '<div class="desk-mon-win-bar desk-mon-win-bar-gray"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Email Draft</span></div>'
+    + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:90%;background:#ccc"></div><div class="desk-mon-win-line" style="width:45%;background:#ccc"></div></div></div>'
+    + '</div>'
+    + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Budget</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
+
+  el.innerHTML = ''
+    + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No action points remaining.</strong> Click "End Round" below to continue.</div>' : '')
+    + '<div style="margin-bottom:28px">'
+    + '<div class="section-header">'
+    + '<span class="step-ind">' + roundHeading + '</span>'
+    + '<h2>Your Desk</h2>'
+    + '<p>You have <strong>' + G.apRemaining + '</strong> action point' + (G.apRemaining !== 1 ? 's' : '') + ' remaining.</p>'
+    + endRoundHtml
+    + '</div>'
+    + '<div class="desk-objects">'
+
+    // Phone
+    + '<div class="desk-obj desk-obj-phone' + phoneRingClass + '" id="desk-phone">'
+    + phoneBadge
+    + '<div class="desk-phone-wrap">'
+    + '<img class="desk-phone-img" src="art/phone.png" />'
+    + '<div class="desk-phone-screen">' + phoneScreenHtml + '</div>'
+    + '</div>'
+    + '<div class="desk-obj-sub">Free to answer</div>'
+    + '</div>'
+
+    // Monitor
+    + '<div class="desk-obj desk-obj-monitor' + monDisabled + '" onclick="deskAction(\'monitor\')">'
+    + deskBadge(monQ.length)
+    + '<div class="desk-monitor-wrap">'
+    + '<img class="desk-monitor-img" src="art/monitor.png" />'
+    + '<div class="desk-monitor-screen">' + monScreen + '</div>'
+    + '</div>'
+    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '</div>'
+
+    // Folder
+    + '<div class="desk-obj desk-obj-folder' + folDisabled + '" onclick="deskAction(\'folder\')">'
+    + deskBadge(folQ.length)
+    + '<img class="desk-folder-img" src="art/folder.png" />'
+    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '</div>'
+
+    // Keys
+    + '<div class="desk-obj desk-obj-keys' + keyDisabled + '" onclick="deskAction(\'keys\')">'
+    + deskBadge(keyQ.length)
+    + '<img class="desk-keys-img" src="art/keys.png" />'
+    + '<div class="desk-obj-label">Out &amp; About</div>'
+    + '<div class="desk-obj-sub">1 AP each</div>'
+    + '</div>'
+
+    + '</div>'
+    + '</div>'
+
+    // Action log
+    + '<div class="invest-toggle-bar">'
+    + (G.roundActions.length > 0 ? '<button class="log-toggle-btn" onclick="toggleActionLog()">\uD83D\uDCCB Action Log <span class="log-btn-count">' + G.roundActions.length + '</span></button>' : '')
+    + '</div>'
+    + '<div class="action-log-panel" id="action-log-panel">'
+    + G.roundActions.map(function(a) {
+        return '<div class="act-result">'
+          + '<div class="act-result-title">' + a.icon + ' ' + a.name + '</div>'
+          + '<div class="act-result-text">' + a.outcomeText + '</div>'
+          + '<div class="chip-row">' + a.chips + '</div>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+}
+
+// ═══════════════ DESK ACTION ═══════════════
+function deskAction(channel) {
+  if (G.apRemaining <= 0) return;
+  var queue = G.channelQueues[channel];
+  if (!queue || queue.length === 0) return;
+
+  // Pull next scenario from this channel's queue
+  var scenarioId = queue.shift();
+  G.apRemaining--;
+  G.actionsThisRound++;
+
+  // Tick persistent inbox timers
+  tickInboxTimers();
+
+  // Show deferred inbox toasts after first action
+  (G.inboxMessages||[]).forEach(function(msg) {
+    if(!msg.toastShown && !msg.expired) {
+      showInboxToast(msg.scenario);
+      msg.toastShown = true;
+    }
+  });
+
+  updateHUD();
+  updateInboxPanel();
+  if(checkFailure()) return;
+
+  // Find and execute the scenario
+  var sc = GAME_DATA.scenarios.find(function(s) { return s.id === scenarioId; });
+  if (!sc) { renderMain(); return; }
+
+  G.usedScenarioIds.push(sc.id);
+  G.history.push('Round ' + G.round + ' — Desk: ' + channel);
+
+  // Check for breaking news BEFORE normal scenario
+  var bn = checkBreakingNews();
+  if (bn) {
+    G.pendingQueue = ['scenario:' + sc.id];
+    showBreakingNews(bn);
+    return;
+  }
+
+  renderScenario(sc);
 }
 
 // ═══════════════ ACTION ═══════════════

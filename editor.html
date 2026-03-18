@@ -14507,8 +14507,18 @@ function renderAdvisorQuotesEditor(scenario, si, prefix){
     html += '</select>';
     html += '<button class="btn btn-danger btn-sm" style="margin-left:auto;padding:3px 8px;font-size:10px" onclick="deleteAdvisorQuote('+si+','+qi+',\''+prefix+'\')">✕</button>';
     html += '</div>';
-    // Row 2: quote text
-    html += '<div class="form-group" style="margin-bottom:8px"><label>Quote Text</label><textarea class="aq-text" id="'+prefix+'-aqtext-'+si+'-'+qi+'" rows="2" style="font-size:12px">'+esc(q.text||'')+'</textarea></div>';
+    // Row 2: mood + quote text
+    var qmood = q.mood || 'neutral';
+    var portraitPreview = adv.portrait ? '<img src="'+esc(adv.portrait)+'/'+qmood+'.png" id="'+prefix+'-aqmoodprev-'+si+'-'+qi+'" style="width:36px;height:42px;object-fit:cover;object-position:top;border-radius:4px;flex-shrink:0">' : '';
+    html += '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px">';
+    html += portraitPreview;
+    html += '<div style="flex:1"><div class="form-group" style="margin-bottom:4px"><label>Expression</label><select id="'+prefix+'-aqmood-'+si+'-'+qi+'" style="font-size:12px;padding:4px" onchange="updateMoodPreview(\''+prefix+'\','+si+','+qi+')">';
+    ['neutral','approving','concerned','disapproving','excited'].forEach(function(m){
+      html += '<option value="'+m+'"'+(qmood===m?' selected':'')+'>'+m+'</option>';
+    });
+    html += '</select></div>';
+    html += '<div class="form-group"><label>Quote Text</label><textarea class="aq-text" id="'+prefix+'-aqtext-'+si+'-'+qi+'" rows="2" style="font-size:12px">'+esc(q.text||'')+'</textarea></div>';
+    html += '</div></div>';
     // Row 3: recommendation fields
     html += '<div class="form-row three" style="margin-bottom:6px">';
     html += '<div class="form-group"><label>Recommends Choice</label><select id="'+prefix+'-aqrec-'+si+'-'+qi+'" style="font-size:12px">';
@@ -14529,11 +14539,22 @@ function renderAdvisorQuotesEditor(scenario, si, prefix){
   return html;
 }
 
+function updateMoodPreview(prefix, si, qi){
+  var moodSel = document.getElementById(prefix+'-aqmood-'+si+'-'+qi);
+  var preview = document.getElementById(prefix+'-aqmoodprev-'+si+'-'+qi);
+  if(!moodSel || !preview) return;
+  var mood = moodSel.value;
+  var src = preview.src;
+  // Replace the mood filename in the src
+  src = src.replace(/\/(neutral|approving|concerned|disapproving|excited)\.png/, '/'+mood+'.png');
+  preview.src = src;
+}
+
 function addAdvisorQuote(si, prefix){
   var list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
   var s = list[si]; if(!s) return;
   if(!s.advisorQuotes) s.advisorQuotes = [];
-  s.advisorQuotes.push({advisorId:'',text:'',recommendsChoice:null,effectModifier:{},explicit:true});
+  s.advisorQuotes.push({advisorId:'',text:'',mood:'neutral',recommendsChoice:null,effectModifier:{},explicit:true});
   setDirty();
   prefix==='sc'?populateScenarios():populateInbox();
 }
@@ -14559,12 +14580,13 @@ function readAdvisorQuotes(si, prefix){
     var recVal = document.getElementById(prefix+'-aqrec-'+si+'-'+qi).value;
     var recommendsChoice = recVal==='' ? null : parseInt(recVal);
     var explicit = document.getElementById(prefix+'-aqexpl-'+si+'-'+qi).value !== 'false';
+    var mood = (document.getElementById(prefix+'-aqmood-'+si+'-'+qi)||{}).value || 'neutral';
     var effectModifier = {};
     stats.forEach(function(st){
       var v = parseInt(document.getElementById(prefix+'-aqefx-'+si+'-'+qi+'-'+st.id)?.value)||0;
       if(v) effectModifier[st.id] = v;
     });
-    quotes.push({advisorId:advisorId,text:text,recommendsChoice:recommendsChoice,effectModifier:effectModifier,explicit:explicit});
+    quotes.push({advisorId:advisorId,text:text,mood:mood,recommendsChoice:recommendsChoice,effectModifier:effectModifier,explicit:explicit});
     qi++;
   }
   return quotes;

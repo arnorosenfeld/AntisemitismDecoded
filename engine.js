@@ -1902,7 +1902,13 @@ function deskAction(channel) {
   // Check for breaking news BEFORE normal scenario
   var bn = checkBreakingNews();
   if (bn) {
-    G.pendingQueue = ['scenario:' + sc.id];
+    // Restore the action — breaking news is free
+    G.apRemaining++;
+    G.actionsThisRound--;
+    // Put the scenario back in the channel queue
+    queue.unshift(scenarioId);
+    G.usedScenarioIds.pop(); // undo the push above
+    G.history.pop();
     showBreakingNews(bn);
     return;
   }
@@ -3895,8 +3901,9 @@ function checkBreakingNews() {
 }
 function showBreakingNews(bn) {
   G.currentBreakingNews = bn;
-  var container = document.getElementById('game-inner');
-  if (!container) return;
+  var overlay = document.getElementById('bn-overlay');
+  var screen = document.getElementById('bn-tv-screen');
+  if (!overlay || !screen) return;
   var advHtml = renderAdvisorQuotes(bn);
   var choicesHtml = bn.choices.map(function(c, ci) {
     inferPoliticalLean(c, bn);
@@ -3911,10 +3918,19 @@ function showBreakingNews(bn) {
     var polTag = renderPoliticalTag(c);
     var choiceAdv = renderChoiceAdvisorQuote(c);
     var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' budget' + (cantAfford?' (insufficient)':'') + '</span>' : '';
-    return '<button class="choice-btn' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + badge + coalWarn + polTag + costTag + esc(c.text) + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
+    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + badge + coalWarn + polTag + costTag + esc(c.text) + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
   }).join('');
-  container.innerHTML = '<div class="breaking-banner">\u26a0 BREAKING NEWS \u26a0</div><div class="scenario-card breaking"><div class="scenario-tag">' + esc(bn.tag) + '</div><h2>' + esc(bn.title) + '</h2><p>' + esc(bn.body) + '</p>' + advHtml + '<div class="choices-container">' + choicesHtml + '</div></div>';
-  // breaking news shown in game-inner
+  screen.innerHTML =
+    '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Developing story \u2014 community response underway</span></div>' +
+    '<div class="bn-screen-inner">' +
+      '<div class="bn-tag">' + esc(bn.tag) + '</div>' +
+      '<div class="bn-title">' + esc(bn.title) + '</div>' +
+      '<div class="bn-body">' + esc(bn.body) + '</div>' +
+      advHtml +
+      '<div class="bn-choices">' + choicesHtml + '</div>' +
+    '</div>';
+  // Fade in
+  setTimeout(function() { overlay.classList.add('active'); }, 50);
 }
 function pickBreakingChoice(ci) {
   var bn = G.currentBreakingNews;
@@ -3968,12 +3984,35 @@ function pickBreakingChoice(ci) {
   updateHUD();
   if(checkFailure()) return;
   G.currentBreakingNews = null;
+  G.pendingQueue = []; // Don't auto-play any queued scenario
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
   if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
-  showOutcome(bn.title, choice.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, function(){processQueue()});
+  // Close TV overlay and show outcome in the TV screen
+  var screen = document.getElementById('bn-tv-screen');
+  if (screen) {
+    screen.innerHTML =
+      '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Story resolved \u2014 ' + esc(bn.title) + '</span></div>' +
+      '<div class="bn-screen-inner">' +
+        '<div class="bn-tag">Outcome</div>' +
+        '<div class="bn-title">' + esc(bn.title) + '</div>' +
+        '<div class="bn-outcome-choice"><span style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#999;display:block;margin-bottom:4px">Your Decision</span>' + esc(choice.text) + '</div>' +
+        '<div class="bn-body">' + outcome.text + '</div>' +
+        '<div class="chip-row" style="margin-bottom:12px">' + chips+sc+budgetChip+polChips+advisorChips + '</div>' +
+        (contextWithPol ? '<div class="bn-context">' + contextWithPol + '</div>' : '') +
+        '<button class="bn-continue" onclick="closeBreakingNews()">Return to your desk \u2192</button>' +
+      '</div>';
+  }
+}
+
+function closeBreakingNews() {
+  var overlay = document.getElementById('bn-overlay');
+  if (overlay) overlay.classList.remove('active');
+  updateHUD();
+  renderMain();
+  renderInvestStrip();
 }
 
 // ═══ COALITION SYSTEM ═══

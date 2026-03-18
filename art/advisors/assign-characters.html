@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>Assign Characters to Advisor Roles</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900&family=Merriweather+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Merriweather Sans', sans-serif; background: #f0ede8; padding: 20px 30px; color: #1a1a2e; }
+h1 { font-family: 'Merriweather', serif; font-size: 22px; margin-bottom: 4px; }
+.intro { color: #666; margin-bottom: 24px; font-size: 13px; line-height: 1.6; max-width: 700px; }
+
+.faces-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; margin-bottom: 30px; }
+@media (max-width: 1200px) { .faces-grid { grid-template-columns: repeat(6, 1fr); } }
+.face-card { background: #faf8f4; border: 2px solid #c4b9a8; padding: 8px; text-align: center; }
+.face-card img { width: 100%; height: auto; border: 1px solid #eee; }
+.face-card .label { font-size: 12px; font-weight: 700; color: #b8860b; margin-top: 6px; }
+.face-card .id { font-size: 9px; color: #999; font-family: monospace; }
+
+h2 { font-family: 'Merriweather', serif; font-size: 16px; margin-bottom: 12px; color: #b8860b; }
+.advisors-list { display: flex; flex-direction: column; gap: 10px; max-width: 700px; margin-bottom: 30px; }
+.advisor-row { display: flex; align-items: center; gap: 14px; background: #faf8f4; border: 1px solid #c4b9a8; padding: 12px 16px; }
+.advisor-row .emoji { font-size: 28px; flex-shrink: 0; }
+.advisor-row .info { flex: 1; }
+.advisor-row .name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 14px; }
+.advisor-row .role { font-size: 11px; color: #666; }
+.advisor-row .personality { font-size: 11px; color: #999; font-style: italic; }
+.advisor-row select { padding: 6px 10px; font-size: 13px; border: 1px solid #ccc; min-width: 160px; }
+.advisor-row select.assigned { border-color: #b8860b; background: #fef8e8; font-weight: bold; }
+.advisor-row .preview { width: 50px; height: 50px; object-fit: cover; border: 1px solid #ddd; display: none; }
+.advisor-row .preview.show { display: block; }
+
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-bottom: 8px; margin-top: 24px; }
+
+.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; padding: 12px 30px; display: flex; align-items: center; gap: 16px; z-index: 100; }
+.export-btn { background: #b8860b; color: white; border: none; padding: 10px 24px; font-size: 13px; font-weight: bold; cursor: pointer; }
+.export-btn:hover { background: #a07d10; }
+.export-output { flex: 1; color: #8899bb; font-size: 11px; font-family: monospace; }
+</style>
+</head><body>
+
+<h1>Assign Characters to Game Roles</h1>
+<p class="intro">Below are all 17 character faces (neutral expression). Under each current advisor, pick which character should represent them. Extra characters can be assigned to conversation NPCs or left unassigned for future use.</p>
+
+<h2>All 17 Characters</h2>
+<div class="faces-grid" id="faces-grid"></div>
+
+<div class="section-label">Current Advisors (8)</div>
+<h2>Assign a Character to Each Advisor</h2>
+<div class="advisors-list" id="advisors-list"></div>
+
+<div class="section-label">Unassigned Characters</div>
+<p class="intro">These characters can be used for conversation NPCs, future advisors, or other roles. No action needed now.</p>
+
+<div class="export-bar">
+  <button class="export-btn" onclick="exportAssignments()">Copy Assignments to Clipboard</button>
+  <span class="export-output" id="export-output"></span>
+</div>
+
+<div style="height:70px"></div>
+
+<script>
+var ADVISORS = [
+  { id: 'rachel_steinberg', emoji: '🧑‍💼', name: 'Rachel Steinberg', role: 'Board Chair', personality: 'Cautious' },
+  { id: 'avi_kessler', emoji: '🧑‍🏫', name: 'Avi Kessler', role: 'Program Director', personality: 'Idealist' },
+  { id: 'miriam_gold', emoji: '💼', name: 'Miriam Gold', role: 'Development Director', personality: 'Pragmatist' },
+  { id: 'rabbi_friedman', emoji: '📖', name: 'Rabbi David Friedman', role: 'Senior Rabbi', personality: 'Principled' },
+  { id: 'sarah_feld', emoji: '🏛️', name: 'Sarah Feld', role: 'Political Consultant', personality: 'Strategic' },
+  { id: 'tali_navarro', emoji: '✊', name: 'Tali Navarro', role: 'Community Organizer', personality: 'Activist' },
+  { id: 'leonard_katz', emoji: '🏦', name: 'Leonard Katz', role: 'Philanthropic Advisor', personality: 'Transactional' },
+  { id: 'noa_berman', emoji: '📱', name: 'Noa Berman', role: 'Media Strategist', personality: 'Calculated' }
+];
+
+var CHARS = [];
+for (var i = 1; i <= 17; i++) {
+  CHARS.push('char' + (i < 10 ? '0' : '') + i);
+}
+
+// Build faces grid
+var facesHtml = '';
+CHARS.forEach(function(cid) {
+  facesHtml += '<div class="face-card"><img src="' + cid + '/neutral.png"><div class="label">' + cid + '</div></div>';
+});
+document.getElementById('faces-grid').innerHTML = facesHtml;
+
+// Build advisor list
+var advisorHtml = '';
+ADVISORS.forEach(function(adv) {
+  advisorHtml += '<div class="advisor-row">';
+  advisorHtml += '<span class="emoji">' + adv.emoji + '</span>';
+  advisorHtml += '<div class="info"><div class="name">' + adv.name + '</div><div class="role">' + adv.role + '</div><div class="personality">' + adv.personality + '</div></div>';
+  advisorHtml += '<img class="preview" id="preview-' + adv.id + '">';
+  advisorHtml += '<select id="assign-' + adv.id + '" onchange="onAssign(\'' + adv.id + '\')">';
+  advisorHtml += '<option value="">— select character —</option>';
+  CHARS.forEach(function(cid) {
+    advisorHtml += '<option value="' + cid + '">' + cid + '</option>';
+  });
+  advisorHtml += '</select>';
+  advisorHtml += '</div>';
+});
+document.getElementById('advisors-list').innerHTML = advisorHtml;
+
+function onAssign(advId) {
+  var sel = document.getElementById('assign-' + advId);
+  var preview = document.getElementById('preview-' + advId);
+  var val = sel.value;
+
+  if (val) {
+    // Clear this character from other advisors
+    ADVISORS.forEach(function(other) {
+      if (other.id !== advId) {
+        var otherSel = document.getElementById('assign-' + other.id);
+        if (otherSel.value === val) {
+          otherSel.value = '';
+          otherSel.className = '';
+          var otherPreview = document.getElementById('preview-' + other.id);
+          otherPreview.className = 'preview';
+        }
+      }
+    });
+    sel.className = 'assigned';
+    preview.src = val + '/neutral.png';
+    preview.className = 'preview show';
+  } else {
+    sel.className = '';
+    preview.className = 'preview';
+  }
+}
+
+function exportAssignments() {
+  var result = {};
+  ADVISORS.forEach(function(adv) {
+    var sel = document.getElementById('assign-' + adv.id);
+    if (sel.value) result[adv.id] = sel.value;
+  });
+  var json = JSON.stringify(result, null, 2);
+  navigator.clipboard.writeText(json).then(function() {
+    document.getElementById('export-output').textContent = 'Copied! ' + Object.keys(result).length + ' advisors assigned.';
+  });
+}
+</script>
+</body></html>

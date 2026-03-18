@@ -93,7 +93,7 @@ body {
 .lp-cta-btn { padding: 16px 40px; font-size: 13px; letter-spacing: 2px; }
 .lp-cta-tagline { font-family: 'Merriweather', serif; font-style: italic; font-size: 13px; color: var(--muted); margin-top: 14px; }
 .lp-depth-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 36px 28px; max-width: 720px; margin: 0 auto 32px; }
-.lp-depth-label { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; text-align: center; }
+.lp-depth-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; text-align: center; }
 .lp-depth-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
 @media (max-width: 600px) { .lp-depth-grid { grid-template-columns: 1fr; } }
 .lp-depth-item { text-align: center; }
@@ -101,14 +101,14 @@ body {
 .lp-depth-title { font-family: 'Merriweather', serif; font-weight: 700; font-size: 13px; margin-bottom: 4px; }
 .lp-depth-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
 /* Scroll hint arrow */
-.lp-scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; pointer-events: none; animation: scrollHintPulse 2s ease-in-out infinite; transition: opacity 0.4s; }
-.lp-scroll-hint.hidden { opacity: 0; }
-.lp-scroll-arrow { font-size: 32px; color: var(--gold); text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-@keyframes scrollHintPulse { 0%,100%{ opacity: 0.6; transform: translateX(-50%) translateY(0); } 50%{ opacity: 1; transform: translateX(-50%) translateY(6px); } }
+.lp-scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; pointer-events: auto; cursor: pointer; animation: scrollHintPulse 2s ease-in-out infinite; transition: opacity 0.4s; }
+.lp-scroll-hint.hidden { opacity: 0; pointer-events: none; }
+.lp-scroll-arrow { font-size: 44px; color: #999; display: block; width: 44px; height: 44px; line-height: 44px; text-align: center; }
+@keyframes scrollHintPulse { 0%,100%{ opacity: 0.5; transform: translateX(-50%) translateY(0); } 50%{ opacity: 0.85; transform: translateX(-50%) translateY(6px); } }
 
 /* Advisor preview on landing page */
 .lp-advisors-strip { max-width: 720px; margin: 0 auto 32px; padding: 28px; text-align: center; }
-.lp-advisors-label { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+.lp-advisors-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
 .lp-advisors-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
 .lp-advisor-card { text-align: center; width: 90px; }
 .lp-advisor-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 11px; margin-top: 8px; }

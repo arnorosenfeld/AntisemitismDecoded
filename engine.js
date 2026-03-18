@@ -447,11 +447,7 @@ function lpPickChoice(idx) {
   ['lp-reveal','lp-depth','lp-advisors','lp-headlines','lp-bottom'].forEach(function(id,i) {
     setTimeout(function() {
       var el = document.getElementById(id);
-      if(el) {
-        el.classList.add('revealed');
-        // Auto-scroll to newly revealed section if it's below the fold
-        setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
-      }
+      if(el) el.classList.add('revealed');
     }, 1800 + i*600);
   });
   // Mark that the player has seen the cold open
@@ -563,6 +559,10 @@ function initIntro() {
     }).join('');
     tc.innerHTML = tickerHtml + tickerHtml; // duplicate for seamless loop
   }
+  // Scroll down on arrow click — scroll by roughly one viewport height
+  window.scrollDownHint = function() {
+    window.scrollBy({ top: window.innerHeight * 0.7, behavior: 'smooth' });
+  };
   // Scroll hint arrow — hide when user scrolls near bottom or leaves intro screen
   var scrollHint = document.getElementById('lp-scroll-hint');
   if (scrollHint) {

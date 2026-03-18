@@ -531,7 +531,7 @@ function initIntro() {
   var advPreview = document.getElementById('lp-advisors-grid');
   if (advPreview) {
     var pool = GAME_DATA.advisorPool || [];
-    var previewAdvs = pool.slice(0, 4);
+    var previewAdvs = pool.slice(0, 6);
     advPreview.innerHTML = previewAdvs.map(function(adv) {
       var portraitHtml = adv.portrait ?
         '<img src="' + adv.portrait + '/neutral.png" style="width:56px;height:64px;object-fit:cover;object-position:top;border-radius:6px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
@@ -569,10 +569,15 @@ function initIntro() {
     var introScreen = document.getElementById('intro-screen');
     function checkScrollHint() {
       if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
-      var nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
+      var scrollable = document.documentElement.scrollHeight || document.body.scrollHeight;
+      var scrolled = window.scrollY + window.innerHeight;
+      var nearBottom = scrolled >= scrollable - 80;
       scrollHint.classList.toggle('hidden', nearBottom);
     }
     window.addEventListener('scroll', checkScrollHint);
+    window.addEventListener('resize', checkScrollHint);
+    // Recheck periodically as sections reveal and change page height
+    setInterval(checkScrollHint, 500);
     checkScrollHint();
   }
 }

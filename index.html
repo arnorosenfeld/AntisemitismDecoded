@@ -115,7 +115,7 @@ body {
 @keyframes scrollHintPulse { 0%,100%{ opacity: 0.5; transform: translateX(-50%) translateY(0); } 50%{ opacity: 0.85; transform: translateX(-50%) translateY(6px); } }
 
 /* Advisor preview on landing page */
-.lp-advisors-strip { max-width: 720px; margin: 0 auto 32px; padding: 28px; text-align: center; }
+.lp-advisors-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); max-width: 720px; margin: 0 auto 32px; padding: 36px 28px; text-align: center; }
 .lp-advisors-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
 .lp-advisors-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
 .lp-advisor-card { text-align: center; width: 90px; }
@@ -13933,7 +13933,7 @@ function initIntro() {
   var advPreview = document.getElementById('lp-advisors-grid');
   if (advPreview) {
     var pool = GAME_DATA.advisorPool || [];
-    var previewAdvs = pool.slice(0, 4);
+    var previewAdvs = pool.slice(0, 6);
     advPreview.innerHTML = previewAdvs.map(function(adv) {
       var portraitHtml = adv.portrait ?
         '<img src="' + adv.portrait + '/neutral.png" style="width:56px;height:64px;object-fit:cover;object-position:top;border-radius:6px;filter:drop-shadow(1px 2px 4px rgba(0,0,0,0.12))">' :
@@ -13975,10 +13975,15 @@ function initIntro() {
     var introScreen = document.getElementById('intro-screen');
     function checkScrollHint() {
       if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
-      var nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 100;
+      var scrollable = document.documentElement.scrollHeight || document.body.scrollHeight;
+      var scrolled = window.scrollY + window.innerHeight;
+      var nearBottom = scrolled >= scrollable - 80;
       scrollHint.classList.toggle('hidden', nearBottom);
     }
     window.addEventListener('scroll', checkScrollHint);
+    window.addEventListener('resize', checkScrollHint);
+    // Recheck periodically as sections reveal and change page height
+    setInterval(checkScrollHint, 500);
     checkScrollHint();
   }
 }

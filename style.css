@@ -107,7 +107,7 @@ body {
 @keyframes scrollHintPulse { 0%,100%{ opacity: 0.5; transform: translateX(-50%) translateY(0); } 50%{ opacity: 0.85; transform: translateX(-50%) translateY(6px); } }
 
 /* Advisor preview on landing page */
-.lp-advisors-strip { max-width: 720px; margin: 0 auto 32px; padding: 28px; text-align: center; }
+.lp-advisors-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); max-width: 720px; margin: 0 auto 32px; padding: 36px 28px; text-align: center; }
 .lp-advisors-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
 .lp-advisors-grid { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
 .lp-advisor-card { text-align: center; width: 90px; }

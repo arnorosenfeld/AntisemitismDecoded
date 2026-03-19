@@ -615,7 +615,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* ═══ BREAKING NEWS TV OVERLAY ═══ */
 .bn-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0); z-index: 9500; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: background 1.2s ease; }
 .bn-overlay.active { background: rgba(0,0,0,0.75); pointer-events: auto; }
-.bn-tv-wrap { position: relative; width: 1120px; max-width: 96vw; opacity: 0; transform: scale(0.92); transition: opacity 1.5s ease, transform 1.5s ease; }
+.bn-tv-wrap { position: relative; width: 880px; max-width: 92vw; opacity: 0; transform: scale(0.92); transition: opacity 1.5s ease, transform 1.5s ease; }
 .bn-overlay.active .bn-tv-wrap { opacity: 1; transform: scale(1); }
 .bn-tv-img { width: 100%; height: auto; display: block; filter: drop-shadow(0 8px 40px rgba(0,0,0,0.5)); position: relative; z-index: 1; pointer-events: none; }
 .bn-tv-screen { position: absolute; top: 32.5%; left: 14.0%; right: 23.4%; bottom: 16.0%; z-index: 2; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent; background: #1a1a2e; display: flex; flex-direction: column; }
@@ -630,8 +630,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .bn-choice { text-align: left; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); cursor: pointer; font-family: 'Merriweather Sans', sans-serif; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85); transition: all 0.16s; width: 100%; display: block; }
 .bn-choice:hover { border-color: #c0392b; background: rgba(192,57,43,0.15); padding-left: 18px; }
 .bn-choice.locked { opacity: 0.4; cursor: not-allowed; }
-.bn-outcome-choice { font-size: 11px; color: rgba(255,255,255,0.7); padding: 8px 10px; border-left: 2px solid #c0392b; margin-bottom: 10px; line-height: 1.5; }
-.bn-context { font-size: 10px; color: rgba(255,255,255,0.6); padding: 8px 10px; background: rgba(255,255,255,0.04); margin-bottom: 10px; line-height: 1.5; }
+.bn-outcome-choice { font-size: 12px; color: rgba(255,255,255,0.9); padding: 8px 10px; border-left: 2px solid #c0392b; margin-bottom: 10px; line-height: 1.5; }
+.bn-context { font-size: 11px; color: rgba(255,255,255,0.9); padding: 8px 10px; background: rgba(255,255,255,0.08); margin-bottom: 10px; line-height: 1.5; }
 .bn-continue { background: #c0392b; color: white; border: none; padding: 8px 18px; font-family: 'Merriweather Sans', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s; }
 .bn-continue:hover { background: #a93226; }
 .bn-choice .m-badge { color: white; border-color: rgba(255,255,255,0.3); }
@@ -647,9 +647,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .bn-screen-inner .chip-neg { background: rgba(192,57,43,0.4); color: #f5a8a2; }
 .bn-screen-inner .chip-star-up { background: rgba(184,134,11,0.4); color: #f0d87a; }
 .bn-screen-inner .chip-star-dn { background: rgba(192,57,43,0.4); color: #f5a8a2; }
-.bn-outcome-choice { font-size: 12px; color: rgba(255,255,255,0.8); }
-.bn-context { font-size: 11px; color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.06); }
-.bn-screen-inner .context-note { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+.bn-outcome-choice { font-size: 12px; color: rgba(255,255,255,0.9); }
+.bn-context { font-size: 11px; color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); }
+.bn-screen-inner .context-note { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+.bn-screen-inner .chip-pol-clout { background: rgba(107,33,168,0.4); color: #d4b0f0; }
+.bn-screen-inner .chip-gold { background: rgba(184,134,11,0.4); color: #f0d87a; }
 .bn-screen-inner .advisor-panel { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); }
 .bn-screen-inner .advisor-text { color: rgba(255,255,255,0.8); }
 .bn-screen-inner .advisor-name { color: #d4a843; }

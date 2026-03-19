@@ -105,8 +105,6 @@ function showScreen(id) {
   if(lpTicker) lpTicker.style.display = isIntro ? '' : 'none';
   if(isGame) setTimeout(function(){ updateHUD(); }, 10);
   if (id === 'advisor-screen') renderAdvisorSelection();
-  if (id === 'budget-screen') initBudget(false);
-  if (id === 'promo-budget-screen') initBudget(true);
   window.scrollTo(0,0);
 }
 function shuffle(arr) {
@@ -698,121 +696,6 @@ function getOrgStartingBudget(orgId) {
   return (org?.budgetOverrides?.startingBudget) || bc.startingBudget || 100;
 }
 
-function initBudget(promo=false){
-  const gridId=promo?'promo-pri-grid':'pri-grid';
-  const poolId=promo?'promo-pool-display':'pool-display';
-  const px=promo?'pp':'p';
-
-  // Show warning box if configured
-  if (!promo) {
-    var warnBox = document.getElementById('pri-warning-box');
-    var warnText = (GAME_DATA.config.pageText?.budgetScreen?.warningText) || '';
-    if (warnBox) {
-      if (warnText) { warnBox.innerHTML = '<strong>Warning:</strong> ' + esc(warnText); warnBox.style.display = 'block'; }
-      else { warnBox.style.display = 'none'; }
-    }
-  }
-
-  // Calculate baselines from org + traits + mission + advisors
-  const allOrgs=[...GAME_DATA.organizations,...GAME_DATA.nationalOrganizations];
-  const org=allOrgs.find(o=>o.id===G.orgId);
-  const mission=GAME_DATA.missions.find(m=>m.id===G.missionId);
-  const pool = GAME_DATA.advisorPool || [];
-
-  var baselines = {};
-  var baselineBreakdown = {};
-  GAME_DATA.stats.forEach(function(s){
-    baselines[s.id] = 0;
-    baselineBreakdown[s.id] = [];
-    // Org bonus
-    var orgMod = (org && org.statModifiers && org.statModifiers[s.id]) || 0;
-    if(orgMod !== 0) { baselines[s.id] += orgMod; baselineBreakdown[s.id].push({source: org.name, value: orgMod}); }
-    // Mission bonus
-    var misMod = (mission && mission.statBonus && mission.statBonus[s.id]) || 0;
-    if(misMod !== 0) { baselines[s.id] += misMod; baselineBreakdown[s.id].push({source: mission.name, value: misMod}); }
-    // Trait bonuses
-    (G.charTraits||[]).forEach(function(tid){
-      var t = GAME_DATA.characterTraits.find(function(t){return t.id===tid});
-      var traitMod = (t && t.statModifiers && t.statModifiers[s.id]) || 0;
-      if(traitMod !== 0) { baselines[s.id] += traitMod; baselineBreakdown[s.id].push({source: t.name, value: traitMod}); }
-    });
-    // Advisor bonuses
-    (G.selectedAdvisors||[]).forEach(function(advId){
-      var adv = pool.find(function(a){return a.id===advId});
-      var advMod = (adv && adv.statModifiers && adv.statModifiers[s.id]) || 0;
-      if(advMod !== 0) { baselines[s.id] += advMod; baselineBreakdown[s.id].push({source: adv.name, value: advMod}); }
-    });
-  });
-
-  // Allocation points from org
-  var allocPoints = (org && org.allocationPoints) || 50;
-  G._baselines = baselines;
-
-  // Pre-fill allocations so every stat starts at least at MIN_START (25)
-  var MIN_START = 25;
-  G.priorities = {};
-  var usedForFloor = 0;
-  GAME_DATA.stats.forEach(function(s){
-    var base = baselines[s.id] || 0;
-    if (base < MIN_START) {
-      var needed = MIN_START - base;
-      // Round up to nearest 5 for clean UI
-      needed = Math.ceil(needed / 5) * 5;
-      G.priorities[s.id] = needed;
-      usedForFloor += needed;
-    } else {
-      G.priorities[s.id] = 0;
-    }
-  });
-  var discretionary = allocPoints - usedForFloor;
-  G._allocBudget = allocPoints;
-  G._allocMin = 0;
-  G._allocMax = allocPoints;
-
-  // Scale for display: max bar represents ~80 (baseline + max possible allocation)
-  var maxDisplay = 80;
-
-  document.getElementById(gridId).innerHTML=GAME_DATA.stats.map(function(s){
-    var base = baselines[s.id];
-    var alloc = G.priorities[s.id];
-    var total = Math.max(0, base + alloc);
-    var basePct = Math.max(0, Math.min(100, (Math.abs(base) / maxDisplay) * 100));
-    var allocPct = (alloc / maxDisplay) * 100;
-    var isNeg = base < 0;
-
-    // Breakdown tooltip text
-    var breakdownItems = baselineBreakdown[s.id].map(function(b){
-      return (b.value>0?'+':'')+b.value+' '+esc(b.source);
-    }).join(', ');
-    var breakdownText = breakdownItems || 'No bonuses';
-
-    return '<div class="pri-row-v2">' +
-      '<div class="pri-row-header">' +
-        '<span class="pri-label">' + s.label + '</span>' +
-        '<span class="pri-total" id="' + px + 't-' + s.id + '">' + total + '</span>' +
-      '</div>' +
-      '<div class="pri-bar-track">' +
-        (isNeg ?
-          '<div class="pri-bar-penalty" style="width:' + basePct + '%"></div>' :
-          '<div class="pri-bar-base" style="width:' + basePct + '%"></div>'
-        ) +
-        '<div class="pri-bar-alloc" id="' + px + 'b-' + s.id + '" style="width:' + allocPct + '%;left:' + (isNeg ? 0 : basePct) + '%"></div>' +
-      '</div>' +
-      '<div class="pri-row-controls">' +
-        '<span class="pri-baseline-tag ' + (isNeg?'penalty':'bonus') + '">' +
-          (isNeg ? '' : '+') + base + ' starting ' + (isNeg?'penalty':'bonus') +
-        '</span>' +
-        '<span class="pri-breakdown">' + breakdownText + '</span>' +
-        '<div class="pri-buttons">' +
-          '<button class="pri-btn pri-minus" onclick="adjustPri(\'' + s.id + '\',-5,\'' + px + '\',\'' + poolId + '\')">−</button>' +
-          '<span class="pri-alloc-val" id="' + px + 'v-' + s.id + '">+' + alloc + '</span>' +
-          '<button class="pri-btn pri-plus" onclick="adjustPri(\'' + s.id + '\',5,\'' + px + '\',\'' + poolId + '\')">+</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-  refreshPool(px,poolId);
-}
 
 function adjustPri(id, delta, px, poolId){
   var total = G._allocBudget || 50;
@@ -849,8 +732,6 @@ function adjustPri(id, delta, px, poolId){
   if(totalEl) totalEl.textContent = totalVal;
   
   refreshPool(px, poolId);
-  // Live check priority floors for warning display
-  if (!px || px === 'p') checkPriorityFloors();
 }
 
 // Legacy compat
@@ -1031,82 +912,6 @@ function autoAllocateStats() {
 }
 
 // ═══════════════ START GAME ═══════════════
-function checkPriorityFloors() {
-  var baselines = G._baselines || {};
-  var MIN_START = 25;
-  var dangerStats = [];
-  GAME_DATA.stats.forEach(function(s) {
-    var total = (baselines[s.id] || 0) + (G.priorities[s.id] || 0);
-    if (total < MIN_START) {
-      dangerStats.push({ label: s.label, value: total, needed: MIN_START - total });
-    }
-  });
-  var warnEl = document.getElementById('pri-floor-warning');
-  var btn = document.getElementById('briefing-btn');
-  if (!warnEl) return;
-  if (dangerStats.length > 0) {
-    var html = '<strong>\u26a0\ufe0f Some stats are dangerously low</strong><br>';
-    html += '<span style="font-size:12px;opacity:0.85">If any stat starts below ' + MIN_START + ', you risk an immediate board crisis. Allocate more points to:</span>';
-    html += '<ul style="margin:6px 0 0 16px;padding:0">';
-    dangerStats.forEach(function(d) {
-      html += '<li><strong>' + d.label + '</strong> is at <strong style="color:#c0392b">' + d.value + '</strong> \u2014 needs <strong>+' + d.needed + ' more</strong></li>';
-    });
-    html += '</ul>';
-    warnEl.innerHTML = html;
-    warnEl.style.display = 'block';
-    btn.disabled = true;
-    btn.style.opacity = '0.4';
-    btn.style.cursor = 'not-allowed';
-  } else {
-    warnEl.style.display = 'none';
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.style.cursor = '';
-  }
-}
-
-function goToBriefing() {
-  var baselines = G._baselines || {};
-  var MIN_START = 25;
-  var blocked = false;
-  GAME_DATA.stats.forEach(function(s) {
-    var total = (baselines[s.id] || 0) + (G.priorities[s.id] || 0);
-    if (total < MIN_START) blocked = true;
-  });
-  if (blocked) {
-    checkPriorityFloors();
-    return;
-  }
-  initBriefing();
-  showScreen('briefing-screen');
-}
-
-function initBriefing() {
-  var bs = GAME_DATA.config.pageText?.briefingScreen;
-  if (!bs) return;
-  var el;
-  el = document.getElementById('briefing-step'); if(el) el.textContent = bs.stepLabel || '';
-  el = document.getElementById('briefing-heading'); if(el) el.textContent = bs.heading || '';
-  el = document.getElementById('briefing-desc'); if(el) el.textContent = bs.description || '';
-  var advLine = document.getElementById('briefing-advisor-line');
-  if(advLine) advLine.innerHTML = (bs.advisorName ? advPortrait(OUTGOING_ED, 'neutral', 36) + ' ' + esc(bs.advisorName) : '') + (bs.advisorRole ? ' <span style="font-weight:400;opacity:0.7;font-size:12px">· ' + esc(bs.advisorRole) + '</span>' : '');
-  el = document.getElementById('briefing-opening-text'); if(el) el.textContent = '"' + (bs.openingQuote || '') + '"';
-  var itemsEl = document.getElementById('briefing-items');
-  if(itemsEl && bs.items) {
-    itemsEl.innerHTML = bs.items.map(function(item) {
-      var bgStyle = item.style === 'danger' ? 'background:#fdf2f2;border-radius:8px;padding:14px 18px;margin-bottom:20px' :
-                    item.style === 'success' ? 'background:#f0f7f0;border-radius:8px;padding:14px 18px;margin-bottom:20px' :
-                    'margin-bottom:20px';
-      var titleColor = item.style === 'danger' ? 'color:#8b1a1a' :
-                       item.style === 'success' ? 'color:#1a5c1a' : 'color:#1a1510';
-      return '<div style="' + bgStyle + '">' +
-        '<div style="font-weight:700;font-size:15px;margin-bottom:8px;' + titleColor + '">' + (item.icon || '') + ' ' + esc(item.title) + '</div>' +
-        '<div style="font-size:13px">' + esc(item.text) + '</div>' +
-      '</div>';
-    }).join('');
-  }
-}
-
 function toggleHelpPanel() {
   var panel = document.getElementById('help-panel');
   var overlay = document.getElementById('help-overlay');
@@ -1115,22 +920,18 @@ function toggleHelpPanel() {
   panel.style.display = isOpen ? 'none' : 'block';
   overlay.style.display = isOpen ? 'none' : 'block';
   if (!isOpen) {
-    // Populate help content from briefing data
-    var bs = GAME_DATA.config.pageText?.briefingScreen;
     var body = document.getElementById('help-panel-body');
-    var title = document.getElementById('help-panel-title');
-    if (title && bs && bs.helpButtonLabel) title.textContent = bs.helpButtonLabel;
-    if (body && bs && bs.items) {
-      body.innerHTML = bs.items.map(function(item) {
-        return '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">' + (item.icon||'') + ' ' + esc(item.title) + '</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">' + esc(item.text) + '</div></div>';
-      }).join('') +
-      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
-        '<div style="margin-bottom:10px"><strong>⭐ Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. Lose all your stars and the board loses confidence. Earn bonus stars through mission-aligned decisions — they boost your year-end score.</div>' +
-        '<div style="margin-bottom:10px"><strong>💰 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices and crises cost gelt. Running out limits your options.</div>' +
-        '<div style="margin-bottom:10px"><strong>📈 Momentum:</strong> Stats that trend up for two rounds get a small boost. Stats that trend down get a small penalty. Watch the arrows (↑↓→) next to your stats — they show the trend.</div>' +
-        '<div style="margin-bottom:10px"><strong>👥 Segments:</strong> Community Trust is the weighted average of how different groups feel about you — Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another.</div>' +
-        '<div><strong>⚖️ Political Capital:</strong> Your political position (left to right) and clout affect which coalitions, allies, and choices are available to you.</div>' +
-      '</div>';
+    if (body) {
+      body.innerHTML =
+        '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">\ud83d\udea8 How You Get Fired</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">If any stat drops to ' + (GAME_DATA.config.failureBarThreshold || 15) + ' or below, the board calls an emergency meeting and your tenure ends immediately.</div></div>' +
+        '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">\ud83c\udfc6 How You Win</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">Score ' + (GAME_DATA.config.promotionThreshold || 75) + ' or above at year\'s end and you\'ll be offered a promotion. Score below ' + (GAME_DATA.config.failureScoreThreshold || 30) + ' and your contract won\'t be renewed.</div></div>' +
+        '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
+          '<div style="margin-bottom:10px"><strong>\u2b50 Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. They boost your year-end score.</div>' +
+          '<div style="margin-bottom:10px"><strong>\ud83d\udcb0 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices cost gelt.</div>' +
+          '<div style="margin-bottom:10px"><strong>\ud83d\udcc8 Momentum:</strong> Stats that trend up for two rounds get a small boost. Stats that trend down get a penalty. Watch the arrows next to your stats.</div>' +
+          '<div style="margin-bottom:10px"><strong>\ud83d\udc65 Segments:</strong> Community Trust is the weighted average of how different groups feel about you. A decision that thrills one group may alienate another.</div>' +
+          '<div><strong>\u2696\ufe0f Political Capital:</strong> Your political position and clout affect which coalitions, allies, and choices are available to you.</div>' +
+        '</div>';
     }
   }
 }
@@ -1370,7 +1171,7 @@ function startGame(){
   const mission=GAME_DATA.missions.find(m=>m.id===G.missionId);
   
   // Stats = baseline (from org+traits+mission+advisors) + player allocation
-  // Baselines were computed in initBudget and stored in G._baselines
+  // Baselines were computed in autoAllocateStats and stored in G._baselines
   var baselines = G._baselines || {};
   GAME_DATA.stats.forEach(s=>{
     var base = baselines[s.id] || 0;
@@ -1458,17 +1259,14 @@ function startGame(){
 function startPromoGame(){
   clearSave();
   const org=GAME_DATA.nationalOrganizations.find(o=>o.id===G.orgId);
-  const orgBudget = getOrgStartingBudget(G.orgId);
-  const n = GAME_DATA.stats.length;
-  const evenSplit = orgBudget / n;
-  
-  GAME_DATA.stats.forEach(s=>{
-    let v=s.startBase+10;
-    if(org.statModifiers&&org.statModifiers[s.id]) v+=org.statModifiers[s.id];
-    const alloc = G.priorities[s.id] || evenSplit;
-    const offset = Math.round(((alloc - evenSplit) / evenSplit) * 15);
-    v+=offset;
-    G.stats[s.id]=Math.max(5,Math.min(100,v));
+
+  // Stats already computed by autoAllocateStats with floor of 30
+  var baselines = G._baselines || {};
+  GAME_DATA.stats.forEach(function(s){
+    var base = baselines[s.id] || 0;
+    var alloc = G.priorities[s.id] || 0;
+    var promoBonus = 10; // promotion stat boost
+    G.stats[s.id] = Math.max(0, Math.min(100, base + alloc + promoBonus));
   });
   G.missionStars=GAME_DATA.config.missionStartStars||3;
   G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[]; G.promotionLevel=1;
@@ -2648,6 +2446,27 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 }
 
 // ═══════════════ PROMOTION ═══════════════
+var _isPromotionFlow = false;
+
+function advanceFromMission() {
+  if (_isPromotionFlow) {
+    _isPromotionFlow = false;
+    autoAllocateStats();
+    startPromoGame();
+  } else {
+    showScreen('advisor-screen');
+  }
+}
+
+function backFromMission() {
+  if (_isPromotionFlow) {
+    _isPromotionFlow = false;
+    showScreen('promo-screen');
+  } else {
+    showScreen('org-screen');
+  }
+}
+
 function showPromoScreen(){
   const org=GAME_DATA.organizations.find(o=>o.id===G.orgId);
   const eligible=org?.promotionEligible||['center'];
@@ -2674,8 +2493,8 @@ function showPromoScreen(){
 
 function selectPromoOrg(id){
   G.orgId=id;
-  autoAllocateStats();
-  startPromoGame();
+  _isPromotionFlow = true;
+  showScreen('mission-screen');
 }
 
 // ═══════════════ RESET ═══════════════
@@ -2685,76 +2504,63 @@ function resetGame(){
   
   var ticker = document.getElementById('news-ticker');
   if(ticker) ticker.classList.remove('active');
-  initChar();initOrg();initBudget();showScreen('char-screen');
+  initChar();initOrg();showScreen('char-screen');
 }
 
 function restartSameCharacter(){
-  var savedName = G.charName;
-  var savedEmoji = G.charEmoji;
-  var savedTraits = G.charTraits.slice();
-  var savedOrg = G.orgId;
-  var savedMission = G.missionId;
-  var savedAdvisors = (G.selectedAdvisors||[]).slice();
-  
-  G.priorities = {};
+  clearSave();
+  // Preserve character identity
+  var charName = G.charName;
+  var charEmoji = G.charEmoji;
+  var charTraits = G.charTraits;
+  var orgId = G.orgId;
+  var missionId = G.missionId;
+  var selectedAdvisors = G.selectedAdvisors;
+  var promotionLevel = G.promotionLevel || 0;
+  var activeUnlocks = G.activeUnlocks || [];
+
+  // Reset game state but keep character
   G.stats = {};
   G.missionStars = 0;
   G.round = 0;
-  G.apRemaining = 0;
   G.history = [];
-  G.pendingQueue = [];
-  G.roundActions = [];
   G.usedScenarioIds = [];
   G.usedInboxIds = [];
-  G.activeUnlocks = [];
-  G.promotionLevel = 0;
-  G.actionsThisRound = 0;
-  G.inboxDelivered = 0;
-  G.roundInboxQueue = [];
-  G.pendingInbox = [];
   G.inboxMessages = [];
   G.coalitionStrikes = {};
   G.activeCoalitions = [];
   G.declinedCoalitions = [];
   G.brokenCoalitions = [];
   G.statHistory = [];
-  G.advisorBonusLog = [];
-  G.currentAdvisorBonusMultiplier = 1.0;
-  G.budget = 0;
-  G.budgetMax = 100;
-  G.budgetIncomeThisYear = 0;
-  G.budgetSpentThisYear = 0;
-  G.orgOperatingCost = 0;
-  G.orgBaseIncome = 0;
-  G.investmentPool = 0;
-  G.investmentsUsed = 0;
-  G.investmentUses = {};
-  G.pendingReserves = [];
-  G.politicalPosition = 50;
-  G.politicalClout = 20;
-  G.segmentApproval = null;
-  G.segmentHistory = {};
-  G.segmentSnapshots = [];
-  G._coachWarningsLifetime = {};
-  G._coachWarningsThisRound = {};
   G.notableMoments = [];
   G.investmentsFrozen = false;
   G._probationLifted = false;
-  G._startingPoliticalPosition = 50;
-  G._startingPoliticalClout = 20;
+  G.endowmentIncome = 0;
+  G._dangerWarningsShown = {};
+  G._coachWarningsLifetime = {};
+  G._coachWarningsThisRound = {};
+  G.pendingQueue = [];
+  G.roundActions = [];
+  G.actionsThisRound = 0;
+  G.inboxDelivered = 0;
 
-  G.charName = savedName;
-  G.charEmoji = savedEmoji;
-  G.charTraits = savedTraits;
-  G.orgId = savedOrg;
-  G.missionId = savedMission;
-  G.selectedAdvisors = savedAdvisors;
-  
-  var ticker = document.getElementById('news-ticker');
-  if(ticker) ticker.classList.remove('active');
-  
-  initBudget();
-  showScreen('budget-screen');
+  // Restore character
+  G.charName = charName;
+  G.charEmoji = charEmoji;
+  G.charTraits = charTraits;
+  G.orgId = orgId;
+  G.missionId = missionId;
+  G.selectedAdvisors = selectedAdvisors;
+  G.promotionLevel = promotionLevel;
+  G.activeUnlocks = activeUnlocks;
+
+  // Auto-allocate and start
+  autoAllocateStats();
+  if (promotionLevel > 0) {
+    startPromoGame();
+  } else {
+    startGame();
+  }
 }
 
 // ═══════════════ INVESTMENT STRIP ═══════════════
@@ -3235,23 +3041,6 @@ function updatePoliticsHUD() {
   }
 }
 
-function toggleGradeDetail(evt) {
-  evt.stopPropagation();
-  var detail = document.getElementById('grade-detail');
-  if (detail) {
-    var isOpen = detail.style.display === 'block';
-    detail.style.display = isOpen ? 'none' : 'block';
-    if (!isOpen) {
-      setTimeout(function() {
-        document.addEventListener('click', function closeGrade() {
-          detail.style.display = 'none';
-          document.removeEventListener('click', closeGrade);
-        }, {once: true});
-      }, 10);
-    }
-  }
-}
-
 function togglePolDetail(evt) {
   evt.stopPropagation();
   var detail = document.getElementById('pol-detail');
@@ -3300,7 +3089,7 @@ function inferPoliticalLean(choice, scenario) {
 }
 
 // ═══════════════ BOOT ═══════════════
-initIntro(); initChar(); initOrg(); initBudget();
+initIntro(); initChar(); initOrg();
 
 // ═══ ADVISOR SYSTEM ═══
 // Renders scenario-level advisor quotes as Option C (between body and choices)

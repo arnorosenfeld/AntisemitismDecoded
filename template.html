@@ -142,8 +142,8 @@
     </div>
     <div class="mission-list" id="mission-list"></div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-sm" onclick="showScreen('org-screen')">← Back</button>
-      <button class="btn btn-primary" id="mission-next-btn" disabled onclick="showScreen('advisor-screen')">Next: Choose Advisors →</button>
+      <button class="btn btn-secondary btn-sm" onclick="backFromMission()">← Back</button>
+      <button class="btn btn-primary" id="mission-next-btn" disabled onclick="advanceFromMission()">Next: Choose Advisors →</button>
     </div>
   </div>
 </div>
@@ -166,54 +166,7 @@
   </div>
 </div>
 
-<!-- BUDGET ALLOCATION (now Step 5) -->
-<div id="budget-screen" class="screen">
-  <div class="container page-pad">
-    <div class="section-header">
-      <span class="step-ind">Step 5 of 6 — Priority Allocation</span>
-      <h2>Set Your Priorities</h2>
-      <p>Your organization, traits, mission, and advisors give you a starting baseline in each area. Each stat has been brought to a minimum of 25 — now allocate your remaining points to shape where your organization is strongest.</p>
-    </div>
-    <div id="pri-warning-box" style="background:#fdf2f2;border-left:3px solid #c0392b;padding:12px 16px;margin-bottom:18px;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:#5a2020;line-height:1.7;display:none"></div>
-    <div class="pool-box">
-      <div>
-        <div class="label" style="margin:0 0 2px">Points to Allocate</div>
-        <div class="pool-num ok" id="pool-display">0</div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);max-width:220px;text-align:right;font-style:italic">Use + and − to distribute your remaining priority points across stats.</div>
-    </div>
-    <div class="pri-grid" id="pri-grid"></div>
-    <div id="pri-floor-warning" style="display:none;background:#fdf2f2;border:1px solid #e8a0a0;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-family:'Merriweather Sans',sans-serif;font-size:13px;color:#8b1a1a;line-height:1.6"></div>
-    <div class="btn-row">
-      <button class="btn btn-secondary btn-sm" onclick="showScreen('advisor-screen')">← Back</button>
-      <button class="btn btn-primary" id="briefing-btn" onclick="goToBriefing()">Next: Your Briefing →</button>
-    </div>
-  </div>
-</div>
-
 <!-- GAME -->
-<!-- BRIEFING -->
-<div id="briefing-screen" class="screen">
-  <div class="container page-pad">
-    <div class="section-header">
-      <span class="step-ind" id="briefing-step"></span>
-      <h2 id="briefing-heading"></h2>
-      <p id="briefing-desc"></p>
-    </div>
-    <div style="max-width:640px;margin:0 auto;font-family:'Merriweather Sans',sans-serif;line-height:1.8;color:#3d3425">
-      <div id="briefing-opening-quote" style="background:#f9f6f0;border-left:4px solid #b8860b;padding:16px 20px;border-radius:6px;margin-bottom:24px;font-size:14px">
-        <div id="briefing-advisor-line" style="font-weight:700;margin-bottom:6px"></div>
-        <div id="briefing-opening-text" style="font-style:italic"></div>
-      </div>
-      <div id="briefing-items"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-secondary btn-sm" onclick="showScreen('advisor-screen')">← Back</button>
-      <button class="btn btn-primary" onclick="startGame()">Begin Your Tenure →</button>
-    </div>
-  </div>
-</div>
-
 <div id="game-screen" class="screen">
   <div class="hud-banner" id="hud-banner-el" style="display:none">
     <div class="hud-banner-inner">
@@ -398,26 +351,4 @@
   </div>
 </div>
 
-<!-- PROMO BUDGET -->
-<div id="promo-budget-screen" class="screen">
-  <div class="container page-pad">
-    <div class="section-header">
-      <span class="step-ind">New Organization — Reset Priorities</span>
-      <h2>Set Your New Priorities</h2>
-      <p>You're leading a larger, more complex organization now. Reallocate your priorities for this new challenge.</p>
-    </div>
-    <div class="budget-disp"><span>New Operating Budget</span><span id="promo-budget-amt">$0</span></div>
-    <div class="pool-box">
-      <div>
-        <div class="label" style="margin:0 0 2px">Points Remaining</div>
-        <div class="pool-num ok" id="promo-pool-display">0</div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);max-width:200px;text-align:right;font-style:italic">Drag sliders to allocate your new priorities.</div>
-    </div>
-    <div class="pri-grid" id="promo-pri-grid"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="startPromoGame()">Begin New Tenure →</button>
-    </div>
-  </div>
-</div>
 

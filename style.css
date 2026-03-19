@@ -330,15 +330,18 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-stars { font-size: 20px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; height: 24px; }
 .hud-stars .star { display: inline-block; width: 20px; height: 20px; text-align: center; line-height: 20px; font-size: 18px; vertical-align: middle; }
 .hud-stars .star-empty { opacity: 0.45; }
-/* Live grade badge */
-.hud-grade-wrap { display: inline-flex; align-items: center; gap: 4px; margin-left: 12px; }
-.hud-grade-label { font-size: 8px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-.hud-live-grade { font-family: 'Merriweather', serif; font-weight: 900; font-size: 14px; padding: 2px 8px; border-radius: 3px; cursor: default; }
-.hud-live-grade.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.15); }
-.hud-live-grade.grade-b { color: #b8860b; background: rgba(184,134,11,0.15); }
-.hud-live-grade.grade-c { color: #7a6b1a; background: rgba(122,107,26,0.15); }
-.hud-live-grade.grade-d { color: #c0392b; background: rgba(192,57,43,0.15); }
-.hud-live-grade.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.2); }
+/* Board rating in HUD */
+.hud-board-rating { position: relative; cursor: pointer; text-align: center; }
+.hud-grade-letter { font-family: 'Merriweather', serif; font-weight: 900; font-size: 18px; padding: 4px 12px; border-radius: 4px; line-height: 1; }
+.hud-grade-letter.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.15); }
+.hud-grade-letter.grade-b { color: #b8860b; background: rgba(184,134,11,0.15); }
+.hud-grade-letter.grade-c { color: #7a6b1a; background: rgba(122,107,26,0.15); }
+.hud-grade-letter.grade-d { color: #c0392b; background: rgba(192,57,43,0.15); }
+.hud-grade-letter.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.2); }
+.grade-detail { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: #2e3a52; border: 1px solid rgba(255,255,255,0.2); padding: 12px 14px; min-width: 220px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; }
+.grade-detail::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #2e3a52; border-right: 1px solid rgba(255,255,255,0.2); border-bottom: 1px solid rgba(255,255,255,0.2); }
+.grade-detail-title { font-weight: 700; font-size: 11px; margin-bottom: 8px; color: #f0d87a; }
+.grade-detail-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px; }
 
 /* Round info removed from HUD - now in AP bar */
 

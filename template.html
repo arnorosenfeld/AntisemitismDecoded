@@ -249,6 +249,14 @@
       </div>
       <div class="meters" id="hud-meters"></div>
       <div class="hud-budget-mission">
+        <div class="hud-board-rating" id="hud-board-rating" onclick="toggleGradeDetail(event)">
+          <span class="hud-budget-label">Board Rating</span>
+          <div class="hud-grade-letter" id="hud-live-grade">B</div>
+          <div class="grade-detail" id="grade-detail" style="display:none">
+            <div class="grade-detail-title">📊 Score Breakdown</div>
+            <div id="grade-detail-body"></div>
+          </div>
+        </div>
         <div class="hud-budget" id="hud-budget">
           <span class="hud-budget-label">Gelt</span>
           <div class="hud-budget-bags" id="hud-budget-bags"></div>

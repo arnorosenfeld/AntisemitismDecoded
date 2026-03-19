@@ -1656,22 +1656,23 @@ function updateHUD(){
 
   // Live grade display
   var liveGrade = computeLiveGrade();
-  var gradeWrap = document.getElementById('hud-grade-wrap');
-  if (!gradeWrap) {
-    gradeWrap = document.createElement('span');
-    gradeWrap.id = 'hud-grade-wrap';
-    gradeWrap.className = 'hud-grade-wrap';
-    gradeWrap.innerHTML = '<span class="hud-grade-label">Board Rating</span><span id="hud-live-grade"></span>';
-    var orgNameEl = document.getElementById('hud-org-name');
-    if (orgNameEl && orgNameEl.parentNode) {
-      orgNameEl.parentNode.insertBefore(gradeWrap, orgNameEl.nextSibling);
-    }
-  }
   var gradeEl = document.getElementById('hud-live-grade');
   if (gradeEl) {
     gradeEl.textContent = liveGrade.grade;
-    gradeWrap.title = 'Board Rating — Score: ' + liveGrade.score + ' (Base: ' + liveGrade.baseScore + ' + Mission: +' + liveGrade.starBonus + ')';
-    gradeEl.className = 'hud-live-grade grade-' + liveGrade.grade.toLowerCase();
+    gradeEl.className = 'hud-grade-letter grade-' + liveGrade.grade.toLowerCase();
+  }
+  var gradeBody = document.getElementById('grade-detail-body');
+  if (gradeBody) {
+    var statLines = '';
+    GAME_DATA.stats.forEach(function(s) {
+      var v = Math.round(G.stats[s.id] || 0);
+      var wt = (GAME_DATA.scoring.weights || {})[s.id] || 0.25;
+      statLines += '<div class="grade-detail-row"><span>' + s.label + '</span><span>' + v + ' × ' + Math.round(wt * 100) + '%</span></div>';
+    });
+    gradeBody.innerHTML = statLines +
+      '<div class="grade-detail-row" style="border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Base Score</span><span>' + liveGrade.baseScore + '</span></div>' +
+      '<div class="grade-detail-row"><span>Mission Stars (' + (G.missionStars||0) + ' × ' + (GAME_DATA.config.missionStarPoints||1) + ')</span><span>+' + liveGrade.starBonus + '</span></div>' +
+      '<div class="grade-detail-row" style="font-weight:700;border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Total</span><span>' + liveGrade.score + '</span></div>';
   }
 
   // Probation unlock check
@@ -3200,6 +3201,23 @@ function updatePoliticsHUD() {
       else if (clout <= 20) tips.push('Low clout limits your effectiveness. Build more political relationships.');
     }
     dDesc.textContent = tips.join(' ');
+  }
+}
+
+function toggleGradeDetail(evt) {
+  evt.stopPropagation();
+  var detail = document.getElementById('grade-detail');
+  if (detail) {
+    var isOpen = detail.style.display === 'block';
+    detail.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) {
+      setTimeout(function() {
+        document.addEventListener('click', function closeGrade() {
+          detail.style.display = 'none';
+          document.removeEventListener('click', closeGrade);
+        }, {once: true});
+      }, 10);
+    }
   }
 }
 

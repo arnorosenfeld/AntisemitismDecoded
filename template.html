@@ -5,9 +5,11 @@
     <h1 style="font-family:'Merriweather',serif;font-weight:900;font-size:28px;margin-bottom:4px">Antisemitism Decoded: <span style="color:var(--gold)">The Game</span></h1>
     <p style="font-size:13px;color:var(--muted);margin-bottom:28px;font-style:italic">A Jewish Leadership Simulator</p>
     <label class="label" style="text-align:left;display:block;margin-bottom:6px">Enter Password to Continue</label>
-    <input type="password" id="pw-input" placeholder="Password" style="width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);background:var(--white);font-family:'Merriweather Sans',sans-serif;margin-bottom:6px" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div data-form-type="other">
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" style="width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);background:var(--white);font-family:'Merriweather Sans',sans-serif;margin-bottom:6px" onkeydown="if(event.key==='Enter')checkPassword()">
     <div id="pw-err" style="color:#c0392b;font-size:12px;min-height:20px;margin-bottom:12px"></div>
     <button class="btn btn-primary" onclick="checkPassword()" style="width:100%">Enter →</button>
+    </div>
   </div>
 </div>
 

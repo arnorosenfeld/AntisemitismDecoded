@@ -431,6 +431,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
               <div class="form-group"><label>Momentum Bonus</label><input type="number" id="cfg-momentumBonus" min="0" max="10" /><div class="form-hint">Extra points added when a stat has positive momentum</div></div>
               <div class="form-group"><label>Momentum Penalty</label><input type="number" id="cfg-momentumPenalty" min="0" max="10" /><div class="form-hint">Extra points lost when a stat has negative momentum</div></div>
             </div>
+            <div class="form-row three">
+              <div class="form-group"><label>Polarization Multiplier</label><input type="number" id="cfg-polarizationMultiplier" min="1" max="3" step="0.1" /><div class="form-hint">How much harder negative political alignment hits vs positive (1.0 = symmetric, 1.5 = 50% harder to lose trust than gain it). Default: 1.5</div></div>
+            </div>
           </div>
 
           <div class="form-section">
@@ -1116,6 +1119,7 @@ var EDITOR_DATA =
       "investmentsPerYear": 0.5,
       "nationalInvestmentsPerYear": 1
     },
+    "polarizationMultiplier": 1.5,
     "momentumWindow": 2,
     "momentumBonus": 1,
     "momentumPenalty": 3,
@@ -1125,8 +1129,10 @@ var EDITOR_DATA =
         "name": "Orthodox",
         "populationBaseline": 11,
         "politicalCenter": 75,
-        "comfortRange": 15,
-        "baseStartApproval": 58,
+        "comfortRange": 8,
+        "israelCenter": 50,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.9,
         "floor": 5,
         "ceiling": 28
@@ -1136,8 +1142,10 @@ var EDITOR_DATA =
         "name": "Conservative",
         "populationBaseline": 19,
         "politicalCenter": 42,
-        "comfortRange": 30,
-        "baseStartApproval": 55,
+        "comfortRange": 15,
+        "israelCenter": 50,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.72,
         "floor": 8,
         "ceiling": 25
@@ -1147,8 +1155,10 @@ var EDITOR_DATA =
         "name": "Reform",
         "populationBaseline": 37,
         "politicalCenter": 35,
-        "comfortRange": 25,
-        "baseStartApproval": 50,
+        "comfortRange": 13,
+        "israelCenter": 50,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.53,
         "floor": 8,
         "ceiling": 30
@@ -1158,8 +1168,10 @@ var EDITOR_DATA =
         "name": "Unaffiliated",
         "populationBaseline": 29,
         "politicalCenter": 30,
-        "comfortRange": 22,
-        "baseStartApproval": 43,
+        "comfortRange": 11,
+        "israelCenter": 50,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.18,
         "floor": 5,
         "ceiling": 30
@@ -1169,8 +1181,10 @@ var EDITOR_DATA =
         "name": "Young Jews",
         "populationBaseline": 23,
         "politicalCenter": 32,
-        "comfortRange": 20,
-        "baseStartApproval": 47,
+        "comfortRange": 10,
+        "israelCenter": 50,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.34,
         "floor": 8,
         "ceiling": 28
@@ -1180,8 +1194,10 @@ var EDITOR_DATA =
         "name": "Older Jews",
         "populationBaseline": 29,
         "politicalCenter": 45,
-        "comfortRange": 28,
-        "baseStartApproval": 53,
+        "comfortRange": 14,
+        "israelCenter": 50,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.61,
         "floor": 8,
         "ceiling": 30
@@ -13994,6 +14010,7 @@ function populateMomentumConfig(){
   el = document.getElementById('cfg-momentumWindow'); if(el) el.value = c.momentumWindow || 2;
   el = document.getElementById('cfg-momentumBonus'); if(el) el.value = c.momentumBonus || 1;
   el = document.getElementById('cfg-momentumPenalty'); if(el) el.value = c.momentumPenalty || 3;
+  document.getElementById('cfg-polarizationMultiplier').value = c.polarizationMultiplier || 1.5;
 }
 function saveMomentumConfig(){
   var c = GD.config;
@@ -14001,6 +14018,7 @@ function saveMomentumConfig(){
   el = document.getElementById('cfg-momentumWindow'); if(el) c.momentumWindow = parseInt(el.value)||2;
   el = document.getElementById('cfg-momentumBonus'); if(el) c.momentumBonus = parseInt(el.value)||1;
   el = document.getElementById('cfg-momentumPenalty'); if(el) c.momentumPenalty = parseInt(el.value)||1;
+  c.polarizationMultiplier = parseFloat(document.getElementById('cfg-polarizationMultiplier').value) || 1.5;
 }
 
 // ═══ POLITICAL MECHANICS ═══
@@ -15082,12 +15100,12 @@ function populateSegments() {
       '</div>' +
       '<div class="form-row three">' +
       '<div class="form-group"><label>Pop Baseline %</label><input type="number" id="seg-pop-'+i+'" value="'+seg.populationBaseline+'" min="1" max="50" /><div class="form-hint">Relative population weight of this segment in the community</div></div>' +
-      '<div class="form-group"><label>Political Center</label><input type="number" id="seg-pol-'+i+'" value="'+seg.politicalCenter+'" min="0" max="100" /><div class="form-hint">Where this segment sits politically (0=far left, 50=center, 100=far right)</div></div>' +
-      '<div class="form-group"><label>Comfort Range</label><input type="number" id="seg-comfort-'+i+'" value="'+(seg.comfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their political center before approval drops sharply</div></div>' +
+      '<div class="form-group"><label>Political Center</label><input type="number" id="seg-pol-'+i+'" value="'+seg.politicalCenter+'" min="0" max="100" /><div class="form-hint">Where this segment sits on U.S. politics. 0 = far left, 50 = center, 100 = far right. Based on Pew 2020 + JVRC 2025 survey data.</div></div>' +
+      '<div class="form-group"><label>Comfort Range</label><input type="number" id="seg-comfort-'+i+'" value="'+(seg.comfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their political center a choice can lean before this segment starts losing trust. Smaller = more politically sensitive. Default values based on within-group standard deviations from survey data.</div></div>' +
       '</div>' +
       '<div class="form-row three">' +
-      '<div class="form-group"><label>Israel Center</label><input type="number" id="seg-ilcenter-'+i+'" value="'+(seg.israelCenter||50)+'" min="0" max="100" /><div class="form-hint">Where this segment sits on Israel policy (0=dovish, 50=center, 100=hawkish)</div></div>' +
-      '<div class="form-group"><label>Israel Comfort Range</label><input type="number" id="seg-ilcomfort-'+i+'" value="'+(seg.israelComfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their Israel center before approval drops</div></div>' +
+      '<div class="form-group"><label>Israel Center</label><input type="number" id="seg-ilcenter-'+i+'" value="'+(seg.israelCenter||50)+'" min="0" max="100" /><div class="form-hint">Where this segment sits on Israel policy. 0 = very dovish/critical, 50 = center, 100 = very hawkish/pro-Israel. Based on Pew 2020 + JVRC 2025 survey data.</div></div>' +
+      '<div class="form-group"><label>Israel Comfort Range</label><input type="number" id="seg-ilcomfort-'+i+'" value="'+(seg.israelComfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their Israel center a choice can lean before this segment reacts negatively. Smaller = more sensitive to Israel-related choices.</div></div>' +
       '</div>' +
       '<div class="form-row three">' +
       '<div class="form-group"><label>Base Start Approval</label><input type="number" id="seg-base-'+i+'" value="'+seg.baseStartApproval+'" min="20" max="80" /><div class="form-hint">Default approval rating at game start before political alignment adjustments</div></div>' +

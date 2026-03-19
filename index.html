@@ -1194,9 +1194,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
     <h1 style="font-family:'Merriweather',serif;font-weight:900;font-size:28px;margin-bottom:4px">Antisemitism Decoded: <span style="color:var(--gold)">The Game</span></h1>
     <p style="font-size:13px;color:var(--muted);margin-bottom:28px;font-style:italic">A Jewish Leadership Simulator</p>
     <label class="label" style="text-align:left;display:block;margin-bottom:6px">Enter Password to Continue</label>
-    <input type="password" id="pw-input" placeholder="Password" style="width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);background:var(--white);font-family:'Merriweather Sans',sans-serif;margin-bottom:6px" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div data-form-type="other">
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" style="width:100%;padding:12px 14px;font-size:15px;border:1.5px solid var(--border);background:var(--white);font-family:'Merriweather Sans',sans-serif;margin-bottom:6px" onkeydown="if(event.key==='Enter')checkPassword()">
     <div id="pw-err" style="color:#c0392b;font-size:12px;min-height:20px;margin-bottom:12px"></div>
     <button class="btn btn-primary" onclick="checkPassword()" style="width:100%">Enter →</button>
+    </div>
   </div>
 </div>
 
@@ -1557,6 +1559,7 @@ var GAME_DATA =
     "failureScoreThreshold": 30,
     "promotionThreshold": 75,
     "inboxPerRound": 2,
+    "polarizationMultiplier": 1.5,
     "scoreWeights": {
       "trust": 0.333,
       "morale": 0.333,
@@ -1885,10 +1888,10 @@ var GAME_DATA =
         "name": "Orthodox",
         "populationBaseline": 11,
         "politicalCenter": 66,
-        "comfortRange": 29,
+        "comfortRange": 15,
         "israelCenter": 65,
-        "israelComfortRange": 20,
-        "baseStartApproval": 58,
+        "israelComfortRange": 12,
+        "baseStartApproval": 40,
         "donationRate": 0.9,
         "floor": 5,
         "ceiling": 28
@@ -1898,10 +1901,10 @@ var GAME_DATA =
         "name": "Conservative",
         "populationBaseline": 19,
         "politicalCenter": 44,
-        "comfortRange": 33,
+        "comfortRange": 17,
         "israelCenter": 61,
-        "israelComfortRange": 18,
-        "baseStartApproval": 55,
+        "israelComfortRange": 10,
+        "baseStartApproval": 40,
         "donationRate": 0.72,
         "floor": 8,
         "ceiling": 25
@@ -1911,10 +1914,10 @@ var GAME_DATA =
         "name": "Reform",
         "populationBaseline": 37,
         "politicalCenter": 33,
-        "comfortRange": 26,
+        "comfortRange": 14,
         "israelCenter": 52,
-        "israelComfortRange": 23,
-        "baseStartApproval": 50,
+        "israelComfortRange": 13,
+        "baseStartApproval": 40,
         "donationRate": 0.53,
         "floor": 8,
         "ceiling": 30
@@ -1924,10 +1927,10 @@ var GAME_DATA =
         "name": "Unaffiliated",
         "populationBaseline": 29,
         "politicalCenter": 39,
-        "comfortRange": 31,
+        "comfortRange": 16,
         "israelCenter": 47,
-        "israelComfortRange": 24,
-        "baseStartApproval": 43,
+        "israelComfortRange": 14,
+        "baseStartApproval": 40,
         "donationRate": 0.18,
         "floor": 5,
         "ceiling": 30
@@ -1937,10 +1940,10 @@ var GAME_DATA =
         "name": "Young Jews",
         "populationBaseline": 23,
         "politicalCenter": 36,
-        "comfortRange": 30,
+        "comfortRange": 16,
         "israelCenter": 45,
-        "israelComfortRange": 27,
-        "baseStartApproval": 47,
+        "israelComfortRange": 15,
+        "baseStartApproval": 40,
         "donationRate": 0.34,
         "floor": 8,
         "ceiling": 28
@@ -1950,10 +1953,10 @@ var GAME_DATA =
         "name": "Older Jews",
         "populationBaseline": 29,
         "politicalCenter": 40,
-        "comfortRange": 33,
+        "comfortRange": 17,
         "israelCenter": 55,
-        "israelComfortRange": 23,
-        "baseStartApproval": 53,
+        "israelComfortRange": 13,
+        "baseStartApproval": 40,
         "donationRate": 0.61,
         "floor": 8,
         "ceiling": 30
@@ -14545,7 +14548,7 @@ function initSegmentApprovals(orgId) {
     // Political alignment adjustment: compare org position to segment center
     var diff = Math.abs(orgPos - seg.politicalCenter);
     var comfortRange = seg.comfortRange || 20;
-    var maxAdj = 15;
+    var maxAdj = 25;
     
     var adjustment;
     if (diff <= comfortRange / 3) {
@@ -14657,7 +14660,12 @@ function applySegmentEffects(trustDelta, choice, scenario) {
       // Average across active axes
       if (axisCount > 0) alignmentBonus = alignmentBonus / axisCount;
 
-      segEffect = trustDelta + (alignmentBonus * divergence * Math.abs(trustDelta > 0 ? Math.max(1, trustDelta / 3) : Math.min(-1, trustDelta / 3)));
+      var rawEffect = alignmentBonus * divergence * Math.abs(trustDelta > 0 ? Math.max(1, trustDelta / 3) : Math.min(-1, trustDelta / 3));
+      if (rawEffect < 0) {
+        var polMult = GAME_DATA.config.polarizationMultiplier || 1.5;
+        rawEffect *= polMult;
+      }
+      segEffect = trustDelta + rawEffect;
     }
 
     segEffect = Math.round(segEffect);

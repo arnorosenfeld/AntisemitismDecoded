@@ -134,7 +134,7 @@ function initSegmentApprovals(orgId) {
     // Political alignment adjustment: compare org position to segment center
     var diff = Math.abs(orgPos - seg.politicalCenter);
     var comfortRange = seg.comfortRange || 20;
-    var maxAdj = 15;
+    var maxAdj = 25;
     
     var adjustment;
     if (diff <= comfortRange / 3) {
@@ -246,7 +246,13 @@ function applySegmentEffects(trustDelta, choice, scenario) {
       // Average across active axes
       if (axisCount > 0) alignmentBonus = alignmentBonus / axisCount;
 
-      segEffect = trustDelta + (alignmentBonus * divergence * Math.abs(trustDelta > 0 ? Math.max(1, trustDelta / 3) : Math.min(-1, trustDelta / 3)));
+      var rawEffect = alignmentBonus * divergence * Math.abs(trustDelta > 0 ? Math.max(1, trustDelta / 3) : Math.min(-1, trustDelta / 3));
+      // Asymmetric polarization: negative alignment hits harder than positive helps
+      if (rawEffect < 0) {
+        var polMult = GAME_DATA.config.polarizationMultiplier || 1.5;
+        rawEffect *= polMult;
+      }
+      segEffect = trustDelta + rawEffect;
     }
     
     segEffect = Math.round(segEffect);

@@ -353,9 +353,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Round info removed from HUD - now in AP bar */
 
 /* INVESTMENT STRIP - below HUD */
-.invest-strip { background: #283248; padding: 7px 20px; left: 0; right: 0; z-index: 1; border-top: 1px solid rgba(255,255,255,0.06); }
+.invest-strip { background: #283248; padding: 7px 20px; left: 0; right: 0; z-index: 1; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
 .invest-strip-wrap { max-width: 820px; margin: 0 auto; position: relative; }
-.invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
 .invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding: 8px 16px 8px 0; flex-shrink: 0; }
 .invest-strip-label::after { content: ''; position: absolute; top: -20px; bottom: -20px; right: -28px; width: 28px; background: linear-gradient(to right, #283248 30%, transparent); pointer-events: none; }

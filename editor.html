@@ -13427,6 +13427,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
       <div id="${prefix}-polfields-${si}-${ci}" style="display:${hasPol?'block':'none'}">
         <div class="form-row three" style="margin-bottom:4px">
           <div class="form-group"><label>Political Lean</label><input type="number" id="${prefix}-cpollean-${si}-${ci}" value="${c.politicalLean||0}" min="-10" max="10" /><div class="form-hint">-10=hard left, +10=hard right, 0=none</div></div>
+          <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${c.israelLean||0}" min="-10" max="10" /><div class="form-hint">-10=dovish, +10=hawkish, 0=none</div></div>
           <div class="form-group"><label>Clout Effect</label><input type="number" id="${prefix}-cpolclout-${si}-${ci}" value="${c.cloutEffect||0}" min="-10" max="10" /><div class="form-hint">Political capital gained/lost</div></div>
           <div class="form-group"><label>Min Clout Required</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = no requirement</div></div>
         </div>
@@ -13511,6 +13512,7 @@ function saveScenario(i, prefix) {
     });
     // Political impact fields
     var polLean = parseInt(document.getElementById(prefix+'-cpollean-'+i+'-'+ci)?.value)||0;
+    var israelLean = parseInt(document.getElementById(prefix+'-cpolleanil-'+i+'-'+ci)?.value)||0;
     var polClout = parseInt(document.getElementById(prefix+'-cpolclout-'+i+'-'+ci)?.value)||0;
     var polMinClout = parseInt(document.getElementById(prefix+'-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
@@ -13525,7 +13527,9 @@ function saveScenario(i, prefix) {
       oi++;
     }
     var segOv = readSegOverrides(prefix, i, ci);
-    s.choices.push({id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
+    var choiceObj = {id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    if (israelLean !== 0) choiceObj.israelLean = israelLean; else delete choiceObj.israelLean;
+    s.choices.push(choiceObj);
     ci++;
   }
   // Save advisor quotes with recommendation fields
@@ -15068,6 +15072,10 @@ function populateSegments() {
       '<div class="form-group"><label>Comfort Range</label><input type="number" id="seg-comfort-'+i+'" value="'+(seg.comfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their political center before approval drops sharply</div></div>' +
       '</div>' +
       '<div class="form-row three">' +
+      '<div class="form-group"><label>Israel Center</label><input type="number" id="seg-ilcenter-'+i+'" value="'+(seg.israelCenter||50)+'" min="0" max="100" /><div class="form-hint">Where this segment sits on Israel policy (0=dovish, 50=center, 100=hawkish)</div></div>' +
+      '<div class="form-group"><label>Israel Comfort Range</label><input type="number" id="seg-ilcomfort-'+i+'" value="'+(seg.israelComfortRange||20)+'" min="5" max="50" /><div class="form-hint">How far from their Israel center before approval drops</div></div>' +
+      '</div>' +
+      '<div class="form-row three">' +
       '<div class="form-group"><label>Base Start Approval</label><input type="number" id="seg-base-'+i+'" value="'+seg.baseStartApproval+'" min="20" max="80" /><div class="form-hint">Default approval rating at game start before political alignment adjustments</div></div>' +
       '<div class="form-group"><label>Donation Rate</label><input type="number" step="0.01" id="seg-don-'+i+'" value="'+seg.donationRate+'" min="0" max="1" /><div class="form-hint">Multiplier for this segment\'s contribution to donor stat income</div></div>' +
       '<div class="form-group"><label>Floor / Ceiling</label><input id="seg-fc-'+i+'" value="'+seg.floor+'/'+seg.ceiling+'" /><div class="form-hint">Min/max percentage this segment can be weighted in org segment weights</div></div>' +
@@ -15084,6 +15092,8 @@ function saveSegments() {
     seg.populationBaseline = parseInt(document.getElementById('seg-pop-'+i).value) || seg.populationBaseline;
     seg.politicalCenter = parseInt(document.getElementById('seg-pol-'+i).value) || seg.politicalCenter;
     seg.comfortRange = parseInt(document.getElementById('seg-comfort-'+i).value) || 20;
+    seg.israelCenter = parseInt(document.getElementById('seg-ilcenter-'+i).value) || 50;
+    seg.israelComfortRange = parseInt(document.getElementById('seg-ilcomfort-'+i).value) || 20;
     seg.baseStartApproval = parseInt(document.getElementById('seg-base-'+i).value) || seg.baseStartApproval;
     seg.donationRate = parseFloat(document.getElementById('seg-don-'+i).value) || seg.donationRate;
     var fc = (document.getElementById('seg-fc-'+i).value || '').split('/');

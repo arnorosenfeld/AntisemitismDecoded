@@ -202,25 +202,50 @@ function applySegmentEffects(trustDelta, choice, scenario) {
       // No political signal + high consensus = flat effect
       segEffect = trustDelta;
     } else {
-      // Consensus-based divergence formula
-      // Convert politicalLean (-10 to +10) to position shift (0-100 scale)
-      var choicePosition = 50 + lean * 5;
-      // How well does this choice align with this segment?
-      var segDist = Math.abs(choicePosition - seg.politicalCenter);
-      var comfort = seg.comfortRange || 20;
-      var alignmentBonus;
-      
-      if (segDist <= comfort / 2) {
-        // Good alignment: bonus
-        alignmentBonus = (1 - segDist / (comfort / 2)) * scalingFactor;
-      } else if (segDist <= comfort) {
-        // Neutral zone
-        alignmentBonus = -(segDist - comfort / 2) / (comfort / 2) * scalingFactor * 0.5;
-      } else {
-        // Poor alignment: penalty that scales with distance
-        alignmentBonus = -scalingFactor * 0.5 - ((segDist - comfort) / 30) * scalingFactor;
+      // Calculate alignment on both political axes
+      var usLean = (choice && choice.politicalLean) || 0;
+      var israelLean = (choice && choice.israelLean) || 0;
+
+      var alignmentBonus = 0;
+      var axisCount = 0;
+
+      // U.S. politics axis
+      if (usLean !== 0) {
+        var choicePositionUS = 50 + usLean * 5;
+        var segDistUS = Math.abs(choicePositionUS - seg.politicalCenter);
+        var comfortUS = seg.comfortRange || 20;
+        var usBonus;
+        if (segDistUS <= comfortUS / 2) {
+          usBonus = (1 - segDistUS / (comfortUS / 2)) * scalingFactor;
+        } else if (segDistUS <= comfortUS) {
+          usBonus = -(segDistUS - comfortUS / 2) / (comfortUS / 2) * scalingFactor * 0.5;
+        } else {
+          usBonus = -scalingFactor * 0.5 - ((segDistUS - comfortUS) / 30) * scalingFactor;
+        }
+        alignmentBonus += usBonus;
+        axisCount++;
       }
-      
+
+      // Israel politics axis
+      if (israelLean !== 0) {
+        var choicePositionIL = 50 + israelLean * 5;
+        var segDistIL = Math.abs(choicePositionIL - (seg.israelCenter || seg.politicalCenter));
+        var comfortIL = seg.israelComfortRange || seg.comfortRange || 20;
+        var ilBonus;
+        if (segDistIL <= comfortIL / 2) {
+          ilBonus = (1 - segDistIL / (comfortIL / 2)) * scalingFactor;
+        } else if (segDistIL <= comfortIL) {
+          ilBonus = -(segDistIL - comfortIL / 2) / (comfortIL / 2) * scalingFactor * 0.5;
+        } else {
+          ilBonus = -scalingFactor * 0.5 - ((segDistIL - comfortIL) / 30) * scalingFactor;
+        }
+        alignmentBonus += ilBonus;
+        axisCount++;
+      }
+
+      // Average across active axes
+      if (axisCount > 0) alignmentBonus = alignmentBonus / axisCount;
+
       segEffect = trustDelta + (alignmentBonus * divergence * Math.abs(trustDelta > 0 ? Math.max(1, trustDelta / 3) : Math.min(-1, trustDelta / 3)));
     }
     
@@ -242,14 +267,14 @@ function applySegmentEffects(trustDelta, choice, scenario) {
     var hist = G.segmentHistory[seg.id] || [];
     var lastChange = hist.length > 0 ? hist[hist.length - 1] : 0;
     var w = weights[seg.id] || seg.populationBaseline;
-    if (Math.abs(lastChange) >= 3 && w >= 10) {
+    if (Math.abs(lastChange) >= 1) {
       significantChanges.push({ name: seg.name, delta: lastChange });
     }
   });
   
   // Show top 2-3 most impactful segment changes
   significantChanges.sort(function(a, b) { return Math.abs(b.delta) - Math.abs(a.delta); });
-  significantChanges.slice(0, 3).forEach(function(sc) {
+  significantChanges.slice(0, 6).forEach(function(sc) {
     var cls = sc.delta > 0 ? 'seg-chip-pos' : 'seg-chip-neg';
     chips += '<span class="seg-chip ' + cls + '">' + (sc.delta > 0 ? '+' : '') + sc.delta + ' ' + sc.name + '</span>';
   });
@@ -3085,6 +3110,9 @@ function inferPoliticalLean(choice, scenario) {
   } else {
     choice.politicalLean = 0;
     choice.cloutEffect = 0;
+  }
+  if (choice.israelLean === undefined && scenario) {
+    choice.israelLean = 0; // default to no Israel lean unless explicitly set
   }
 }
 

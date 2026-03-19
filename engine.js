@@ -1636,7 +1636,7 @@ function computeLiveGrade() {
   });
   if (tw > 0) score = score / tw;
   // Add mission star bonus
-  var starBonus = (G.missionStars || 0) * (GAME_DATA.config.missionStarPoints || 5);
+  var starBonus = (G.missionStars || 0) * (GAME_DATA.config.missionStarPoints || 1);
   score = Math.min(100, Math.round(score + starBonus));
 
   var thresholds = GAME_DATA.scoring.thresholds || [];
@@ -2392,7 +2392,7 @@ function endYear(){
   score += polMod;
   
   // #3: Mission star scoring
-  const starPoints = GAME_DATA.config.missionStarPoints || 5;
+  const starPoints = GAME_DATA.config.missionStarPoints || 1;
   const starBonus = G.missionStars * starPoints;
   score += starBonus;
   score = Math.min(100, score); // cap at 100

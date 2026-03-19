@@ -1101,8 +1101,8 @@ var EDITOR_DATA =
       "nationalInvestmentsPerYear": 1
     },
     "momentumWindow": 2,
-    "momentumBonus": 2,
-    "momentumPenalty": 3,
+    "momentumBonus": 1,
+    "momentumPenalty": 1,
     "segments": [
       {
         "id": "orthodox",
@@ -13968,15 +13968,15 @@ function populateMomentumConfig(){
   var c = GD.config;
   var el;
   el = document.getElementById('cfg-momentumWindow'); if(el) el.value = c.momentumWindow || 2;
-  el = document.getElementById('cfg-momentumBonus'); if(el) el.value = c.momentumBonus || 2;
-  el = document.getElementById('cfg-momentumPenalty'); if(el) el.value = c.momentumPenalty || 3;
+  el = document.getElementById('cfg-momentumBonus'); if(el) el.value = c.momentumBonus || 1;
+  el = document.getElementById('cfg-momentumPenalty'); if(el) el.value = c.momentumPenalty || 1;
 }
 function saveMomentumConfig(){
   var c = GD.config;
   var el;
   el = document.getElementById('cfg-momentumWindow'); if(el) c.momentumWindow = parseInt(el.value)||2;
-  el = document.getElementById('cfg-momentumBonus'); if(el) c.momentumBonus = parseInt(el.value)||2;
-  el = document.getElementById('cfg-momentumPenalty'); if(el) c.momentumPenalty = parseInt(el.value)||3;
+  el = document.getElementById('cfg-momentumBonus'); if(el) c.momentumBonus = parseInt(el.value)||1;
+  el = document.getElementById('cfg-momentumPenalty'); if(el) c.momentumPenalty = parseInt(el.value)||1;
 }
 
 // ═══ POLITICAL MECHANICS ═══

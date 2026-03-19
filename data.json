@@ -318,8 +318,8 @@
           },
           {
             "icon": "⏳",
-            "title": "Entropy Is Real",
-            "text": "Every round, your stats naturally decay by 2–4 points as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place.",
+            "title": "Momentum Matters",
+            "text": "Your stats have momentum. If a stat trends up for two rounds in a row, it gets a small boost. If it trends down, it drops a little faster. Watch the arrows next to your stats — they show which way things are heading.",
             "style": "default"
           },
           {
@@ -366,8 +366,8 @@
       "nationalInvestmentsPerYear": 1
     },
     "momentumWindow": 2,
-    "momentumBonus": 2,
-    "momentumPenalty": 3,
+    "momentumBonus": 1,
+    "momentumPenalty": 1,
     "segments": [
       {
         "id": "orthodox",

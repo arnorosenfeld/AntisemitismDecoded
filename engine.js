@@ -1124,6 +1124,7 @@ function toggleHelpPanel() {
       '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
         '<div style="margin-bottom:10px"><strong>⭐ Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. Lose all your stars and the board loses confidence. Earn bonus stars through mission-aligned decisions — they boost your year-end score.</div>' +
         '<div style="margin-bottom:10px"><strong>💰 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices and crises cost gelt. Running out limits your options.</div>' +
+        '<div style="margin-bottom:10px"><strong>📈 Momentum:</strong> Stats that trend up for two rounds get a small boost. Stats that trend down get a small penalty. Watch the arrows (↑↓→) next to your stats — they show the trend.</div>' +
         '<div style="margin-bottom:10px"><strong>👥 Segments:</strong> Community Trust is the weighted average of how different groups feel about you — Orthodox, Reform, Conservative, unaffiliated, young adults, older adults. A decision that thrills one group may alienate another.</div>' +
         '<div><strong>⚖️ Political Capital:</strong> Your political position (left to right) and clout affect which coalitions, allies, and choices are available to you.</div>' +
       '</div>';
@@ -1213,7 +1214,7 @@ var ONBOARDING_STEPS = [
   },
   {
     mood: 'concerned',
-    msg: 'One more thing \u2014 every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
+    msg: 'One more thing \u2014 your stats have <strong>momentum</strong>. If a stat trends up for two rounds, it gets a small boost. If it trends down, it drops a little faster. Watch the arrows next to your stats \u2014 they show which way things are heading. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
     label: 'Let\'s do this \u2192'
   }
 ];
@@ -1428,74 +1429,7 @@ function startPromoGame(){
 
 // ═══════════════ ROUND ═══════════════
 // ═══════════════ ROUND ENTROPY ═══════════════
-// Stats naturally decay each round to simulate organizational entropy
-var ENTROPY_MESSAGES = [
-  "Between crises, attention drifts. Relationships require maintenance.",
-  "Time erodes what you don\u2019t actively sustain.",
-  "Donors ask \u2018what have you done for me lately?\u2019 Staff energy flags.",
-  "The community\u2019s memory is short. Last month\u2019s victory is already fading.",
-  "Entropy is the default state of organizations. Progress requires constant effort.",
-  "Board members grow restless. Volunteers drift to other causes.",
-  "Institutional momentum slows without constant attention.",
-  "The news cycle moves on. Your last win is already yesterday\u2019s story."
-];
-
-function applyEntropy() {
-  var FLOOR = 25;
-  var statIds = GAME_DATA.stats.map(function(s) { return s.id; });
-  var chips = '';
-  var anyDecayed = false;
-
-  statIds.forEach(function(statId) {
-    var current = G.stats[statId] || 50;
-    if (current <= FLOOR) return; // don't decay below floor
-    var decay = Math.floor(Math.random() * 3) + 2; // 2-4
-    // Don't let decay push below floor
-    decay = Math.min(decay, current - FLOOR);
-    if (decay <= 0) return;
-
-    if (statId === 'trust' && G.segmentApproval) {
-      // Decay each segment individually
-      var segments = GAME_DATA.config.segments || [];
-      segments.forEach(function(seg) {
-        var segVal = G.segmentApproval[seg.id] || 50;
-        if (segVal <= FLOOR) return;
-        var segDecay = Math.floor(Math.random() * 3) + 2;
-        segDecay = Math.min(segDecay, segVal - FLOOR);
-        if (segDecay > 0) {
-          G.segmentApproval[seg.id] = segVal - segDecay;
-        }
-      });
-      G.stats.trust = computeCompositeTrust();
-      var newVal = G.stats.trust;
-      var effectiveDecay = current - newVal;
-      if (effectiveDecay > 0) {
-        var lbl = GAME_DATA.stats.find(function(s){return s.id===statId;})?.label || statId;
-        chips += '<span class="chip chip-neg">-' + effectiveDecay + ' ' + lbl + '</span>';
-        anyDecayed = true;
-      }
-    } else {
-      G.stats[statId] = current - decay;
-      var lbl = GAME_DATA.stats.find(function(s){return s.id===statId;})?.label || statId;
-      chips += '<span class="chip chip-neg">-' + decay + ' ' + lbl + '</span>';
-      anyDecayed = true;
-    }
-  });
-
-  if (anyDecayed) {
-    var msg = ENTROPY_MESSAGES[Math.floor(Math.random() * ENTROPY_MESSAGES.length)];
-    var div = document.createElement('div');
-    div.className = 'game-notification notif-entropy';
-    div.innerHTML = '<button class="notif-close" onclick="event.stopPropagation();this.parentNode.remove()">\u2715</button>' +
-      '<div style="font-weight:700;margin-bottom:5px">\u23f3 Time Passes</div>' +
-      '<div style="font-size:12px;opacity:0.9;margin-bottom:6px;font-style:italic">' + msg + '</div>' +
-      '<div>' + chips + '</div>';
-    div.onclick = function(){ div.remove(); };
-    document.body.appendChild(div);
-    positionNotification(div);
-    setTimeout(function(){ if(div.parentNode) div.remove(); }, 7000);
-  }
-}
+// Entropy removed — momentum is the only passive stat change system
 
 function beginRound(){
   G.round++;
@@ -1504,11 +1438,8 @@ function beginRound(){
   // Record stat snapshot for momentum tracking
   recordStatSnapshot();
   
-  // Apply stat momentum (Feature 6)
+  // Apply stat momentum
   if(G.round > 1) applyMomentum();
-  
-  // Apply round entropy (natural stat decay)
-  if(G.round > 1) applyEntropy();
   
   // Check coaching warnings (Year 1 only)
   if(G.round > 1) checkCoachingWarnings();
@@ -4278,8 +4209,8 @@ function getStatMomentum(statId) {
   return 0;
 }
 function applyMomentum() {
-  var bonus = GAME_DATA.config.momentumBonus || 2;
-  var penalty = GAME_DATA.config.momentumPenalty || 3;
+  var bonus = GAME_DATA.config.momentumBonus || 1;
+  var penalty = GAME_DATA.config.momentumPenalty || 1;
   (GAME_DATA.stats||[]).forEach(function(s) {
     var m = getStatMomentum(s.id);
     if (m > 0) G.stats[s.id] = Math.min(100, (G.stats[s.id]||50) + bonus);

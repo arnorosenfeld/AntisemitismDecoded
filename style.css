@@ -330,6 +330,14 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-stars { font-size: 20px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; height: 24px; }
 .hud-stars .star { display: inline-block; width: 20px; height: 20px; text-align: center; line-height: 20px; font-size: 18px; vertical-align: middle; }
 .hud-stars .star-empty { opacity: 0.45; }
+/* Live grade badge */
+.hud-live-grade { font-family: 'Merriweather', serif; font-weight: 900; font-size: 16px; margin-left: auto; padding: 2px 10px; border-radius: 3px; cursor: help; }
+.hud-live-grade.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.15); }
+.hud-live-grade.grade-b { color: #b8860b; background: rgba(184,134,11,0.15); }
+.hud-live-grade.grade-c { color: #7a6b1a; background: rgba(122,107,26,0.15); }
+.hud-live-grade.grade-d { color: #c0392b; background: rgba(192,57,43,0.15); }
+.hud-live-grade.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.2); }
+
 /* Round info removed from HUD - now in AP bar */
 
 /* INVESTMENT STRIP - below HUD */
@@ -358,6 +366,12 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .ap-pip { width: 14px; height: 14px; border: 2px solid var(--ink); background: var(--ink); transition: all 0.18s; border-radius: 50%; }
 .ap-pip.empty { background: transparent; }
 .ap-end { margin-left: 8px; }
+
+/* Stat danger backgrounds */
+.desk-warning { background: rgba(234, 179, 8, 0.06); animation: deskWarningPulse 3s ease-in-out infinite; }
+.desk-danger { background: rgba(220, 38, 38, 0.06); animation: deskDangerPulse 2s ease-in-out infinite; }
+@keyframes deskWarningPulse { 0%,100% { background-color: rgba(234,179,8,0.04); } 50% { background-color: rgba(234,179,8,0.1); } }
+@keyframes deskDangerPulse { 0%,100% { background-color: rgba(220,38,38,0.04); } 50% { background-color: rgba(220,38,38,0.1); } }
 
 /* GAME MAIN */
 .game-main { padding: 26px 20px 80px; }
@@ -491,6 +505,52 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .end-m-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
 .end-m-val { font-family: 'Merriweather', serif; font-size: 20px; font-weight: 900; }
 .end-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+
+/* Enhanced end screen */
+.end-section { padding: 20px 32px; border-top: 1px solid var(--border); }
+.end-section-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.end-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.end-stat { text-align: center; }
+.end-stat-bar { height: 5px; background: #e0ddd5; border-radius: 3px; margin-top: 6px; }
+.end-stat-fill { height: 100%; border-radius: 3px; }
+.end-stat-delta { font-size: 11px; font-weight: 700; margin-left: 4px; }
+.end-stat-delta.up { color: #2d6a4f; }
+.end-stat-delta.down { color: #c0392b; }
+.end-stat-delta.flat { color: #999; }
+.end-secondary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding-top: 16px; border-top: 1px solid #eee; }
+.end-sec-item { text-align: center; }
+.end-sec-label { font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
+.end-sec-val { font-family: 'Merriweather', serif; font-size: 16px; font-weight: 700; }
+.end-sec-delta { font-size: 10px; font-weight: 700; display: block; margin-top: 1px; }
+.end-sec-delta.up { color: #2d6a4f; }
+.end-sec-delta.down { color: #c0392b; }
+.end-sec-delta.flat { color: #999; }
+.end-moment { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; padding: 10px 12px; background: #f8f5ef; }
+.end-moment-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.end-moment-text { font-size: 12px; line-height: 1.6; color: #3a3528; }
+.end-seg-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 11px; }
+.end-seg-name { width: 85px; color: var(--muted); font-weight: 600; }
+.end-seg-bar { flex: 1; height: 7px; background: #e8e0d0; border-radius: 4px; }
+.end-seg-fill { height: 100%; border-radius: 4px; }
+.end-seg-val { width: 28px; text-align: right; font-weight: 700; font-size: 12px; }
+.end-seg-delta { width: 36px; text-align: right; font-size: 10px; font-weight: 700; }
+.end-seg-delta.up { color: #2d6a4f; }
+.end-seg-delta.down { color: #c0392b; }
+.end-spectrum { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, #3b82f6, #8b5cf6, #a855f7, #ef4444); margin-bottom: 4px; margin-top: 14px; }
+.end-spectrum-dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; top: -3px; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+.end-spectrum-dot.start { background: #999; opacity: 0.5; }
+.end-spectrum-dot.end { background: var(--gold); }
+.end-spectrum-labels { display: flex; justify-content: space-between; font-size: 7px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.end-pol-summary { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.end-reflection { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; }
+.end-refl-portrait { width: 40px; height: 46px; object-fit: cover; object-position: top; border-radius: 5px; flex-shrink: 0; }
+.end-refl-name { font-weight: 700; font-size: 11px; color: var(--ink); margin-bottom: 2px; }
+.end-refl-text { font-size: 12px; line-height: 1.5; color: #555; font-style: italic; }
+.end-replay { padding: 16px 32px; border-top: 1px solid var(--border); background: #f5f0e4; text-align: center; }
+.end-replay-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.end-replay-text strong { color: var(--ink); }
+.end-score-breakdown { font-size: 12px; color: var(--muted); margin-top: 4px; margin-bottom: 16px; }
+.end-score-breakdown strong { color: var(--ink); }
 
 /* PROMOTION SCREEN */
 .promo-list { display: flex; flex-direction: column; gap: 11px; margin-bottom: 22px; }

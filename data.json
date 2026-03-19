@@ -6,9 +6,9 @@
     "traitsToSelect": 2,
     "missionStartStars": 3,
     "missionMaxStars": 5,
-    "failureBarThreshold": 20,
-    "failureScoreThreshold": 40,
-    "promotionThreshold": 80,
+    "failureBarThreshold": 15,
+    "failureScoreThreshold": 30,
+    "promotionThreshold": 75,
     "inboxPerRound": 2,
     "scoreWeights": {
       "trust": 0.33,
@@ -8972,34 +8972,34 @@
   "scoring": {
     "thresholds": [
       {
-        "min": 80,
+        "min": 75,
         "grade": "A",
-        "heading": "A Year of Real Leadership",
+        "heading": "Exceptional Leadership",
         "verdict": "You navigated a difficult year with integrity and skill. No decision was perfect, and you made some enemies — that is the cost of having convictions. But the organization is stronger, the community trusts you, and your staff knows you have their backs."
       },
       {
-        "min": 65,
+        "min": 60,
         "grade": "B",
         "heading": "A Solid Performance",
-        "verdict": "You kept the organization on course through real challenges. A few decisions you'd take back, but the fundamentals are sound. The board has renewed your contract."
+        "verdict": "You kept the organization on course through real challenges. The board renewed your contract with a vote of confidence and approved an expanded operating budget. A few decisions you'd take back, but the fundamentals are sound."
       },
       {
-        "min": 50,
+        "min": 45,
         "grade": "C",
-        "heading": "A Mixed Record",
-        "verdict": "You survived. Some decisions you're proud of; others you'd take back. The organization is intact but not thriving. The Jewish communal world is small and long-memoried."
+        "heading": "A Quiet Year",
+        "verdict": "The board renewed your contract. No one celebrated, but no one objected either. You survived — some decisions you're proud of, others you'd take back. You have another year to prove yourself."
       },
       {
-        "min": 40,
+        "min": 30,
         "grade": "D",
-        "heading": "A Difficult Year",
-        "verdict": "The year exposed how hard this work is. Budget pressure, community conflict, and moral complexity took their toll. The board has expressed concerns. You have been given another year."
+        "heading": "On Probation",
+        "verdict": "The board renewed your contract — barely. You've been placed on a performance improvement plan. Discretionary investments have been frozen until the board sees sustained improvement. The next review will not be this generous."
       },
       {
         "min": 0,
         "grade": "F",
         "heading": "Your Tenure Has Ended",
-        "verdict": "Multiple organizational indicators reached critical levels. The board has asked for your resignation. The work is hard, the stakeholders are demanding, and the stakes are real. The organization will continue."
+        "verdict": "The board has asked for your resignation. Trust collapsed, donors walked, and staff morale hit rock bottom. The work is impossibly hard, the stakeholders demanding, the stakes real. The community will find someone else to carry this forward."
       }
     ]
   },

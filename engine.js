@@ -64,7 +64,10 @@ let G = {
   // Advisor system
   selectedAdvisors: [],
   advisorBonusLog: [],
-  currentAdvisorBonusMultiplier: 1.0
+  currentAdvisorBonusMultiplier: 1.0,
+  notableMoments: [],
+  investmentsFrozen: false,
+  _probationLifted: false
 };
 
 // ═══════════════ UTILS ═══════════════
@@ -1168,9 +1171,9 @@ function pickCoachMsg(category) {
 }
 
 function showCoachingWarning(msg, level) {
-  var bgColor = level === 'red' ? '#fdf2f2' : level === 'yellow' ? '#fefce8' : '#f0f4ff';
-  var borderColor = level === 'red' ? '#e8a0a0' : level === 'yellow' ? '#e8d44d' : '#a0b4e8';
-  var textColor = level === 'red' ? '#8b1a1a' : level === 'yellow' ? '#7a6b1a' : '#1a3a6b';
+  var bgColor = level === 'red' ? '#fdf2f2' : level === 'yellow' ? '#fefce8' : level === 'green' ? '#f0fdf4' : '#f0f4ff';
+  var borderColor = level === 'red' ? '#e8a0a0' : level === 'yellow' ? '#e8d44d' : level === 'green' ? '#6ee7b7' : '#a0b4e8';
+  var textColor = level === 'red' ? '#8b1a1a' : level === 'yellow' ? '#7a6b1a' : level === 'green' ? '#166534' : '#1a3a6b';
   var div = document.createElement('div');
   div.className = 'game-notification';
   div.style.background = bgColor;
@@ -1183,6 +1186,54 @@ function showCoachingWarning(msg, level) {
   document.body.appendChild(div);
   positionNotification(div);
   setTimeout(function(){ if(div.parentNode) div.remove(); }, 8000);
+}
+
+// ═══════════════ STAT DANGER SYSTEM ═══════════════
+var DANGER_ORANGE = 25;
+var DANGER_RED = 20;
+
+function updateStatDanger() {
+  var gameMain = document.querySelector('.game-main');
+  if (!gameMain) return;
+  if (!G._dangerWarningsShown) G._dangerWarningsShown = {};
+
+  var worstLevel = 'none'; // none, orange, red
+  var dangerStats = [];
+
+  (GAME_DATA.stats || []).forEach(function(s) {
+    var v = G.stats[s.id] || 50;
+    var meterId = 'hud-meter-' + s.id;
+
+    if (v <= DANGER_RED) {
+      worstLevel = 'red';
+      dangerStats.push({ stat: s, level: 'red', value: v });
+    } else if (v <= DANGER_ORANGE) {
+      if (worstLevel !== 'red') worstLevel = 'orange';
+      dangerStats.push({ stat: s, level: 'orange', value: v });
+    }
+  });
+
+  // Update desk background
+  gameMain.classList.remove('desk-warning', 'desk-danger');
+  if (worstLevel === 'red') gameMain.classList.add('desk-danger');
+  else if (worstLevel === 'orange') gameMain.classList.add('desk-warning');
+
+  // Show one-time popups
+  dangerStats.forEach(function(d) {
+    var key = d.level + '_danger_' + d.stat.id;
+    if (G._dangerWarningsShown[key]) return;
+    G._dangerWarningsShown[key] = true;
+
+    if (d.level === 'red') {
+      setTimeout(function() {
+        showCoachingWarning('\ud83d\udea8 The board has called an emergency meeting. Your <strong>' + d.stat.label + '</strong> is critically low at ' + d.value + '. If it drops to ' + (GAME_DATA.config.failureBarThreshold || 15) + ', your tenure ends immediately.', 'red');
+      }, 500);
+    } else {
+      setTimeout(function() {
+        showCoachingWarning('Heads up \u2014 your <strong>' + d.stat.label + '</strong> is getting low at ' + d.value + '. Keep an eye on it before the board starts asking questions.', 'yellow');
+      }, 500);
+    }
+  });
 }
 
 // ═══════════════ ONBOARDING TUTORIAL ═══════════════
@@ -1199,12 +1250,12 @@ var ONBOARDING_STEPS = [
   },
   {
     mood: 'concerned',
-    msg: 'Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 20 or below, the board calls an emergency meeting and your tenure ends immediately.',
+    msg: 'Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 15 or below, the board calls an emergency meeting and your tenure ends immediately.',
     label: 'How do I win?'
   },
   {
     mood: 'approving',
-    msg: 'At year\'s end, the board evaluates your overall performance. Score above <strong>80</strong> and you\'ll be offered a promotion to a national organization. Stay above <strong>40</strong> and you keep your job. Below that\u2026 well, don\'t go below that.',
+    msg: 'At year\'s end, the board evaluates your overall performance. Score above <strong>75</strong> and you\'ll be offered a promotion to a national organization. Stay above <strong>30</strong> and you keep your job. Below that\u2026 well, don\'t go below that. Your mission stars also significantly impact your score \u2014 stay true to your stated priorities.',
     label: 'Any other advice?'
   },
   {
@@ -1259,6 +1310,17 @@ function checkCoachingWarnings() {
   if (!G._coachWarningsThisRound) G._coachWarningsThisRound = {};
 
   // Avi's onboarding replaces the old closing advice for first-time players
+
+  // Mission star alerts
+  if (G.missionStars <= 1 && G.missionStars > 0 && !G._coachWarningsLifetime['stars_low']) {
+    G._coachWarningsLifetime['stars_low'] = true;
+    setTimeout(function() { showCoachingWarning('Your mission stars are dangerously low. The board expects you to stay true to your stated priorities \u2014 losing all your stars means losing their confidence.', 'yellow'); }, 800);
+  }
+  if (G.missionStars >= (GAME_DATA.config.missionMaxStars || 5) && !G._coachWarningsLifetime['stars_max']) {
+    G._coachWarningsLifetime['stars_max'] = true;
+    setTimeout(function() { showCoachingWarning('You\u2019ve earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.', 'green');
+    }, 800);
+  }
 
   var totalRounds = GAME_DATA.config.totalRounds || 6;
   var isFinalRound = G.round >= totalRounds;
@@ -1372,6 +1434,9 @@ function startGame(){
     if (adv.politicalLean) G.politicalPosition += adv.politicalLean;
     if (adv.cloutBonus) G.politicalClout += adv.cloutBonus;
   });
+  // Save starting values for end-screen deltas
+  G._startingPoliticalPosition = G.politicalPosition;
+  G._startingPoliticalClout = G.politicalClout;
   // Initialize constituency segments
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
@@ -1421,7 +1486,10 @@ function startPromoGame(){
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
   G.politicalClout = Math.min(100, G.politicalClout + 15); // promotion clout bonus
-  
+  // Save starting values for end-screen deltas
+  G._startingPoliticalPosition = G.politicalPosition;
+  G._startingPoliticalClout = G.politicalClout;
+
   showScreen('game-screen');
   initTicker();
   beginRound();
@@ -1558,12 +1626,58 @@ function weightedPickMultiple(scenarios, count) {
   return result;
 }
 
+function computeLiveGrade() {
+  var w = GAME_DATA.scoring.weights || {};
+  var score = 0, tw = 0;
+  GAME_DATA.stats.forEach(function(s) {
+    var wt = w[s.id] || 0.25;
+    score += (G.stats[s.id] || 0) * wt;
+    tw += wt;
+  });
+  if (tw > 0) score = score / tw;
+  // Add mission star bonus
+  var starBonus = (G.missionStars || 0) * (GAME_DATA.config.missionStarPoints || 5);
+  score = Math.min(100, Math.round(score + starBonus));
+
+  var thresholds = GAME_DATA.scoring.thresholds || [];
+  var grade = 'F';
+  for (var i = 0; i < thresholds.length; i++) {
+    if (score >= thresholds[i].min) { grade = thresholds[i].grade; break; }
+  }
+  return { score: score, grade: grade, starBonus: starBonus, baseScore: Math.round(score - starBonus) };
+}
+
 function updateHUD(){
   const allOrgs=[...GAME_DATA.organizations,...GAME_DATA.nationalOrganizations];
   const org=allOrgs.find(o=>o.id===G.orgId);
   document.getElementById('hud-char-emoji').textContent=G.charEmoji;
   document.getElementById('hud-char-name').textContent=G.charName;
   document.getElementById('hud-org-name').textContent=org?.name||'';
+
+  // Live grade display
+  var liveGrade = computeLiveGrade();
+  var gradeEl = document.getElementById('hud-live-grade');
+  if (!gradeEl) {
+    gradeEl = document.createElement('span');
+    gradeEl.id = 'hud-live-grade';
+    gradeEl.className = 'hud-live-grade';
+    gradeEl.title = 'Current projected grade';
+    var banner = document.querySelector('.hud-banner-inner');
+    if (banner) banner.appendChild(gradeEl);
+  }
+  gradeEl.textContent = liveGrade.grade;
+  gradeEl.title = 'Score: ' + liveGrade.score + ' (Base: ' + liveGrade.baseScore + ' + Mission: +' + liveGrade.starBonus + ')';
+  gradeEl.className = 'hud-live-grade grade-' + liveGrade.grade.toLowerCase();
+
+  // Probation unlock check
+  if (G.investmentsFrozen && !G._probationLifted && liveGrade.score >= 60) {
+    G._probationLifted = true;
+    G.investmentsFrozen = false;
+    setTimeout(function() {
+      showCoachingWarning('Good news \u2014 the board has lifted your probation. Your investment budget has been restored. Keep up the strong performance.', 'green');
+      renderInvestStrip();
+    }, 600);
+  }
 
   // Recalculate composite trust from segments
   if (G.segmentApproval) {
@@ -1624,6 +1738,7 @@ function updateHUD(){
   
   // Update political clout display
   updatePoliticsHUD();
+  updateStatDanger();
 }
 
 // ═══════════════ DESK / CHANNEL DISTRIBUTION ═══════════════
@@ -1954,6 +2069,31 @@ function renderScenario(s){
     </div>`;
 }
 
+function recordNotableMoment(scenario, choice, outcome, isBreaking) {
+  if (!G.notableMoments) G.notableMoments = [];
+  var statImpact = 0;
+  Object.values(outcome.effects || {}).forEach(function(v) { statImpact += Math.abs(v); });
+  G.notableMoments.push({
+    title: scenario.title,
+    choiceText: (choice.text || '').substring(0, 80),
+    outcomeText: (outcome.text || '').substring(0, 120),
+    round: G.round,
+    complexity: scenario.complexity || 3,
+    isBreaking: !!isBreaking,
+    statImpact: statImpact
+  });
+}
+
+function getTopMoments(count) {
+  var moments = (G.notableMoments || []).slice();
+  moments.sort(function(a, b) {
+    if (a.isBreaking !== b.isBreaking) return a.isBreaking ? -1 : 1;
+    if (a.complexity !== b.complexity) return b.complexity - a.complexity;
+    return b.statImpact - a.statImpact;
+  });
+  return moments.slice(0, count || 3);
+}
+
 function chooseScenario(sid,idx){
   const s=GAME_DATA.scenarios.find(x=>x.id===sid);
   const valid=s.choices.filter(c=>!c.requiresUnlock||G.activeUnlocks.includes(c.requiresUnlock));
@@ -2033,6 +2173,7 @@ function chooseScenario(sid,idx){
   if (advisorContextNote) contextParts.push(advisorContextNote);
   if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
+  recordNotableMoment(s, c, outcome, false);
   showOutcome(s.title, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, function(){
     if (afterConv) {
       showConversation(afterConv.id, function(){ processQueue(); });
@@ -2159,6 +2300,7 @@ function chooseInbox(sid,idx){
   if (advisorContextNote) contextParts.push(advisorContextNote);
   if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
+  recordNotableMoment(s, c, outcome, false);
   showOutcome(s.subject, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, ()=>processQueue());
 }
 
@@ -2320,13 +2462,106 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   }
   endIllustration.style.display = 'block';
 
-  document.getElementById('end-score').textContent=forcedFail?'—':score;
-  document.getElementById('end-grade').textContent=grade?'Grade: '+grade:'';
-  document.getElementById('end-verdict').textContent=verdict;
-  document.getElementById('end-meters').innerHTML=GAME_DATA.stats.map(s=>{
-    const v=Math.round(G.stats[s.id]||0);
-    return `<div><span class="end-m-label">${s.label}</span><span class="end-m-val" style="color:${barColor(v)}">${v}</span></div>`;
-  }).join('')+`<div><span class="end-m-label">Gelt</span><span class="end-m-val" style="color:${G.budget>=40?'#b8860b':G.budget>=20?'#e67e22':'#c0392b'}"><img src="art/coins.png" style="width:16px;vertical-align:middle"> ${Math.round(G.budget)}</span></div>`+`<div><span class="end-m-label">Politics</span><span class="end-m-val" style="color:#6b7280;font-size:14px">${getPositionLabel(G.politicalPosition)}</span></div>`+`<div><span class="end-m-label">Clout</span><span class="end-m-val" style="color:#b8860b">⚡${Math.round(G.politicalClout)}</span></div>`+`<div><span class="end-m-label">Mission</span><span class="end-m-val" style="color:var(--gold)">${Array.from({length:GAME_DATA.config.missionMaxStars||5},(_, i)=>i<G.missionStars?'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle">':'<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">').join('')}</span></div>`+`<div class="budget-summary" style="grid-column:1/-1"><strong>Gelt Summary:</strong> Income this year: +${G.budgetIncomeThisYear} · Spent: -${G.budgetSpentThisYear} · Net: ${G.budgetIncomeThisYear - G.budgetSpentThisYear >= 0 ? '+' : ''}${G.budgetIncomeThisYear - G.budgetSpentThisYear} · Investments made: ${G.investmentsUsed||0} · <strong>Political:</strong> ${getPositionLabel(G.politicalPosition)} with ${Math.round(G.politicalClout)} clout (${getEffectivenessDesc().label} effectiveness)</div>`;
+  // Score breakdown
+  var liveGrade = computeLiveGrade();
+  var baseScore = liveGrade.baseScore;
+  var starBonus = liveGrade.starBonus;
+
+  document.getElementById('end-score').textContent = forcedFail ? '—' : score;
+  document.getElementById('end-grade').textContent = grade ? grade : '';
+
+  // Build enhanced content
+  var html = '';
+
+  // Score breakdown line
+  if (!forcedFail) {
+    html += '<div class="end-score-breakdown">Base: <strong>' + baseScore + '</strong> + Mission Stars: <strong>+' + starBonus + '</strong> (' + (G.missionStars||0) + ' × ' + (GAME_DATA.config.missionStarPoints||5) + ') = <strong>' + score + '</strong></div>';
+  }
+
+  // Verdict
+  html += '<p class="end-verdict">' + verdict + '</p>';
+
+  // Core stats with bars and deltas
+  var startSnap = (G.statHistory && G.statHistory[0]) || {};
+  html += '<div class="end-section"><div class="end-section-label">Year-End Performance</div><div class="end-stats-grid">';
+  GAME_DATA.stats.forEach(function(s) {
+    var v = Math.round(G.stats[s.id] || 0);
+    var sv = Math.round(startSnap[s.id] || v);
+    var d = v - sv;
+    var dCls = d > 0 ? 'up' : d < 0 ? 'down' : 'flat';
+    var dText = d > 0 ? '+' + d : d < 0 ? '' + d : '±0';
+    html += '<div class="end-stat"><span class="end-m-label">' + s.label + '</span><span class="end-m-val" style="color:' + barColor(v) + '">' + v + '</span><span class="end-stat-delta ' + dCls + '">' + dText + '</span><div class="end-stat-bar"><div class="end-stat-fill" style="width:' + v + '%;background:' + barColor(v) + '"></div></div></div>';
+  });
+  html += '</div>';
+
+  // Secondary stats
+  var startBudget = G.budgetMax || 100;
+  var startStars = GAME_DATA.config.missionStartStars || 3;
+  var starsHtml = '';
+  var maxS = GAME_DATA.config.missionMaxStars || 5;
+  for (var si = 0; si < maxS; si++) {
+    starsHtml += si < G.missionStars ? '<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle">' : '<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">';
+  }
+  var geltDelta = Math.round(G.budget) - startBudget;
+  var starsDelta = (G.missionStars || 0) - startStars;
+  html += '<div class="end-secondary">';
+  html += '<div class="end-sec-item"><span class="end-sec-label">Gelt</span><span class="end-sec-val"><img src="art/coins.png" style="width:14px;vertical-align:middle"> ' + Math.round(G.budget) + '</span><span class="end-sec-delta ' + (geltDelta > 0 ? 'up' : geltDelta < 0 ? 'down' : 'flat') + '">' + (geltDelta > 0 ? '+' : '') + geltDelta + '</span></div>';
+  html += '<div class="end-sec-item"><span class="end-sec-label">Mission</span><span class="end-sec-val">' + starsHtml + '</span><span class="end-sec-delta ' + (starsDelta > 0 ? 'up' : starsDelta < 0 ? 'down' : 'flat') + '">' + (starsDelta > 0 ? '+' : '') + starsDelta + '</span></div>';
+  html += '<div class="end-sec-item"><span class="end-sec-label">Investments</span><span class="end-sec-val">' + (G.investmentsUsed || 0) + ' made</span></div>';
+  html += '</div></div>';
+
+  // Key moments
+  var moments = getTopMoments(3);
+  if (moments.length > 0) {
+    html += '<div class="end-section"><div class="end-section-label">Key moments from your tenure</div>';
+    var icons = ['\uD83D\uDCF0', '\uD83E\uDD1D', '\uD83D\uDCB0', '\u26A0\uFE0F', '\uD83D\uDCCB'];
+    moments.forEach(function(m, i) {
+      var icon = m.isBreaking ? '\u26A0\uFE0F' : icons[i % icons.length];
+      html += '<div class="end-moment"><span class="end-moment-icon">' + icon + '</span><div class="end-moment-text"><strong>' + esc(m.title) + '</strong> — ' + esc(m.outcomeText) + '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  // Community segments with deltas
+  if (G.segmentApproval && !forcedFail) {
+    var segments = GAME_DATA.config.segments || [];
+    var startSegs = (G.segmentSnapshots && G.segmentSnapshots[0]) || {};
+    html += '<div class="end-section"><div class="end-section-label">Community Response</div>';
+    segments.forEach(function(seg) {
+      var v = Math.round(G.segmentApproval[seg.id] || 50);
+      var sv = Math.round(startSegs[seg.id] || v);
+      var d = v - sv;
+      var dCls = d > 0 ? 'up' : d < 0 ? 'down' : 'flat';
+      var dText = d > 0 ? '+' + d : d < 0 ? '' + d : '±0';
+      html += '<div class="end-seg-row"><span class="end-seg-name">' + esc(seg.name) + '</span><div class="end-seg-bar"><div class="end-seg-fill" style="width:' + v + '%;background:' + barColor(v) + '"></div></div><span class="end-seg-val" style="color:' + barColor(v) + '">' + v + '</span><span class="end-seg-delta ' + dCls + '">' + dText + '</span></div>';
+    });
+
+    // Political spectrum
+    var startPos = G._startingPoliticalPosition || 50;
+    var startClout = G._startingPoliticalClout || 20;
+    var posShift = Math.round(G.politicalPosition) - startPos;
+    var cloutChange = Math.round(G.politicalClout) - startClout;
+    var posLabel = G.politicalPosition < 30 ? 'Left' : G.politicalPosition < 45 ? 'Center-Left' : G.politicalPosition < 55 ? 'Center' : G.politicalPosition < 70 ? 'Center-Right' : 'Right';
+    var shiftText = Math.abs(posShift) <= 3 ? 'Held steady' : posShift > 0 ? 'Shifted right by ' + posShift + ' points' : 'Shifted left by ' + Math.abs(posShift) + ' points';
+    var cloutText = cloutChange > 0 ? '+' + cloutChange : '' + cloutChange;
+
+    html += '<div class="end-spectrum"><div class="end-spectrum-dot start" style="left:' + startPos + '%"></div><div class="end-spectrum-dot end" style="left:' + Math.round(G.politicalPosition) + '%"></div></div>';
+    html += '<div class="end-spectrum-labels"><span>Far Left</span><span>Left</span><span>Center</span><span>Right</span><span>Far Right</span></div>';
+    html += '<div class="end-pol-summary">' + shiftText + ' · Now: <strong>' + posLabel + '</strong> · Political Capital: \u26A1' + Math.round(G.politicalClout) + ' (' + cloutText + ')</div>';
+    html += '</div>';
+  }
+
+  // Replay hook
+  var totalScenarios = (GAME_DATA.scenarios || []).length;
+  var usedCount = (G.usedScenarioIds || []).length;
+  var allOrgs = [].concat(GAME_DATA.organizations, GAME_DATA.nationalOrganizations);
+  var org = allOrgs.find(function(o) { return o.id === G.orgId; });
+  var orgName = org ? org.name : 'your organization';
+  html += '<div class="end-replay"><div class="end-replay-text">You experienced <strong>' + usedCount + ' of ' + totalScenarios + '</strong> possible scenarios. Playing as <strong>' + esc(orgName) + '</strong> shaped which events you encountered. <strong>Try a different org for a completely different game.</strong></div></div>';
+
+  // Set the content
+  document.getElementById('end-meters').innerHTML = html;
+  document.getElementById('end-verdict').textContent = '';  // Verdict is now inline in the html above
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';
@@ -2345,7 +2580,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
-    b.onclick=()=>{G.round=0;G.usedScenarioIds=[];G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
+    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedScenarioIds=[];G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
     actEl.appendChild(b);
     const b2=document.createElement('button');
     b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
@@ -2392,7 +2627,7 @@ function selectPromoOrg(id){
 // ═══════════════ RESET ═══════════════
 function resetGame(){
   clearSave();
-  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{}};
+  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],investmentsFrozen:false,_probationLifted:false};
   
   var ticker = document.getElementById('news-ticker');
   if(ticker) ticker.classList.remove('active');
@@ -2448,7 +2683,12 @@ function restartSameCharacter(){
   G.segmentSnapshots = [];
   G._coachWarningsLifetime = {};
   G._coachWarningsThisRound = {};
-  
+  G.notableMoments = [];
+  G.investmentsFrozen = false;
+  G._probationLifted = false;
+  G._startingPoliticalPosition = 50;
+  G._startingPoliticalClout = 20;
+
   G.charName = savedName;
   G.charEmoji = savedEmoji;
   G.charTraits = savedTraits;
@@ -2469,6 +2709,10 @@ function renderInvestStrip() {
   if(!el) return;
   var investments = GAME_DATA.investments || [];
   if(investments.length === 0) { el.innerHTML = ''; return; }
+  if (G.investmentsFrozen && !G._probationLifted) {
+    el.innerHTML = '<span class="invest-strip-label">Investments</span><span class="invest-strip-empty" style="color:#c0392b">\uD83D\uDD12 Frozen by board \u2014 reach a B grade to unlock</span>';
+    return;
+  }
   var remaining = (G.investmentPool || 0) - (G.investmentsUsed || 0);
   G.investmentUses = G.investmentUses || {};
   
@@ -3922,6 +4166,7 @@ function pickBreakingChoice(ci) {
   if (advisorContextNote) contextParts.push(advisorContextNote);
   if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
+  recordNotableMoment(bn, choice, outcome, true);
   // Close TV overlay and show outcome in the TV screen
   var screen = document.getElementById('bn-tv-screen');
   if (screen) {

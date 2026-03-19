@@ -14569,6 +14569,37 @@ function initSegmentApprovals(orgId) {
   });
 }
 
+function applyTrustBonusProportionally(bonus) {
+  var segments = GAME_DATA.config.segments || [];
+  if (!segments.length || !G.segmentApproval) return;
+  var orgPos = G.politicalPosition || 50;
+
+  // Calculate alignment scores: closer to org position = higher share
+  var alignScores = [];
+  var totalAlign = 0;
+  segments.forEach(function(seg) {
+    var dist = Math.abs(orgPos - seg.politicalCenter);
+    var comfort = seg.comfortRange || 15;
+    // Score: 1.0 at center, tapering to 0.2 at far distance
+    var score;
+    if (dist <= comfort / 2) {
+      score = 1.0;
+    } else if (dist <= comfort) {
+      score = 0.6;
+    } else {
+      score = Math.max(0.1, 0.3 - (dist - comfort) / 100);
+    }
+    alignScores.push(score);
+    totalAlign += score;
+  });
+
+  // Distribute bonus proportionally
+  segments.forEach(function(seg, i) {
+    var share = (alignScores[i] / totalAlign) * bonus * segments.length;
+    G.segmentApproval[seg.id] = Math.max(5, Math.min(95, Math.round((G.segmentApproval[seg.id] || 40) + share)));
+  });
+}
+
 // Calculate weighted composite trust from segment approvals
 function computeCompositeTrust() {
   var segments = GAME_DATA.config.segments || [];
@@ -15632,7 +15663,23 @@ function startGame(){
   G._startingPoliticalClout = G.politicalClout;
   // Initialize constituency segments
   initSegmentApprovals(G.orgId);
+
+  // Apply trust bonuses from setup proportionally across segments
+  var trustBonus = (G._baselines.trust || 0) + (G.priorities.trust || 0);
+  if (trustBonus > 0 && G.segmentApproval) {
+    applyTrustBonusProportionally(trustBonus);
+  }
+
+  // Enforce floor: if composite trust is below 30, boost aligned segments
   G.stats.trust = computeCompositeTrust();
+  var TRUST_FLOOR = 30;
+  var attempts = 0;
+  while (G.stats.trust < TRUST_FLOOR && attempts < 20) {
+    applyTrustBonusProportionally(2); // small increments to aligned segments
+    G.stats.trust = computeCompositeTrust();
+    attempts++;
+  }
+
   // Save starting segment snapshot for end-screen deltas
   if (G.segmentApproval) {
     G._startingSegments = {};
@@ -15681,7 +15728,22 @@ function startPromoGame(){
   G.politicalPosition = G.politicalPosition; // keep from local
   // Initialize constituency segments for national org
   initSegmentApprovals(G.orgId);
+
+  // Apply trust bonuses proportionally
+  var trustBonus = (G._baselines.trust || 0) + (G.priorities.trust || 0);
+  if (trustBonus > 0 && G.segmentApproval) {
+    applyTrustBonusProportionally(trustBonus);
+  }
+
+  // Enforce floor
   G.stats.trust = computeCompositeTrust();
+  var attempts = 0;
+  while (G.stats.trust < 30 && attempts < 20) {
+    applyTrustBonusProportionally(2);
+    G.stats.trust = computeCompositeTrust();
+    attempts++;
+  }
+
   // Save starting segment snapshot for end-screen deltas
   if (G.segmentApproval) {
     G._startingSegments = {};

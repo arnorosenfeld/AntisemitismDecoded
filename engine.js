@@ -56,7 +56,7 @@ let G = {
   coalitionStrikes:{}, // {coalitionId: strikeCount}
   // Budget system
   budget: 0, budgetMax: 100, budgetIncomeThisYear: 0, budgetSpentThisYear: 0,
-  investmentPool: 0, investmentsUsed: 0, pendingReserves: [],
+  investmentPool: 0, investmentsUsed: 0, pendingReserves: [], endowmentIncome: 0,
   _allocBudget: 100, _allocMin: 1, _allocMax: 55,
   // Political clout system
   politicalPosition: 50, // 0=far-left, 50=center, 100=far-right
@@ -1521,6 +1521,8 @@ function beginRound(){
     var fundStatId = bc.fundraisingStatId || 'donors';
     var fundMult = bc.fundraisingIncomeMultiplier || 0.12;
     var income = Math.round((G.orgBaseIncome || 5) + (G.stats[fundStatId] || 50) * fundMult);
+    var endowment = G.endowmentIncome || 0;
+    income += endowment;
     var costs = G.orgOperatingCost || 8;
     G.budget += income - costs;
     G.budgetIncomeThisYear += income;
@@ -2662,7 +2664,7 @@ function selectPromoOrg(id){
 // ═══════════════ RESET ═══════════════
 function resetGame(){
   clearSave();
-  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],investmentsFrozen:false,_probationLifted:false};
+  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],investmentsFrozen:false,_probationLifted:false,endowmentIncome:0,_dangerWarningsShown:{}};
   
   var ticker = document.getElementById('news-ticker');
   if(ticker) ticker.classList.remove('active');
@@ -2897,7 +2899,7 @@ function renderInvestmentContent() {
         '<div class="invest-name">' + inv.name + '</div>' +
         '<div class="invest-desc">' + inv.description + '</div>' +
         '<div class="invest-cost' + costClass + '">💰 ' + inv.budgetCost + ' gelt' + disabledReason + '</div>' +
-        '<div class="invest-effects">' + investEffectChips(inv.effects) + '</div>' +
+        '<div class="invest-effects">' + investEffectChips(inv.effects) + (inv.geltPerRound ? '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.geltPerRound + ' gelt/round</span>' : '') + '</div>' +
         usesLabel +
       '</div>';
     }).join('') +
@@ -2928,11 +2930,17 @@ function makeInvestment(invId) {
   var chips = applyEffects(inv.effects);
   var budgetChip = '<span class="chip chip-neg">-' + inv.budgetCost + ' Gelt</span>';
   
-  // Handle delayed budget return (e.g. reserves)
+  // Handle delayed budget return (legacy reserves)
   if(inv.budgetReturn && inv.budgetReturnDelay) {
     G.pendingReserves = G.pendingReserves || [];
     G.pendingReserves.push({amount: inv.budgetReturn, roundsLeft: inv.budgetReturnDelay});
-    budgetChip += '<span class="chip chip-star-up">🏦 +' + inv.budgetReturn + ' in ' + inv.budgetReturnDelay + ' rounds</span>';
+    budgetChip += '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.budgetReturn + ' in ' + inv.budgetReturnDelay + ' rounds</span>';
+  }
+  // Handle endowment (gelt per round)
+  if(inv.geltPerRound) {
+    G.endowmentIncome = (G.endowmentIncome || 0) + inv.geltPerRound;
+    var roundsLeft = (GAME_DATA.config.totalRounds || 4) - G.round;
+    budgetChip += '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.geltPerRound + ' gelt/round (' + roundsLeft + ' rounds remaining)</span>';
   }
   
   G.roundActions.push({icon: inv.icon, name: inv.name, outcomeText: inv.outcomeText, chips: chips + budgetChip});

@@ -11037,15 +11037,14 @@
     },
     {
       "id": "inv_reserve",
-      "name": "Build Reserves",
-      "icon": "🏦",
-      "description": "Set aside funds in an operating reserve for emergencies. No immediate benefit but protects your future.",
+      "name": "Endowment Contribution",
+      "icon": "🏛️",
+      "description": "Contribute to the organization's endowment. No immediate stat benefit, but generates +3 gelt income every round for the rest of the year.",
       "budgetCost": 15,
       "effects": {},
-      "outcomeText": "Your reserve fund grows. The board approves — fiscal responsibility matters.",
-      "budgetReturn": 20,
-      "budgetReturnDelay": 3,
-      "maxUses": 2
+      "outcomeText": "Your endowment contribution is approved by the board. The returns will boost your operating budget every round for the rest of the year.",
+      "maxUses": 1,
+      "geltPerRound": 3
     }
   ],
   "advisorPool": [

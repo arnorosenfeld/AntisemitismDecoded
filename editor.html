@@ -465,7 +465,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <h3>Win / Lose / Promotion Thresholds</h3>
             <p class="section-note">Mid-round failure triggers if any single stat bar drops to or below the bar threshold. Year-end: score below the score threshold = loss; above promotion threshold = promotion (or retirement if already national).</p>
             <div class="form-row three">
-              <div class="form-group"><label>Sudden Death Threshold ⚡</label><input type="number" id="cfg-failureBarThreshold" min="0" max="50" /><div class="form-hint">Any single stat at or below this triggers immediate game over mid-round (default: 20)</div></div>
+              <div class="form-group"><label>Sudden Death Threshold ⚡</label><input type="number" id="cfg-failureBarThreshold" min="0" max="50" /><div class="form-hint">Any single stat at or below this triggers immediate game over mid-round (default: 15)</div></div>
+              <div class="form-group"><label>Warning Threshold (Orange)</label><input type="number" id="cfg-dangerOrangeThreshold" min="0" max="50" /><div class="form-hint">Stats at or below this show orange warning (default: 25)</div></div>
+              <div class="form-group"><label>Emergency Threshold (Red)</label><input type="number" id="cfg-dangerRedThreshold" min="0" max="50" /><div class="form-hint">Stats at or below this trigger emergency board meeting (default: 20)</div></div>
               <div class="form-group"><label>Failure Score Threshold</label><input type="number" id="cfg-failureScoreThreshold" min="0" max="79" /><div class="form-hint">Year-end avg below this = loss screen</div></div>
               <div class="form-group"><label>Promotion Threshold</label><input type="number" id="cfg-promotionThreshold" min="1" max="100" /><div class="form-hint">Year-end avg at or above this = promotion</div></div>
             </div>
@@ -760,9 +762,9 @@ var EDITOR_DATA =
     "traitsToSelect": 2,
     "missionStartStars": 3,
     "missionMaxStars": 5,
-    "failureBarThreshold": 20,
-    "failureScoreThreshold": 40,
-    "promotionThreshold": 80,
+    "failureBarThreshold": 15,
+    "failureScoreThreshold": 30,
+    "promotionThreshold": 75,
     "inboxPerRound": 2,
     "scoreWeights": {
       "trust": 0.33,
@@ -808,7 +810,7 @@ var EDITOR_DATA =
       }
     ],
     "editorPassword": "admin1234",
-    "missionStarPoints": 5,
+    "missionStarPoints": 3,
     "pageText": {
       "introScreen": {
         "kicker": "Antisemitism Decoded: The Game",
@@ -12997,11 +12999,13 @@ function populateConfig() {
   document.getElementById('cfg-priorityMax').value = c.priorityMax || 70;
   document.getElementById('cfg-missionStartStars').value = c.missionStartStars || 3;
   document.getElementById('cfg-missionMaxStars').value = c.missionMaxStars || 5;
-  document.getElementById('cfg-failureBarThreshold').value = c.failureBarThreshold || 20;
-  document.getElementById('cfg-failureScoreThreshold').value = c.failureScoreThreshold || 40;
-  document.getElementById('cfg-promotionThreshold').value = c.promotionThreshold || 80;
+  document.getElementById('cfg-failureBarThreshold').value = c.failureBarThreshold || 15;
+  document.getElementById('cfg-dangerOrangeThreshold').value = c.dangerOrangeThreshold || 25;
+  document.getElementById('cfg-dangerRedThreshold').value = c.dangerRedThreshold || 20;
+  document.getElementById('cfg-failureScoreThreshold').value = c.failureScoreThreshold || 30;
+  document.getElementById('cfg-promotionThreshold').value = c.promotionThreshold || 75;
   document.getElementById('cfg-inboxPerRound').value = c.inboxPerRound || 2;
-  document.getElementById('cfg-missionStarPoints').value = c.missionStarPoints || 5;
+  document.getElementById('cfg-missionStarPoints').value = c.missionStarPoints || 3;
   // Budget system config
   const bc = c.budgetConfig || {};
   document.getElementById('cfg-bc-startingBudget').value = bc.startingBudget || 100;
@@ -13059,11 +13063,13 @@ function saveConfig() {
   c.priorityMax = parseInt(document.getElementById('cfg-priorityMax').value) || 70;
   c.missionStartStars = parseInt(document.getElementById('cfg-missionStartStars').value) || 3;
   c.missionMaxStars = parseInt(document.getElementById('cfg-missionMaxStars').value) || 5;
-  c.failureBarThreshold = parseInt(document.getElementById('cfg-failureBarThreshold').value) || 20;
-  c.failureScoreThreshold = parseInt(document.getElementById('cfg-failureScoreThreshold').value) || 40;
-  c.promotionThreshold = parseInt(document.getElementById('cfg-promotionThreshold').value) || 80;
+  c.failureBarThreshold = parseInt(document.getElementById('cfg-failureBarThreshold').value) || 15;
+  c.dangerOrangeThreshold = parseInt(document.getElementById('cfg-dangerOrangeThreshold').value) || 25;
+  c.dangerRedThreshold = parseInt(document.getElementById('cfg-dangerRedThreshold').value) || 20;
+  c.failureScoreThreshold = parseInt(document.getElementById('cfg-failureScoreThreshold').value) || 30;
+  c.promotionThreshold = parseInt(document.getElementById('cfg-promotionThreshold').value) || 75;
   c.inboxPerRound = parseInt(document.getElementById('cfg-inboxPerRound').value) || 2;
-  c.missionStarPoints = parseInt(document.getElementById('cfg-missionStarPoints').value) || 5;
+  c.missionStarPoints = parseInt(document.getElementById('cfg-missionStarPoints').value) || 3;
   // Budget system config
   if(!c.budgetConfig) c.budgetConfig = {};
   c.budgetConfig.startingBudget = parseInt(document.getElementById('cfg-bc-startingBudget').value) || 100;
@@ -14140,6 +14146,14 @@ function renderAdvisorForm(a, i){
     '<div class="checkbox-grid">'+ADV_EXPERTISE_OPTS.map(function(e){
       return '<label class="checkbox-item"><input type="checkbox" id="adv-exp-'+i+'-'+e+'" '+(expertise.includes(e)?'checked':'')+' />'+e+'</label>';
     }).join('')+'</div></div>'+
+    '<div class="form-section" style="margin-top:12px"><label class="section-label">End-Game Quotes (by grade)</label>'+
+    '<div class="form-hint" style="margin-bottom:8px">What this advisor says on the year-end screen for each grade. Leave blank for default.</div>'+
+    '<div class="form-row"><div class="form-group"><label>Grade A</label><input id="adv-endquote-'+i+'-A" value="'+esc((a.endGameQuotes||{}).A||'')+'" placeholder="Outstanding work..." /></div>'+
+    '<div class="form-group"><label>Grade B</label><input id="adv-endquote-'+i+'-B" value="'+esc((a.endGameQuotes||{}).B||'')+'" placeholder="A solid year..." /></div></div>'+
+    '<div class="form-row"><div class="form-group"><label>Grade C</label><input id="adv-endquote-'+i+'-C" value="'+esc((a.endGameQuotes||{}).C||'')+'" placeholder="We got through it..." /></div>'+
+    '<div class="form-group"><label>Grade D</label><input id="adv-endquote-'+i+'-D" value="'+esc((a.endGameQuotes||{}).D||'')+'" placeholder="This was tough..." /></div></div>'+
+    '<div class="form-row"><div class="form-group"><label>Grade F</label><input id="adv-endquote-'+i+'-F" value="'+esc((a.endGameQuotes||{}).F||'')+'" placeholder="I wish things had gone differently..." /></div></div>'+
+    '</div>'+
     '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveAdvisor('+i+')">Save Advisor</button></div>'+
   '</div>';
 }
@@ -14168,6 +14182,14 @@ function saveAdvisor(i){
     var el = document.getElementById('adv-exp-'+i+'-'+e);
     return el && el.checked;
   });
+  // End-game quotes
+  var endQuotes = {};
+  ['A','B','C','D','F'].forEach(function(g) {
+    var val = (document.getElementById('adv-endquote-'+i+'-'+g) || {}).value || '';
+    if (val) endQuotes[g] = val;
+  });
+  if (Object.keys(endQuotes).length > 0) a.endGameQuotes = endQuotes;
+  else delete a.endGameQuotes;
   setDirty(); setStatus('Advisor saved.','success'); populateAdvisors(); refreshDependentPanels('advisors');
 }
 

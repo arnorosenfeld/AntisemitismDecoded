@@ -1189,8 +1189,8 @@ function showCoachingWarning(msg, level) {
 }
 
 // ═══════════════ STAT DANGER SYSTEM ═══════════════
-var DANGER_ORANGE = 25;
-var DANGER_RED = 20;
+function getDangerOrange() { return (GAME_DATA.config.dangerOrangeThreshold || 25); }
+function getDangerRed() { return (GAME_DATA.config.dangerRedThreshold || 20); }
 
 function updateStatDanger() {
   var gameMain = document.querySelector('.game-main');
@@ -1204,10 +1204,10 @@ function updateStatDanger() {
     var v = G.stats[s.id] || 50;
     var meterId = 'hud-meter-' + s.id;
 
-    if (v <= DANGER_RED) {
+    if (v <= getDangerRed()) {
       worstLevel = 'red';
       dangerStats.push({ stat: s, level: 'red', value: v });
-    } else if (v <= DANGER_ORANGE) {
+    } else if (v <= getDangerOrange()) {
       if (worstLevel !== 'red') worstLevel = 'orange';
       dangerStats.push({ stat: s, level: 'orange', value: v });
     }

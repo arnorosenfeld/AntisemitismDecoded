@@ -1656,18 +1656,23 @@ function updateHUD(){
 
   // Live grade display
   var liveGrade = computeLiveGrade();
-  var gradeEl = document.getElementById('hud-live-grade');
-  if (!gradeEl) {
-    gradeEl = document.createElement('span');
-    gradeEl.id = 'hud-live-grade';
-    gradeEl.className = 'hud-live-grade';
-    gradeEl.title = 'Current projected grade';
-    var banner = document.querySelector('.hud-banner-inner');
-    if (banner) banner.appendChild(gradeEl);
+  var gradeWrap = document.getElementById('hud-grade-wrap');
+  if (!gradeWrap) {
+    gradeWrap = document.createElement('span');
+    gradeWrap.id = 'hud-grade-wrap';
+    gradeWrap.className = 'hud-grade-wrap';
+    gradeWrap.innerHTML = '<span class="hud-grade-label">Board Rating</span><span id="hud-live-grade"></span>';
+    var orgNameEl = document.getElementById('hud-org-name');
+    if (orgNameEl && orgNameEl.parentNode) {
+      orgNameEl.parentNode.insertBefore(gradeWrap, orgNameEl.nextSibling);
+    }
   }
-  gradeEl.textContent = liveGrade.grade;
-  gradeEl.title = 'Score: ' + liveGrade.score + ' (Base: ' + liveGrade.baseScore + ' + Mission: +' + liveGrade.starBonus + ')';
-  gradeEl.className = 'hud-live-grade grade-' + liveGrade.grade.toLowerCase();
+  var gradeEl = document.getElementById('hud-live-grade');
+  if (gradeEl) {
+    gradeEl.textContent = liveGrade.grade;
+    gradeWrap.title = 'Board Rating — Score: ' + liveGrade.score + ' (Base: ' + liveGrade.baseScore + ' + Mission: +' + liveGrade.starBonus + ')';
+    gradeEl.className = 'hud-live-grade grade-' + liveGrade.grade.toLowerCase();
+  }
 
   // Probation unlock check
   if (G.investmentsFrozen && !G._probationLifted && liveGrade.score >= 60) {
@@ -2551,6 +2556,41 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
     html += '</div>';
   }
 
+  // Advisor reflections
+  if (!forcedFail) {
+    var pool = GAME_DATA.advisorPool || [];
+    var selectedAdvs = (G.selectedAdvisors || []).slice(0, 3);
+    if (selectedAdvs.length > 0) {
+      html += '<div class="end-section"><div class="end-section-label">Your advisors reflect</div>';
+      selectedAdvs.forEach(function(advId) {
+        var adv = pool.find(function(a) { return a.id === advId; });
+        if (!adv) return;
+        // Determine mood based on grade
+        var mood = 'neutral';
+        if (grade === 'A' || grade === 'A+') mood = 'approving';
+        else if (grade === 'B') mood = 'approving';
+        else if (grade === 'C') mood = 'neutral';
+        else if (grade === 'D') mood = 'concerned';
+        else if (grade === 'F') mood = 'disapproving';
+        // Get end-game quote from advisor data, or generate a generic one
+        var quote = '';
+        if (adv.endGameQuotes && adv.endGameQuotes[grade]) {
+          quote = adv.endGameQuotes[grade];
+        } else {
+          // Generic fallback quotes
+          if (grade === 'A' || grade === 'A+') quote = 'Outstanding work this year. The community is in good hands.';
+          else if (grade === 'B') quote = 'A solid year. Room to grow, but the foundation is strong.';
+          else if (grade === 'C') quote = 'We got through it. Next year, we need to aim higher.';
+          else if (grade === 'D') quote = 'This was a tough year. We need to do better.';
+          else quote = 'I wish things had gone differently.';
+        }
+        html += '<div class="end-reflection"><img class="end-refl-portrait" src="' + (adv.portrait ? adv.portrait + '/' + mood + '.png' : '') + '">' +
+          '<div><div class="end-refl-name">' + esc(adv.name) + '</div><div class="end-refl-text">\u201c' + esc(quote) + '\u201d</div></div></div>';
+      });
+      html += '</div>';
+    }
+  }
+
   // Replay hook
   var totalScenarios = (GAME_DATA.scenarios || []).length;
   var usedCount = (G.usedScenarioIds || []).length;
@@ -2565,18 +2605,12 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';
-  if(retirement){
-    actEl.innerHTML='<button class="btn btn-gold" onclick="restartSameCharacter()">Play Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character \u2192</button>';
-  } else if(promotion){
+  if(promotion){
     const b=document.createElement('button');
     b.className='btn btn-gold'; b.textContent='Choose Your Next Organization \u2192'; b.onclick=showPromoScreen;
     actEl.appendChild(b);
-    const b2=document.createElement('button');
-    b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
-    actEl.appendChild(b2);
-    const b3=document.createElement('button');
-    b3.className='btn btn-secondary'; b3.textContent='New Character'; b3.onclick=resetGame;
-    actEl.appendChild(b3);
+  } else if(retirement){
+    actEl.innerHTML='<button class="btn btn-gold" onclick="restartSameCharacter()">Play Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character</button>';
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
@@ -2589,7 +2623,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
     b3.className='btn btn-secondary'; b3.textContent='New Character'; b3.onclick=resetGame;
     actEl.appendChild(b3);
   } else {
-    actEl.innerHTML='<button class="btn btn-primary" onclick="restartSameCharacter()">Try Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character \u2192</button>';
+    actEl.innerHTML='<button class="btn btn-primary" onclick="restartSameCharacter()">Try Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character</button>';
   }
 }
 
@@ -4094,7 +4128,7 @@ function showBreakingNews(bn) {
     var polTag = renderPoliticalTag(c);
     var choiceAdv = renderChoiceAdvisorQuote(c);
     var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' gelt' + (cantAfford?' (insufficient)':'') + '</span>' : '';
-    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + badge + coalWarn + polTag + costTag + esc(c.text) + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
+    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + esc(c.text) + badge + coalWarn + polTag + costTag + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
   }).join('');
   screen.innerHTML =
     '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Developing story \u2014 community response underway</span></div>' +

@@ -338,7 +338,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-stars .star { display: inline-block; width: 20px; height: 20px; text-align: center; line-height: 20px; font-size: 18px; vertical-align: middle; }
 .hud-stars .star-empty { opacity: 0.45; }
 /* Live grade badge */
-.hud-live-grade { font-family: 'Merriweather', serif; font-weight: 900; font-size: 16px; margin-left: auto; padding: 2px 10px; border-radius: 3px; cursor: help; }
+.hud-grade-wrap { display: inline-flex; align-items: center; gap: 4px; margin-left: 12px; }
+.hud-grade-label { font-size: 8px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.hud-live-grade { font-family: 'Merriweather', serif; font-weight: 900; font-size: 14px; padding: 2px 8px; border-radius: 3px; cursor: help; }
 .hud-live-grade.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.15); }
 .hud-live-grade.grade-b { color: #b8860b; background: rgba(184,134,11,0.15); }
 .hud-live-grade.grade-c { color: #7a6b1a; background: rgba(122,107,26,0.15); }
@@ -351,8 +353,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .invest-strip-wrap { max-width: 820px; margin: 0 auto; position: relative; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
-.invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding-right: 12px; flex-shrink: 0; }
-.invest-strip-label::after { content: ''; position: absolute; top: -8px; bottom: -8px; right: -20px; width: 20px; background: linear-gradient(to right, #283248, transparent); pointer-events: none; }
+.invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding-right: 16px; flex-shrink: 0; }
+.invest-strip-label::after { content: ''; position: absolute; top: -12px; bottom: -12px; right: -28px; width: 28px; background: linear-gradient(to right, #283248 30%, transparent); pointer-events: none; }
 .invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
 .invest-pill:hover:not(.pill-disabled) { background: rgba(184,134,11,0.3); border-color: var(--gold); box-shadow: 0 0 8px rgba(184,134,11,0.3); }
 .invest-pill .pill-icon { font-size: 13px; }
@@ -507,7 +509,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .end-grade { font-family: 'Merriweather', serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 18px; }
 .end-verdict { font-size: 14px; line-height: 1.85; color: var(--muted); max-width: 460px; margin: 0 auto 22px; font-style: italic; }
 #end-illustration { width: 140px; height: auto; display: block; margin: 16px auto; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.1)); }
-.end-meters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 22px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 16px 0; }
+.end-meters { display: block; margin: 0; padding: 0; border: none; }
 .end-m-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 2px; }
 .end-m-val { font-family: 'Merriweather', serif; font-size: 20px; font-weight: 900; }
 .end-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
@@ -547,7 +549,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .end-spectrum-dot.start { background: #999; opacity: 0.5; }
 .end-spectrum-dot.end { background: var(--gold); }
 .end-spectrum-labels { display: flex; justify-content: space-between; font-size: 7px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-.end-pol-summary { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.end-pol-summary { font-size: 11px; color: var(--ink); line-height: 1.6; }
 .end-reflection { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; }
 .end-refl-portrait { width: 40px; height: 46px; object-fit: cover; object-position: top; border-radius: 5px; flex-shrink: 0; }
 .end-refl-name { font-weight: 700; font-size: 11px; color: var(--ink); margin-bottom: 2px; }
@@ -566,7 +568,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   .card-grid { grid-template-columns: 1fr; }
   .traits-grid { grid-template-columns: 1fr; }
   .action-cards { grid-template-columns: 1fr; }
-  .end-meters { grid-template-columns: repeat(3, 1fr); }
   .meters { gap: 7px; }
   .meter { min-width: 48px; }
 }
@@ -710,7 +711,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .bn-outcome-choice { font-size: 12px; color: rgba(255,255,255,0.9); }
 .bn-context { font-size: 11px; color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); }
 .bn-screen-inner .context-note { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
-.bn-screen-inner .chip-pol-clout { background: rgba(107,33,168,0.4); color: #d4b0f0; }
+.bn-screen-inner .chip-pol-clout { background: rgba(139,92,246,0.3); color: #fff; }
 .bn-screen-inner .chip-gold { background: rgba(184,134,11,0.4); color: #f0d87a; }
 .bn-screen-inner .advisor-panel { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); }
 .bn-screen-inner .advisor-text { color: rgba(255,255,255,0.8); }
@@ -1679,7 +1680,7 @@ var GAME_DATA =
       }
     ],
     "editorPassword": "admin1234",
-    "missionStarPoints": 5,
+    "missionStarPoints": 3,
     "pageText": {
       "introScreen": {
         "kicker": "Antisemitism Decoded: The Game",
@@ -15208,18 +15209,23 @@ function updateHUD(){
 
   // Live grade display
   var liveGrade = computeLiveGrade();
-  var gradeEl = document.getElementById('hud-live-grade');
-  if (!gradeEl) {
-    gradeEl = document.createElement('span');
-    gradeEl.id = 'hud-live-grade';
-    gradeEl.className = 'hud-live-grade';
-    gradeEl.title = 'Current projected grade';
-    var banner = document.querySelector('.hud-banner-inner');
-    if (banner) banner.appendChild(gradeEl);
+  var gradeWrap = document.getElementById('hud-grade-wrap');
+  if (!gradeWrap) {
+    gradeWrap = document.createElement('span');
+    gradeWrap.id = 'hud-grade-wrap';
+    gradeWrap.className = 'hud-grade-wrap';
+    gradeWrap.innerHTML = '<span class="hud-grade-label">Board Rating</span><span id="hud-live-grade"></span>';
+    var orgNameEl = document.getElementById('hud-org-name');
+    if (orgNameEl && orgNameEl.parentNode) {
+      orgNameEl.parentNode.insertBefore(gradeWrap, orgNameEl.nextSibling);
+    }
   }
-  gradeEl.textContent = liveGrade.grade;
-  gradeEl.title = 'Score: ' + liveGrade.score + ' (Base: ' + liveGrade.baseScore + ' + Mission: +' + liveGrade.starBonus + ')';
-  gradeEl.className = 'hud-live-grade grade-' + liveGrade.grade.toLowerCase();
+  var gradeEl = document.getElementById('hud-live-grade');
+  if (gradeEl) {
+    gradeEl.textContent = liveGrade.grade;
+    gradeWrap.title = 'Board Rating — Score: ' + liveGrade.score + ' (Base: ' + liveGrade.baseScore + ' + Mission: +' + liveGrade.starBonus + ')';
+    gradeEl.className = 'hud-live-grade grade-' + liveGrade.grade.toLowerCase();
+  }
 
   // Probation unlock check
   if (G.investmentsFrozen && !G._probationLifted && liveGrade.score >= 60) {
@@ -16084,6 +16090,41 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   var allOrgs = [].concat(GAME_DATA.organizations, GAME_DATA.nationalOrganizations);
   var org = allOrgs.find(function(o) { return o.id === G.orgId; });
   var orgName = org ? org.name : 'your organization';
+  // Advisor reflections
+  if (!forcedFail) {
+    var pool = GAME_DATA.advisorPool || [];
+    var selectedAdvs = (G.selectedAdvisors || []).slice(0, 3);
+    if (selectedAdvs.length > 0) {
+      html += '<div class="end-section"><div class="end-section-label">Your advisors reflect</div>';
+      selectedAdvs.forEach(function(advId) {
+        var adv = pool.find(function(a) { return a.id === advId; });
+        if (!adv) return;
+        // Determine mood based on grade
+        var mood = 'neutral';
+        if (grade === 'A' || grade === 'A+') mood = 'approving';
+        else if (grade === 'B') mood = 'approving';
+        else if (grade === 'C') mood = 'neutral';
+        else if (grade === 'D') mood = 'concerned';
+        else if (grade === 'F') mood = 'disapproving';
+        // Get end-game quote from advisor data, or generate a generic one
+        var quote = '';
+        if (adv.endGameQuotes && adv.endGameQuotes[grade]) {
+          quote = adv.endGameQuotes[grade];
+        } else {
+          // Generic fallback quotes
+          if (grade === 'A' || grade === 'A+') quote = 'Outstanding work this year. The community is in good hands.';
+          else if (grade === 'B') quote = 'A solid year. Room to grow, but the foundation is strong.';
+          else if (grade === 'C') quote = 'We got through it. Next year, we need to aim higher.';
+          else if (grade === 'D') quote = 'This was a tough year. We need to do better.';
+          else quote = 'I wish things had gone differently.';
+        }
+        html += '<div class="end-reflection"><img class="end-refl-portrait" src="' + (adv.portrait ? adv.portrait + '/' + mood + '.png' : '') + '">' +
+          '<div><div class="end-refl-name">' + esc(adv.name) + '</div><div class="end-refl-text">\u201c' + esc(quote) + '\u201d</div></div></div>';
+      });
+      html += '</div>';
+    }
+  }
+
   html += '<div class="end-replay"><div class="end-replay-text">You experienced <strong>' + usedCount + ' of ' + totalScenarios + '</strong> possible scenarios. Playing as <strong>' + esc(orgName) + '</strong> shaped which events you encountered. <strong>Try a different org for a completely different game.</strong></div></div>';
 
   // Set the content
@@ -16092,18 +16133,12 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';
-  if(retirement){
-    actEl.innerHTML='<button class="btn btn-gold" onclick="restartSameCharacter()">Play Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character \u2192</button>';
-  } else if(promotion){
+  if(promotion){
     const b=document.createElement('button');
     b.className='btn btn-gold'; b.textContent='Choose Your Next Organization \u2192'; b.onclick=showPromoScreen;
     actEl.appendChild(b);
-    const b2=document.createElement('button');
-    b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
-    actEl.appendChild(b2);
-    const b3=document.createElement('button');
-    b3.className='btn btn-secondary'; b3.textContent='New Character'; b3.onclick=resetGame;
-    actEl.appendChild(b3);
+  } else if(retirement){
+    actEl.innerHTML='<button class="btn btn-gold" onclick="restartSameCharacter()">Play Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character</button>';
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
@@ -16116,7 +16151,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
     b3.className='btn btn-secondary'; b3.textContent='New Character'; b3.onclick=resetGame;
     actEl.appendChild(b3);
   } else {
-    actEl.innerHTML='<button class="btn btn-primary" onclick="restartSameCharacter()">Try Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character \u2192</button>';
+    actEl.innerHTML='<button class="btn btn-primary" onclick="restartSameCharacter()">Try Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character</button>';
   }
 }
 
@@ -17622,7 +17657,7 @@ function showBreakingNews(bn) {
     var polTag = renderPoliticalTag(c);
     var choiceAdv = renderChoiceAdvisorQuote(c);
     var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' gelt' + (cantAfford?' (insufficient)':'') + '</span>' : '';
-    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + badge + coalWarn + polTag + costTag + esc(c.text) + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
+    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + esc(c.text) + badge + coalWarn + polTag + costTag + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
   }).join('');
   screen.innerHTML =
     '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Developing story \u2014 community response underway</span></div>' +

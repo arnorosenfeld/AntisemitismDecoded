@@ -4348,47 +4348,59 @@ function applyCoalitionBenefits() {
   });
 }
 function checkCoalitionViolations(choice) {
-  var broken = [];
+  var defaultMax = GAME_DATA.config.coalitionStrikeMax || 3;
   (G.activeCoalitions||[]).forEach(function(ac) {
+    var violated = false;
     (ac.constraints||[]).forEach(function(con) {
       if (con.type === 'avoidMission') {
         var align = choice.missionAligned || [];
-        if (con.missionIds.some(function(mid){return align.includes(mid)})) broken.push(ac);
+        if (con.missionIds.some(function(mid){return align.includes(mid)})) violated = true;
       } else if (con.type === 'maintainStat') {
-        if ((G.stats[con.stat]||50) < (con.above||0)) broken.push(ac);
+        if ((G.stats[con.stat]||50) < (con.above||0)) violated = true;
       }
     });
+    if (!violated) return;
+
+    // Add a strike instead of immediately breaking
+    if(!G.coalitionStrikes) G.coalitionStrikes = {};
+    G.coalitionStrikes[ac.id] = (G.coalitionStrikes[ac.id]||0) + 1;
+    var max = ac.strikeMax || defaultMax;
+
+    if(G.coalitionStrikes[ac.id] >= max) {
+      // Coalition breaks from accumulated strikes
+      var fx = (ac.violationPenalty||{}).effects || {};
+      Object.keys(fx).forEach(function(k){
+        if(k === 'trust' && G.segmentApproval) { applySegmentEffects(fx[k], null, null); }
+        else { G.stats[k] = Math.max(0, Math.min(100, (G.stats[k]||50) + fx[k])); }
+      });
+      var bfxPen = (ac.violationPenalty||{}).budgetEffect || 0;
+      if(bfxPen < 0) { G.budget += bfxPen; G.budgetSpentThisYear += Math.abs(bfxPen); }
+      if(G.budget < 0) G.budget = 0;
+      var cloutPen = ac.breakCloutPenalty || (ac.violationPenalty||{}).cloutEffect || 0;
+      if(cloutPen !== 0) { G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutPen)); }
+      recordEvent('coalitionBroken', {coalitionId:ac.id, reason:'violations'});
+      if (!G.brokenCoalitions) G.brokenCoalitions = [];
+      G.brokenCoalitions.push(ac.id);
+      var div = document.createElement('div');
+      div.className = 'game-notification notif-broken';
+      div.innerHTML = '<div style="font-weight:700;margin-bottom:4px">\ud83d\udea8 Coalition Broken: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">' + esc((ac.violationPenalty||{}).text||'Too many constraint violations ended this partnership.') + '</div>';
+      div.onclick = function(){div.remove()};
+      document.body.appendChild(div);
+      positionNotification(div);
+      setTimeout(function(){if(div.parentNode)div.remove()}, 7000);
+      G.activeCoalitions = (G.activeCoalitions||[]).filter(function(c){return c.id!==ac.id});
+    } else {
+      // Warning
+      var remaining = max - G.coalitionStrikes[ac.id];
+      var div = document.createElement('div');
+      div.className = 'game-notification notif-warning';
+      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">\u26a0\ufe0f Coalition Warning: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">Constraint violation \u2014 Strike ' + G.coalitionStrikes[ac.id] + '/' + max + '. ' + remaining + ' more and this partnership ends.</div>';
+      div.onclick = function(){div.remove()};
+      document.body.appendChild(div);
+      positionNotification(div);
+      setTimeout(function(){if(div.parentNode)div.remove()}, 5000);
+    }
   });
-  // Remove duplicates
-  var seen = {};
-  broken = broken.filter(function(ac){if(seen[ac.id])return false;seen[ac.id]=true;return true;});
-  broken.forEach(function(ac) {
-    // Apply penalty
-    var fx = (ac.violationPenalty||{}).effects || {};
-    Object.keys(fx).forEach(function(k){
-      if(k === 'trust' && G.segmentApproval) { applySegmentEffects(fx[k], null, null); }
-      else { G.stats[k] = Math.max(0, Math.min(100, (G.stats[k]||50) + fx[k])); }
-    });
-    // Apply budget penalty
-    var bfxPen = (ac.violationPenalty||{}).budgetEffect || 0;
-    if(bfxPen < 0) { G.budget += bfxPen; G.budgetSpentThisYear += Math.abs(bfxPen); }
-    if(G.budget < 0) G.budget = 0;
-    // Apply political clout penalty for breaking coalition
-    var cloutPen = ac.breakCloutPenalty || (ac.violationPenalty||{}).cloutEffect || 0;
-    if(cloutPen !== 0) { G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutPen)); }
-    recordEvent('coalitionBroken', {coalitionId:ac.id});
-    if (!G.brokenCoalitions) G.brokenCoalitions = [];
-    G.brokenCoalitions.push(ac.id);
-    // Notify
-    var div = document.createElement('div');
-    div.className = 'game-notification notif-broken';
-    div.innerHTML = '<div style="font-weight:700;margin-bottom:4px">\ud83d\udea8 Coalition Broken: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">' + esc((ac.violationPenalty||{}).text||'The partnership has ended.') + '</div>';
-    div.onclick = function(){div.remove()};
-    document.body.appendChild(div);
-    positionNotification(div);
-    setTimeout(function(){if(div.parentNode)div.remove()}, 7000);
-  });
-  G.activeCoalitions = (G.activeCoalitions||[]).filter(function(ac){return !broken.some(function(b){return b.id===ac.id})});
 }
 function tickCoalitionDurations() {
   (G.activeCoalitions||[]).forEach(function(ac){

@@ -10771,8 +10771,8 @@
       "offeredByRound": 2,
       "benefits": {
         "perRound": {
-          "trust": 3,
-          "morale": 2
+          "trust": 2,
+          "morale": 1
         }
       },
       "constraints": [
@@ -10812,8 +10812,8 @@
       "offeredByRound": 3,
       "benefits": {
         "perRound": {
-          "trust": 2,
-          "donors": 2,
+          "trust": 1,
+          "donors": 1,
           "morale": 1
         }
       },
@@ -10853,7 +10853,7 @@
       "offeredByRound": 1,
       "benefits": {
         "perRound": {
-          "donors": 4
+          "donors": 2
         },
         "budgetPerRound": 5
       },
@@ -10894,7 +10894,7 @@
       "offeredByRound": 2,
       "benefits": {
         "perRound": {
-          "trust": 2
+          "trust": 1
         },
         "budgetPerRound": 4
       },
@@ -10933,7 +10933,7 @@
       "offeredByRound": 3,
       "benefits": {
         "perRound": {
-          "trust": 3,
+          "trust": 2,
           "donors": 1
         }
       },
@@ -10975,7 +10975,8 @@
       "budgetCost": 15,
       "effects": {
         "trust": 3,
-        "morale": 2
+        "morale": 2,
+        "donors": -1
       },
       "outcomeText": "Your facility is noticeably more secure. Staff and visitors feel safer.",
       "maxUses": 1
@@ -10988,7 +10989,8 @@
       "budgetCost": 12,
       "effects": {
         "donors": 4,
-        "trust": 2
+        "trust": 2,
+        "morale": -2
       },
       "outcomeText": "Your campaign reaches thousands of new potential supporters. Several reach out.",
       "maxUses": -1
@@ -11000,7 +11002,8 @@
       "description": "Send your team to professional development training and leadership workshops.",
       "budgetCost": 10,
       "effects": {
-        "morale": 5
+        "morale": 5,
+        "donors": -1
       },
       "outcomeText": "Your staff returns energized with new skills and renewed commitment.",
       "maxUses": 2
@@ -11013,8 +11016,7 @@
       "budgetCost": 18,
       "effects": {
         "donors": 2,
-        "morale": 2,
-        "trust": 1
+        "morale": 2
       },
       "outcomeText": "Operations run smoother. Your digital presence is significantly improved.",
       "maxUses": 1
@@ -11027,7 +11029,8 @@
       "budgetCost": 20,
       "effects": {
         "trust": 4,
-        "donors": 3
+        "donors": 3,
+        "morale": -2
       },
       "outcomeText": "The event draws strong attendance and media coverage. Your organization is the talk of the community.",
       "maxUses": -1

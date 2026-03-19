@@ -1440,6 +1440,13 @@ function startGame(){
   // Initialize constituency segments
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
+  // Save starting segment snapshot for end-screen deltas
+  if (G.segmentApproval) {
+    G._startingSegments = {};
+    Object.keys(G.segmentApproval).forEach(function(k) {
+      G._startingSegments[k] = G.segmentApproval[k];
+    });
+  }
 
   showScreen('game-screen');
   initTicker();
@@ -1485,6 +1492,13 @@ function startPromoGame(){
   // Initialize constituency segments for national org
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
+  // Save starting segment snapshot for end-screen deltas
+  if (G.segmentApproval) {
+    G._startingSegments = {};
+    Object.keys(G.segmentApproval).forEach(function(k) {
+      G._startingSegments[k] = G.segmentApproval[k];
+    });
+  }
   G.politicalClout = Math.min(100, G.politicalClout + 15); // promotion clout bonus
   // Save starting values for end-screen deltas
   G._startingPoliticalPosition = G.politicalPosition;
@@ -1629,7 +1643,7 @@ function weightedPickMultiple(scenarios, count) {
 }
 
 function computeLiveGrade() {
-  var w = GAME_DATA.scoring.weights || {};
+  var w = GAME_DATA.config.scoreWeights || GAME_DATA.scoring.weights || {};
   var score = 0, tw = 0;
   GAME_DATA.stats.forEach(function(s) {
     var wt = w[s.id] || 0.25;
@@ -1668,7 +1682,7 @@ function updateHUD(){
     var statLines = '';
     GAME_DATA.stats.forEach(function(s) {
       var v = Math.round(G.stats[s.id] || 0);
-      var wt = (GAME_DATA.scoring.weights || {})[s.id] || 0.25;
+      var wt = (GAME_DATA.config.scoreWeights || GAME_DATA.scoring.weights || {})[s.id] || 0.25;
       statLines += '<div class="grade-detail-row"><span>' + s.label + '</span><span>' + v + ' × ' + Math.round(wt * 100) + '%</span></div>';
     });
     gradeBody.innerHTML = statLines +
@@ -2533,7 +2547,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   // Community segments with deltas
   if (G.segmentApproval && !forcedFail) {
     var segments = GAME_DATA.config.segments || [];
-    var startSegs = (G.segmentSnapshots && G.segmentSnapshots[0]) || {};
+    var startSegs = G._startingSegments || (G.segmentSnapshots && G.segmentSnapshots[0]) || {};
     html += '<div class="end-section"><div class="end-section-label">Community Response</div>';
     segments.forEach(function(seg) {
       var v = Math.round(G.segmentApproval[seg.id] || 50);
@@ -2587,8 +2601,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
           else if (grade === 'D') quote = 'This was a tough year. We need to do better.';
           else quote = 'I wish things had gone differently.';
         }
-        html += '<div class="end-reflection"><img class="end-refl-portrait" src="' + (adv.portrait ? adv.portrait + '/' + mood + '.png' : '') + '">' +
-          '<div><div class="end-refl-name">' + esc(adv.name) + '</div><div class="end-refl-text">\u201c' + esc(quote) + '\u201d</div></div></div>';
+        html += '<div class="advisor-bubble" style="background:transparent;padding:8px 0"><span class="advisor-avatar">' + advPortrait(adv, mood, 40) + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + '</span><span class="advisor-text">\u201c' + esc(quote) + '\u201d</span></div></div>';
       });
       html += '</div>';
     }
@@ -2600,7 +2613,11 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   var allOrgs = [].concat(GAME_DATA.organizations, GAME_DATA.nationalOrganizations);
   var org = allOrgs.find(function(o) { return o.id === G.orgId; });
   var orgName = org ? org.name : 'your organization';
-  html += '<div class="end-replay"><div class="end-replay-text">You experienced <strong>' + usedCount + ' of ' + totalScenarios + '</strong> possible scenarios. Playing as <strong>' + esc(orgName) + '</strong> shaped which events you encountered. <strong>Try a different org for a completely different game.</strong></div></div>';
+  if (promotion) {
+    html += '<div class="end-replay"><div class="end-replay-text">Your success at <strong>' + esc(orgName) + '</strong> has attracted national attention. Choose your next organization to continue your leadership journey.</div></div>';
+  } else {
+    html += '<div class="end-replay"><div class="end-replay-text">You experienced <strong>' + usedCount + ' of ' + totalScenarios + '</strong> possible scenarios. Playing as <strong>' + esc(orgName) + '</strong> shaped which events you encountered. <strong>Try a different org for a completely different game.</strong></div></div>';
+  }
 
   // Set the content
   document.getElementById('end-meters').innerHTML = html;
@@ -2797,14 +2814,20 @@ function renderInvestStrip() {
       arrow.textContent = '›';
       arrow.onclick = function(e){ e.stopPropagation(); scrollInvestStrip(); };
       wrap.appendChild(arrow);
+      var fadeLeft = document.createElement('div');
+      fadeLeft.className = 'invest-strip-fade-left';
+      wrap.insertBefore(fadeLeft, wrap.firstChild);
     }
     strip.classList.remove('has-overflow');
+    strip.classList.remove('has-scroll-left');
     setTimeout(function(){
       if(el.scrollWidth > el.clientWidth) {
         strip.classList.add('has-overflow');
         el.onscroll = function() {
           var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
           strip.classList.toggle('has-overflow', !atEnd);
+          var hasScrollLeft = el.scrollLeft > 10;
+          strip.classList.toggle('has-scroll-left', hasScrollLeft);
         };
       }
     }, 50);
@@ -3967,25 +3990,32 @@ function buildTickerContent() {
   var el = document.getElementById('ticker-content');
   if(!el) return;
   
-  // Mix: game headlines + RSS + fallback fillers
-  var items = [];
-  
-  // Add game headlines
+  // Build game headline items
+  var gameItems = [];
   tickerHeadlines.forEach(function(h){
-    items.push('<span class="ticker-item game-headline">' + esc(h.text) + '</span><span class="ticker-sep">◆</span>');
+    gameItems.push('<span class="ticker-item game-headline">' + esc(h.text) + '</span><span class="ticker-sep">◆</span>');
   });
-  
-  // Add RSS headlines (if available) — clickable links to original articles
+
+  // Build RSS headline items — clickable links to original articles
+  var rssItems = [];
   var rss = rssHeadlines.length > 0 ? rssHeadlines : [];
   rss.forEach(function(h){
     var text = typeof h === 'string' ? h : h.text;
     var link = typeof h === 'object' ? h.link : '';
     if(link) {
-      items.push('<span class="ticker-item rss-headline"><a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(text) + '</a></span><span class="ticker-sep">◆</span>');
+      rssItems.push('<span class="ticker-item rss-headline"><a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(text) + '</a></span><span class="ticker-sep">◆</span>');
     } else {
-      items.push('<span class="ticker-item rss-headline">' + esc(text) + '</span><span class="ticker-sep">◆</span>');
+      rssItems.push('<span class="ticker-item rss-headline">' + esc(text) + '</span><span class="ticker-sep">◆</span>');
     }
   });
+
+  // Interleave game and RSS headlines
+  var items = [];
+  var maxLen = Math.max(gameItems.length, rssItems.length);
+  for (var ti = 0; ti < maxLen; ti++) {
+    if (ti < gameItems.length) items.push(gameItems[ti]);
+    if (ti < rssItems.length) items.push(rssItems[ti]);
+  }
   
   // If still < 8 items, pad with fallback
   var fallbacks = shuffle(FALLBACK_HEADLINES);

@@ -11,9 +11,9 @@
     "promotionThreshold": 75,
     "inboxPerRound": 2,
     "scoreWeights": {
-      "trust": 0.33,
-      "morale": 0.33,
-      "donors": 0.34
+      "trust": 0.333,
+      "morale": 0.333,
+      "donors": 0.334
     },
     "roundNames": [
       {

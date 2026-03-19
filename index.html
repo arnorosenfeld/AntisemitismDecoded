@@ -357,8 +357,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .invest-strip-wrap { max-width: 820px; margin: 0 auto; position: relative; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
-.invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding: 8px 16px 8px 0; flex-shrink: 0; }
-.invest-strip-label::after { content: ''; position: absolute; top: -20px; bottom: -20px; right: -28px; width: 28px; background: linear-gradient(to right, #283248 30%, transparent); pointer-events: none; }
+.invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding: 12px 16px 12px 0; flex-shrink: 0; }
 .invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
 .invest-pill:hover:not(.pill-disabled) { background: rgba(184,134,11,0.3); border-color: var(--gold); box-shadow: 0 0 8px rgba(184,134,11,0.3); }
 .invest-pill .pill-icon { font-size: 13px; }
@@ -510,7 +509,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .end-card { border: 2px solid var(--ink); padding: 40px 32px; text-align: center; background: var(--white); }
 .end-score-lbl { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; display: block; }
 .end-score { font-family: 'Merriweather', serif; font-size: 72px; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 4px; }
-.end-grade { font-family: 'Merriweather', serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 18px; }
+.end-grade { font-family: 'Merriweather', serif; font-size: 64px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
 .end-verdict { font-size: 14px; line-height: 1.85; color: var(--muted); max-width: 460px; margin: 0 auto 22px; font-style: italic; }
 #end-illustration { width: 140px; height: auto; display: block; margin: 16px auto; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.1)); }
 .end-meters { display: block; margin: 0; padding: 0; border: none; }
@@ -1182,6 +1181,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .invest-strip { position: relative; }
 .invest-strip-fade { display: none; position: absolute; top: 0; bottom: 0; right: 0; width: 60px; background: linear-gradient(to right, transparent, #283248); pointer-events: auto; z-index: 2; cursor: pointer; }
 .invest-strip.has-overflow .invest-strip-fade { display: block; }
+.invest-strip-fade-left { display: none; position: absolute; top: 0; bottom: 0; left: 0; width: 80px; background: linear-gradient(to right, #283248 40%, transparent); pointer-events: none; z-index: 2; }
+.invest-strip.has-scroll-left .invest-strip-fade-left { display: block; }
 .invest-scroll-arrow { display: none; position: absolute; right: 8px; top: 0; bottom: 0; margin: auto; height: 18px; line-height: 18px; color: #d4a843; font-size: 18px; font-weight: 700; z-index: 3; pointer-events: auto; cursor: pointer; }
 .invest-strip.has-overflow .invest-scroll-arrow { display: block; }
 @keyframes scrollHint { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(3px); } }
@@ -1661,9 +1662,9 @@ var GAME_DATA =
     "promotionThreshold": 75,
     "inboxPerRound": 2,
     "scoreWeights": {
-      "trust": 0.33,
-      "morale": 0.33,
-      "donors": 0.34
+      "trust": 0.333,
+      "morale": 0.333,
+      "donors": 0.334
     },
     "roundNames": [
       {
@@ -15976,6 +15977,13 @@ function startGame(){
   // Initialize constituency segments
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
+  // Save starting segment snapshot for end-screen deltas
+  if (G.segmentApproval) {
+    G._startingSegments = {};
+    Object.keys(G.segmentApproval).forEach(function(k) {
+      G._startingSegments[k] = G.segmentApproval[k];
+    });
+  }
 
   showScreen('game-screen');
   initTicker();
@@ -16021,6 +16029,13 @@ function startPromoGame(){
   // Initialize constituency segments for national org
   initSegmentApprovals(G.orgId);
   G.stats.trust = computeCompositeTrust();
+  // Save starting segment snapshot for end-screen deltas
+  if (G.segmentApproval) {
+    G._startingSegments = {};
+    Object.keys(G.segmentApproval).forEach(function(k) {
+      G._startingSegments[k] = G.segmentApproval[k];
+    });
+  }
   G.politicalClout = Math.min(100, G.politicalClout + 15); // promotion clout bonus
   // Save starting values for end-screen deltas
   G._startingPoliticalPosition = G.politicalPosition;
@@ -16165,7 +16180,7 @@ function weightedPickMultiple(scenarios, count) {
 }
 
 function computeLiveGrade() {
-  var w = GAME_DATA.scoring.weights || {};
+  var w = GAME_DATA.config.scoreWeights || GAME_DATA.scoring.weights || {};
   var score = 0, tw = 0;
   GAME_DATA.stats.forEach(function(s) {
     var wt = w[s.id] || 0.25;
@@ -16229,7 +16244,7 @@ function updateHUD(){
     var statLines = '';
     GAME_DATA.stats.forEach(function(s) {
       var v = Math.round(G.stats[s.id] || 0);
-      var wt = (GAME_DATA.scoring.weights || {})[s.id] || 0.25;
+      var wt = (GAME_DATA.config.scoreWeights || GAME_DATA.scoring.weights || {})[s.id] || 0.25;
       statLines += '<div class="grade-detail-row"><span>' + s.label + '</span><span>' + v + ' × ' + Math.round(wt * 100) + '%</span></div>';
     });
     gradeBody.innerHTML = statLines +
@@ -17069,7 +17084,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   // Community segments with deltas
   if (G.segmentApproval && !forcedFail) {
     var segments = GAME_DATA.config.segments || [];
-    var startSegs = (G.segmentSnapshots && G.segmentSnapshots[0]) || {};
+    var startSegs = G._startingSegments || (G.segmentSnapshots && G.segmentSnapshots[0]) || {};
     html += '<div class="end-section"><div class="end-section-label">Community Response</div>';
     segments.forEach(function(seg) {
       var v = Math.round(G.segmentApproval[seg.id] || 50);
@@ -17129,14 +17144,17 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
           else if (grade === 'D') quote = 'This was a tough year. We need to do better.';
           else quote = 'I wish things had gone differently.';
         }
-        html += '<div class="end-reflection"><img class="end-refl-portrait" src="' + (adv.portrait ? adv.portrait + '/' + mood + '.png' : '') + '">' +
-          '<div><div class="end-refl-name">' + esc(adv.name) + '</div><div class="end-refl-text">\u201c' + esc(quote) + '\u201d</div></div></div>';
+        html += '<div class="advisor-bubble" style="background:transparent;padding:8px 0"><span class="advisor-avatar">' + advPortrait(adv, mood, 40) + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + '</span><span class="advisor-text">\u201c' + esc(quote) + '\u201d</span></div></div>';
       });
       html += '</div>';
     }
   }
 
-  html += '<div class="end-replay"><div class="end-replay-text">You experienced <strong>' + usedCount + ' of ' + totalScenarios + '</strong> possible scenarios. Playing as <strong>' + esc(orgName) + '</strong> shaped which events you encountered. <strong>Try a different org for a completely different game.</strong></div></div>';
+  if (promotion) {
+    html += '<div class="end-replay"><div class="end-replay-text">Your success at <strong>' + esc(orgName) + '</strong> has attracted national attention. Choose your next organization to continue your leadership journey.</div></div>';
+  } else {
+    html += '<div class="end-replay"><div class="end-replay-text">You experienced <strong>' + usedCount + ' of ' + totalScenarios + '</strong> possible scenarios. Playing as <strong>' + esc(orgName) + '</strong> shaped which events you encountered. <strong>Try a different org for a completely different game.</strong></div></div>';
+  }
 
   // Set the content
   document.getElementById('end-meters').innerHTML = html;
@@ -17333,8 +17351,12 @@ function renderInvestStrip() {
       arrow.textContent = '›';
       arrow.onclick = function(e){ e.stopPropagation(); scrollInvestStrip(); };
       wrap.appendChild(arrow);
+      var fadeLeft = document.createElement('div');
+      fadeLeft.className = 'invest-strip-fade-left';
+      wrap.insertBefore(fadeLeft, wrap.firstChild);
     }
     strip.classList.remove('has-overflow');
+    strip.classList.remove('has-scroll-left');
     setTimeout(function(){
       if(el.scrollWidth > el.clientWidth) {
         strip.classList.add('has-overflow');
@@ -17342,6 +17364,8 @@ function renderInvestStrip() {
         el.onscroll = function() {
           var atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
           strip.classList.toggle('has-overflow', !atEnd);
+          var hasScrollLeft = el.scrollLeft > 10;
+          strip.classList.toggle('has-scroll-left', hasScrollLeft);
         };
       }
     }, 50);
@@ -18503,38 +18527,45 @@ function feedTickerHeadlines() {
 function buildTickerContent() {
   var el = document.getElementById('ticker-content');
   if(!el) return;
-  
-  // Mix: game headlines + RSS + fallback fillers
-  var items = [];
-  
-  // Add game headlines
+
+  // Build game headline items
+  var gameItems = [];
   tickerHeadlines.forEach(function(h){
-    items.push('<span class="ticker-item game-headline">' + esc(h.text) + '</span><span class="ticker-sep">◆</span>');
+    gameItems.push('<span class="ticker-item game-headline">' + esc(h.text) + '</span><span class="ticker-sep">◆</span>');
   });
-  
-  // Add RSS headlines (if available) — clickable links to original articles
+
+  // Build RSS headline items — clickable links to original articles
+  var rssItems = [];
   var rss = rssHeadlines.length > 0 ? rssHeadlines : [];
   rss.forEach(function(h){
     var text = typeof h === 'string' ? h : h.text;
     var link = typeof h === 'object' ? h.link : '';
     if(link) {
-      items.push('<span class="ticker-item rss-headline"><a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(text) + '</a></span><span class="ticker-sep">◆</span>');
+      rssItems.push('<span class="ticker-item rss-headline"><a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(text) + '</a></span><span class="ticker-sep">◆</span>');
     } else {
-      items.push('<span class="ticker-item rss-headline">' + esc(text) + '</span><span class="ticker-sep">◆</span>');
+      rssItems.push('<span class="ticker-item rss-headline">' + esc(text) + '</span><span class="ticker-sep">◆</span>');
     }
   });
-  
+
+  // Interleave game and RSS headlines
+  var items = [];
+  var maxLen = Math.max(gameItems.length, rssItems.length);
+  for (var ti = 0; ti < maxLen; ti++) {
+    if (ti < gameItems.length) items.push(gameItems[ti]);
+    if (ti < rssItems.length) items.push(rssItems[ti]);
+  }
+
   // If still < 8 items, pad with fallback
   var fallbacks = shuffle(FALLBACK_HEADLINES);
   var needed = Math.max(0, 8 - items.length);
   for(var i = 0; i < needed && i < fallbacks.length; i++) {
     items.push('<span class="ticker-item filler-headline">' + esc(fallbacks[i]) + '</span><span class="ticker-sep">◆</span>');
   }
-  
+
   // Duplicate for seamless loop
   var html = items.join('');
   el.innerHTML = html + html;
-  
+
   // Adjust speed based on content length (faster)
   var duration = Math.max(17, items.length * 2.1);
   el.style.setProperty('--ticker-duration', duration + 's');

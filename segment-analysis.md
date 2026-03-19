@@ -16,8 +16,8 @@
 | **Conservative** | 44 | ±45 | 61 | ±27 |
 | **Reform** | 32 | ±37 | 51 | ±30 |
 | **Unaffiliated** | 36 | ±45 | 47 | ±31 |
-| **Young Jews (18-39)** | 34 | ±44 | 47 | ±32 |
-| **Older Jews (50+)** | 40 | ±46 | 55 | ±30 |
+| **Young Jews (18-29)** | 35 | ±43 | 47 | ±32 |
+| **Older Jews (65+)** | 41 | ±45 | 54 | ±30 |
 
 **Scale:** US Politics: 0 = far left, 50 = center, 100 = far right.
 Israel Politics: 0 = very dovish/critical of Israel, 50 = center, 100 = very hawkish/pro-Israel.
@@ -29,8 +29,8 @@ Israel Politics: 0 = very dovish/critical of Israel, 50 = center, 100 = very haw
 ## Methodology Overview
 
 ### Blending Strategy
-- **40% weight** to Pew 2020 (larger sample, individual-level data, richer variables)
-- **60% weight** to JVRC 2025 (more current, captures post-Oct 7 shifts and 2024 election dynamics)
+- **Denomination segments:** 40% Pew 2020 / 60% JVRC 2025 (JVRC weighted higher for currency)
+- **Age segments (updated 2026-03-19):** 60% Pew 2020 / 40% JVRC 2025 (Pew weighted higher because its age brackets — 18-29 and 65+ — more closely match the target definitions; JVRC's Under 35 and Over 64 are slightly wider/narrower)
 - **+3 adjustment** added to all Israel scores to account for post-Oct 7 hawkish shift not fully captured by attachment questions alone
 
 ### U.S. Political Center: Composite Formula
@@ -329,9 +329,11 @@ Reform Jews show mixed Israel signals: attachment rose post-Oct 7, but Netanyahu
 
 ---
 
-### 5. Young Jews (18-39)
+### 5. Young Jews (18-29)
 
-**Pew 2020 sample:** n=1,984 (using 18-49 age bracket as proxy — Pew bins are 18-29 and 30-49)
+**Bracket change (2026-03-19):** Narrowed from 18-39 to Pew 18-29 + JVRC Under 35 to better capture the youngest cohort's distinct political profile. Weighting is 60% Pew (larger n, narrower bracket match) / 40% JVRC (more current but bracket is Under 35, slightly wider).
+
+**Pew 2020 sample:** n=554, weighted n=1,916,708 (AGE4CAT == '18-29' only —)
 **JVRC 2025 sample:** n~208 (Under 35)
 
 #### U.S. Politics
@@ -339,97 +341,99 @@ Reform Jews show mixed Israel signals: attachment rose post-Oct 7, but Netanyahu
 **IDEO distribution (Pew 2020, weighted):**
 | Ideology | % |
 |---|---|
-| Very Conservative | 4.6% |
-| Conservative | 12.0% |
-| Moderate | 35.4% |
-| Liberal | 29.8% |
-| Very Liberal | 18.1% |
+| Very Conservative | 3.9% |
+| Conservative | 9.8% |
+| Moderate | 35.1% |
+| Liberal | 28.4% |
+| Very Liberal | 22.8% |
 
-**IDEO Score: 38.8** (SD=26.5)
+**IDEO Score: 35.9** (SD=26.6)
 
-**PARTYSUM:** DEM 66.1%, DK 3.0%, REP 30.9% → **Score: 37.7** (SD=32.2)
-**PRESAPP:** SA 15.0%, SomA 15.3%, SomD 13.0%, SD 56.8% → **Score: 33.7** (SD=31.6)
+**PARTYSUM:** DEM 66.4%, DK 4.2%, REP 29.4% → **Score: 37.0** (SD=31.7)
+**PRESAPP:** SA 9.7%, SomA 13.1%, SomD 15.5%, SD 61.7% → **Score: 28.8** (SD=28.4)
 
-**Pew US Composite: 37.4** | **Comfort: ±44**
+**Pew US Composite: 34.8** | **Comfort: ±43**
 
 **JVRC 2025 (Under 35):**
 - Ideology: Liberal 66%, Moderate 19%, Conservative 12% → Score: 36.1
 - Party: Dem 64%, Ind 24%, Rep 12% → Score: 31.8
-- Trump: 16% approve, 84% disapprove → Score: 22.8
-- **JVRC US Composite: 32.1**
+- Trump: 16% approve, 84% disapprove → Score: 36.4
+- **JVRC US Composite: 34.9**
 
-Young Jews have shifted further left since 2020, especially on Trump approval.
+The narrower 18-29 Pew bracket and the JVRC Under 35 data converge closely, both showing a solidly center-left cohort.
 
-**Final Blended US Score: 34** (40% x 37.4 + 60% x 32.1)
+**Final Blended US Score: 35** (60% x 34.8 + 40% x 34.9)
 
 #### Israel Politics
 
-**ATTISR:** VA 20.9%, SA 24.7%, NTA 28.1%, NAAA 26.4% → **Score: 45.0** (SD=27.2)
-**ISUPP:** Too 27.7%, Right 50.3%, Not Enough 21.9% → **Score: 48.3** (SD=21.1)
-**PEACE1:** Yes 32.2%, No 67.8% → **Score: 42.9** (SD=18.7)
-**COEX:** Yes 69.6%, No 30.4% → **Score: 52.6** (SD=11.5)
+**ATTISR:** VA 16.4%, SA 24.9%, NTA 28.9%, NAAA 29.9% → **Score: 41.9** (SD=26.5)
+**ISUPP:** Score: 47.9 (SD=23.3)
+**PEACE1:** Yes 27.4%, No 72.6% → **Score: 41.0** (SD=17.8)
+**COEX:** Yes 73.5%, No 26.5% → **Score: 51.6** (SD=11.0)
 
-**Pew Israel Composite: 46.7** | **Comfort: ±32**
+**Pew Israel Composite: 45.0** | **Comfort: ±32**
 
 **JVRC 2025:**
-- Attachment: 55% attached → Score: 52.0
-- Netanyahu: 20% fav, 73% unfav → Score: 33.2
-- **JVRC Israel Composite: 42.6**
+- Attachment: 55% attached → Score: 47.0
+- Netanyahu: 20% fav, 73% unfav → Score: 36.5
+- **JVRC Israel Composite: 41.7**
 
-Young Jews are the most dovish/critical segment on Israel, with the highest Netanyahu unfavorability (73%) and lowest attachment. They also have the widest Israel comfort range (±32).
+Young Jews (18-29) are the most dovish/critical segment on Israel, with the highest Netanyahu unfavorability (73%) and lowest attachment (55%). The narrower bracket shows even lower Israel attachment than the old 18-39 range.
 
-**Final Blended Israel Score:** 0.40(46.7) + 0.60(42.6) + 3 = **47**
+**Final Blended Israel Score:** 0.60(45.0) + 0.40(41.7) + 3 (Oct 7 adj) = **47**
 
 ---
 
-### 6. Older Jews (50+)
+### 6. Older Jews (65+)
 
-**Pew 2020 sample:** n=3,767, weighted n=4,706,469
-**JVRC 2025 sample:** n~216 (Over 64, narrower than 50+ — note this skews slightly older)
+**Bracket change (2026-03-19):** Narrowed from 50+ to Pew 65+ + JVRC Over 64 to focus on the retirement-age cohort. Weighting is 60% Pew (larger n, bracket match) / 40% JVRC (more current, bracket aligns well).
+
+**Pew 2020 sample:** n=2,336, weighted n=2,406,454 (AGE4CAT == '65+')
+**JVRC 2025 sample:** n~216 (Over 64)
 
 #### U.S. Politics
 
 **IDEO distribution (Pew 2020, weighted):**
 | Ideology | % |
 |---|---|
-| Very Conservative | 7.0% |
-| Conservative | 19.3% |
-| Moderate | 34.3% |
-| Liberal | 26.6% |
-| Very Liberal | 12.8% |
+| Very Conservative | 6.1% |
+| Conservative | 18.3% |
+| Moderate | 32.9% |
+| Liberal | 30.8% |
+| Very Liberal | 11.9% |
 
-**IDEO Score: 45.3** (SD=27.6)
+**IDEO Score: 44.0** (SD=26.9)
 
-**PARTYSUM:** DEM 60.3%, DK 4.4%, REP 35.3% → **Score: 41.3** (SD=33.1)
-**PRESAPP:** SA 24.6%, SomA 12.9%, SomD 5.7%, SD 56.8% → **Score: 38.5** (SD=35.3)
+**PARTYSUM:** DEM 61.7%, DK 6.0%, REP 32.3% → **Score: 39.7** (SD=32.3)
+**PRESAPP:** SA 24.2%, SomA 10.2%, SomD 6.3%, SD 59.4% → **Score: 36.7** (SD=35.0)
 
-**Pew US Composite: 42.7** | **Comfort: ±46**
+**Pew US Composite: 41.2** | **Comfort: ±45**
 
 **JVRC 2025 (Over 64):**
 - Ideology: Liberal 38%, Moderate 44%, Conservative 17% → Score: 44.7
 - Party: Dem 61%, Ind 22%, Rep 16% → Score: 33.8
-- Trump: 28% approve, 72% disapprove → Score: 32.4
-- **JVRC US Composite: 39.0**
+- Trump: 28% approve, 72% disapprove → Score: 41.2
+- **JVRC US Composite: 40.7**
 
-**Final Blended US Score: 40** (40% x 42.7 + 60% x 39.0)
+**Final Blended US Score: 41** (60% x 41.2 + 40% x 40.7)
 
 #### Israel Politics
 
-**ATTISR:** VA 23.1%, SA 34.3%, NTA 26.0%, NAAA 16.5% → **Score: 51.0** (SD=25.3)
-**ISUPP:** Too 20.3%, Right 61.1%, Not Enough 18.7% → **Score: 49.5** (SD=18.7)
-**PEACE1:** Yes 39.0%, No 61.0% → **Score: 45.6** (SD=19.5)
-**COEX:** Yes 60.7%, No 39.3% → **Score: 54.8** (SD=12.2)
+**ATTISR:** VA 25.9%, SA 34.3%, NTA 23.3%, NAAA 16.5% → **Score: 52.4** (SD=25.7)
+**ISUPP:** Score: 50.2 (SD=18.4)
+**PEACE1:** Yes 40.5%, No 59.5% → **Score: 46.2** (SD=19.6)
+**COEX:** Yes 60.8%, No 39.2% → **Score: 54.8** (SD=12.2)
 
-**Pew Israel Composite: 50.1** | **Comfort: ±30**
+**Pew Israel Composite: 50.9** | **Comfort: ±30**
 
 **JVRC 2025:**
-- Attachment: 79% attached → Score: 61.6
-- Netanyahu: 42% fav, 53% unfav → Score: 44.8
-- **JVRC Israel Composite: 53.2**
+- Attachment: 79% attached → Score: 56.6
+- Netanyahu: 42% fav, 53% unfav → Score: 47.1
+- **JVRC Israel Composite: 51.9**
 
-Older Jews are more hawkish/pro-Israel than younger Jews, with notably higher attachment and Netanyahu favorability.
+Older Jews (65+) are more hawkish/pro-Israel than younger Jews, with notably higher attachment (79% vs 55%) and Netanyahu favorability (42% vs 20%).
 
-**Final Blended Israel Score:** 0.40(50.1) + 0.60(53.2) + 3 = **55**
+**Final Blended Israel Score:** 0.60(50.9) + 0.40(51.9) + 3 (Oct 7 adj) = **54**
 
 ---
 
@@ -443,7 +447,7 @@ Older Jews are more hawkish/pro-Israel than younger Jews, with notably higher at
 
 4. **Comfort ranges are wide across the board** (27-46 points). This reflects genuine internal diversity within every Jewish segment. No group is monolithic.
 
-5. **Young Jews are the most liberal AND most dovish** on Israel — but their wide comfort range (±32 on Israel, ±44 on US) means they can tolerate a range of positions.
+5. **Young Jews (18-29) are the most liberal AND most dovish** on Israel — but their wide comfort range (±32 on Israel, ±43 on US) means they can tolerate a range of positions.
 
 6. **The biggest denominational gap on Israel is Orthodox/Conservative vs. Unaffiliated/Young** (61 vs. 47 — a 14-point gap). On US politics, the gap is much larger: Orthodox (64) vs. Reform (32) — a 32-point gap.
 

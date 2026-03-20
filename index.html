@@ -484,6 +484,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Enhanced end screen */
 .end-section { padding: 20px 32px; border-top: 1px solid var(--border); }
 .end-section-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.end-section .advisor-bubble { background: #f8f5ef; padding: 10px 14px; margin-bottom: 10px; border-radius: 4px; max-width: 500px; }
+.end-section .advisor-meta { flex: 1; }
 .end-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .end-stat { text-align: center; }
 .end-stat-bar { height: 5px; background: #e0ddd5; border-radius: 3px; margin-top: 6px; }
@@ -1272,7 +1274,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
     <div class="lp-bottom-cta">
       <p id="lp-bottom-text"></p>
       <button class="btn btn-gold lp-cta-btn" id="lp-continue-btn-bottom" style="display:none;margin-bottom:10px" onclick="loadSavedGame()">Continue Your Game &rarr;</button>
-      <button class="btn btn-primary lp-cta-btn" onclick="showScreen('char-screen')">Accept the Position →</button>
+      <button class="btn btn-primary lp-cta-btn" id="lp-cta-btn-bottom" onclick="showScreen('char-screen')">Accept the Position →</button>
     </div>
   </div>
   <div class="lp-ticker" id="lp-ticker">
@@ -12409,7 +12411,7 @@ var GAME_DATA =
         "effects": {
           "donors": -3
         },
-        "text": "The donor collective redirects their giving to a rival organization. You feel the budget impact immediately.",
+        "text": "The donor collective redirects their giving to a rival organization. You feel the gelt impact immediately.",
         "budgetEffect": -5
       }
     },
@@ -15026,6 +15028,13 @@ function initIntro() {
   var hasSave = hasSavedGame();
   var cb1 = document.getElementById('lp-continue-btn'); if(cb1) cb1.style.display = hasSave ? '' : 'none';
   var cb2 = document.getElementById('lp-continue-btn-bottom'); if(cb2) cb2.style.display = hasSave ? '' : 'none';
+  // Update CTA button text when save exists
+  var ctaBtn = document.getElementById('lp-cta-btn');
+  var ctaBtnBottom = document.getElementById('lp-cta-btn-bottom');
+  if (hasSave) {
+    if (ctaBtn) ctaBtn.textContent = 'Start a New Game \u2192';
+    if (ctaBtnBottom) ctaBtnBottom.textContent = 'Start a New Game \u2192';
+  }
   // Ticker
   var tc = document.getElementById('lp-ticker-content');
   if (tc && pt.tickerHeadlines) {
@@ -15768,7 +15777,17 @@ function startPromoGame(){
 function beginRound(){
   G.round++;
   if(G.round>GAME_DATA.config.totalRounds){endYear();return;}
-  
+
+  // Check if we've exhausted all scenarios
+  var allScenarios = GAME_DATA.scenarios || [];
+  var available = allScenarios.filter(function(s) { return !G.usedScenarioIds.includes(s.id); });
+  if (available.length === 0) {
+    // No more scenarios — end the game gracefully
+    renderEndScreen(computeLiveGrade().score, false, null, false, false, false);
+    showScreen('end-screen');
+    return;
+  }
+
   // Record stat snapshot for momentum tracking
   recordStatSnapshot();
   
@@ -16886,7 +16905,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
-    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedScenarioIds=[];G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
+    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
     actEl.appendChild(b);
     const b2=document.createElement('button');
     b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
@@ -18541,7 +18560,7 @@ function checkCoalitionOffers() {
 }
 function showCoalitionOffer(co) {
   var benefitText = Object.entries(co.benefits.perRound||{}).map(function(e){return '+'+e[1]+' '+e[0]+'/round'}).join(', ');
-  if(co.benefits.budgetPerRound) benefitText += (benefitText?', ':'')+'+'+co.benefits.budgetPerRound+' budget/round';
+  if(co.benefits.budgetPerRound) benefitText += (benefitText?', ':'')+'+'+co.benefits.budgetPerRound+' gelt/round';
   var constraintText = (co.constraints||[]).map(function(c){return c.description}).join('; ');
   
   // Political info

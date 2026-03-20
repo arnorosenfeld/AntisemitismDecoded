@@ -580,6 +580,13 @@ function initIntro() {
   if (continueBtn) continueBtn.style.display = hasSave ? '' : 'none';
   var continueBtnBottom = document.getElementById('lp-continue-btn-bottom');
   if (continueBtnBottom) continueBtnBottom.style.display = hasSave ? '' : 'none';
+  // Update CTA button text when save exists
+  var ctaBtn = document.getElementById('lp-cta-btn');
+  var ctaBtnBottom = document.getElementById('lp-cta-btn-bottom');
+  if (hasSave) {
+    if (ctaBtn) ctaBtn.textContent = 'Start a New Game \u2192';
+    if (ctaBtnBottom) ctaBtnBottom.textContent = 'Start a New Game \u2192';
+  }
   // Depth
   var dl = document.getElementById('lp-depth-label'); if(dl) dl.textContent = pt.depthLabel || '';
   var dg = document.getElementById('lp-depth-grid');
@@ -1408,7 +1415,17 @@ function startPromoGame(){
 function beginRound(){
   G.round++;
   if(G.round>GAME_DATA.config.totalRounds){endYear();return;}
-  
+
+  // Check if we've exhausted all scenarios
+  var allScenarios = GAME_DATA.scenarios || [];
+  var available = allScenarios.filter(function(s) { return !G.usedScenarioIds.includes(s.id); });
+  if (available.length === 0) {
+    // No more scenarios — end the game gracefully
+    renderEndScreen(computeLiveGrade().score, false, null, false, false, false);
+    showScreen('end-screen');
+    return;
+  }
+
   // Record stat snapshot for momentum tracking
   recordStatSnapshot();
   
@@ -2526,7 +2543,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
-    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedScenarioIds=[];G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
+    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
     actEl.appendChild(b);
     const b2=document.createElement('button');
     b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
@@ -4183,7 +4200,7 @@ function checkCoalitionOffers() {
 }
 function showCoalitionOffer(co) {
   var benefitText = Object.entries(co.benefits.perRound||{}).map(function(e){return '+'+e[1]+' '+e[0]+'/round'}).join(', ');
-  if(co.benefits.budgetPerRound) benefitText += (benefitText?', ':'')+'+'+co.benefits.budgetPerRound+' budget/round';
+  if(co.benefits.budgetPerRound) benefitText += (benefitText?', ':'')+'+'+co.benefits.budgetPerRound+' gelt/round';
   var constraintText = (co.constraints||[]).map(function(c){return c.description}).join('; ');
   
   // Political info
@@ -4210,7 +4227,7 @@ function showCoalitionOffer(co) {
     var dp = co.declinePenalty;
     var dpParts = [];
     Object.entries(dp.effects||{}).forEach(function(e){ if(e[1] < 0) dpParts.push(e[1] + ' ' + e[0]); });
-    if (dp.budgetEffect && dp.budgetEffect < 0) dpParts.push(dp.budgetEffect + ' budget');
+    if (dp.budgetEffect && dp.budgetEffect < 0) dpParts.push(dp.budgetEffect + ' gelt');
     if (dpParts.length) declineText = dpParts.join(', ');
   }
 

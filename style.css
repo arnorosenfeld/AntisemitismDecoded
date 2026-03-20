@@ -479,6 +479,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Enhanced end screen */
 .end-section { padding: 20px 32px; border-top: 1px solid var(--border); }
 .end-section-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.end-section .advisor-bubble { background: #f8f5ef; padding: 10px 14px; margin-bottom: 10px; border-radius: 4px; max-width: 500px; }
+.end-section .advisor-meta { flex: 1; }
 .end-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .end-stat { text-align: center; }
 .end-stat-bar { height: 5px; background: #e0ddd5; border-radius: 3px; margin-top: 6px; }

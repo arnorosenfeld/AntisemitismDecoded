@@ -11,6 +11,8 @@
     "promotionThreshold": 75,
     "inboxPerRound": 2,
     "polarizationMultiplier": 1.5,
+    "communityPoliticalCenter": 43,
+    "communityCloutBonus": 5,
     "scoreWeights": {
       "trust": 0.333,
       "morale": 0.333,
@@ -10745,6 +10747,7 @@
       "id": "coal_interfaith",
       "name": "Interfaith Alliance Partnership",
       "description": "The local Interfaith Council wants a formal partnership. You'll co-host monthly events and they'll amplify your work to their 15,000-member network. But they expect you to remain neutral on Israel-Palestine issues in all public communications.",
+      "politicalRequirement": {"maxPosition": 55},
       "offeredByRound": 2,
       "benefits": {
         "perRound": {
@@ -10786,6 +10789,7 @@
       "id": "coal_campus",
       "name": "Campus Coalition Against Hate",
       "description": "A coalition of campus organizations invites you to join their anti-hate alliance. You'll get direct access to college students and shared programming resources. But they require members to publicly support all coalition statements — even ones you might disagree with.",
+      "politicalRequirement": {"maxPosition": 50},
       "offeredByRound": 3,
       "benefits": {
         "perRound": {
@@ -10827,6 +10831,7 @@
       "id": "coal_donor_circle",
       "name": "Major Donor Collective",
       "description": "A group of five major donors wants to form an advisory circle with guaranteed annual giving of $200K combined. In exchange, they want quarterly briefings and veto power over any public statement on Israel.",
+      "politicalRequirement": {"minPosition": 45},
       "offeredByRound": 1,
       "benefits": {
         "perRound": {
@@ -10907,6 +10912,7 @@
       "id": "coal_media",
       "name": "Jewish Media Consortium",
       "description": "Three Jewish media outlets offer you a regular column and guaranteed coverage of your events. In exchange, you give them exclusive access and first comment rights on any controversy. You can't talk to outside media first.",
+      "politicalRequirement": {"minClout": 15},
       "offeredByRound": 3,
       "benefits": {
         "perRound": {
@@ -11022,6 +11028,17 @@
       "outcomeText": "Your endowment contribution is approved by the board. The returns will boost your operating budget every round for the rest of the year.",
       "maxUses": 1,
       "geltPerRound": 5
+    },
+    {
+      "id": "inv_lobbyist",
+      "name": "Hire Lobbyist",
+      "icon": "🏛️",
+      "description": "Retain a government affairs consultant to build political relationships and open doors.",
+      "budgetCost": 12,
+      "effects": {},
+      "cloutGain": 8,
+      "outcomeText": "Your new lobbyist is already making introductions. Political capital is growing.",
+      "maxUses": 1
     }
   ],
   "advisorPool": [

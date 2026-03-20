@@ -278,7 +278,21 @@ function applySegmentEffects(trustDelta, choice, scenario) {
       // Average across active axes
       if (axisCount > 0) alignmentBonus = alignmentBonus / axisCount;
 
+      // On-brand/off-brand modifier
+      var orgPos = G.politicalPosition || 50;
+      var orgSide = orgPos < 45 ? 'left' : orgPos > 55 ? 'right' : 'center';
+      var choiceSide = usLean < -1 ? 'left' : usLean > 1 ? 'right' : 'center';
+      var brandMod = 1.0;
+      if (choiceSide !== 'center' && orgSide !== 'center') {
+        if (choiceSide === orgSide) {
+          brandMod = 1.2; // on-brand: 20% boost
+        } else {
+          brandMod = 0.7; // off-brand: 30% penalty to positive effects, 30% boost to negative
+        }
+      }
+
       var rawEffect = alignmentBonus * divergence * Math.abs(trustDelta > 0 ? Math.max(1, trustDelta / 3) : Math.min(-1, trustDelta / 3));
+      rawEffect *= brandMod;
       // Asymmetric polarization: negative alignment hits harder than positive helps
       if (rawEffect < 0) {
         var polMult = GAME_DATA.config.polarizationMultiplier || 1.5;
@@ -1434,7 +1448,32 @@ function beginRound(){
   
   // Check coaching warnings (Year 1 only)
   if(G.round > 1) checkCoachingWarnings();
-  
+
+  // Community median clout bonus
+  if (G.round >= 1) {
+    var communityCenter = GAME_DATA.config.communityPoliticalCenter || 43;
+    var maxCloutBonus = GAME_DATA.config.communityCloutBonus || 5;
+    var dist = Math.abs(G.politicalPosition - communityCenter);
+    var cloutBonus = 0;
+    if (dist <= 20) {
+      cloutBonus = Math.round(maxCloutBonus * (1 - dist / 20));
+    }
+    // Apply centrist penalty
+    var isCentrist = G.politicalPosition >= 40 && G.politicalPosition <= 60 && G.politicalClout < 50;
+    if (isCentrist && cloutBonus > 0) {
+      var full = cloutBonus;
+      cloutBonus = Math.max(1, Math.round(cloutBonus * 0.5));
+      if (full !== cloutBonus) {
+        showCoachingWarning('⚡ +' + cloutBonus + ' Clout from your position near the community\'s political center. You earned ' + cloutBonus + ' instead of ' + full + ' because centrist organizations build influence at half rate.', 'info');
+      } else {
+        showCoachingWarning('⚡ +' + cloutBonus + ' Clout from your position near the community\'s political center.', 'info');
+      }
+    } else if (cloutBonus > 0) {
+      showCoachingWarning('⚡ +' + cloutBonus + ' Clout from your position near the community\'s political center.', 'info');
+    }
+    G.politicalClout = Math.min(100, G.politicalClout + cloutBonus);
+  }
+
   // Apply coalition benefits (Feature 5)
   applyCoalitionBenefits();
   
@@ -1982,13 +2021,17 @@ function renderScenario(s){
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
           var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var cCost = c.cloutCost || 0;
+          var hasClout = cCost <= G.politicalClout;
+          var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
-          var isLocked = lockBudget || lockPolitical;
+          var isLocked = lockBudget || !hasClout || lockPolitical;
           var recBadge = getAdvisorRecommendationBadge(s, i);
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled':''}onclick="chooseScenario('${s.id}',${i})">
             <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
             ${costTag}
+            ${cloutTag}
             ${missionBadgeHTML(c)}
             ${renderPoliticalTag(c)}
             ${renderCoalitionWarnings(c)}
@@ -2039,16 +2082,16 @@ function chooseScenario(sid,idx){
   if(bCost > 0) { G.budget -= bCost; G.budgetSpentThisYear += bCost; }
   var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Gelt</span>' : '';
 
+  // Clout cost
+  var cCost = c.cloutCost || 0;
+  if (cCost > G.politicalClout) return;
+  if (cCost > 0) { G.politicalClout -= cCost; }
+
   // #6: Pick from weighted outcomes
   const outcome = pickOutcome(c);
   
-  // Apply political effectiveness modifier to outcome effects (only if scenario is politically relevant)
   var modifiedEffects = Object.assign({}, outcome.effects);
-  var isPolitical = s.politicallyRelevant !== false; // default true for backward compat, but editor can set false
-  if (isPolitical) {
-    applyPoliticalModifier(modifiedEffects);
-  }
-  
+
   // Apply advisor recommendation bonus
   var advisorBonus = getAdvisorBonus(s, idx);
   var advisorChips = '';
@@ -2071,8 +2114,7 @@ function chooseScenario(sid,idx){
   var polChips = applyPoliticalEffects(c);
   
   // Political outcome flavor text (only for political scenarios)
-  var polFlavor = isPolitical ? politicalOutcomeModifier(outcome) : '';
-  
+
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
@@ -2102,7 +2144,6 @@ function chooseScenario(sid,idx){
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
-  if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(s, c, outcome, false);
   showOutcome(s.title, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, function(){
@@ -2144,12 +2185,16 @@ function renderInbox(s){
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
           var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var cCost = c.cloutCost || 0;
+          var hasClout = cCost <= G.politicalClout;
+          var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
-          var isLocked = lockBudget || lockPolitical;
+          var isLocked = lockBudget || !hasClout || lockPolitical;
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled ':''}onclick="chooseInbox('${s.id}',${i})">
             <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
             ${costTag}
+            ${cloutTag}
             ${missionBadgeHTML(c)}
             ${renderPoliticalTag(c)}
             ${renderCoalitionWarnings(c)}
@@ -2174,14 +2219,14 @@ function chooseInbox(sid,idx){
   if(bCost > 0) { G.budget -= bCost; G.budgetSpentThisYear += bCost; }
   var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Gelt</span>' : '';
 
+  // Clout cost
+  var cCost = c.cloutCost || 0;
+  if (cCost > G.politicalClout) return;
+  if (cCost > 0) { G.politicalClout -= cCost; }
+
   const outcome = pickOutcome(c);
 
-  // Apply political effectiveness modifier (only if politically relevant)
   var modifiedEffects = Object.assign({}, outcome.effects);
-  var isPolitical = s.politicallyRelevant !== false;
-  if (isPolitical) {
-    applyPoliticalModifier(modifiedEffects);
-  }
 
   // Apply advisor recommendation bonus
   var advisorBonus = getAdvisorBonus(s, idx);
@@ -2202,7 +2247,6 @@ function chooseInbox(sid,idx){
   // Apply political lean/clout
   inferPoliticalLean(c, s);
   var polChips = applyPoliticalEffects(c);
-  var polFlavor = isPolitical ? politicalOutcomeModifier(outcome) : '';
 
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
@@ -2216,7 +2260,7 @@ function chooseInbox(sid,idx){
   let sc='';
   if(alignment==='aligned'){G.missionStars=Math.min(maxS,G.missionStars+1);sc=`<span class="chip chip-star-up">+1 Mission</span>`;}
   else if(alignment==='opposed'){G.missionStars=Math.max(0,G.missionStars-1);sc=`<span class="chip chip-star-dn">-1 Mission</span>`;}
-  
+
   recordEvent('choiceMade', {scenarioId:s.id, choiceIndex:idx});
   checkCoalitionViolations(c);
   checkCoalitionStrikes(c);
@@ -2229,7 +2273,6 @@ function chooseInbox(sid,idx){
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
-  if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(s, c, outcome, false);
   showOutcome(s.subject, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, ()=>processQueue());
@@ -2312,10 +2355,6 @@ function endYear(){
   var budgetMod = G.budget >= 60 ? 5 : G.budget >= 40 ? 2 : G.budget >= 20 ? 0 : G.budget >= 10 ? -3 : -5;
   score += budgetMod;
   
-  // Political effectiveness bonus/penalty (capped at +/- 4 points)
-  var polEff = getPoliticalEffectiveness();
-  var polMod = polEff >= 1.05 ? 4 : polEff >= 0.95 ? 2 : polEff >= 0.8 ? 0 : polEff >= 0.6 ? -2 : -4;
-  score += polMod;
   
   // #3: Mission star scoring
   const starPoints = GAME_DATA.config.missionStarPoints || 1;
@@ -2839,7 +2878,7 @@ function renderInvestmentContent() {
         '<div class="invest-name">' + inv.name + '</div>' +
         '<div class="invest-desc">' + inv.description + '</div>' +
         '<div class="invest-cost' + costClass + '">💰 ' + inv.budgetCost + ' gelt' + disabledReason + '</div>' +
-        '<div class="invest-effects">' + investEffectChips(inv.effects) + (inv.geltPerRound ? '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.geltPerRound + ' gelt/round</span>' : '') + '</div>' +
+        '<div class="invest-effects">' + investEffectChips(inv.effects) + (inv.geltPerRound ? '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.geltPerRound + ' gelt/round</span>' : '') + (inv.cloutGain ? '<span class="chip chip-pol-clout">⚡ +' + inv.cloutGain + ' Clout</span>' : '') + '</div>' +
         usesLabel +
       '</div>';
     }).join('') +
@@ -2882,7 +2921,12 @@ function makeInvestment(invId) {
     var roundsLeft = (GAME_DATA.config.totalRounds || 4) - G.round;
     budgetChip += '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.geltPerRound + ' gelt/round (' + roundsLeft + ' rounds remaining)</span>';
   }
-  
+  // Handle clout gain (e.g. lobbyist)
+  if (inv.cloutGain) {
+    G.politicalClout = Math.min(100, G.politicalClout + inv.cloutGain);
+    budgetChip += '<span class="chip chip-pol-clout">⚡ +' + inv.cloutGain + ' Clout</span>';
+  }
+
   G.roundActions.push({icon: inv.icon, name: inv.name, outcomeText: inv.outcomeText, chips: chips + budgetChip});
   G.history.push('INVEST: ' + inv.name + ' (-' + inv.budgetCost + ' budget)');
   
@@ -2923,73 +2967,14 @@ function getPositionLabel(pos) {
   return 'Far Right';
 }
 
-// Calculate political effectiveness multiplier
-// Center-left (35-45) is optimal for American Jewish leadership
-// Exponentially harder at extremes, harder on far-right than far-left
-// BIPARTISAN TRAP: Staying centered (35-65) limits influence — access everywhere, influence nowhere
-function getPoliticalEffectiveness() {
-  var pos = G.politicalPosition;
-  var clout = G.politicalClout;
-  
-  // Position modifier: center-left is ideal (around 40), with asymmetric penalties
-  var optimalPos = 40; // slightly left of center
-  var dist = Math.abs(pos - optimalPos);
-  var positionMod;
-  
-  if (dist <= 10) {
-    // Sweet spot: center to center-left
-    positionMod = 1.0 + (clout / 400); // small clout bonus
-  } else if (dist <= 25) {
-    // Moderate lean: still effective
-    positionMod = 0.95 - (dist - 10) * 0.01;
-  } else if (dist <= 40) {
-    // Strong lean: penalties start
-    var penalty = (dist - 25) * 0.02;
-    // Asymmetry: right-leaning gets slightly more penalty
-    if (pos > optimalPos) penalty *= 1.3;
-    positionMod = 0.8 - penalty;
-  } else {
-    // Extreme: exponential penalty
-    var extreme = (dist - 40) * 0.04;
-    if (pos > optimalPos) extreme *= 1.5; // far-right is harder
-    positionMod = 0.5 - extreme;
-  }
-  
-  // BIPARTISAN TRAP: if position is in the center zone (35-65) AND clout is moderate,
-  // cap effectiveness — you have access but limited real influence
-  var isCentrist = pos >= 35 && pos <= 65;
-  if (isCentrist && clout < 50) {
-    // Centrists need MORE clout to be effective — access doesn't equal influence
-    var centristPenalty = (50 - clout) / 200; // up to 0.25 penalty for zero clout centrists
-    positionMod -= centristPenalty;
-  }
-  
-  // Clout modifier: high clout helps, but only on your side of the spectrum
-  var cloutMod = clout / 200; // 0 to 0.5 bonus
-  
-  // Combined: position sets the base, clout enhances it
-  var total = Math.max(0.3, Math.min(1.3, positionMod + cloutMod));
-  return total;
-}
 
-// Check if player is in the bipartisan trap zone
+// Check if player is in the centrist trap zone
 function isInBipartisanTrap() {
   var pos = G.politicalPosition;
   var clout = G.politicalClout;
-  return pos >= 35 && pos <= 65 && clout < 50;
+  return pos >= 40 && pos <= 60 && clout < 50;
 }
 
-// Get effectiveness description for the UI
-function getEffectivenessDesc() {
-  var eff = getPoliticalEffectiveness();
-  var trap = isInBipartisanTrap();
-  if (trap) return { label: 'Centrist Trap', cls: 'pol-eff-penalty', desc: 'You have access everywhere but influence nowhere. Staying centered limits your political power. Build more clout or take a clearer position to increase your effectiveness.' };
-  if (eff >= 1.1) return { label: 'Strong', cls: 'pol-eff-bonus', desc: 'Your political relationships are a real asset. Doors open for you.' };
-  if (eff >= 0.95) return { label: 'Good', cls: 'pol-eff-bonus', desc: 'Well-positioned in the political landscape. Most doors are open.' };
-  if (eff >= 0.8) return { label: 'Normal', cls: 'pol-eff-neutral', desc: 'Adequate political standing. Some relationships could be stronger.' };
-  if (eff >= 0.6) return { label: 'Strained', cls: 'pol-eff-penalty', desc: 'Your political position is limiting some opportunities.' };
-  return { label: 'Isolated', cls: 'pol-eff-penalty', desc: 'Your political alignment has closed many doors. Rebuilding will take time.' };
-}
 
 // Apply political lean from a choice
 function applyPoliticalEffects(choice) {
@@ -3004,14 +2989,14 @@ function applyPoliticalEffects(choice) {
     chips += '<span class="chip ' + cls + '">' + (lean > 0 ? '+' : '') + lean + ' ' + dir + '</span>';
   }
   if (cloutGain !== 0) {
-    // BIPARTISAN TRAP: centrist clout growth is slower
+    // CENTRIST TRAP: centrist clout growth is slower
     var pos = G.politicalPosition;
-    var isCentrist = pos >= 35 && pos <= 65;
+    var isCentrist = pos >= 40 && pos <= 60;
     if (isCentrist && cloutGain > 0) {
       // Centrists earn clout at 60% rate — broad access dilutes real influence
-      var reduced = Math.max(1, Math.round(cloutGain * 0.6));
+      var reduced = Math.max(1, Math.round(cloutGain * 0.5));
       G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + reduced));
-      chips += '<span class="chip chip-pol-clout">' + (reduced > 0 ? '+' : '') + reduced + ' Clout <span style="font-size:8px;opacity:0.7">(centrist penalty)</span></span>';
+      chips += '<span class="chip chip-pol-clout">' + (reduced > 0 ? '+' : '') + reduced + ' Clout <span style="font-size:8px;opacity:0.7">(earned ' + cloutGain + ', centrist rate 50%)</span></span>';
     } else {
       G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutGain));
       chips += '<span class="chip chip-pol-clout">' + (cloutGain > 0 ? '+' : '') + cloutGain + ' Clout</span>';
@@ -3060,38 +3045,7 @@ function renderPoliticalTag(choice) {
   return tags;
 }
 
-// Modify outcome text based on political effectiveness
-function politicalOutcomeModifier(outcome) {
-  var eff = getPoliticalEffectiveness();
-  // Check if the net effects are positive or negative
-  var netEffect = 0;
-  if (outcome.effects) {
-    Object.values(outcome.effects).forEach(function(v) { netEffect += v; });
-  }
-  if (eff >= 1.05 && netEffect > 0) return '<span style="color:#5b21b6;font-size:12px;font-style:italic">Your political capital amplified the positive outcomes.</span>';
-  if (eff >= 1.05 && netEffect < 0) return '<span style="color:#5b21b6;font-size:12px;font-style:italic">Your political capital softened the blow somewhat.</span>';
-  if (eff <= 0.65 && netEffect < 0) return '<span style="color:#5b21b6;font-size:12px;font-style:italic">Your political isolation made the fallout worse.</span>';
-  if (eff <= 0.65 && netEffect > 0) return '<span style="color:#5b21b6;font-size:12px;font-style:italic">Your limited political capital reduced the impact of this win.</span>';
-  return '';
-}
 
-// Apply political effectiveness to stat effects (modifies effects in place)
-function applyPoliticalModifier(effects) {
-  var eff = getPoliticalEffectiveness();
-  if (Math.abs(eff - 1.0) < 0.05) return; // close enough to 1.0, no modification
-  var modified = {};
-  Object.keys(effects).forEach(function(k) {
-    var v = effects[k];
-    if (v > 0) {
-      // Positive effects get scaled by effectiveness
-      modified[k] = Math.round(v * eff);
-    } else {
-      // Negative effects: lower effectiveness means worse penalties
-      modified[k] = Math.round(v * (2 - eff));
-    }
-  });
-  Object.assign(effects, modified);
-}
 
 // Update the HUD political display
 function updatePoliticsHUD() {
@@ -3126,17 +3080,19 @@ function updatePoliticsHUD() {
   var dMarker = document.getElementById('pol-d-marker');
   if (dMarker) dMarker.style.left = pct + '%';
   
-  var effInfo = getEffectivenessDesc();
+  var trap = isInBipartisanTrap();
+  var effLabel = trap ? 'Centrist Trap' : 'Normal';
+  var effCls = trap ? 'pol-eff-penalty' : 'pol-eff-neutral';
+  var effDesc = trap ? 'You have access everywhere but influence nowhere. Staying centered limits your political power. Build more clout or take a clearer position.' : 'Your political positioning is effective.';
   var dEff = document.getElementById('pol-d-eff');
-  if (dEff) dEff.textContent = effInfo.label;
+  if (dEff) dEff.textContent = effLabel;
   var dEffBar = document.getElementById('pol-d-eff-bar');
-  if (dEffBar) { dEffBar.className = 'pol-effectiveness ' + effInfo.cls; dEffBar.textContent = effInfo.desc; }
+  if (dEffBar) { dEffBar.className = 'pol-effectiveness ' + effCls; dEffBar.textContent = effDesc; }
   var dDesc = document.getElementById('pol-d-desc');
   if (dDesc) {
     var tips = [];
-    var trap = isInBipartisanTrap();
     if (trap) {
-      tips.push('⚠️ BIPARTISAN TRAP: You sit in the political center with moderate clout. In American Jewish politics, centrism gives you access to everyone but deep influence over no one. Your clout grows 40% slower and your effectiveness is capped until you either build significantly more clout (50+) or commit to a clearer political lean.');
+      tips.push('⚠️ CENTRIST TRAP: You sit in the political center with moderate clout. In American Jewish politics, centrism gives you access to everyone but deep influence over no one. Your clout grows 50% slower and your effectiveness is capped until you either build significantly more clout (50+) or commit to a clearer political lean.');
     } else if (pos < 30) {
       tips.push('Strong progressive relationships, limited conservative access.');
     } else if (pos > 70) {
@@ -3192,7 +3148,7 @@ function inferPoliticalLean(choice, scenario) {
     choice.cloutEffect = rightScore;
   } else if (centerScore > 0) {
     choice.politicalLean = 0;
-    choice.cloutEffect = centerScore + 1; // bipartisan work builds more clout
+    choice.cloutEffect = centerScore + 1; // centrist work builds more clout
   } else {
     choice.politicalLean = 0;
     choice.cloutEffect = 0;
@@ -4082,12 +4038,15 @@ function showBreakingNews(bn) {
     var bCost = c.budgetCost || 0;
     var cantAfford = bCost > 0 && bCost > G.budget;
     var polLocked = isChoicePoliticallyLocked(c);
-    var isDisabled = locked || cantAfford || polLocked;
+    var cCost = c.cloutCost || 0;
+    var hasClout = cCost <= G.politicalClout;
+    var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
+    var isDisabled = locked || cantAfford || !hasClout || polLocked;
     var coalWarn = renderCoalitionWarnings(c);
     var polTag = renderPoliticalTag(c);
     var choiceAdv = renderChoiceAdvisorQuote(c);
     var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' gelt' + (cantAfford?' (insufficient)':'') + '</span>' : '';
-    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + esc(c.text) + badge + coalWarn + polTag + costTag + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
+    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + esc(c.text) + badge + coalWarn + polTag + costTag + cloutTag + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
   }).join('');
   screen.innerHTML =
     '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Developing story \u2014 community response underway</span></div>' +
@@ -4111,10 +4070,14 @@ function pickBreakingChoice(ci) {
   if(bCost > G.budget) return;
   if(bCost > 0) { G.budget -= bCost; G.budgetSpentThisYear += bCost; }
   var budgetChip = bCost > 0 ? '<span class="chip chip-neg">-' + bCost + ' Gelt</span>' : '';
+
+  // Clout cost
+  var cCost = choice.cloutCost || 0;
+  if (cCost > G.politicalClout) return;
+  if (cCost > 0) { G.politicalClout -= cCost; }
+
   var outcome = pickOutcome(choice);
-  // Apply political effectiveness modifier
   var modifiedEffects = Object.assign({}, outcome.effects);
-  applyPoliticalModifier(modifiedEffects);
   
   // Apply advisor recommendation bonus
   var advisorBonus = getAdvisorBonus(bn, ci);
@@ -4134,7 +4097,6 @@ function pickBreakingChoice(ci) {
   // Apply political lean/clout
   inferPoliticalLean(choice, bn);
   var polChips = applyPoliticalEffects(choice);
-  var polFlavor = politicalOutcomeModifier(outcome);
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
@@ -4157,7 +4119,6 @@ function pickBreakingChoice(ci) {
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
-  if (polFlavor) contextParts.push(polFlavor);
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(bn, choice, outcome, true);
   // Close TV overlay and show outcome in the TV screen
@@ -4192,6 +4153,13 @@ function checkCoalitionOffers() {
     if ((G.activeCoalitions||[]).some(function(ac){return ac.id===co.id})) return false;
     if ((G.declinedCoalitions||[]).includes(co.id)) return false;
     if ((G.brokenCoalitions||[]).includes(co.id)) return false;
+    // Check political requirement
+    if (co.politicalRequirement) {
+      var pr = co.politicalRequirement;
+      if (pr.maxPosition !== undefined && G.politicalPosition > pr.maxPosition) return false;
+      if (pr.minPosition !== undefined && G.politicalPosition < pr.minPosition) return false;
+      if (pr.minClout !== undefined && G.politicalClout < pr.minClout) return false;
+    }
     return true;
   });
   if (offers.length === 0 || (G.activeCoalitions||[]).length >= 3) return null;

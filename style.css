@@ -305,9 +305,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-grade-letter.grade-d { color: #c0392b; background: rgba(192,57,43,0.15); }
 .hud-grade-letter.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.2); }
 .hud-board-rating:hover .grade-detail { display: block; }
-.grade-detail { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 14px; min-width: 220px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; margin-top: 6px; }
+.grade-detail { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px; min-width: 240px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; margin-top: 6px; }
 .grade-detail::before { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #1a1a2e; border-left: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15); }
-.grade-detail-title { font-weight: 700; font-size: 11px; margin-bottom: 8px; color: #f0d87a; }
+.grade-detail-title { font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 11px; color: #f0d87a; margin-bottom: 8px; letter-spacing: 0.5px; }
 .grade-detail-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px; }
 
 /* Round info removed from HUD - now in AP bar */
@@ -808,24 +808,23 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-pol-center{background:#f3e8ff;color:#6b21a8;font-size:10px;font-weight:700;padding:2px 6px}
 .chip-pol-clout{background:#f3e8ff;color:#6b21a8;font-size:10px;font-weight:700;padding:2px 6px}
 /* Political detail panel (tooltip) */
-.pol-detail{display:none;position:absolute;top:100%;left:0;z-index:300;background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:14px 16px;min-width:280px;box-shadow:0 8px 24px rgba(0,0,0,0.3);text-align:left;margin-top:6px}
-.pol-detail.open{display:block}
-.pol-detail-title{font-family:'Merriweather',serif;font-weight:700;font-size:12px;color:#d4a843;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.pol-detail{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:300;background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:12px 16px;min-width:240px;box-shadow:0 4px 16px rgba(0,0,0,0.3);text-align:left;margin-top:6px}
+.hud-politics:hover .pol-detail{display:block}
+.pol-detail::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:8px;height:8px;background:#1a1a2e;border-left:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.15)}
+.pol-detail-title{font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:11px;color:#f0d87a;margin-bottom:8px;letter-spacing:0.5px}
 .pol-detail-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#b0b0c0}
 .pol-detail-row span:last-child{font-weight:700;color:#fff}
-.pol-detail-spectrum{position:relative;height:14px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:4px;margin:8px 0;overflow:visible}
-.pol-detail-marker{position:absolute;top:-2px;transform:translateX(-50%);width:4px;height:18px;background:#fff;border-radius:2px;box-shadow:0 0 4px rgba(255,255,255,0.5)}
+.pol-detail-spectrum{position:relative;height:18px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:6px;margin:8px 0;overflow:visible}
+.pol-detail-marker{position:absolute;top:-3px;transform:translateX(-50%);width:6px;height:24px;background:#fff;border-radius:3px;box-shadow:0 0 6px rgba(255,255,255,0.5)}
 .pol-detail-labels{display:flex;justify-content:space-between;font-size:9px;color:#7a7a8a;margin-bottom:6px}
-.pol-detail-desc{font-size:10px;color:#9090a8;font-style:italic;line-height:1.5;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px;margin-top:4px}
-.pol-effectiveness{font-size:10px;margin-top:6px;padding:5px 8px;border-radius:3px}
-.pol-eff-bonus{background:rgba(39,174,96,0.15);color:#27ae60}
-.pol-eff-penalty{background:rgba(192,57,43,0.15);color:#e74c3c}
-.pol-eff-neutral{background:rgba(255,255,255,0.05);color:#9090a8}
+.pol-detail-desc{font-size:10px;color:#9090a8;line-height:1.5;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px;margin-top:4px}
 /* Choice political lean indicator — purple */
 .choice-pol-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;margin-left:4px;vertical-align:middle;letter-spacing:0.5px}
 .choice-pol-tag.lean-left{background:#ede9fe;color:#5b21b6}
 .choice-pol-tag.lean-right{background:#ede9fe;color:#5b21b6}
 .choice-pol-tag.lean-center{background:#f3e8ff;color:#6b21a8}
+.choice-clout-tag { display: inline-block; font-size: 10px; font-weight: 600; color: #8b5cf6; margin-top: 4px; }
+.choice-clout-tag.unaffordable { color: #ef4444; }
 
 /* ═══ STAT MOMENTUM ═══ */
 .stat-trend{font-size:10px;margin-left:4px;font-weight:700}
@@ -842,8 +841,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .trust-meter:hover .seg-tooltip { display: block; }
 .seg-tooltip {
   display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-  background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 10px 14px;
-  min-width: 260px; z-index: 200; margin-top: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px;
+  min-width: 240px; z-index: 300; margin-top: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 .seg-tooltip::before {
   content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg);

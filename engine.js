@@ -66,6 +66,7 @@ let G = {
   advisorBonusLog: [],
   currentAdvisorBonusMultiplier: 1.0,
   notableMoments: [],
+  advisorChoiceLog: [],
   investmentsFrozen: false,
   _probationLifted: false
 };
@@ -1056,6 +1057,8 @@ function pickCoachMsg(category) {
 }
 
 function showCoachingWarning(msg, level) {
+  // Don't show coaching warnings while tutorial is active
+  if (!localStorage.getItem('ad_onboarded') && document.querySelector('.onboarding-notif')) return;
   var bgColor = level === 'red' ? '#fdf2f2' : level === 'yellow' ? '#fefce8' : level === 'green' ? '#f0fdf4' : '#f0f4ff';
   var borderColor = level === 'red' ? '#e8a0a0' : level === 'yellow' ? '#e8d44d' : level === 'green' ? '#6ee7b7' : '#a0b4e8';
   var textColor = level === 'red' ? '#8b1a1a' : level === 'yellow' ? '#7a6b1a' : level === 'green' ? '#166534' : '#1a3a6b';
@@ -1118,6 +1121,15 @@ function updateStatDanger() {
         showCoachingWarning('Heads up \u2014 your <strong>' + d.stat.label + '</strong> is getting low at ' + d.value + '. Keep an eye on it before the board starts asking questions.', 'yellow');
       }, 500);
     }
+
+    // Investment suggestion (once per stat entering danger)
+    var investKey = 'invest_suggest_' + d.stat.id;
+    if (!G._dangerWarningsShown[investKey]) {
+      G._dangerWarningsShown[investKey] = true;
+      setTimeout(function() {
+        showCoachingWarning('Your <strong>' + d.stat.label + '</strong> is in trouble. Consider using investments to help — check the investment bar for options that boost ' + d.stat.label + '.', 'yellow');
+      }, 2500 + dangerStats.indexOf(d) * 1000);
+    }
   });
 }
 
@@ -1167,7 +1179,17 @@ function showOnboarding() {
 function showOnboardingStep(idx) {
   if (idx >= ONBOARDING_STEPS.length) {
     localStorage.setItem('ad_onboarded', '1');
+    var overlay = document.getElementById('onboarding-overlay');
+    if (overlay) overlay.remove();
     return;
+  }
+  // Create overlay if it doesn't exist
+  var overlay = document.getElementById('onboarding-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'onboarding-overlay';
+    overlay.className = 'onboarding-overlay';
+    document.body.appendChild(overlay);
   }
   var step = ONBOARDING_STEPS[idx];
   var div = document.createElement('div');
@@ -1177,12 +1199,12 @@ function showOnboardingStep(idx) {
   div.style.borderLeft = '4px solid #a0b4e8';
   div.style.cursor = 'default';
   div.innerHTML =
-    '<button style="position:absolute;top:6px;right:8px;background:none;border:none;color:#8899bb;font-size:14px;cursor:pointer;padding:2px 6px;line-height:1" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();localStorage.setItem(\'ad_onboarded\',\'1\')" title="Skip tutorial">\u2715</button>' +
+    '<button style="position:absolute;top:6px;right:8px;background:none;border:none;color:#8899bb;font-size:14px;cursor:pointer;padding:2px 6px;line-height:1" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();localStorage.setItem(\'ad_onboarded\',\'1\');var ov=document.getElementById(\'onboarding-overlay\');if(ov)ov.remove()" title="Skip tutorial">\u2715</button>' +
     '<div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + advPortrait(OUTGOING_ED, step.mood, 36) + ' ' + OUTGOING_ED.name + '</div>' +
     '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + step.msg + '</div>' +
     '<div style="display:flex;justify-content:space-between;align-items:center">' +
       '<span style="font-size:10px;color:#8899bb">' + (idx + 1) + ' of ' + ONBOARDING_STEPS.length + '</span>' +
-      '<button style="background:#1a1a2e;color:#faf8f4;border:none;padding:6px 14px;font-family:\'Merriweather Sans\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;letter-spacing:0.5px" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();showOnboardingStep(' + (idx + 1) + ')">' + step.label + '</button>' +
+      '<button style="background:#1a1a2e;color:#faf8f4;border:none;padding:6px 14px;font-family:\'Merriweather Sans\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.5px" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();showOnboardingStep(' + (idx + 1) + ')">' + step.label + '</button>' +
     '</div>';
   document.body.appendChild(div);
   positionNotification(div);
@@ -1428,6 +1450,7 @@ function startPromoGame(){
 
 function beginRound(){
   G.round++;
+  G.breakingNewsThisRound = 0;
   if(G.round>GAME_DATA.config.totalRounds){endYear();return;}
 
   // Check if we've exhausted all scenarios
@@ -1501,7 +1524,7 @@ function beginRound(){
       G.budgetIncomeThisYear += returnedReserves;
       var div = document.createElement('div');
       div.className = 'game-notification';
-      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">🏦 Reserve Matured</div><div style="font-size:12px;opacity:0.9">Your reserve investment returned +' + returnedReserves + ' budget.</div>';
+      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">🏦 Reserve Matured</div><div style="font-size:12px;opacity:0.9">Your reserve investment returned +' + returnedReserves + ' gelt.</div>';
       div.onclick = function(){div.remove()};
       document.body.appendChild(div);
       positionNotification(div);
@@ -1644,7 +1667,7 @@ function updateHUD(){
     G._probationLifted = true;
     G.investmentsFrozen = false;
     setTimeout(function() {
-      showCoachingWarning('Good news \u2014 the board has lifted your probation. Your investment budget has been restored. Keep up the strong performance.', 'green');
+      showCoachingWarning('Good news \u2014 the board has lifted your probation. Your investment gelt has been restored. Keep up the strong performance.', 'green');
       renderInvestStrip();
     }, 600);
   }
@@ -2106,9 +2129,24 @@ function chooseScenario(sid,idx){
   }
   // Reset advisor bonus multiplier after use
   G.currentAdvisorBonusMultiplier = 1.0;
-  
+
+  // Log advisor recommendations for end-screen
+  if (!G.advisorChoiceLog) G.advisorChoiceLog = [];
+  var scenarioQuotes = s.advisorQuotes || [];
+  scenarioQuotes.forEach(function(q) {
+    if (q.recommendsChoice !== null && q.recommendsChoice !== undefined && G.selectedAdvisors.includes(q.advisorId)) {
+      G.advisorChoiceLog.push({
+        advisorId: q.advisorId,
+        recommended: q.recommendsChoice,
+        playerChose: idx,
+        followed: q.recommendsChoice === idx,
+        scenarioId: s.id
+      });
+    }
+  });
+
   const chips=applyEffects(modifiedEffects, c, s);
-  
+
   // Apply political lean/clout
   inferPoliticalLean(c, s);
   var polChips = applyPoliticalEffects(c);
@@ -2144,6 +2182,10 @@ function chooseScenario(sid,idx){
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
+  if (G._lastPoliticalContext) {
+    contextParts.push(G._lastPoliticalContext);
+    G._lastPoliticalContext = null;
+  }
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(s, c, outcome, false);
   showOutcome(s.title, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, function(){
@@ -2242,6 +2284,21 @@ function chooseInbox(sid,idx){
   }
   G.currentAdvisorBonusMultiplier = 1.0;
 
+  // Log advisor recommendations for end-screen
+  if (!G.advisorChoiceLog) G.advisorChoiceLog = [];
+  var scenarioQuotes2 = s.advisorQuotes || [];
+  scenarioQuotes2.forEach(function(q) {
+    if (q.recommendsChoice !== null && q.recommendsChoice !== undefined && G.selectedAdvisors.includes(q.advisorId)) {
+      G.advisorChoiceLog.push({
+        advisorId: q.advisorId,
+        recommended: q.recommendsChoice,
+        playerChose: idx,
+        followed: q.recommendsChoice === idx,
+        scenarioId: s.id
+      });
+    }
+  });
+
   const chips=applyEffects(modifiedEffects, c, s);
 
   // Apply political lean/clout
@@ -2273,6 +2330,10 @@ function chooseInbox(sid,idx){
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
+  if (G._lastPoliticalContext) {
+    contextParts.push(G._lastPoliticalContext);
+    G._lastPoliticalContext = null;
+  }
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(s, c, outcome, false);
   showOutcome(s.subject, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, ()=>processQueue());
@@ -2521,34 +2582,54 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
     html += '</div>';
   }
 
-  // Advisor reflections
+  // Advisor reflections — only advisors who participated
   if (!forcedFail) {
     var pool = GAME_DATA.advisorPool || [];
-    var selectedAdvs = (G.selectedAdvisors || []).slice(0, 3);
-    if (selectedAdvs.length > 0) {
+    var log = G.advisorChoiceLog || [];
+
+    // Find advisors who actually gave advice during the game
+    var advisorsWhoParticipated = {};
+    log.forEach(function(entry) {
+      if (!advisorsWhoParticipated[entry.advisorId]) {
+        advisorsWhoParticipated[entry.advisorId] = { total: 0, followed: 0 };
+      }
+      advisorsWhoParticipated[entry.advisorId].total++;
+      if (entry.followed) advisorsWhoParticipated[entry.advisorId].followed++;
+    });
+
+    var participatingAdvisors = Object.keys(advisorsWhoParticipated);
+    if (participatingAdvisors.length > 0) {
       html += '<div class="end-section"><div class="end-section-label">Your advisors reflect</div>';
-      selectedAdvs.forEach(function(advId) {
+      participatingAdvisors.slice(0, 3).forEach(function(advId) {
         var adv = pool.find(function(a) { return a.id === advId; });
         if (!adv) return;
-        // Determine mood based on grade
-        var mood = 'neutral';
-        if (grade === 'A' || grade === 'A+') mood = 'approving';
-        else if (grade === 'B') mood = 'approving';
-        else if (grade === 'C') mood = 'neutral';
-        else if (grade === 'D') mood = 'concerned';
-        else if (grade === 'F') mood = 'disapproving';
-        // Get end-game quote from advisor data, or generate a generic one
-        var quote = '';
-        if (adv.endGameQuotes && adv.endGameQuotes[grade]) {
-          quote = adv.endGameQuotes[grade];
+        var stats = advisorsWhoParticipated[advId];
+        var followRate = stats.total > 0 ? stats.followed / stats.total : 0;
+
+        // Determine mood and quote based on follow rate and grade
+        var mood, quote;
+        if (followRate >= 0.6) {
+          // Player mostly followed this advisor
+          mood = (grade === 'A' || grade === 'B') ? 'approving' : 'neutral';
+          if (adv.endGameQuotes && adv.endGameQuotes[grade]) {
+            quote = adv.endGameQuotes[grade];
+          } else {
+            quote = followRate >= 0.8 ?
+              'You listened when it mattered. I respect that.' :
+              'We didn\'t always agree, but you heard me out. That counts for something.';
+          }
+        } else if (followRate >= 0.3) {
+          // Mixed
+          mood = 'neutral';
+          quote = adv.endGameQuotes && adv.endGameQuotes[grade] ? adv.endGameQuotes[grade] :
+            'You went your own way more often than not. Time will tell if you were right.';
         } else {
-          // Generic fallback quotes
-          if (grade === 'A' || grade === 'A+') quote = 'Outstanding work this year. The community is in good hands.';
-          else if (grade === 'B') quote = 'A solid year. Room to grow, but the foundation is strong.';
-          else if (grade === 'C') quote = 'We got through it. Next year, we need to aim higher.';
-          else if (grade === 'D') quote = 'This was a tough year. We need to do better.';
-          else quote = 'I wish things had gone differently.';
+          // Player rarely followed this advisor
+          mood = (grade === 'D' || grade === 'F') ? 'disapproving' : 'concerned';
+          quote = adv.endGameQuotes && adv.endGameQuotes[grade] ? adv.endGameQuotes[grade] :
+            'I gave you my best advice. You chose differently. I hope it was worth it.';
         }
+
         html += '<div class="advisor-bubble" style="background:transparent;padding:8px 0"><span class="advisor-avatar">' + advPortrait(adv, mood, 40) + '</span><div class="advisor-meta"><span class="advisor-name">' + esc(adv.name) + ' \u2014 ' + esc(adv.role) + '</span><span class="advisor-text">\u201c' + esc(quote) + '\u201d</span></div></div>';
       });
       html += '</div>';
@@ -2650,7 +2731,7 @@ function selectPromoOrg(id){
 // ═══════════════ RESET ═══════════════
 function resetGame(){
   clearSave();
-  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],investmentsFrozen:false,_probationLifted:false,endowmentIncome:0,_dangerWarningsShown:{}};
+  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],advisorChoiceLog:[],investmentsFrozen:false,_probationLifted:false,endowmentIncome:0,_dangerWarningsShown:{},breakingNewsCount:0,breakingNewsThisRound:0};
   
   var ticker = document.getElementById('news-ticker');
   if(ticker) ticker.classList.remove('active');
@@ -2683,10 +2764,13 @@ function restartSameCharacter(){
   G.brokenCoalitions = [];
   G.statHistory = [];
   G.notableMoments = [];
+  G.advisorChoiceLog = [];
   G.investmentsFrozen = false;
   G._probationLifted = false;
   G.endowmentIncome = 0;
   G._dangerWarningsShown = {};
+  G.breakingNewsCount = 0;
+  G.breakingNewsThisRound = 0;
   G._coachWarningsLifetime = {};
   G._coachWarningsThisRound = {};
   G.pendingQueue = [];
@@ -2847,7 +2931,7 @@ function renderInvestmentContent() {
       '<h3>💰 Investments</h3>' +
       '<span class="invest-pool-tag">' + remaining + ' investment' + (remaining !== 1 ? 's' : '') + ' remaining this year</span>' +
     '</div>' +
-    '<p style="font-size:12px;color:var(--muted);margin-bottom:14px">Spend budget on strategic investments. These don\'t cost actions.</p>' +
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:14px">Spend gelt on strategic investments. These don\'t cost actions.</p>' +
     '<div class="invest-cards">' +
     investments.slice().sort(function(a, b) {
       var aEx = (a.maxUses > 0 && ((G.investmentUses||{})[a.id]||0) >= a.maxUses) ? 1 : 0;
@@ -2928,7 +3012,7 @@ function makeInvestment(invId) {
   }
 
   G.roundActions.push({icon: inv.icon, name: inv.name, outcomeText: inv.outcomeText, chips: chips + budgetChip});
-  G.history.push('INVEST: ' + inv.name + ' (-' + inv.budgetCost + ' budget)');
+  G.history.push('INVEST: ' + inv.name + ' (-' + inv.budgetCost + ' gelt)');
   
   updateHUD();
   if(checkFailure()) { closeInvestModal(); return; }
@@ -2978,15 +3062,19 @@ function isInBipartisanTrap() {
 
 // Apply political lean from a choice
 function applyPoliticalEffects(choice) {
+  G._lastPoliticalContext = null;
   var lean = choice.politicalLean || 0; // negative = left, positive = right
   var cloutGain = choice.cloutEffect || 0;
   var chips = '';
   
   if (lean !== 0) {
     G.politicalPosition = Math.max(0, Math.min(100, G.politicalPosition + lean));
-    var dir = lean < 0 ? '← Left' : 'Right →';
-    var cls = lean < 0 ? 'chip-pol-left' : 'chip-pol-right';
-    chips += '<span class="chip ' + cls + '">' + (lean > 0 ? '+' : '') + lean + ' ' + dir + '</span>';
+    var absLean = Math.abs(lean);
+    if (lean < 0) {
+      chips += '<span class="chip chip-pol-left">+' + absLean + ' to the Left</span>';
+    } else {
+      chips += '<span class="chip chip-pol-right">+' + absLean + ' to the Right</span>';
+    }
   }
   if (cloutGain !== 0) {
     // CENTRIST TRAP: centrist clout growth is slower
@@ -2996,7 +3084,8 @@ function applyPoliticalEffects(choice) {
       // Centrists earn clout at 60% rate — broad access dilutes real influence
       var reduced = Math.max(1, Math.round(cloutGain * 0.5));
       G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + reduced));
-      chips += '<span class="chip chip-pol-clout">' + (reduced > 0 ? '+' : '') + reduced + ' Clout <span style="font-size:8px;opacity:0.7">(earned ' + cloutGain + ', centrist rate 50%)</span></span>';
+      chips += '<span class="chip chip-pol-clout">' + (reduced > 0 ? '+' : '') + reduced + ' Clout <span style="font-size:8px;opacity:0.7">(centrist penalty 50%)</span></span>';
+      G._lastPoliticalContext = 'Your decision would have earned +' + cloutGain + ' clout, but the centrist penalty reduced it to +' + reduced + '. Organizations closer to the political center build influence more slowly.';
     } else {
       G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutGain));
       chips += '<span class="chip chip-pol-clout">' + (cloutGain > 0 ? '+' : '') + cloutGain + ' Clout</span>';
@@ -4010,6 +4099,8 @@ function renderCoalitionWarnings(choice) {
 // ═══ BREAKING NEWS SYSTEM ═══
 var breakingNewsFired = {};
 function checkBreakingNews() {
+  if (G.breakingNewsThisRound >= 1) return null; // max 1 per round
+  if ((G.breakingNewsCount || 0) >= 3) return null; // max 3 per year
   var pool = (GAME_DATA.breakingNews||[]).filter(function(bn) {
     if (bn.once && breakingNewsFired[bn.id]) return false;
     if (bn.minRound && G.round < bn.minRound) return false;
@@ -4025,6 +4116,8 @@ function checkBreakingNews() {
   return null;
 }
 function showBreakingNews(bn) {
+  G.breakingNewsThisRound = (G.breakingNewsThisRound || 0) + 1;
+  G.breakingNewsCount = (G.breakingNewsCount || 0) + 1;
   G.currentBreakingNews = bn;
   var overlay = document.getElementById('bn-overlay');
   var screen = document.getElementById('bn-tv-screen');
@@ -4092,7 +4185,22 @@ function pickBreakingChoice(ci) {
     G.advisorBonusLog.push({scenarioId: bn.id, choiceIndex: ci, effects: advisorBonus.effects});
   }
   G.currentAdvisorBonusMultiplier = 1.0;
-  
+
+  // Log advisor recommendations for end-screen
+  if (!G.advisorChoiceLog) G.advisorChoiceLog = [];
+  var scenarioQuotes3 = bn.advisorQuotes || [];
+  scenarioQuotes3.forEach(function(q) {
+    if (q.recommendsChoice !== null && q.recommendsChoice !== undefined && G.selectedAdvisors.includes(q.advisorId)) {
+      G.advisorChoiceLog.push({
+        advisorId: q.advisorId,
+        recommended: q.recommendsChoice,
+        playerChose: ci,
+        followed: q.recommendsChoice === ci,
+        scenarioId: bn.id
+      });
+    }
+  });
+
   var chips = applyEffects(modifiedEffects, choice, bn);
   // Apply political lean/clout
   inferPoliticalLean(choice, bn);
@@ -4119,6 +4227,10 @@ function pickBreakingChoice(ci) {
   var contextParts = [];
   if (outcome.contextNote) contextParts.push(outcome.contextNote);
   if (advisorContextNote) contextParts.push(advisorContextNote);
+  if (G._lastPoliticalContext) {
+    contextParts.push(G._lastPoliticalContext);
+    G._lastPoliticalContext = null;
+  }
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(bn, choice, outcome, true);
   // Close TV overlay and show outcome in the TV screen
@@ -4160,6 +4272,14 @@ function checkCoalitionOffers() {
       if (pr.minPosition !== undefined && G.politicalPosition < pr.minPosition) return false;
       if (pr.minClout !== undefined && G.politicalClout < pr.minClout) return false;
     }
+    // Don't offer coalitions with stat requirements the player can't currently meet
+    var ineligible = false;
+    (co.constraints || []).forEach(function(con) {
+      if (con.type === 'maintainStat' && (G.stats[con.stat] || 50) < (con.above || 0)) {
+        ineligible = true;
+      }
+    });
+    if (ineligible) return false;
     return true;
   });
   if (offers.length === 0 || (G.activeCoalitions||[]).length >= 3) return null;
@@ -4346,7 +4466,7 @@ function renderCoalitionBadges() {
     var strikes = (G.coalitionStrikes||{})[ac.id] || 0;
     var max = ac.strikeMax || defaultMax;
     var warn = strikes >= max - 1;
-    html += '<span class="coal-badge' + (warn?' warning':'') + '" onclick="showCoalitionPopover(event,\'' + ac.id + '\')">\ud83e\udd1d ' + esc(ac.name).substring(0,18);
+    html += '<span class="coal-badge' + (warn?' warning':'') + '" onclick="showCoalitionPopover(event,\'' + ac.id + '\')">\ud83e\udd1d ' + esc(ac.name);
     if(strikes > 0) html += ' <span class="coal-strikes">' + strikes + '/' + max + ' ⚡</span>';
     html += '</span>';
   });

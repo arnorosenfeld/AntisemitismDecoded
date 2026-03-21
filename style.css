@@ -681,6 +681,10 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .bn-screen-inner .context-note { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
 .bn-screen-inner .chip-pol-clout { background: rgba(139,92,246,0.3); color: #fff; }
 .bn-screen-inner .chip-gold { background: rgba(184,134,11,0.4); color: #f0d87a; }
+.bn-screen-inner .chip-pol-left { background: rgba(37,99,235,0.3); color: #93c5fd; }
+.bn-screen-inner .chip-pol-right { background: rgba(220,38,38,0.3); color: #fca5a5; }
+.bn-screen-inner .chip { color: white; }
+.bn-choice .choice-clout-tag { color: rgba(255,255,255,0.7); }
 .bn-screen-inner .advisor-panel { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); }
 .bn-screen-inner .advisor-text { color: rgba(255,255,255,0.8); }
 .bn-screen-inner .advisor-name { color: #d4a843; }
@@ -1182,3 +1186,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .inbox-strip-pill.expired{opacity:0.4;cursor:default;text-decoration:line-through}
 .inbox-strip-pill .pill-urgent{color:#e74c3c;font-weight:700;font-size:9px;letter-spacing:0.5px}
 .inbox-strip-pill .pill-icon{font-size:12px}
+/* Tutorial overlay */
+.onboarding-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:8999}
+.onboarding-notif{z-index:9000 !important;max-width:440px !important;width:90vw !important;padding:18px 22px !important;font-size:13px !important}

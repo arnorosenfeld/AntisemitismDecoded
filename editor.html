@@ -139,8 +139,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 .item-card-name{font-family:'Merriweather',Georgia,serif;font-weight:700;font-size:14px;margin-bottom:3px}
 .item-card-desc{font-size:12px;color:var(--muted);line-height:1.5}
 .item-card-actions{display:flex;gap:7px;flex-shrink:0}
-.expand-icon{font-size:16px;color:var(--muted);flex-shrink:0;transition:transform .18s}
-.item-card.open .expand-icon{transform:rotate(90deg)}
+.expand-icon{font-size:16px;color:var(--muted);flex-shrink:0}
 .item-edit-form{background:var(--white);border:1.5px solid var(--gold);border-top:none;padding:24px;margin-top:-2px;margin-bottom:9px}
 
 /* ── STAT INPUTS GRID ── */
@@ -14099,8 +14098,9 @@ function populateAdvisors(){
 
 var PORTRAIT_CHARS = [];
 for(var _ci=1;_ci<=17;_ci++) PORTRAIT_CHARS.push('char'+(_ci<10?'0':'')+_ci);
-// Also include named advisor folders
 var PORTRAIT_NAMED = ['rachel_steinberg','avi_kessler','miriam_gold','rabbi_friedman','sarah_feld','tali_navarro','leonard_katz','noa_berman','avi_rosen'];
+// Combined list for picker — named folders first (what advisors actually use), then charXX
+var ALL_PORTRAITS = PORTRAIT_NAMED.concat(PORTRAIT_CHARS);
 
 function renderPortraitPicker(a, i){
   var current = a.portrait || '';
@@ -14112,8 +14112,8 @@ function renderPortraitPicker(a, i){
   });
   var previewHtml = current ?
     '<img src="'+esc(current)+'/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">' :
-    '<span style="font-size:36px">'+esc(a.emoji||'👤')+'</span>';
-  var gridHtml = PORTRAIT_CHARS.map(function(cid){
+    '<span style="font-size:12px;color:var(--muted);padding:12px">No portrait selected</span>';
+  var gridHtml = ALL_PORTRAITS.map(function(cid){
     var path = 'art/advisors/'+cid;
     var isUsed = usedPortraits[path];
     var isCurrent = current === path;
@@ -14130,7 +14130,6 @@ function renderPortraitPicker(a, i){
       '<div style="flex:1">'+
         '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px" id="adv-portrait-grid-'+i+'">'+gridHtml+'</div>'+
         '<input type="hidden" id="adv-portrait-'+i+'" value="'+esc(current)+'" />'+
-        '<button class="btn btn-sm" style="font-size:10px" onclick="selectPortrait('+i+',\'\')">Clear portrait (use emoji)</button>'+
       '</div>'+
     '</div></div>';
 }
@@ -14142,8 +14141,7 @@ function selectPortrait(i, path){
   if(path) {
     previewEl.innerHTML = '<img src="'+path+'/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">';
   } else {
-    var emoji = document.getElementById('adv-emoji-'+i)?.value || '👤';
-    previewEl.innerHTML = '<span style="font-size:36px">'+emoji+'</span>';
+    previewEl.innerHTML = '<span style="font-size:12px;color:var(--muted);padding:12px">No portrait selected</span>';
   }
   // Update grid selection highlights
   var grid = document.getElementById('adv-portrait-grid-'+i);
@@ -14178,10 +14176,9 @@ function renderAdvisorForm(a, i){
   var stats = GD.stats||[];
   var expertise = a.expertise || [];
   return '<div class="item-edit-form" id="adv-form-'+i+'" style="display:none">'+
-    '<div class="form-row three">'+
+    '<div class="form-row">'+
       '<div class="form-group"><label>Name</label><input id="adv-name-'+i+'" value="'+esc(a.name)+'" /></div>'+
       '<div class="form-group"><label>Role</label><input id="adv-role-'+i+'" value="'+esc(a.role)+'" /></div>'+
-      '<div class="form-group"><label>Emoji</label><input id="adv-emoji-'+i+'" value="'+esc(a.emoji)+'" style="font-size:18px" /></div>'+
     '</div>'+
     renderPortraitPicker(a, i)+
     '<div class="form-group" style="margin-bottom:11px"><label>Bio</label><textarea id="adv-bio-'+i+'" rows="2">'+esc(a.bio||'')+'</textarea></div>'+

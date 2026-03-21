@@ -304,6 +304,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <button class="nav-item" onclick="showPanel('breaking', this)">🚨 Breaking News</button>
         <button class="nav-item" onclick="showPanel('coalitions', this)">🤝 Coalitions</button>
         <button class="nav-item" onclick="showPanel('investments', this)">💰 Investments</button>
+        <button class="nav-item" onclick="showPanel('tooltips', this)">💬 Tooltips & Popups</button>
       </nav>
       <div class="sidebar-footer">
         <button class="sf-publish-btn" id="publish-btn" onclick="saveToGithub()">🚀 Publish to GitHub</button>
@@ -762,6 +763,17 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
           <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Gelt investments that players can purchase during rounds. Each has a cost, stat effects, and optional gelt return over time.</p>
           <div class="item-list" id="investments-list"></div>
           <button class="add-btn" onclick="addInvestment()">+ Add Investment</button>
+        </div>
+
+        <!-- TOOLTIPS PANEL -->
+        <div id="panel-tooltips" class="panel">
+          <div class="form-section">
+            <h3>Tooltips & Popup Messages</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Manage in-game popup messages — coaching warnings, tutorial steps, danger alerts, and custom notifications. Each tooltip has a speaker, message text, trigger condition, and display style.</p>
+            <div id="tooltips-list"></div>
+            <button class="add-btn" onclick="addTooltip()">+ Add Custom Tooltip</button>
+            <div style="margin-top:14px"><button class="btn btn-primary" onclick="saveTooltips()">Save Tooltips</button></div>
+          </div>
         </div>
 
       </div><!-- /editor-content -->
@@ -12968,7 +12980,7 @@ const PANEL_TITLES = {
   actions: 'Actions', scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios', segments: 'Segments',
   scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration', politics: 'Political Mechanics',
   advisors: 'Advisor Pool', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
-  investments: 'Investments', conversations: 'Conversations'
+  investments: 'Investments', conversations: 'Conversations', tooltips: 'Tooltips & Popups'
 };
 var _populatedPanels = {};
 var _currentPanelId = 'github';
@@ -12992,7 +13004,8 @@ var PANEL_POPULATORS = {
   coalitions: function(){ if(typeof populateCoalitions==='function') populateCoalitions(); },
   investments: function(){ if(typeof populateInvestments==='function') populateInvestments(); },
   conversations: function(){ if(typeof populateConversations==='function') populateConversations(); },
-  politics: function(){ if(typeof populateMomentumConfig==='function') populateMomentumConfig(); }
+  politics: function(){ if(typeof populateMomentumConfig==='function') populateMomentumConfig(); },
+  tooltips: function(){ if(typeof populateTooltips==='function') populateTooltips(); }
 };
 function _ensurePanelPopulated(id) {
   if (_populatedPanels[id]) return;
@@ -15223,6 +15236,112 @@ function readSegOverrides(prefix, si, ci) {
     }
   });
   return Object.keys(overrides).length > 0 ? overrides : undefined;
+}
+
+// ═══ TOOLTIPS & POPUPS ═══
+function populateTooltips() {
+  var list = document.getElementById('tooltips-list');
+  if (!list) return;
+  if (!GD.tooltips) GD.tooltips = [];
+
+  var html = '<div style="margin-bottom:16px;padding:12px;background:#f8f5ef;border:1px solid var(--border);font-size:12px;line-height:1.6;color:var(--muted)">' +
+    '<strong>Built-in tooltips</strong> (tutorial, danger warnings, coaching) are managed in the engine code. ' +
+    'Custom tooltips below can trigger at specific game events and display messages from any character.' +
+    '</div>';
+
+  GD.tooltips.forEach(function(t, i) {
+    var pool = GD.advisorPool || [];
+    html += '<div class="item-card" id="tip-card-'+i+'" onclick="toggleEdit(\'tip\','+i+')">' +
+      '<span class="expand-icon" id="tip-exp-'+i+'">▸</span>' +
+      '<div class="item-card-info"><div class="item-card-name">' + esc(t.speaker || 'Custom') + ': ' + esc((t.message||'').substring(0,50)) + '...</div>' +
+      '<div class="item-card-desc">Trigger: ' + esc(t.trigger || 'manual') + ' · ' + (t.greyOut ? 'Screen greys out' : 'No overlay') + '</div></div>' +
+      '<div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteTooltip('+i+')">Delete</button></div></div>';
+
+    html += '<div class="item-edit-form" id="tip-form-'+i+'" style="display:none">' +
+      '<div class="form-row three">' +
+        '<div class="form-group"><label>Speaker</label><select id="tip-speaker-'+i+'">' +
+          '<option value="Avi Rosen"' + (t.speaker==='Avi Rosen'?' selected':'') + '>Avi Rosen (Outgoing ED)</option>' +
+          pool.map(function(a){ return '<option value="'+esc(a.name)+'"'+(t.speaker===a.name?' selected':'')+'>'+esc(a.name)+'</option>'; }).join('') +
+          '<option value="System"' + (t.speaker==='System'?' selected':'') + '>System Message</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Trigger</label><select id="tip-trigger-'+i+'">' +
+          '<option value="roundStart"' + (t.trigger==='roundStart'?' selected':'') + '>Round Start</option>' +
+          '<option value="statDanger"' + (t.trigger==='statDanger'?' selected':'') + '>Stat Enters Danger</option>' +
+          '<option value="scenarioComplete"' + (t.trigger==='scenarioComplete'?' selected':'') + '>After Scenario</option>' +
+          '<option value="coalitionJoin"' + (t.trigger==='coalitionJoin'?' selected':'') + '>Coalition Joined</option>' +
+          '<option value="coalitionBreak"' + (t.trigger==='coalitionBreak'?' selected':'') + '>Coalition Broken</option>' +
+          '<option value="starChange"' + (t.trigger==='starChange'?' selected':'') + '>Mission Star Change</option>' +
+          '<option value="custom"' + (t.trigger==='custom'?' selected':'') + '>Custom Event</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Style</label><select id="tip-style-'+i+'">' +
+          '<option value="info"' + (t.style==='info'?' selected':'') + '>Info (blue)</option>' +
+          '<option value="yellow"' + (t.style==='yellow'?' selected':'') + '>Warning (yellow)</option>' +
+          '<option value="red"' + (t.style==='red'?' selected':'') + '>Danger (red)</option>' +
+          '<option value="green"' + (t.style==='green'?' selected':'') + '>Success (green)</option>' +
+        '</select></div>' +
+      '</div>' +
+      '<div class="form-group" style="margin-bottom:8px"><label>Message</label><textarea id="tip-message-'+i+'" rows="3" style="font-size:12px">'+esc(t.message||'')+'</textarea></div>' +
+      '<div class="form-row three">' +
+        '<div class="form-group"><label>Grey Out Screen</label><select id="tip-greyout-'+i+'"><option value="false"' + (!t.greyOut?' selected':'') + '>No</option><option value="true"' + (t.greyOut?' selected':'') + '>Yes</option></select><div class="form-hint">If yes, the rest of the screen dims behind the tooltip</div></div>' +
+        '<div class="form-group"><label>Speaker Mood</label><select id="tip-mood-'+i+'">' +
+          '<option value="neutral"' + ((t.mood||'neutral')==='neutral'?' selected':'') + '>Neutral</option>' +
+          '<option value="approving"' + (t.mood==='approving'?' selected':'') + '>Approving</option>' +
+          '<option value="concerned"' + (t.mood==='concerned'?' selected':'') + '>Concerned</option>' +
+          '<option value="disapproving"' + (t.mood==='disapproving'?' selected':'') + '>Disapproving</option>' +
+          '<option value="excited"' + (t.mood==='excited'?' selected':'') + '>Excited</option>' +
+        '</select></div>' +
+        '<div class="form-group"><label>Fire Once</label><select id="tip-once-'+i+'"><option value="true"' + (t.fireOnce!==false?' selected':'') + '>Yes</option><option value="false"' + (t.fireOnce===false?' selected':'') + '>No (every time)</option></select><div class="form-hint">If yes, only shows once per game</div></div>' +
+      '</div>' +
+      '<div class="form-group"><label>Condition (optional)</label><input id="tip-condition-'+i+'" value="'+esc(t.condition||'')+'" placeholder="e.g., round=2, stat_trust<30, scenario=ai_moderation" /><div class="form-hint">Optional condition for when this tooltip triggers. Leave blank for always.</div></div>' +
+      '<div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveTooltip('+i+')">Save Tooltip</button></div>' +
+    '</div>';
+  });
+
+  list.innerHTML = html;
+}
+
+function addTooltip() {
+  if (!GD.tooltips) GD.tooltips = [];
+  GD.tooltips.push({
+    speaker: 'Avi Rosen',
+    trigger: 'roundStart',
+    style: 'info',
+    message: '',
+    greyOut: false,
+    mood: 'neutral',
+    fireOnce: true,
+    condition: ''
+  });
+  setDirty();
+  populateTooltips();
+}
+
+function saveTooltip(i) {
+  if (!GD.tooltips || !GD.tooltips[i]) return;
+  var t = GD.tooltips[i];
+  t.speaker = document.getElementById('tip-speaker-'+i).value;
+  t.trigger = document.getElementById('tip-trigger-'+i).value;
+  t.style = document.getElementById('tip-style-'+i).value;
+  t.message = document.getElementById('tip-message-'+i).value;
+  t.greyOut = document.getElementById('tip-greyout-'+i).value === 'true';
+  t.mood = document.getElementById('tip-mood-'+i).value;
+  t.fireOnce = document.getElementById('tip-once-'+i).value !== 'false';
+  t.condition = document.getElementById('tip-condition-'+i).value;
+  setDirty();
+  setStatus('Tooltip saved.', 'success');
+  populateTooltips();
+}
+
+function saveTooltips() {
+  setDirty();
+  setStatus('All tooltips saved.', 'success');
+}
+
+function deleteTooltip(i) {
+  if (!confirm('Delete this tooltip?')) return;
+  GD.tooltips.splice(i, 1);
+  setDirty();
+  populateTooltips();
 }
 
 </script>

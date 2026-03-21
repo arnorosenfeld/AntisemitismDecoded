@@ -12855,7 +12855,7 @@ async function loadFromGithub() {
     const res = await fetch(url, { headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json' } });
     if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
     const data = await res.json();
-    const content = atob(data.content.replace(/\n/g,''));
+    const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
     GD = extractGameData(content);
     if (!GD) throw new Error('Could not find GAME_DATA block in file.');
     sessionPassword = GD.config.editorPassword || sessionPassword;
@@ -12907,7 +12907,7 @@ async function saveToGithub() {
     if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
     const fileData = await getRes.json();
     const sha = fileData.sha;
-    const currentContent = atob(fileData.content.replace(/\n/g,''));
+    const currentContent = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));
     var newContent;
     // Try marked format first
     if (currentContent.indexOf('/* GAME_DATA_START */') >= 0) {

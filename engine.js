@@ -1910,60 +1910,6 @@ function deskAction(channel) {
   renderScenario(sc);
 }
 
-// ═══════════════ ACTION (legacy) ═══════════════
-function doAction(actionId){
-  if(G.apRemaining<=0) return;
-  const action=GAME_DATA.actions.find(a=>a.id===actionId);
-  if(!action) return;
-  var budgetCost = action.budgetCost || 0;
-  if(budgetCost > G.budget) return; // can't afford
-  if(budgetCost > 0) { G.budget -= budgetCost; G.budgetSpentThisYear += budgetCost; }
-  // Apply budget effect (e.g. fundraise adds budget, advocacy costs budget)
-  var bfx = action.budgetEffect || 0;
-  if(bfx > 0) { G.budget += bfx; G.budgetIncomeThisYear += bfx; }
-  else if(bfx < 0) { G.budget += bfx; G.budgetSpentThisYear += Math.abs(bfx); }
-  if(G.budget < 0) G.budget = 0;
-  if(G.budget > G.budgetMax) G.budgetMax = G.budget;
-  const chips=applyEffects(action.baseEffects);
-  var budgetChip = '';
-  if(budgetCost > 0) budgetChip += '<span class="chip chip-neg">-' + budgetCost + ' Gelt</span>';
-  if(bfx > 0) budgetChip += '<span class="chip chip-pos">+' + bfx + ' Gelt</span>';
-  else if(bfx < 0) budgetChip += '<span class="chip chip-neg">' + bfx + ' Gelt</span>';
-  G.apRemaining-=action.cost;
-  G.actionsThisRound++;
-  G.roundActions.push({icon:action.icon,name:action.name,outcomeText:action.outcomeText,chips:chips+budgetChip});
-  G.history.push('Round '+G.round+' — '+action.name);
-  
-  // Tick persistent inbox timers
-  tickInboxTimers();
-  
-  // #20: Show deferred inbox toasts after first action
-  (G.inboxMessages||[]).forEach(function(msg) {
-    if(!msg.toastShown && !msg.expired) {
-      showInboxToast(msg.scenario);
-      msg.toastShown = true;
-    }
-  });
-  
-  updateHUD();
-  updateInboxPanel();
-  if(checkFailure()) return;
-
-  // Feature 4: Check for breaking news BEFORE normal scenario
-  var bn = checkBreakingNews();
-  if(bn){
-    // Queue normal scenario for after breaking news
-    const sc=pickScenario(action.triggersEventType);
-    G.pendingQueue = sc ? ['scenario:'+sc.id] : [];
-    showBreakingNews(bn);
-    return;
-  }
-
-  // #4: Only queue the scenario for this action.
-  const sc=pickScenario(action.triggersEventType);
-  G.pendingQueue = sc ? ['scenario:'+sc.id] : [];
-  processQueue();
-}
 
 function processQueue(){
   if(G.pendingQueue.length===0){

@@ -1,6 +1,5 @@
 {
   "config": {
-    "gameTitle": "Antisemitism Decoded: The Game",
     "totalRounds": 4,
     "actionPointsPerRound": 3,
     "traitsToSelect": 2,
@@ -332,9 +331,6 @@
       "investmentsPerYear": 0.5,
       "nationalInvestmentsPerYear": 1
     },
-    "momentumWindow": 2,
-    "momentumBonus": 1,
-    "momentumPenalty": 3,
     "segments": [
       {
         "id": "orthodox",
@@ -345,7 +341,6 @@
         "israelCenter": 65,
         "israelComfortRange": 12,
         "baseStartApproval": 40,
-        "donationRate": 0.9,
         "floor": 5,
         "ceiling": 28
       },
@@ -358,7 +353,6 @@
         "israelCenter": 61,
         "israelComfortRange": 10,
         "baseStartApproval": 40,
-        "donationRate": 0.72,
         "floor": 8,
         "ceiling": 25
       },
@@ -371,7 +365,6 @@
         "israelCenter": 52,
         "israelComfortRange": 13,
         "baseStartApproval": 40,
-        "donationRate": 0.53,
         "floor": 8,
         "ceiling": 30
       },
@@ -384,7 +377,6 @@
         "israelCenter": 47,
         "israelComfortRange": 14,
         "baseStartApproval": 40,
-        "donationRate": 0.18,
         "floor": 5,
         "ceiling": 30
       },
@@ -397,7 +389,6 @@
         "israelCenter": 45,
         "israelComfortRange": 15,
         "baseStartApproval": 40,
-        "donationRate": 0.34,
         "floor": 8,
         "ceiling": 28
       },
@@ -410,7 +401,6 @@
         "israelCenter": 55,
         "israelComfortRange": 13,
         "baseStartApproval": 40,
-        "donationRate": 0.61,
         "floor": 8,
         "ceiling": 30
       }
@@ -425,12 +415,36 @@
     },
     "popupMessages": {
       "onboarding": [
-        {"mood": "neutral", "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching.", "label": "What do I need to know?"},
-        {"mood": "neutral", "msg": "You have <strong>3 actions</strong> each round. Click an object on your desk to spend one. Your phone is free — inbox messages don't cost actions.", "label": "Got it. What am I trying to do?"},
-        {"mood": "concerned", "msg": "Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 15 or below, the board calls an emergency meeting and your tenure ends immediately.", "label": "How do I win?"},
-        {"mood": "approving", "msg": "At year's end, the board evaluates your overall performance. Score above <strong>75</strong> and you'll be offered a promotion to a national organization. Stay above <strong>30</strong> and you keep your job. Below that… well, don't go below that. Your mission stars also significantly impact your score — stay true to your stated priorities.", "label": "Any other advice?"},
-        {"mood": "neutral", "msg": "You have a <strong>gelt</strong> (budget) you can invest in your organization — marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost actions but they do cost money.", "label": "One more thing?"},
-        {"mood": "concerned", "msg": "One more thing — there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.", "label": "Let's do this →"}
+        {
+          "mood": "neutral",
+          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching.",
+          "label": "What do I need to know?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "You have <strong>3 actions</strong> each round. Click an object on your desk to spend one. Your phone is free — inbox messages don't cost actions.",
+          "label": "Got it. What am I trying to do?"
+        },
+        {
+          "mood": "concerned",
+          "msg": "Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 15 or below, the board calls an emergency meeting and your tenure ends immediately.",
+          "label": "How do I win?"
+        },
+        {
+          "mood": "approving",
+          "msg": "At year's end, the board evaluates your overall performance. Score above <strong>75</strong> and you'll be offered a promotion to a national organization. Stay above <strong>30</strong> and you keep your job. Below that… well, don't go below that. Your mission stars also significantly impact your score — stay true to your stated priorities.",
+          "label": "Any other advice?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "You have a <strong>gelt</strong> (budget) you can invest in your organization — marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost actions but they do cost money.",
+          "label": "One more thing?"
+        },
+        {
+          "mood": "concerned",
+          "msg": "One more thing — there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.",
+          "label": "Let's do this →"
+        }
       ],
       "statDangerOrange": "Heads up — your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
       "statDangerRed": "🚨 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
@@ -446,18 +460,15 @@
   "stats": [
     {
       "id": "trust",
-      "label": "Trust",
-      "startBase": 0
+      "label": "Trust"
     },
     {
       "id": "morale",
-      "label": "Morale",
-      "startBase": 0
+      "label": "Morale"
     },
     {
       "id": "donors",
-      "label": "Donors",
-      "startBase": 0
+      "label": "Donors"
     }
   ],
   "avatarEmojis": [
@@ -494,8 +505,7 @@
       "statModifiers": {
         "trust": 8,
         "donors": 5
-      },
-      "unlocksChoices": []
+      }
     },
     {
       "id": "outsider_voice",
@@ -503,8 +513,7 @@
       "description": "You came from outside the Jewish communal bubble. You see things others miss — and don't owe anyone favors.",
       "statModifiers": {
         "morale": 8
-      },
-      "unlocksChoices": []
+      }
     },
     {
       "id": "fundraiser",
@@ -513,9 +522,6 @@
       "statModifiers": {
         "donors": 8
       },
-      "unlocksChoices": [
-        "master_fundraiser"
-      ],
       "budgetBonus": 10
     },
     {
@@ -525,10 +531,7 @@
       "statModifiers": {
         "trust": 6,
         "morale": 8
-      },
-      "unlocksChoices": [
-        "grassroots_organizer"
-      ]
+      }
     },
     {
       "id": "scholar",
@@ -536,10 +539,7 @@
       "description": "Your depth of Jewish learning gives you moral authority. When you cite Torah, people listen.",
       "statModifiers": {
         "trust": 5
-      },
-      "unlocksChoices": [
-        "jewish_scholar"
-      ]
+      }
     },
     {
       "id": "political_operator",
@@ -548,9 +548,6 @@
       "statModifiers": {
         "donors": 6
       },
-      "unlocksChoices": [
-        "political_operator"
-      ],
       "budgetBonus": 6
     },
     {
@@ -559,10 +556,7 @@
       "description": "You know how to work a story. Journalists take your calls and you rarely come off badly in print.",
       "statModifiers": {
         "trust": 10
-      },
-      "unlocksChoices": [
-        "media_savvy"
-      ]
+      }
     },
     {
       "id": "burnout_survivor",
@@ -570,10 +564,7 @@
       "description": "You've been through the fire before. You protect your staff because you know what it costs when no one does.",
       "statModifiers": {
         "morale": 12
-      },
-      "unlocksChoices": [
-        "burnout_survivor"
-      ]
+      }
     }
   ],
   "organizations": [
@@ -591,12 +582,6 @@
       "statModifiers": {
         "trust": -5
       },
-      "allowedMissions": [
-        "antisemitism_left",
-        "social_justice",
-        "israel_peace",
-        "diaspora_unity"
-      ],
       "politicalTilt": [
         "left"
       ],
@@ -632,12 +617,6 @@
       "statModifiers": {
         "donors": 8
       },
-      "allowedMissions": [
-        "antisemitism_right",
-        "israel_security",
-        "jewish_identity",
-        "diaspora_unity"
-      ],
       "politicalTilt": [
         "right"
       ],
@@ -673,12 +652,6 @@
       "statModifiers": {
         "trust": 5
       },
-      "allowedMissions": [
-        "antisemitism_all",
-        "diaspora_unity",
-        "jewish_identity",
-        "israel_security"
-      ],
       "politicalTilt": [
         "center"
       ],
@@ -719,12 +692,6 @@
         "morale": 5,
         "trust": 5
       },
-      "allowedMissions": [
-        "community_hub",
-        "jewish_identity",
-        "diaspora_unity",
-        "social_justice"
-      ],
       "politicalTilt": [
         "center"
       ],
@@ -765,12 +732,6 @@
         "trust": -8,
         "morale": 5
       },
-      "allowedMissions": [
-        "antisemitism_left",
-        "social_justice",
-        "israel_peace",
-        "diaspora_unity"
-      ],
       "politicalTilt": [
         "left"
       ],
@@ -804,12 +765,6 @@
         "donors": 10,
         "trust": -5
       },
-      "allowedMissions": [
-        "antisemitism_right",
-        "israel_security",
-        "jewish_identity",
-        "diaspora_unity"
-      ],
       "politicalTilt": [
         "right"
       ],
@@ -842,12 +797,6 @@
       "statModifiers": {
         "trust": 5
       },
-      "allowedMissions": [
-        "antisemitism_all",
-        "diaspora_unity",
-        "jewish_identity",
-        "israel_security"
-      ],
       "politicalTilt": [
         "center"
       ],
@@ -880,11 +829,6 @@
       "statModifiers": {
         "morale": 5
       },
-      "allowedMissions": [
-        "community_hub",
-        "jewish_identity",
-        "diaspora_unity"
-      ],
       "politicalTilt": [
         "center"
       ],
@@ -1035,60 +979,12 @@
       }
     }
   ],
-  "actions": [
-    {
-      "id": "fundraise",
-      "name": "Fundraise",
-      "icon": "💰",
-      "description": "Court donors, plan events, write grants. Keeps the lights on but can blur your mission.",
-      "cost": 1,
-      "baseEffects": {
-        "donors": 5,
-        "trust": -2,
-        "morale": -2
-      },
-      "outcomeText": "You spend the week in donor meetings and grant applications.",
-      "triggersEventType": "fundraise",
-      "budgetEffect": 5
-    },
-    {
-      "id": "engage",
-      "name": "Community Engagement",
-      "icon": "🤝",
-      "description": "Host programs, build relationships, show up for your community. Builds trust and morale.",
-      "cost": 1,
-      "baseEffects": {
-        "trust": 4,
-        "morale": 2,
-        "donors": -3
-      },
-      "outcomeText": "You spend time with your community — in synagogues, at events, at school pickups.",
-      "triggersEventType": "community",
-      "budgetEffect": -3
-    },
-    {
-      "id": "advocate",
-      "name": "Advocacy",
-      "icon": "📢",
-      "description": "Speak out, write op-eds, lobby, build coalitions. Advances your mission but can cost you.",
-      "cost": 1,
-      "baseEffects": {
-        "trust": 3,
-        "donors": -3,
-        "morale": -1
-      },
-      "outcomeText": "You take a visible public position. Some people are energized. Others are watching carefully.",
-      "triggersEventType": "advocacy",
-      "budgetEffect": -2
-    }
-  ],
   "scenarios": [
     {
       "id": "antisemitism_incident",
       "tag": "Crisis",
       "title": "Antisemitic Vandalism at the Local University",
       "body": "Swastikas were spray-painted on the Jewish student center at the nearby university. The local Jewish community is shaken. Your board chair calls you asking what you intend to do. Media requests are already coming in.",
-      "trigger": "community",
       "applicableOrgs": [
         "left",
         "right",
@@ -1279,7 +1175,6 @@
       "tag": "Development",
       "title": "A Major Donor Makes a Restricted Gift Offer",
       "body": "Harold Weinstein, a longtime real-estate developer and major donor, offers $300,000 — but the gift must fund a specific program tangential to your core work. Several staff members have quietly opposed it on strategic grounds.",
-      "trigger": "fundraise",
       "applicableOrgs": [
         "left",
         "right",
@@ -1438,7 +1333,6 @@
       "tag": "Israel",
       "title": "A Request for a Statement on the Latest Conflict",
       "body": "Following renewed fighting in Gaza, young professionals in your community circulate a letter urging you to issue a statement. Some want condemnation of Israeli military actions. Others want unequivocal solidarity with Israel. Your board is divided.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -1613,7 +1507,6 @@
       "tag": "Internal",
       "title": "Staff Burnout Before the High Holiday Season",
       "body": "It's early September. Your two biggest events of the year require enormous staff effort. Your program director reports three staff are burned out, one has requested leave, and everyone is underpaid compared to similar roles.",
-      "trigger": "community",
       "applicableOrgs": [
         "left",
         "right",
@@ -1764,7 +1657,6 @@
       "tag": "Governance",
       "title": "Two Board Members at War",
       "body": "Two of your most influential board members — both major donors — have come into open conflict. The dispute began over programming but has become personal. One walked out of last month's board meeting. Both are calling you asking you to take sides.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -1926,7 +1818,6 @@
       "tag": "Coalition",
       "title": "A Progressive Coalition Asks You to Sign an Embargo Letter",
       "body": "A broad progressive coalition is circulating a letter demanding an arms embargo on Israel. Many of your staff signed a staff-side version. Some of your major donors have explicitly said they will reduce gifts if you sign anything critical of Israeli military policy.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left"
       ],
@@ -2085,7 +1976,6 @@
       "tag": "Crisis",
       "title": "Antisemitism from a Political Ally",
       "body": "A prominent politician who has co-sponsored your events makes remarks widely characterized as antisemitic — dog-whistling about 'globalists' and dual loyalties. Several Jewish newspapers call on organizations to cut ties. This politician is influential in securing a federal grant your org depends on.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "right"
       ],
@@ -2237,7 +2127,6 @@
       "tag": "Crisis",
       "title": "A Bomb Threat",
       "body": "At 9:15 on a Tuesday morning, your JCC receives a bomb threat by phone — the third at a JCC in your region this month. You evacuate 84 people including 31 children. Police sweep the building and find nothing. You must decide how to respond.",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc"
       ],
@@ -2383,7 +2272,6 @@
       "tag": "Communications",
       "title": "A Hostile Journalist Is Working on a Story",
       "body": "A journalist at a Jewish newspaper is working on a critical profile of your organization. She's been calling board members. One board member warns the story could be damaging. You have a week before publication.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -2514,7 +2402,6 @@
       "tag": "Crisis",
       "title": "Campus Divestment Vote",
       "body": "The student government at the largest university in your area has scheduled a vote on a resolution demanding the university divest from companies doing business with Israel. Jewish students are panicking. The campus Hillel director is begging you to intervene. Several progressive allies in your coalition are publicly supporting the resolution.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "center"
@@ -2694,7 +2581,6 @@
       "tag": "Policy",
       "title": "Holocaust Education Under Attack",
       "body": "A state legislator has introduced a bill to remove Holocaust education from the mandatory curriculum, calling it ‘politically motivated content.’ The bill has surprising bipartisan support from both culture-war conservatives and progressives who want the curriculum to focus on ‘a broader range of genocides.’ You have one week before the committee vote.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -2881,7 +2767,6 @@
       "tag": "Internal",
       "title": "Security Partnership with Police Sparks Staff Revolt",
       "body": "After a string of threats, you’ve been offered a formal security partnership with the local police department — dedicated patrols, direct lines, priority response. Half your staff signs a letter opposing the partnership, citing police violence against communities of color. Two board members who are civil rights attorneys support the staff. Your security consultant says the threats are credible and escalating.",
-      "trigger": "community",
       "applicableOrgs": [
         "left",
         "right",
@@ -3027,7 +2912,6 @@
       "tag": "Community",
       "title": "Interfaith Seder Goes Off the Rails",
       "body": "Your annual interfaith Passover seder — co-hosted with a prominent church and mosque — was going beautifully until the imam made an unscripted comparison between Palestinians and the Israelites enslaved in Egypt. Half the Jewish attendees walked out. The imam says he was speaking from his heart and won’t retract. The pastor is trying to mediate. Local media is picking up the story.",
-      "trigger": "community",
       "applicableOrgs": [
         "center",
         "jcc"
@@ -3186,7 +3070,6 @@
       "tag": "Internal",
       "title": "A Staff Member’s Personal Posts Cause a Firestorm",
       "body": "Your communications director — excellent at her job — has been posting passionate pro-Israel content on her personal social media, including sharing IDF videos and calling anti-Zionism a form of antisemitism. A progressive Jewish group screencaps the posts and tags your organization, demanding you ‘address the extremism in your ranks.’ She says it’s her personal account and her personal views.",
-      "trigger": "community",
       "applicableOrgs": [
         "left",
         "right",
@@ -3328,7 +3211,6 @@
       "tag": "Strategy",
       "title": "How to Release a Damning Antisemitism Report",
       "body": "Your research team has completed a comprehensive report showing antisemitic incidents in your region increased 47% last year. The data is solid, but the breakdown is politically uncomfortable: incidents from the far right are up 60%, while incidents tied to progressive spaces (campus protests, social media) are up 35%. How you frame and release this report will shape the public conversation.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -3506,7 +3388,6 @@
       "tag": "Crisis",
       "title": "A Rival Jewish Organization Attacks You Publicly",
       "body": "A competing Jewish organization has published a scathing open letter accusing your organization of ‘failing the Jewish community’ by being too political, too cautious, or too compromised — depending on who you ask. The letter has 40 signatories including three rabbis. It’s trending in Jewish media. Your board is rattled.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -3644,7 +3525,6 @@
       "tag": "Crisis",
       "title": "A Mega-Celebrity’s Antisemitic Meltdown",
       "body": "One of the most famous entertainers in the world has gone on an extended antisemitic rant across social media — Jewish control conspiracies, Holocaust denial, the full catalog. It’s everywhere. Every Jewish organization in America is responding. Journalists are calling you for comment. Your young staffers are shaken. A major tech platform is refusing to remove the posts, citing free speech.",
-      "trigger": "community",
       "applicableOrgs": [
         "left",
         "right",
@@ -3807,7 +3687,6 @@
       "tag": "Policy",
       "title": "State Anti-BDS Legislation",
       "body": "Your state legislature is considering a bill that would bar state contractors from boycotting Israel. Pro-Israel groups are pushing hard for it. The ACLU and civil liberties organizations oppose it as a free speech violation. Both sides are pressuring you to take a public position. The bill’s sponsor wants you to testify in favor.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -3965,7 +3844,6 @@
       "tag": "Crisis",
       "title": "Pushing for Hate Crime Charges",
       "body": "A Jewish teenager was beaten outside a synagogue while attackers shouted antisemitic slurs. The DA is considering whether to file hate crime charges or prosecute it as simple assault. She’s asked your organization to make a public statement supporting hate crime enhancement. The attackers are Black teenagers, and some community leaders warn that your involvement could inflame racial tensions.",
-      "trigger": "community",
       "applicableOrgs": [
         "left",
         "right",
@@ -4135,7 +4013,6 @@
       "tag": "Community",
       "title": "A Jewish Day School on the Brink",
       "body": "The only Jewish day school in your area is losing enrollment fast — down 30% in three years. The board is asking your organization to lead a community rescue effort. The school is Modern Orthodox in orientation but serves families across denominations. Saving it would cost significant political capital and budget, but losing it would be a devastating blow to Jewish continuity in your region.",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc",
         "center"
@@ -4288,7 +4165,6 @@
       "tag": "Coalition",
       "title": "Should Antisemitism Be Part of DEI?",
       "body": "The county government is revamping its DEI (Diversity, Equity, and Inclusion) training for all employees and has asked your organization to contribute a module on antisemitism. Some progressive DEI practitioners object, arguing that Jews are white and privileged and antisemitism doesn’t belong in an equity framework. Your staff is divided. Your campus coalition partners have asked you not to push this.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "center"
@@ -4459,7 +4335,6 @@
       "tag": "Coalition",
       "title": "Evangelical Christians Want to Partner",
       "body": "Christians United for Israel, the largest pro-Israel organization in America, wants a formal partnership with your organization. They’re offering significant resources: shared events, lobbying access, and a $200,000 annual partnership grant. But their theology includes beliefs about Jewish conversion, they oppose LGBTQ+ rights, and many of your progressive members find the alliance deeply uncomfortable.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "right",
         "center"
@@ -4611,7 +4486,6 @@
       "tag": "Development",
       "title": "The Generational Giving Divide",
       "body": "Your development director presents a sobering analysis: 70% of your funding comes from donors over 65, and they’re not being replaced. Young Jewish donors give to different causes — climate, racial justice, reproductive rights — and see your organization as ‘their parents’ charity.’ She proposes a radical rebrand targeting younger donors, but your legacy donors’ advisory council is threatening to pull support if you change direction.",
-      "trigger": "fundraise",
       "applicableOrgs": [
         "left",
         "right",
@@ -4763,7 +4637,6 @@
       "tag": "Communications",
       "title": "A Rabbi’s Sermon Goes Viral",
       "body": "A local rabbi delivered a fiery Yom Kippur sermon calling out ‘Jews who stay silent on antisemitism because they’re afraid of losing their progressive credentials.’ The sermon was recorded and posted online, where it’s been viewed 3 million times. Conservative media is celebrating her. Progressive Jews are calling it divisive. She’s one of your board members. Journalists are asking for your reaction.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left",
         "right",
@@ -4929,7 +4802,6 @@
       "tag": "Coalition",
       "title": "The Litmus Test",
       "body": "Your most important progressive coalition partner — a racial justice organization you've marched with for three years — is circulating a joint statement for all members to sign. The statement calls Zionism 'a form of settler colonialism' and demands signatories pledge to 'center Palestinian liberation in all anti-racism work.' Refusing to sign means expulsion from the coalition. Signing would alienate most of the mainstream Jewish community and several of your own board members. The deadline is Friday.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left"
       ],
@@ -5142,7 +5014,6 @@
       "tag": "Community",
       "title": "Two Mournings, One Calendar",
       "body": "Three of your younger staff members — all progressive Jews — have proposed that your organization co-host a joint Yom HaZikaron/Nakba Day commemoration with a Palestinian solidarity group. They argue it's consistent with your values of shared grief and mutual recognition. Your older donors and several board members view Nakba Day commemorations as delegitimizing Israel's founding. The event would fall during your spring fundraising season.",
-      "trigger": "community",
       "applicableOrgs": [
         "left"
       ],
@@ -5319,7 +5190,6 @@
       "tag": "Coalition",
       "title": "Is Fighting Antisemitism 'Centering Whiteness'?",
       "body": "A prominent DEI consultant who trains staff at three of your coalition partner organizations has published an article arguing that Jewish organizations' focus on antisemitism 'centers white grievance' and 'diverts resources from communities facing structural racism.' The article names your organization specifically. Your coalition partners are quietly circulating it. Your staff — half of whom are Jews of color — are furious, but for different reasons.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left"
       ],
@@ -5505,7 +5375,6 @@
       "tag": "Crisis",
       "title": "When an Ally Says the Quiet Part Loud",
       "body": "A progressive city council member your organization endorsed and campaigned for — someone you called 'a true ally' in a press release — has been caught on a hot mic at a fundraiser saying 'the Jewish lobby controls this city's housing policy' and 'I'm sick of rich Jews in [neighborhood] blocking affordable housing.' The audio is circulating on social media. She's calling it 'taken out of context' and asking for your support.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "left"
       ],
@@ -5691,7 +5560,6 @@
       "tag": "Internal",
       "title": "The Staff Zionism Schism",
       "body": "During an all-staff retreat, a heated argument erupted between your communications director — who identifies as a liberal Zionist — and your outreach coordinator — who identifies as a non-Zionist Jew. The outreach coordinator said she 'doesn't feel safe' working alongside someone who 'supports an apartheid state.' The communications director said she's being asked to deny her Jewish identity. Both are in tears. The rest of the staff is frozen. You're standing at the front of the room.",
-      "trigger": "community",
       "applicableOrgs": [
         "left"
       ],
@@ -5871,7 +5739,6 @@
       "tag": "Crisis",
       "title": "Praised by the Wrong People",
       "body": "Your latest report on antisemitism on college campuses — documenting left-wing harassment of Jewish students — has been praised in a prominent white nationalist newsletter. They're calling your organization 'useful allies' and sharing your data to argue that 'the real threat to Jews comes from the left, not from us.' The report is solid and factual. But it's now being weaponized. A screenshot of the newsletter endorsement is circulating on Jewish Twitter.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "right"
       ],
@@ -6058,7 +5925,6 @@
       "tag": "Coalition",
       "title": "The Megachurch Offer",
       "body": "A 12,000-member evangelical megachurch wants to formalize a partnership with your organization: joint advocacy on Israel, shared security resources, and a co-branded 'Stand With Israel' fundraising campaign they estimate will raise $500,000. The catch: the church's website explicitly states its mission includes 'bringing the Jewish people to Christ' and its pastor has preached that Jews who don't accept Jesus face eternal damnation. He insists these are 'theological' positions separate from the political partnership.",
-      "trigger": "fundraise",
       "applicableOrgs": [
         "right"
       ],
@@ -6247,7 +6113,6 @@
       "tag": "Israel",
       "title": "Settler Violence and the Donor Dilemma",
       "body": "A viral video shows Israeli settlers attacking a Palestinian village in the West Bank while IDF soldiers stand by. The State Department condemns it. Your inbox is flooded. Progressive Jewish groups are demanding every Jewish organization speak out. But two of your top five donors are active supporters of settlement organizations, and one sits on the board of a group named in the video. Your silence is becoming conspicuous.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "right"
       ],
@@ -6426,7 +6291,6 @@
       "tag": "Governance",
       "title": "The Senator's Other Friends",
       "body": "A US Senator who has been your organization's most reliable ally on Israel legislation — sponsoring bills, speaking at your gala, meeting with your board — has been photographed at a private dinner with a known white nationalist commentator. The Senator's office says it was a 'chance encounter at a large event.' But the photos show them seated next to each other in a group of eight. Jewish organizations across the spectrum are being asked to respond.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "right"
       ],
@@ -6604,7 +6468,6 @@
       "tag": "Media",
       "title": "The Prime-Time Invitation",
       "body": "A major conservative cable news host wants you on his show to discuss campus antisemitism — a topic your organization leads on. The segment would reach millions. But this host has a history of trafficking in replacement theory rhetoric and recently platformed a guest who blamed 'Jewish elites' for immigration policy. Your appearance would be seen as legitimizing his show. Declining means losing an enormous platform to reach Americans who need to hear about antisemitism.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "right"
       ],
@@ -6777,7 +6640,6 @@
       "tag": "Strategy",
       "title": "The Bipartisan Squeeze",
       "body": "A student group at the local university invited a controversial Israeli politician to speak on campus. Left-wing Jewish orgs are demanding you condemn the invitation. Right-wing Jewish orgs are demanding you defend it. Both are publicly calling on you by name — 'Jewish Civic Partnership must take a stand.' Your bipartisan identity means both sides expect you to agree with them. Staying silent will be read as cowardice by everyone.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "center"
       ],
@@ -6954,7 +6816,6 @@
       "tag": "Policy",
       "title": "The IHRA Definition Divide",
       "body": "Your city council is considering adopting the IHRA working definition of antisemitism. Pro-Israel groups are pushing hard for it; Palestinian rights groups and the ACLU are opposing it, arguing some examples conflate criticism of Israel with antisemitism. Your centrist coalition — carefully built from members of both camps — is fracturing along exactly this fault line. Both sides expect you to lobby the council on their behalf.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "center"
       ],
@@ -7143,7 +7004,6 @@
       "tag": "Development",
       "title": "The Centrist Donor Exodus",
       "body": "Three of your most reliable moderate donors — who together represent 25% of your annual giving — have scheduled a joint call with you. They're frustrated. 'We gave to you because you were above the fray,' one writes in the meeting request. 'But lately you seem paralyzed. We want to see decisive leadership, not endless balance. If you can't show us a clear direction in the next quarter, we're moving our giving to organizations that actually do things.'",
-      "trigger": "fundraise",
       "applicableOrgs": [
         "center"
       ],
@@ -7306,7 +7166,6 @@
       "tag": "Policy",
       "title": "The Bipartisan Bill Gets Hijacked",
       "body": "You spent eight months helping craft a bipartisan antisemitism awareness bill — co-sponsored by a Democrat and a Republican. It was your signature achievement. Now, hours before the floor vote, the Republican co-sponsor has added a last-minute amendment that includes language about 'anti-Israel activity on campuses' that would effectively classify BDS organizing as antisemitism. The Democrat says she'll pull her co-sponsorship if the amendment stays. Both legislators are calling you.",
-      "trigger": "advocacy",
       "applicableOrgs": [
         "center"
       ],
@@ -7495,7 +7354,6 @@
       "tag": "Media",
       "title": "The 'Enabler' Profile",
       "body": "A national Jewish magazine has published a long profile of your organization titled 'The Radical Center: How Centrism Enables Extremism.' The piece argues that your refusal to take sides on Israel, antisemitism definitions, and political alliances 'gives cover to both far-left antisemites and far-right nationalists.' It quotes unnamed board members, former staff, and rival org leaders. It's going viral. Your phone hasn't stopped ringing.",
-      "trigger": "community",
       "applicableOrgs": [
         "center"
       ],
@@ -7658,7 +7516,6 @@
       "tag": "Community",
       "title": "The Flag in the Lobby",
       "body": "An Israeli flag has hung in your JCC lobby since the building opened in 1987. A group of younger members — many of them parents of preschoolers — has formally petitioned the board to remove it, arguing it makes non-Zionist and anti-Zionist Jewish families feel excluded from a space meant to serve all Jews. A counter-petition from older members has gathered twice as many signatures, calling the flag 'non-negotiable.' Both groups are threatening to cancel their memberships.",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc"
       ],
@@ -7861,7 +7718,6 @@
       "tag": "Community",
       "title": "Pride Month at the JCC",
       "body": "Your program director has planned a Pride Month celebration including a family drag queen story hour, a 'Jewish & Queer' film screening, and rainbow decorations throughout the building. Three Orthodox families who use the JCC daily — including two whose children are in the preschool — have told you they will pull their kids and memberships if the programming proceeds. A group of LGBTQ Jewish parents has written to say this programming is 'the reason we chose this JCC.' Your board is meeting tomorrow.",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc"
       ],
@@ -8040,7 +7896,6 @@
       "tag": "Governance",
       "title": "The Event Space Request",
       "body": "A local chapter of Jewish Voice for Peace — which supports BDS — has submitted a rental application to use your JCC's main event hall for a panel discussion on 'Human Rights in Israel-Palestine.' Your rental policy says the JCC is available to all Jewish community organizations. JVP argues they are a Jewish organization. Your board has never dealt with this question because no one has ever asked before. The application is technically compliant with your written policy.",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc"
       ],
@@ -8220,7 +8075,6 @@
       "tag": "Internal",
       "title": "Women-Only Swim Hours Under Fire",
       "body": "Your JCC has offered women-only swim hours on Sunday mornings for 15 years — originally created to accommodate Orthodox women who observe modesty laws. Muslim women in the neighborhood have also started attending, making it a quiet interfaith success story. Now a male member has filed a formal complaint calling the policy 'gender discrimination.' A local newspaper has picked up the story. The headline reads: 'JCC Bans Men from Pool — Is It Legal?'",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc"
       ],
@@ -8393,7 +8247,6 @@
       "tag": "Internal",
       "title": "The Preschool Teacher's Posts",
       "body": "A parent in your JCC preschool has forwarded you screenshots from a teacher's personal Instagram account. The teacher — beloved by kids and parents, three years on staff — has posted a series of stories calling Israel 'a genocidal apartheid state,' sharing graphic images from Gaza, and writing 'Zionism is racism.' The parent says: 'I'm not sending my four-year-old to be taught by someone who hates our people.' The teacher has never brought politics into the classroom.",
-      "trigger": "community",
       "applicableOrgs": [
         "jcc"
       ],
@@ -8569,7 +8422,6 @@
       "id": "ai_moderation",
       "title": "AI-Generated Antisemitism Goes Viral",
       "tag": "Crisis",
-      "trigger": "community",
       "body": "A sophisticated AI-generated video depicting Jewish community leaders in your city plotting to control local government has gone viral on TikTok and X. The video is a deepfake — completely fabricated — but it's been viewed 3 million times and local news stations are asking if you have a comment. Your staff has received threatening messages referencing the video. The ADL has issued a national statement, but your community wants to hear from you specifically.",
       "categories": [
         "all"
@@ -8577,7 +8429,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "monitor",
-      "politicallyRelevant": false,
       "communityConsensus": 0.4,
       "choices": [
         {
@@ -8724,7 +8575,6 @@
       "id": "holocaust_memorial_controversy",
       "title": "Holocaust Memorial Under Revision",
       "tag": "Dilemma",
-      "trigger": "community",
       "body": "The city council has proposed redesigning the downtown Holocaust memorial to include panels recognizing the Armenian genocide, the Rwandan genocide, and the enslavement of African Americans. The proposal has the support of the mayor and several interfaith groups. Some Holocaust survivors' families are devastated — they say it erases the specificity of the Shoah. Others in your community see it as an opportunity for broader relevance. The council wants your organization's official position before next month's vote.",
       "categories": [
         "all"
@@ -8732,7 +8582,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "folder",
-      "politicallyRelevant": false,
       "communityConsensus": 0.25,
       "choices": [
         {
@@ -8907,7 +8756,6 @@
       "id": "jewish_day_school_closure",
       "title": "Day School on the Brink",
       "tag": "Crisis",
-      "trigger": "community",
       "body": "Hillel Academy, the only Jewish day school in your area, has announced it will close at the end of the school year unless it raises $1.2 million in the next 90 days. Enrollment has dropped 40% over five years. The school's board chair — a major donor to your organization — is asking you to lead the rescue effort. Eighty-three families and two dozen teachers are affected. The building itself is a community landmark.",
       "categories": [
         "all"
@@ -8915,7 +8763,6 @@
       "orgLevel": "local",
       "complexity": 3,
       "channel": "keys",
-      "politicallyRelevant": false,
       "communityConsensus": 0.6,
       "choices": [
         {
@@ -9049,7 +8896,6 @@
       "id": "antisemitic_professor",
       "title": "The Tenured Problem",
       "tag": "Crisis",
-      "trigger": "community",
       "body": "Dr. Richard Harmon, a tenured political science professor at the state university, has a documented history of antisemitic statements in his lectures — comparing Israeli policies to Nazism, questioning the 'outsized influence of the Jewish lobby,' and reportedly telling a Jewish student to 'check her Zionist privilege.' The university's DEI office investigated and found 'insufficient evidence of discriminatory conduct.' Three Jewish students have now filed formal complaints, and their parents are calling your office daily.",
       "categories": [
         "all"
@@ -9057,7 +8903,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "folder",
-      "politicallyRelevant": true,
       "communityConsensus": 0.35,
       "choices": [
         {
@@ -9239,7 +9084,6 @@
       "id": "zionism_definition_fight",
       "title": "The Definition War",
       "tag": "Policy",
-      "trigger": "any",
       "body": "A national coalition of Jewish organizations is circulating a public declaration that anti-Zionism is a form of antisemitism. They want your signature before a coordinated press release next week. The declaration has already been signed by 30 organizations. Progressive Jewish groups are organizing a counter-statement arguing the declaration 'silences legitimate criticism of Israeli policy and alienates young Jews.' Both sides are pressuring you to take a position. Your board is split almost evenly.",
       "categories": [
         "all"
@@ -9247,7 +9091,6 @@
       "orgLevel": "both",
       "complexity": 5,
       "channel": "folder",
-      "politicallyRelevant": true,
       "communityConsensus": 0.15,
       "choices": [
         {
@@ -9434,7 +9277,6 @@
       "id": "muslim_jewish_alliance",
       "title": "An Unlikely Partnership",
       "tag": "Opportunity",
-      "trigger": "community",
       "body": "The Islamic Center of Greater Metro has proposed a formal partnership with your organization: shared programming, joint advocacy on hate crimes legislation, and a co-sponsored community dialogue series. Their imam is widely respected and the offer is genuine. But the Islamic Center has also hosted speakers critical of Israel, and two of your board members have already expressed concerns about 'legitimizing anti-Israel voices.'",
       "categories": [
         "all"
@@ -9442,7 +9284,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "keys",
-      "politicallyRelevant": true,
       "communityConsensus": 0.3,
       "choices": [
         {
@@ -9565,7 +9406,6 @@
       "id": "donor_crypto_scandal",
       "title": "The Tainted Gift",
       "tag": "Crisis",
-      "trigger": "donor",
       "body": "Marcus Feldstein, your second-largest annual donor at $200,000 per year, has been indicted by the SEC for cryptocurrency fraud. His name is in every news outlet. His foundation — which funds your youth programming — is expected to be frozen by the courts. He's called you personally asking you to issue a statement of support, calling the charges 'politically motivated.' Your development director says losing his gift would create a $200,000 hole in next year's budget.",
       "categories": [
         "all"
@@ -9573,7 +9413,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "monitor",
-      "politicallyRelevant": false,
       "communityConsensus": 0.5,
       "choices": [
         {
@@ -9686,7 +9525,6 @@
       "id": "youth_exodus",
       "title": "The Missing Generation",
       "tag": "Dilemma",
-      "trigger": "community",
       "body": "Your annual community survey reveals a stark finding: participation by Jews under 30 has dropped 35% in two years. Exit interviews paint a consistent picture — young Jews feel the organized Jewish community is 'out of touch,' 'too focused on Israel,' and 'run by and for older wealthy donors.' A group of young Jewish professionals has started their own independent havurah that meets in apartments and coffee shops. They're not hostile to your organization — they just don't see the point of it.",
       "categories": [
         "all"
@@ -9694,7 +9532,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "folder",
-      "politicallyRelevant": false,
       "communityConsensus": 0.45,
       "choices": [
         {
@@ -9815,7 +9652,6 @@
       "id": "security_grant_police",
       "title": "Safety at What Cost?",
       "tag": "Policy",
-      "trigger": "any",
       "body": "Your organization has been awarded a $150,000 federal security grant for facility hardening — cameras, reinforced doors, panic buttons. The grant requires a formal partnership with local police, including regular patrol coordination and information sharing. Your security committee is thrilled. But several staff members and community members of color have raised concerns: the local police department has a documented pattern of racial profiling, and a formal partnership could alienate members who don't feel safe around police.",
       "categories": [
         "all"
@@ -9823,7 +9659,6 @@
       "orgLevel": "local",
       "complexity": 4,
       "channel": "folder",
-      "politicallyRelevant": true,
       "communityConsensus": 0.3,
       "choices": [
         {
@@ -9946,7 +9781,6 @@
       "id": "rabbi_metoo",
       "title": "The Reckoning",
       "tag": "Crisis",
-      "trigger": "community",
       "body": "Rabbi Sarah Winters, a beloved figure in the community who has served as scholar-in-residence at your organization's annual retreat for eight years, has been publicly accused of sexual harassment by three former students at the rabbinical seminary where she teaches. The accusations span a decade. Rabbi Winters denies all allegations and has retained a lawyer. Your annual retreat is in six weeks and she's the keynote speaker. Tickets are already sold. Three local rabbis have called you today — two asking you to stand by her until the process plays out, one asking you to cut ties immediately.",
       "categories": [
         "all"
@@ -9954,7 +9788,6 @@
       "orgLevel": "both",
       "complexity": 5,
       "channel": "keys",
-      "politicallyRelevant": false,
       "communityConsensus": 0.35,
       "choices": [
         {
@@ -10091,7 +9924,6 @@
       "id": "birthright_boycott",
       "title": "Staff Rebellion",
       "tag": "Internal",
-      "trigger": "staff",
       "body": "Four of your six program staff members have signed a letter refusing to promote or coordinate Birthright Israel trips, calling the program 'a propaganda tool that whitewashes the occupation.' They're not quitting — they love their other work — but they won't touch anything Birthright-related. Your organization has been a Birthright campus partner for 12 years. The Birthright office is asking why your applications have stalled.",
       "categories": [
         "all"
@@ -10099,7 +9931,6 @@
       "orgLevel": "both",
       "complexity": 5,
       "channel": "keys",
-      "politicallyRelevant": true,
       "communityConsensus": 0.25,
       "choices": [
         {
@@ -10225,7 +10056,6 @@
       "id": "antisemitic_politician_ally",
       "title": "When Allies Go Wrong",
       "tag": "Crisis",
-      "trigger": "community",
       "body": "Congresswoman Diana Torres has been your organization's strongest political ally for five years — sponsoring legislation on antisemitism, attending your events, and securing federal funding for your programs. Last night, at a private fundraiser (recorded by a guest), she said that 'Jewish donors have too much influence in American politics' and made a joke about 'controlling the media.' The audio is everywhere. She's issued a non-apology calling the comments 'taken out of context.' Her office is asking if you'll stand by her.",
       "categories": [
         "all"
@@ -10233,7 +10063,6 @@
       "orgLevel": "both",
       "complexity": 5,
       "channel": "monitor",
-      "politicallyRelevant": true,
       "communityConsensus": 0.4,
       "choices": [
         {
@@ -10366,7 +10195,6 @@
       "id": "gaza_war_statement",
       "title": "Statement on Gaza",
       "tag": "Crisis",
-      "trigger": "any",
       "body": "A major escalation in Gaza has dominated the news for two weeks. Israeli airstrikes have killed over 200 Palestinians including children. Hamas rockets have reached Tel Aviv. Two Israeli civilians are dead. Your inbox has 400+ unread emails. Half demand you condemn Hamas unequivocally. Half demand you condemn the Israeli military response. Your board chair says you must say something this week. Your development director says whatever you say will cost you donors. She's right.",
       "categories": [
         "all"
@@ -10374,7 +10202,6 @@
       "orgLevel": "both",
       "complexity": 5,
       "channel": "folder",
-      "politicallyRelevant": true,
       "communityConsensus": 0.1,
       "choices": [
         {
@@ -10544,7 +10371,6 @@
       "id": "campus_speaker_ban",
       "title": "The Banned Speaker",
       "tag": "Dilemma",
-      "trigger": "community",
       "body": "The state university has disinvited an Israeli diplomat from speaking on campus after student government passed a resolution calling her visit 'an endorsement of apartheid.' The diplomat was invited by the campus Hillel. Jewish students are outraged. The ACLU is considering weighing in on free speech grounds. The university president says the decision was made for 'safety concerns' but the student government resolution makes the real motivation clear.",
       "categories": [
         "all"
@@ -10552,7 +10378,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "monitor",
-      "politicallyRelevant": true,
       "communityConsensus": 0.35,
       "choices": [
         {
@@ -10675,7 +10500,6 @@
       "id": "intermarriage_policy",
       "title": "The Membership Question",
       "tag": "Policy",
-      "trigger": "community",
       "body": "A longtime board member has proposed that your organization formally adopt an inclusive membership policy welcoming intermarried families — including those where the non-Jewish spouse has not converted — as full community members with voting rights and program access. Currently, your policy is ambiguous. The Orthodox members of your board call the proposal 'a betrayal of Jewish continuity.' Several intermarried families who are already active members say the current ambiguity makes them feel like 'second-class Jews.'",
       "categories": [
         "all"
@@ -10683,7 +10507,6 @@
       "orgLevel": "local",
       "complexity": 4,
       "channel": "folder",
-      "politicallyRelevant": false,
       "communityConsensus": 0.3,
       "choices": [
         {
@@ -10791,7 +10614,6 @@
       "id": "hate_crime_data",
       "title": "The Numbers Are In",
       "tag": "Opportunity",
-      "trigger": "any",
       "body": "The FBI's annual hate crime report shows a 37% increase in antisemitic incidents nationwide — the highest in 40 years. Your organization has been tracking local data that tells the same story. Media outlets are calling for comment. This is an opportunity to raise your profile, drive fundraising, and advance your mission. But how you frame the data matters: do you emphasize the threat, the community's resilience, or the systemic failures that allow hate to grow?",
       "categories": [
         "all"
@@ -10799,7 +10621,6 @@
       "orgLevel": "both",
       "complexity": 3,
       "channel": "monitor",
-      "politicallyRelevant": true,
       "communityConsensus": 0.5,
       "choices": [
         {
@@ -10909,7 +10730,6 @@
       "id": "synagogue_security_debate",
       "title": "Guards or Welcome Mats?",
       "tag": "Dilemma",
-      "trigger": "community",
       "body": "After a suspicious individual was spotted photographing your partner synagogue's exits, the security committee wants armed guards at all community events. The rabbi opposes it — 'A synagogue with armed guards sends a message of fear, not faith.' Several families with young children say visible weapons make them uncomfortable. Other families say the absence of visible security makes them nervous. The congregation is split and looking to you for guidance since you coordinate community-wide security programming.",
       "categories": [
         "all"
@@ -10917,7 +10737,6 @@
       "orgLevel": "local",
       "complexity": 4,
       "channel": "keys",
-      "politicallyRelevant": false,
       "communityConsensus": 0.35,
       "choices": [
         {
@@ -11025,7 +10844,6 @@
       "id": "social_media_employee",
       "title": "The Viral Staffer",
       "tag": "Internal",
-      "trigger": "staff",
       "body": "Your communications coordinator, Maya Chen, posted a personal Instagram story showing her at a pro-Palestinian protest over the weekend holding a sign that reads 'End the Occupation.' The post has been screenshot and shared widely. Conservative community members are demanding she be fired. Progressive members are defending her right to personal political expression. Maya is an excellent employee — she's been with you for three years and her work is outstanding. She's also scared.",
       "categories": [
         "all"
@@ -11033,7 +10851,6 @@
       "orgLevel": "both",
       "complexity": 5,
       "channel": "keys",
-      "politicallyRelevant": true,
       "communityConsensus": 0.2,
       "choices": [
         {
@@ -11161,7 +10978,6 @@
       "id": "reparations_position",
       "title": "The Reparations Question",
       "tag": "Policy",
-      "trigger": "community",
       "body": "Your organization is part of a racial justice coalition that has been working on housing discrimination and criminal justice reform. The coalition has now voted to endorse a federal reparations study bill and is asking all member organizations to sign the endorsement letter. The bill doesn't commit to reparations — only to studying them. But signing puts your organization on record in a politically charged debate that has nothing to do with your core Jewish mission.",
       "categories": [
         "progressive",
@@ -11170,7 +10986,6 @@
       "orgLevel": "both",
       "complexity": 4,
       "channel": "folder",
-      "politicallyRelevant": true,
       "communityConsensus": 0.25,
       "choices": [
         {
@@ -11280,7 +11095,6 @@
       "id": "jewish_food_bank",
       "title": "Bread and Boundaries",
       "tag": "Opportunity",
-      "trigger": "community",
       "body": "The regional food bank has approached your organization to partner on a hunger relief program in a low-income neighborhood with a significant Jewish population. The partnership would dramatically expand your reach — serving 400 families monthly instead of 80. But the food bank's inventory isn't kosher, and they can't guarantee separate handling. Your Orthodox constituents who rely on kosher food assistance would be left out. The food bank says it's all or nothing — they can't run two parallel systems.",
       "categories": [
         "all"
@@ -11288,7 +11102,6 @@
       "orgLevel": "local",
       "complexity": 3,
       "channel": "keys",
-      "politicallyRelevant": false,
       "communityConsensus": 0.45,
       "choices": [
         {
@@ -13658,22 +13471,6 @@
     },
     {
       "trigger": {
-        "type": "momentumUp",
-        "stat": "trust"
-      },
-      "headline": "Trust Trend: Third Straight Month of Gains",
-      "subline": "Consistency paying dividends in community relations."
-    },
-    {
-      "trigger": {
-        "type": "momentumDown",
-        "stat": "morale"
-      },
-      "headline": "Staff Morale in Extended Decline",
-      "subline": "'Something has to change,' says departing employee."
-    },
-    {
-      "trigger": {
         "type": "coalitionFormed"
       },
       "headline": "New Partnership Announced Between Jewish Org and Coalition",
@@ -15158,9 +14955,7 @@
       "id": "board_chair",
       "name": "Rachel Steinberg",
       "role": "Board Chair",
-      "emoji": "🧑‍💼",
       "portrait": "art/advisors/rachel_steinberg",
-      "personality": "cautious",
       "bio": "20 years in Jewish communal governance. Thinks in terms of risk, reputation, and fiduciary duty.",
       "type": "internal",
       "statModifiers": {
@@ -15168,19 +14963,13 @@
       },
       "politicalLean": 0,
       "cloutBonus": 5,
-      "expertise": [
-        "governance",
-        "crisis"
-      ],
       "budgetBonus": 0
     },
     {
       "id": "program_dir",
       "name": "Avi Kessler",
       "role": "Program Director",
-      "emoji": "🧑‍🏫",
       "portrait": "art/advisors/avi_kessler",
-      "personality": "idealist",
       "bio": "Former campus Hillel director. Believes the mission comes first, always. Staff love him.",
       "type": "internal",
       "statModifiers": {
@@ -15188,19 +14977,13 @@
       },
       "politicalLean": -3,
       "cloutBonus": 2,
-      "expertise": [
-        "community",
-        "advocacy"
-      ],
       "budgetBonus": 0
     },
     {
       "id": "dev_director",
       "name": "Miriam Gold",
       "role": "Development Director",
-      "emoji": "💼",
       "portrait": "art/advisors/miriam_gold",
-      "personality": "pragmatist",
       "bio": "Raised $40M across three organizations. Knows every major donor by name and preference.",
       "type": "internal",
       "statModifiers": {
@@ -15208,19 +14991,13 @@
       },
       "politicalLean": 2,
       "cloutBonus": 3,
-      "expertise": [
-        "fundraise",
-        "donors"
-      ],
       "budgetBonus": 3
     },
     {
       "id": "rabbi_scholar",
       "name": "Rabbi David Friedman",
       "role": "Senior Rabbi, Congregation Ohev Shalom",
-      "emoji": "📖",
       "portrait": "art/advisors/rabbi_friedman",
-      "personality": "principled",
       "type": "external",
       "bio": "Orthodox-trained, pluralistic in practice. Deep Talmudic knowledge and a reputation for moral clarity that crosses denominational lines.",
       "statModifiers": {
@@ -15228,19 +15005,13 @@
       },
       "politicalLean": 3,
       "cloutBonus": 4,
-      "expertise": [
-        "advocacy",
-        "crisis"
-      ],
       "budgetBonus": 0
     },
     {
       "id": "political_consultant",
       "name": "Sarah Feld",
       "role": "Political Consultant",
-      "emoji": "🏛️",
       "portrait": "art/advisors/sarah_feld",
-      "personality": "strategic",
       "type": "external",
       "bio": "Former congressional chief of staff. Knows every elected official in the state and half the ones in Washington. Thinks three moves ahead.",
       "statModifiers": {
@@ -15248,19 +15019,13 @@
       },
       "politicalLean": -2,
       "cloutBonus": 8,
-      "expertise": [
-        "advocacy",
-        "crisis"
-      ],
       "budgetBonus": 2
     },
     {
       "id": "community_organizer",
       "name": "Tali Navarro",
       "role": "Community Organizer",
-      "emoji": "✊",
       "portrait": "art/advisors/tali_navarro",
-      "personality": "activist",
       "type": "external",
       "bio": "Built the largest Jewish young adult network in the region from scratch. Speaks for a generation that doesn’t show up to galas but will march in the rain.",
       "statModifiers": {
@@ -15269,19 +15034,13 @@
       },
       "politicalLean": -5,
       "cloutBonus": 3,
-      "expertise": [
-        "community",
-        "advocacy"
-      ],
       "budgetBonus": 0
     },
     {
       "id": "major_donor_rep",
       "name": "Leonard Katz",
       "role": "Philanthropic Advisor",
-      "emoji": "🏦",
       "portrait": "art/advisors/leonard_katz",
-      "personality": "transactional",
       "type": "external",
       "bio": "Manages giving strategy for three family foundations worth $400M combined. Pragmatic, well-connected, and always thinking about ROI.",
       "statModifiers": {
@@ -15289,19 +15048,13 @@
       },
       "politicalLean": 5,
       "cloutBonus": 5,
-      "expertise": [
-        "fundraise",
-        "governance"
-      ],
       "budgetBonus": 5
     },
     {
       "id": "media_strategist",
       "name": "Noa Berman",
       "role": "Media Strategist",
-      "emoji": "📱",
       "portrait": "art/advisors/noa_berman",
-      "personality": "calculated",
       "type": "external",
       "bio": "Former editor at the Forward, now a crisis communications consultant. Controls narratives for a living. Never says anything by accident.",
       "statModifiers": {
@@ -15309,10 +15062,6 @@
       },
       "politicalLean": -1,
       "cloutBonus": 4,
-      "expertise": [
-        "crisis",
-        "advocacy"
-      ],
       "budgetBonus": 0
     }
   ],

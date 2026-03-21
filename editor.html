@@ -13420,7 +13420,6 @@ function renderScenarioForm(s, i, prefix) {
     <div class="form-row three">
       <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Unique identifier — used in triggers, conversations, and coalition links</div></div>
       <div class="form-group"><label>Tag</label><input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label shown above the scenario (e.g., 'Crisis', 'Opportunity', 'Dilemma')</div></div>
-      <div class="form-group"><label>Trigger</label><input id="${prefix}-trigger-${i}" value="${esc(s.trigger||'')}" /><div class="form-hint">What causes this scenario to appear (e.g., 'community', 'donor', 'staff', 'any')</div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Title</label><input id="${prefix}-title-${i}" value="${esc(s.title||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="${prefix}-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
@@ -13436,10 +13435,6 @@ function renderScenarioForm(s, i, prefix) {
         <option value="folder" ${s.channel==='folder'?'selected':''}>Folder (Memos)</option>
         <option value="keys" ${s.channel==='keys'?'selected':''}>Keys (In-Person)</option>
       </select><div class="form-hint">Which desk object this scenario appears in (default: any)</div></div>
-    </div>
-    <div style="margin:8px 0;padding:6px 10px;background:#f8f5ff;border:1px solid #e0d8f0;display:flex;align-items:center;gap:10px">
-      <label class="checkbox-item" style="font-weight:700"><input type="checkbox" id="${prefix}-polrel-${i}" ${s.politicallyRelevant!==false?'checked':''} style="accent-color:#6366f1" /> ⚖️ Politically Relevant</label>
-      <span style="font-size:10px;color:var(--muted);font-style:italic">When checked, political effectiveness modifies stat outcomes for this scenario</span>
     </div>
     ${renderConsensusField(s, i, prefix)}
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
@@ -13461,8 +13456,9 @@ function renderChoiceEditor(c, si, ci, prefix) {
       <button class="btn btn-danger btn-sm" onclick="deleteChoice(${si},${ci},'${prefix}')">Delete</button>
     </div>
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Requires Unlock</label><input id="${prefix}-cunlock-${si}-${ci}" value="${esc(c.requiresUnlock||'')}" placeholder="blank = always available" /><div class="form-hint">Trait ID or condition that must be met to see this choice (blank = always available)</div></div>
+    <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option><option value="master_fundraiser"${c.requiresUnlock==='master_fundraiser'?' selected':''}>Master Fundraiser</option><option value="grassroots_organizer"${c.requiresUnlock==='grassroots_organizer'?' selected':''}>Grassroots Organizer</option><option value="jewish_scholar"${c.requiresUnlock==='jewish_scholar'?' selected':''}>Jewish Scholar</option><option value="political_operator"${c.requiresUnlock==='political_operator'?' selected':''}>Political Operator</option><option value="media_savvy"${c.requiresUnlock==='media_savvy'?' selected':''}>Media Savvy</option><option value="burnout_survivor"${c.requiresUnlock==='burnout_survivor'?' selected':''}>Burnout Survivor</option></select><div class="form-hint">Which character trait unlocks this choice</div></div>
     <div class="form-group" style="margin-bottom:6px"><label>Gelt Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Gelt units spent if player picks this choice</div></div>
+    <div class="form-group" style="margin-bottom:6px"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">Clout spent when player picks this choice (0 = free)</div></div>
     <div class="pol-impact-box${hasPol?' active':''}">
       <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
         <input type="checkbox" id="${prefix}-cpol-${si}-${ci}" ${hasPol?'checked':''} style="accent-color:#6366f1" /> ⚖️ Political Impact
@@ -13526,7 +13522,6 @@ function saveScenario(i, prefix) {
   const s = list[i];
   s.id = document.getElementById(prefix+'-id-'+i)?.value||s.id;
   s.tag = document.getElementById(prefix+'-tag-'+i)?.value||'';
-  s.trigger = document.getElementById(prefix+'-trigger-'+i)?.value||'';
   s.title = document.getElementById(prefix+'-title-'+i)?.value||s.title;
   s.body = document.getElementById(prefix+'-body-'+i)?.value||'';
   const allCats=['all','progressive','centrist','conservative','apolitical'];
@@ -13536,9 +13531,6 @@ function saveScenario(i, prefix) {
   s.complexity = parseInt(document.getElementById(prefix+'-cplx-'+i)?.value)||3;
   s.channel = document.getElementById(prefix+'-channel-'+i)?.value || 'any';
   if(s.channel === 'any') delete s.channel; // keep data clean
-  // Political relevance flag
-  var polRelEl = document.getElementById(prefix+'-polrel-'+i);
-  s.politicallyRelevant = polRelEl ? polRelEl.checked : true;
   // Community consensus
   var consensusEl = document.getElementById(prefix+'-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
@@ -13547,7 +13539,7 @@ function saveScenario(i, prefix) {
   let ci=0;
   while(document.getElementById(prefix+'-ctext-'+i+'-'+ci)) {
     const text = document.getElementById(prefix+'-ctext-'+i+'-'+ci).value;
-    const unlock = document.getElementById(prefix+'-cunlock-'+i+'-'+ci)?.value||null;
+    var unlock = document.getElementById(prefix+'-cunlock-'+i+'-'+ci)?.value || '';
     const aligned=[],opposed=[];
     missions.forEach(m=>{
       const v=document.getElementById(prefix+'-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';
@@ -13560,6 +13552,7 @@ function saveScenario(i, prefix) {
     var polMinClout = parseInt(document.getElementById(prefix+'-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
+    var cloutCost = parseInt(document.getElementById(prefix+'-ccloutcost-'+i+'-'+ci)?.value) || 0;
     const outcomes=[];
     let oi=0;
     while(document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi)) {
@@ -13570,9 +13563,13 @@ function saveScenario(i, prefix) {
       oi++;
     }
     var segOv = readSegOverrides(prefix, i, ci);
-    var choiceObj = {id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
-    if (israelLean !== 0) choiceObj.israelLean = israelLean; else delete choiceObj.israelLean;
-    s.choices.push(choiceObj);
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    if (unlock) choice.requiresUnlock = unlock;
+    else delete choice.requiresUnlock;
+    if (cloutCost > 0) choice.cloutCost = cloutCost;
+    else delete choice.cloutCost;
+    if (israelLean !== 0) choice.israelLean = israelLean; else delete choice.israelLean;
+    s.choices.push(choice);
     ci++;
   }
   // Save advisor quotes with recommendation fields
@@ -13659,10 +13656,6 @@ function renderInboxForm(s, i) {
       <div class="stat-inputs cols-4" style="margin-bottom:6px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="ib-expfx-${i}-${s.id}" value="${(expOut.effects||{})[s.id]||0}" /></div>`).join('')}</div>
       <div class="form-group"><label>Context Note</label><input id="ib-expnote-${i}" value="${esc(expOut.contextNote||'')}" /></div>
     </details>
-    <div style="margin:8px 0;padding:6px 10px;background:#f8f5ff;border:1px solid #e0d8f0;display:flex;align-items:center;gap:10px">
-      <label class="checkbox-item" style="font-weight:700"><input type="checkbox" id="ib-polrel-${i}" ${s.politicallyRelevant!==false?'checked':''} style="accent-color:#6366f1" /> ⚖️ Politically Relevant</label>
-      <span style="font-size:10px;color:var(--muted);font-style:italic">When checked, political effectiveness modifies stat outcomes</span>
-    </div>
     ${renderConsensusField(s, i, 'ib')}
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
     <div class="choices-editor">${(s.choices||[]).map((c,ci)=>renderChoiceEditor(c,i,ci,'ib')).join('')}</div>
@@ -13700,9 +13693,6 @@ function saveInbox(i) {
   } else {
     delete s.expiresIn; delete s.expiredOutcome;
   }
-  // Political relevance
-  var polRelEl = document.getElementById('ib-polrel-'+i);
-  s.politicallyRelevant = polRelEl ? polRelEl.checked : true;
   // Community consensus
   var consensusEl = document.getElementById('ib-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
@@ -13711,7 +13701,7 @@ function saveInbox(i) {
   let ci=0;
   while(document.getElementById('ib-ctext-'+i+'-'+ci)) {
     const text = document.getElementById('ib-ctext-'+i+'-'+ci).value;
-    const unlock = document.getElementById('ib-cunlock-'+i+'-'+ci)?.value||null;
+    var unlock = document.getElementById('ib-cunlock-'+i+'-'+ci)?.value || '';
     const aligned=[],opposed=[];
     missions.forEach(m=>{const v=document.getElementById('ib-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
     // Political impact fields
@@ -13720,6 +13710,7 @@ function saveInbox(i) {
     var polMinClout = parseInt(document.getElementById('ib-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
+    var cloutCost = parseInt(document.getElementById('ib-ccloutcost-'+i+'-'+ci)?.value) || 0;
     const outcomes=[];
     let oi=0;
     while(document.getElementById('ib-otext-'+i+'-'+ci+'-'+oi)) {
@@ -13730,7 +13721,12 @@ function saveInbox(i) {
       oi++;
     }
     var segOv = readSegOverrides('ib', i, ci);
-    s.choices.push({id:'c'+ci,text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    if (unlock) choice.requiresUnlock = unlock;
+    else delete choice.requiresUnlock;
+    if (cloutCost > 0) choice.cloutCost = cloutCost;
+    else delete choice.cloutCost;
+    s.choices.push(choice);
     ci++;
   }
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Inbox saved.','success');
@@ -14108,13 +14104,25 @@ var PORTRAIT_NAMED = ['rachel_steinberg','avi_kessler','miriam_gold','rabbi_frie
 
 function renderPortraitPicker(a, i){
   var current = a.portrait || '';
+  var pool = GD.advisorPool || [];
+  // Find which portraits are used by OTHER advisors
+  var usedPortraits = {};
+  pool.forEach(function(adv, idx) {
+    if (idx !== i && adv.portrait) usedPortraits[adv.portrait] = adv.name;
+  });
   var previewHtml = current ?
     '<img src="'+esc(current)+'/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">' :
     '<span style="font-size:36px">'+esc(a.emoji||'👤')+'</span>';
   var gridHtml = PORTRAIT_CHARS.map(function(cid){
     var path = 'art/advisors/'+cid;
-    var sel = current === path ? ' style="outline:3px solid var(--gold);outline-offset:-2px;border-radius:4px"' : '';
-    return '<img src="'+path+'/neutral.png" onclick="selectPortrait('+i+',\''+path+'\')" style="width:40px;height:46px;object-fit:cover;object-position:top;border-radius:4px;cursor:pointer;border:1px solid #ddd"'+sel+' title="'+cid+'">';
+    var isUsed = usedPortraits[path];
+    var isCurrent = current === path;
+    var style = 'width:40px;height:46px;object-fit:cover;object-position:top;border-radius:4px;cursor:pointer;border:1px solid #ddd';
+    if (isCurrent) style += ';outline:3px solid var(--gold);outline-offset:-2px';
+    if (isUsed && !isCurrent) style += ';opacity:0.3;cursor:not-allowed';
+    var onclick = (isUsed && !isCurrent) ? '' : 'onclick="selectPortrait('+i+',\''+path+'\')"';
+    var title = isUsed ? 'Used by ' + isUsed : cid;
+    return '<img src="'+path+'/neutral.png" '+onclick+' style="'+style+'" title="'+title+'">';
   }).join('');
   return '<div class="form-group" style="margin-bottom:14px"><label>Portrait</label>'+
     '<div style="display:flex;align-items:flex-start;gap:14px">'+

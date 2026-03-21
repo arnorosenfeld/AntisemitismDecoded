@@ -298,12 +298,12 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-stars .star-empty { opacity: 0.45; }
 /* Board rating in HUD */
 .hud-board-rating { position: relative; cursor: pointer; text-align: center; }
-.hud-grade-letter { font-family: 'Merriweather', serif; font-weight: 900; font-size: 18px; padding: 4px 12px; border-radius: 4px; line-height: 1; }
-.hud-grade-letter.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.15); }
-.hud-grade-letter.grade-b { color: #b8860b; background: rgba(184,134,11,0.15); }
-.hud-grade-letter.grade-c { color: #7a6b1a; background: rgba(122,107,26,0.15); }
-.hud-grade-letter.grade-d { color: #c0392b; background: rgba(192,57,43,0.15); }
-.hud-grade-letter.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.2); }
+.hud-grade-letter { font-family: 'Merriweather', serif; font-weight: 900; font-size: 18px; padding: 2px 10px; border-radius: 4px; line-height: 1.2; display: inline-block; }
+.hud-grade-letter.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.2); }
+.hud-grade-letter.grade-b { color: #b8860b; background: rgba(184,134,11,0.2); }
+.hud-grade-letter.grade-c { color: #927a1a; background: rgba(146,122,26,0.2); }
+.hud-grade-letter.grade-d { color: #c0392b; background: rgba(192,57,43,0.2); }
+.hud-grade-letter.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.25); }
 .hud-board-rating:hover .grade-detail { display: block; }
 .grade-detail { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px; min-width: 240px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; margin-top: 6px; }
 .grade-detail::before { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #1a1a2e; border-left: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15); }
@@ -829,6 +829,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .choice-pol-tag.lean-center{background:#f3e8ff;color:#6b21a8}
 .choice-clout-tag { display: inline-block; font-size: 10px; font-weight: 600; color: #8b5cf6; margin-top: 4px; }
 .choice-clout-tag.unaffordable { color: #ef4444; }
+.choice-trait-tag { display: inline-block; font-size: 10px; font-weight: 600; margin-top: 4px; }
+.choice-trait-tag.locked { color: #999; }
+.choice-trait-tag.unlocked { color: #2d6a4f; }
 
 /* ═══ STAT MOMENTUM ═══ */
 .stat-trend{font-size:10px;margin-left:4px;font-weight:700}

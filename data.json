@@ -490,7 +490,7 @@
         "donors": 8
       },
       "unlocksChoices": [
-        "major_gift_option"
+        "master_fundraiser"
       ],
       "budgetBonus": 10
     },
@@ -503,7 +503,7 @@
         "morale": 8
       },
       "unlocksChoices": [
-        "coalition_option"
+        "grassroots_organizer"
       ]
     },
     {
@@ -514,7 +514,7 @@
         "trust": 5
       },
       "unlocksChoices": [
-        "halachic_option"
+        "jewish_scholar"
       ]
     },
     {
@@ -525,7 +525,7 @@
         "donors": 6
       },
       "unlocksChoices": [
-        "political_option"
+        "political_operator"
       ],
       "budgetBonus": 6
     },
@@ -537,7 +537,7 @@
         "trust": 10
       },
       "unlocksChoices": [
-        "press_option"
+        "media_savvy"
       ]
     },
     {
@@ -548,7 +548,7 @@
         "morale": 12
       },
       "unlocksChoices": [
-        "staff_support_option"
+        "burnout_survivor"
       ]
     }
   ],
@@ -1118,7 +1118,7 @@
             "antisemitism_all",
             "diaspora_unity"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "grassroots_organizer",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -1346,7 +1346,7 @@
           "id": "c3",
           "text": "Accept and immediately find a matching unrestricted donor to protect your core work.",
           "missionAligned": [],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "master_fundraiser",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -1520,7 +1520,7 @@
           "missionAligned": [
             "jewish_identity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "jewish_scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -1688,7 +1688,7 @@
           "id": "c3",
           "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
           "missionAligned": [],
-          "requiresUnlock": "staff_support_option",
+          "requiresUnlock": "burnout_survivor",
           "missionOpposed": [
             "community_hub"
           ],
@@ -1843,7 +1843,7 @@
           "id": "c3",
           "text": "Quietly engineer a public honor for one of them, making it impossible to continue the feud without looking petty.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -2431,7 +2431,7 @@
           "id": "c3",
           "text": "Use your media relationships to get advance notice of key claims and prepare a surgical rebuttal.",
           "missionAligned": [],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5087,7 +5087,7 @@
             "antisemitism_left",
             "social_justice"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "grassroots_organizer",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -5264,7 +5264,7 @@
             "israel_peace",
             "social_justice"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "master_fundraiser",
           "missionOpposed": [],
           "politicalLean": -3,
           "outcomes": [
@@ -5451,7 +5451,7 @@
             "antisemitism_left",
             "social_justice"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5637,7 +5637,7 @@
           "missionAligned": [
             "antisemitism_left"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5816,7 +5816,7 @@
             "diaspora_unity",
             "jewish_identity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "jewish_scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -6002,7 +6002,7 @@
             "antisemitism_all",
             "antisemitism_right"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "politicalLean": -2,
           "outcomes": [
@@ -6193,7 +6193,7 @@
             "jewish_identity",
             "israel_security"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "jewish_scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -6370,7 +6370,7 @@
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "master_fundraiser",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -6550,7 +6550,7 @@
             "antisemitism_right",
             "israel_security"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -6723,7 +6723,7 @@
           "missionAligned": [
             "antisemitism_all"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -6899,7 +6899,7 @@
             "diaspora_unity",
             "antisemitism_all"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "grassroots_organizer",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7088,7 +7088,7 @@
             "diaspora_unity",
             "jewish_identity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "jewish_scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7252,7 +7252,7 @@
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "master_fundraiser",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7441,7 +7441,7 @@
             "antisemitism_all",
             "diaspora_unity"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7603,7 +7603,7 @@
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7805,7 +7805,7 @@
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "staff_support_option",
+          "requiresUnlock": "burnout_survivor",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7984,7 +7984,7 @@
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "staff_support_option",
+          "requiresUnlock": "burnout_survivor",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8165,7 +8165,7 @@
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "grassroots_organizer",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8338,7 +8338,7 @@
             "community_hub",
             "jewish_identity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "jewish_scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8514,7 +8514,7 @@
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "staff_support_option",
+          "requiresUnlock": "burnout_survivor",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -11848,7 +11848,7 @@
           "id": "c3",
           "text": "Counter-propose a private meeting instead of a public appearance — build the relationship without the optics.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -11950,7 +11950,7 @@
           "id": "c3",
           "text": "Use your political relationships to identify who is driving this and quietly address their specific concerns.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {

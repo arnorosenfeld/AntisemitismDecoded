@@ -114,11 +114,10 @@ function shuffle(arr) {
   return a;
 }
 function barColor(v) {
-  if(v>=80) return '#d4a843';
-  if(v>=60) return '#4ade80';
-  if(v>=40) return '#60a5fa';
-  if(v>=25) return '#f59e0b';
-  return '#ef4444';
+  if(v>=60) return '#2d6a4f';
+  if(v>=40) return '#b8860b';
+  if(v>=25) return '#e67e22';
+  return '#c0392b';
 }
 
 
@@ -361,7 +360,7 @@ function renderSegmentTooltip() {
   segments.forEach(function(seg) {
     var v = Math.round(G.segmentApproval[seg.id] || 50);
     var w = weights[seg.id] || seg.populationBaseline;
-    var col = v >= 60 ? '#4ade80' : v >= 40 ? '#fbbf24' : '#f87171';
+    var col = barColor(v);
     html += '<div class="seg-row">';
     html += '<span class="seg-name">' + seg.name + '</span>';
     html += '<div class="seg-bar-wrap"><div class="seg-bar" style="width:' + v + '%;background:' + col + '"></div></div>';
@@ -656,13 +655,15 @@ function initIntro() {
     var introScreen = document.getElementById('intro-screen');
     function checkScrollHint() {
       if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
-      // Check if the bottom CTA or ticker is visible — means we're at the bottom
       var bottomEl = document.getElementById('lp-bottom') || document.getElementById('lp-ticker');
       if (bottomEl) {
         var rect = bottomEl.getBoundingClientRect();
-        var visible = rect.top < window.innerHeight;
+        var visible = rect.top < window.innerHeight + 50;
         scrollHint.classList.toggle('hidden', visible);
       }
+      // Also hide if we're near the absolute bottom
+      var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
+      if (atBottom) scrollHint.classList.add('hidden');
     }
     window.addEventListener('scroll', checkScrollHint, { passive: true });
     window.addEventListener('resize', checkScrollHint);
@@ -1013,7 +1014,6 @@ function toggleHelpPanel() {
         '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
           '<div style="margin-bottom:10px"><strong>\u2b50 Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. They boost your year-end score.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udcb0 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices cost gelt.</div>' +
-          '<div style="margin-bottom:10px"><strong>\ud83d\udcc8 Momentum:</strong> Stats that trend up for two rounds get a small boost. Stats that trend down get a penalty. Watch the arrows next to your stats.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udc65 Segments:</strong> Community Trust is the weighted average of how different groups feel about you. A decision that thrills one group may alienate another.</div>' +
           '<div><strong>\u2696\ufe0f Political Capital:</strong> Your political position and clout affect which coalitions, allies, and choices are available to you.</div>' +
         '</div>';
@@ -1162,7 +1162,7 @@ var ONBOARDING_STEPS = [
   },
   {
     mood: 'concerned',
-    msg: 'One more thing \u2014 your stats have <strong>momentum</strong>. If a stat trends up for two rounds, it gets a small boost. If it trends down, it drops a little faster. Watch the arrows next to your stats \u2014 they show which way things are heading. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
+    msg: 'One more thing \u2014 there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
     label: 'Let\'s do this \u2192'
   }
 ];
@@ -1444,9 +1444,7 @@ function startPromoGame(){
   beginRound();
 }
 
-// ═══════════════ ROUND ═══════════════
-// ═══════════════ ROUND ENTROPY ═══════════════
-// Entropy removed — momentum is the only passive stat change system
+// ═══════════════ ROUND START ═══════════════
 
 function beginRound(){
   G.round++;
@@ -1463,12 +1461,9 @@ function beginRound(){
     return;
   }
 
-  // Record stat snapshot for momentum tracking
+  // Record stat snapshot for end-screen deltas
   recordStatSnapshot();
-  
-  // Apply stat momentum
-  if(G.round > 1) applyMomentum();
-  
+
   // Check coaching warnings (Year 1 only)
   if(G.round > 1) checkCoachingWarnings();
 
@@ -1682,7 +1677,7 @@ function updateHUD(){
     return `<div class="meter${isTrust?' trust-meter':''}">
       <span class="m-label">${s.label}</span>
       <div class="m-bar-wrap"><div class="m-bar" style="width:${v}%;background:${barColor(v)}"></div></div>
-      <span class="m-val">${v}${momentumArrow(s.id)}</span>
+      <span class="m-val">${v}</span>
       ${isTrust ? renderSegmentTooltip() : ''}
     </div>`;
   }).join('');
@@ -1889,20 +1884,6 @@ function renderMain(){
     + '</div>'
 
     + '</div>'
-    + '</div>'
-
-    // Action log
-    + '<div class="invest-toggle-bar">'
-    + (G.roundActions.length > 0 ? '<button class="log-toggle-btn" onclick="toggleActionLog()">\uD83D\uDCCB Action Log <span class="log-btn-count">' + G.roundActions.length + '</span></button>' : '')
-    + '</div>'
-    + '<div class="action-log-panel" id="action-log-panel">'
-    + G.roundActions.map(function(a) {
-        return '<div class="act-result">'
-          + '<div class="act-result-title">' + a.icon + ' ' + a.name + '</div>'
-          + '<div class="act-result-text">' + a.outcomeText + '</div>'
-          + '<div class="chip-row">' + a.chips + '</div>'
-          + '</div>';
-      }).join('')
     + '</div>';
 }
 
@@ -2027,7 +2008,7 @@ function processQueue(){
 
 // ═══════════════ SCENARIO ═══════════════
 function renderScenario(s){
-  const valid=s.choices.filter(c=>!c.requiresUnlock||G.activeUnlocks.includes(c.requiresUnlock));
+  const valid=s.choices; // Show all choices, locked ones rendered as disabled
   // Auto-infer political lean for choices
   valid.forEach(function(c){ inferPoliticalLean(c, s); });
   const advisorHtml = renderAdvisorQuotes(s);
@@ -2047,14 +2028,24 @@ function renderScenario(s){
           var cCost = c.cloutCost || 0;
           var hasClout = cCost <= G.politicalClout;
           var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
+          var traitLocked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
+          var traitTag = '';
+          if (traitLocked) {
+            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<span class="choice-trait-tag locked">\U0001f512 Requires ' + traitName + ' trait</span>';
+          } else if (c.requiresUnlock) {
+            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
+          }
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
-          var isLocked = lockBudget || !hasClout || lockPolitical;
+          var isLocked = lockBudget || !hasClout || lockPolitical || traitLocked;
           var recBadge = getAdvisorRecommendationBadge(s, i);
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled':''}onclick="chooseScenario('${s.id}',${i})">
             <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
             ${costTag}
             ${cloutTag}
+            ${traitTag}
             ${missionBadgeHTML(c)}
             ${renderPoliticalTag(c)}
             ${renderCoalitionWarnings(c)}
@@ -2093,9 +2084,12 @@ function getTopMoments(count) {
 
 function chooseScenario(sid,idx){
   const s=GAME_DATA.scenarios.find(x=>x.id===sid);
-  const valid=s.choices.filter(c=>!c.requiresUnlock||G.activeUnlocks.includes(c.requiresUnlock));
+  const valid=s.choices; // Show all choices, locked ones rendered as disabled
   const c=valid[idx];
-  
+
+  // Trait lock check
+  if (c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock)) return;
+
   // Political lock check
   if (isChoicePoliticallyLocked(c)) return;
   
@@ -2156,7 +2150,7 @@ function chooseScenario(sid,idx){
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
-  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
+  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
 
@@ -2210,7 +2204,7 @@ function renderInbox(s){
   var overlay = document.getElementById('inbox-overlay');
   if(overlay) overlay.classList.remove('open');
   
-  const valid=s.choices.filter(c=>!c.requiresUnlock||G.activeUnlocks.includes(c.requiresUnlock));
+  const valid=s.choices; // Show all choices, locked ones rendered as disabled
   // Auto-infer political lean for inbox choices
   valid.forEach(function(c){ inferPoliticalLean(c, s); });
   document.getElementById('game-inner').innerHTML=`
@@ -2230,13 +2224,23 @@ function renderInbox(s){
           var cCost = c.cloutCost || 0;
           var hasClout = cCost <= G.politicalClout;
           var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
+          var traitLocked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
+          var traitTag = '';
+          if (traitLocked) {
+            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<span class="choice-trait-tag locked">\U0001f512 Requires ' + traitName + ' trait</span>';
+          } else if (c.requiresUnlock) {
+            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
+          }
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
-          var isLocked = lockBudget || !hasClout || lockPolitical;
+          var isLocked = lockBudget || !hasClout || lockPolitical || traitLocked;
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled ':''}onclick="chooseInbox('${s.id}',${i})">
             <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
             ${costTag}
             ${cloutTag}
+            ${traitTag}
             ${missionBadgeHTML(c)}
             ${renderPoliticalTag(c)}
             ${renderCoalitionWarnings(c)}
@@ -2249,9 +2253,12 @@ function renderInbox(s){
 
 function chooseInbox(sid,idx){
   const s=GAME_DATA.inboxScenarios.find(x=>x.id===sid);
-  const valid=s.choices.filter(c=>!c.requiresUnlock||G.activeUnlocks.includes(c.requiresUnlock));
+  const valid=s.choices; // Show all choices, locked ones rendered as disabled
   const c=valid[idx];
-  
+
+  // Trait lock check
+  if (c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock)) return;
+
   // Political lock check
   if (isChoicePoliticallyLocked(c)) return;
   
@@ -2308,7 +2315,7 @@ function chooseInbox(sid,idx){
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
-  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
+  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
 
@@ -2399,9 +2406,253 @@ function checkFailure(){
 }
 
 // ═══════════════ END ROUND ═══════════════
-// #8: This is only callable when AP = 0
 function endRound(){
-  if(G.apRemaining > 0) return; // safety check
+  if(G.apRemaining > 0) return;
+  showRoundTransition();
+}
+
+function showRoundTransition() {
+  var el = document.getElementById('game-inner');
+  if (!el) return;
+
+  var totalRounds = GAME_DATA.config.totalRounds || 4;
+  var currentRound = G.round;
+  var nextRound = currentRound + 1;
+
+  // Check if this is the final round — go to year end instead
+  if (nextRound > totalRounds) {
+    endYear();
+    return;
+  }
+
+  // Season names
+  var roundNames = GAME_DATA.config.roundNames || [];
+  var currentSeason = roundNames[currentRound - 1] || {};
+  var nextSeason = roundNames[nextRound - 1] || {};
+
+  // Stat deltas this round
+  var prevSnap = (G.statHistory && G.statHistory.length > 1) ? G.statHistory[G.statHistory.length - 2] : (G.statHistory && G.statHistory[0]) || {};
+  var currentSnap = {};
+  GAME_DATA.stats.forEach(function(s) { currentSnap[s.id] = Math.round(G.stats[s.id] || 0); });
+
+  // Stats HTML
+  var statsHtml = '';
+  GAME_DATA.stats.forEach(function(s) {
+    var v = Math.round(G.stats[s.id] || 0);
+    var prev = Math.round(prevSnap[s.id] || v);
+    var d = v - prev;
+    var dCls = d > 0 ? 'delta-up' : d < 0 ? 'delta-down' : 'delta-flat';
+    var dText = d > 0 ? '+' + d : d < 0 ? '' + d : '±0';
+    statsHtml += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">' +
+      '<span style="font-size:12px;font-weight:700;width:65px;color:var(--muted)">' + s.label + '</span>' +
+      '<div style="flex:1;height:8px;background:#e0ddd5;border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;width:' + v + '%;background:' + barColor(v) + '"></div></div>' +
+      '<span style="font-family:Merriweather,serif;font-weight:700;font-size:14px;width:30px;text-align:right;color:' + barColor(v) + '">' + v + '</span>' +
+      '<span style="font-size:11px;font-weight:700;width:36px;text-align:right" class="' + dCls + '">' + dText + '</span>' +
+    '</div>';
+  });
+
+  // Secondary stats
+  var liveGrade = computeLiveGrade();
+  var starsHtml = '';
+  var maxS = GAME_DATA.config.missionMaxStars || 5;
+  for (var si = 0; si < maxS; si++) {
+    starsHtml += si < G.missionStars ? '<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle">' : '<img src="art/star.png" style="width:14px;height:14px;vertical-align:middle;opacity:0.25;filter:grayscale(0.5)">';
+  }
+
+  // Defining moment
+  var moments = getTopMoments(1);
+  var momentHtml = '';
+  if (moments.length > 0) {
+    var m = moments[0];
+    momentHtml = '<div style="background:#f8f5ef;border-left:3px solid var(--gold);padding:12px 16px;margin-bottom:20px;font-size:12px;line-height:1.6">' +
+      '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">This round\'s defining moment</div>' +
+      '<div style="color:#3a3528"><strong>' + esc(m.title) + '</strong> — ' + esc(m.outcomeText) + '</div>' +
+    '</div>';
+  }
+
+  // Gazette headlines
+  var headlines = generateGazetteHeadlines();
+  var gazetteHtml = '';
+  if (headlines.length > 0) {
+    gazetteHtml = '<div style="background:var(--white);border:1px solid var(--border);padding:20px 24px;margin-bottom:24px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:14px">' +
+        '<span style="font-family:Merriweather,serif;font-weight:900;font-size:14px;letter-spacing:1px">✡ The Jewish Gazette</span>' +
+        '<span style="font-size:10px;color:var(--muted);font-style:italic">' + esc(currentSeason.english || '') + '</span>' +
+      '</div>';
+    headlines.slice(0, 3).forEach(function(h) {
+      gazetteHtml += '<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #e8e0d0">' +
+        '<div style="font-family:Merriweather,serif;font-weight:700;font-size:13px;line-height:1.3;margin-bottom:3px">' + esc(h.headline) + '</div>' +
+        '<div style="font-size:11px;color:var(--muted);line-height:1.4">' + esc(h.subline) + '</div>' +
+      '</div>';
+    });
+    gazetteHtml += '</div>';
+  }
+
+  // Coalition offer
+  var coalitionHtml = '';
+  var hasCoalition = false;
+  var pendingCoalition = checkCoalitionOfferForTransition();
+  if (pendingCoalition) {
+    hasCoalition = true;
+    var co = pendingCoalition;
+    var benefitParts = [];
+    var perRound = (co.benefits || {}).perRound || {};
+    Object.entries(perRound).forEach(function(e) {
+      var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0];
+      benefitParts.push('+' + e[1] + ' ' + lbl);
+    });
+    var constraintText = (co.constraints || []).map(function(c) { return c.description; }).join('; ');
+    var declineParts = [];
+    var dp = co.declinePenalty || {};
+    if (dp.effects) {
+      Object.entries(dp.effects).forEach(function(e) {
+        var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0];
+        declineParts.push(e[1] + ' ' + lbl);
+      });
+    }
+    var declineText = declineParts.length > 0 ? declineParts.join(', ') : '';
+
+    coalitionHtml = '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Coalition Opportunity</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
+      '<div id="rt-coalition" style="background:var(--white);border:2px solid var(--gold);padding:20px 24px;margin-bottom:24px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
+          '<span style="font-size:24px">🤝</span>' +
+          '<span style="font-family:Merriweather,serif;font-weight:900;font-size:16px">' + esc(co.name) + '</span>' +
+          '<span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);background:rgba(184,134,11,0.1);padding:2px 8px;margin-left:auto">New Offer</span>' +
+        '</div>' +
+        '<div style="font-size:13px;line-height:1.7;color:#3a3528;margin-bottom:14px">' + esc(co.description) + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+          '<div style="background:#f8f5ef;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Benefits (per round)</div><div style="font-size:12px;color:#2d6a4f">' + benefitParts.join(', ') + '</div></div>' +
+          '<div style="background:#f8f5ef;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Constraint</div><div style="font-size:12px;color:#c0392b">' + esc(constraintText) + '</div></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:12px;justify-content:center">' +
+          '<button class="btn btn-gold" onclick="acceptCoalitionTransition(\'' + esc(co.id) + '\')">Accept Partnership →</button>' +
+          '<button class="btn btn-secondary" onclick="declineCoalitionTransition(\'' + esc(co.id) + '\')" style="position:relative">' +
+            'Decline' + (declineText ? '<span style="display:block;font-size:9px;color:#c0392b;margin-top:2px;text-transform:none;letter-spacing:0;font-weight:600">' + declineText + '</span>' : '') +
+          '</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Build full transition screen
+  var html = '<div style="max-width:640px;margin:0 auto">' +
+    // Round heading
+    '<div style="text-align:center;margin-bottom:6px"><h2 style="font-family:Merriweather,serif;font-weight:900;font-size:28px">Round ' + currentRound + ' <span style="color:var(--gold)">Summary</span></h2></div>' +
+    // Season transition
+    '<div style="text-align:center;margin-bottom:28px">' +
+      '<div style="font-size:13px;color:var(--muted)"><span style="opacity:0.6">' + esc(currentSeason.english || 'Round ' + currentRound) + '</span> <span style="color:var(--gold);font-weight:700;margin:0 6px">→</span> <span style="font-weight:700;color:var(--ink)">' + esc(nextSeason.english || 'Round ' + nextRound) + '</span></div>' +
+    '</div>' +
+    // Divider
+    '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Your Organization</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
+    // Stats
+    '<div style="background:var(--white);border:1px solid var(--border);padding:20px 24px;margin-bottom:20px">' +
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Performance This Round</div>' +
+      statsHtml +
+    '</div>' +
+    // Secondary
+    '<div style="display:flex;gap:20px;justify-content:center;margin-bottom:20px">' +
+      '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Gelt</span><span style="font-family:Merriweather,serif;font-weight:700;font-size:16px"><img src="art/coins.png" style="width:14px;vertical-align:middle"> ' + Math.round(G.budget) + '</span></div>' +
+      '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Mission</span><span style="font-family:Merriweather,serif;font-weight:700;font-size:16px">' + starsHtml + '</span></div>' +
+      '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Board Rating</span><span class="hud-grade-letter grade-' + liveGrade.grade.toLowerCase() + '">' + liveGrade.grade + '</span></div>' +
+      '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Clout</span><span style="font-family:Merriweather,serif;font-weight:700;font-size:16px">⚡' + Math.round(G.politicalClout) + '</span></div>' +
+    '</div>' +
+    // Defining moment
+    momentHtml +
+    // Gazette
+    (headlines.length > 0 ? '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">The Jewish Gazette</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' : '') +
+    gazetteHtml +
+    // Coalition
+    coalitionHtml +
+    // Continue button
+    '<div style="text-align:center;margin-top:8px">' +
+      '<button id="rt-continue-btn" class="btn btn-primary" style="padding:16px 40px;font-size:13px" onclick="continueFromTransition()" ' + (hasCoalition ? 'disabled style="padding:16px 40px;font-size:13px;opacity:0.4;cursor:not-allowed"' : '') + '>Begin Round ' + nextRound + ': ' + esc(nextSeason.english || '') + ' →</button>' +
+      (hasCoalition ? '<div id="rt-continue-msg" style="font-size:11px;color:var(--muted);margin-top:6px;font-style:italic">Accept or decline the coalition offer to continue</div>' : '') +
+    '</div>' +
+  '</div>';
+
+  el.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function checkCoalitionOfferForTransition() {
+  // Check if there's a coalition to offer this round (same logic as checkCoalitionOffers but returns the offer)
+  var offers = GAME_DATA.coalitionOffers || [];
+  for (var i = 0; i < offers.length; i++) {
+    var co = offers[i];
+    if (co.offerRound && co.offerRound !== G.round) continue;
+    if ((G.activeCoalitions||[]).some(function(ac){return ac.id===co.id})) continue;
+    if ((G.declinedCoalitions||[]).includes(co.id)) continue;
+    if ((G.brokenCoalitions||[]).includes(co.id)) continue;
+    // Political requirement check
+    if (co.politicalRequirement) {
+      var pr = co.politicalRequirement;
+      if (pr.maxPosition !== undefined && G.politicalPosition > pr.maxPosition) continue;
+      if (pr.minPosition !== undefined && G.politicalPosition < pr.minPosition) continue;
+      if (pr.minClout !== undefined && G.politicalClout < pr.minClout) continue;
+    }
+    // Stat requirement check
+    var ineligible = false;
+    (co.constraints || []).forEach(function(con) {
+      if (con.type === 'maintainStat' && (G.stats[con.stat] || 50) < (con.above || 0)) ineligible = true;
+    });
+    if (ineligible) continue;
+    return co;
+  }
+  return null;
+}
+
+function acceptCoalitionTransition(coalId) {
+  var co = (GAME_DATA.coalitionOffers||[]).find(function(c){return c.id===coalId});
+  if (!co) return;
+  // Add coalition
+  G.activeCoalitions = G.activeCoalitions || [];
+  G.activeCoalitions.push({
+    id: co.id, name: co.name, benefits: co.benefits, constraints: co.constraints,
+    remaining: co.duration || 999, strikeMax: co.strikeMax
+  });
+  // Apply acceptance bonuses
+  if (co.acceptClout) G.politicalClout = Math.min(100, G.politicalClout + co.acceptClout);
+  if (co.politicalLean) G.politicalPosition = Math.max(0, Math.min(100, G.politicalPosition + co.politicalLean));
+  recordEvent('coalitionFormed', {coalitionId: co.id});
+  // Update UI
+  document.getElementById('rt-coalition').innerHTML = '<div style="text-align:center;padding:20px;color:var(--gold);font-weight:700">🤝 ' + esc(co.name) + ' Accepted</div>';
+  enableContinueButton();
+  updateHUD();
+}
+
+function declineCoalitionTransition(coalId) {
+  var co = (GAME_DATA.coalitionOffers||[]).find(function(c){return c.id===coalId});
+  if (!co) return;
+  G.declinedCoalitions = G.declinedCoalitions || [];
+  G.declinedCoalitions.push(co.id);
+  // Apply decline penalty
+  var dp = co.declinePenalty || {};
+  if (dp.effects) {
+    Object.keys(dp.effects).forEach(function(k) {
+      if (k === 'trust' && G.segmentApproval) applySegmentEffects(dp.effects[k], null, null);
+      else G.stats[k] = Math.max(0, Math.min(100, (G.stats[k]||50) + dp.effects[k]));
+    });
+  }
+  // Update UI
+  var penaltyText = '';
+  if (dp.effects) {
+    Object.entries(dp.effects).forEach(function(e) {
+      var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0];
+      penaltyText += '<span style="color:#c0392b">' + e[1] + ' ' + lbl + '</span> ';
+    });
+  }
+  document.getElementById('rt-coalition').innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-style:italic">Partnership declined. ' + penaltyText + '</div>';
+  enableContinueButton();
+  updateHUD();
+}
+
+function enableContinueButton() {
+  var btn = document.getElementById('rt-continue-btn');
+  if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
+  var msg = document.getElementById('rt-continue-msg');
+  if (msg) msg.style.display = 'none';
+}
+
+function continueFromTransition() {
   beginRound();
 }
 
@@ -2838,7 +3089,9 @@ function renderInvestStrip() {
     '</div>';
   }).join('');
   
-  el.innerHTML = '<span class="invest-strip-label">Investments (' + remaining + ')</span>' + pills;
+  var total = G.investmentPool || 0;
+  var used = G.investmentsUsed || 0;
+  el.innerHTML = '<span class="invest-strip-label">Investments (' + used + '/' + total + ')</span>' + pills;
   // Show scroll fade and arrow if content overflows
   var strip = document.getElementById('invest-strip');
   var wrap = strip ? strip.querySelector('.invest-strip-wrap') : null;
@@ -2927,9 +3180,11 @@ function renderInvestmentContent() {
     }).filter(Boolean).join('');
   }
   
+  var total = G.investmentPool || 0;
+  var used = G.investmentsUsed || 0;
   return '<div class="invest-header">' +
-      '<h3>💰 Investments</h3>' +
-      '<span class="invest-pool-tag">' + remaining + ' investment' + (remaining !== 1 ? 's' : '') + ' remaining this year</span>' +
+      '<h3>💰 Investments (' + used + '/' + total + ')</h3>' +
+      '<span class="invest-pool-tag">' + remaining + ' remaining this year</span>' +
     '</div>' +
     '<p style="font-size:12px;color:var(--muted);margin-bottom:14px">Spend gelt on strategic investments. These don\'t cost actions.</p>' +
     '<div class="invest-cards">' +
@@ -3593,9 +3848,8 @@ function resolveConversation() {
       chipHtml += '<span class="chip ' + (e[1] > 0 ? 'chip-pos' : 'chip-neg') + '">' + sign + e[1] + ' ' + statLabel + '</span>';
     });
   }
-  if (outcome.budgetEffect) {
-    var bsign = outcome.budgetEffect > 0 ? '+' : '';
-    chipHtml += '<span class="chip ' + (outcome.budgetEffect > 0 ? 'chip-pos' : 'chip-neg') + '">' + bsign + outcome.budgetEffect + ' Gelt</span>';
+  if (outcome.budgetEffect && outcome.budgetEffect > 0) {
+    chipHtml += '<span class="chip chip-pos">+' + outcome.budgetEffect + ' Gelt</span>';
   }
   
   outcomeDiv.innerHTML = '<div class="conv-outcome-heading">' + esc(heading) + '</div>' +
@@ -3618,14 +3872,13 @@ function resolveConversation() {
       }
     });
   }
-  if (outcome.budgetEffect) {
+  if (outcome.budgetEffect && outcome.budgetEffect > 0) {
     G.budget += outcome.budgetEffect;
-    if (outcome.budgetEffect > 0) G.budgetIncomeThisYear += outcome.budgetEffect;
-    else G.budgetSpentThisYear += Math.abs(outcome.budgetEffect);
-    if (G.budget < 0) G.budget = 0;
+    G.budgetIncomeThisYear += outcome.budgetEffect;
     if (G.budget > G.budgetMax) G.budgetMax = G.budget;
   }
-  
+  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
+
   // For advisor conversations, store the multiplier
   if (conv.type === 'advisor' && outcome.modifiesAdvisorBonus !== undefined) {
     G.currentAdvisorBonusMultiplier = outcome.modifiesAdvisorBonus;
@@ -3685,10 +3938,6 @@ function pickGazetteHeadlines() {
     } else if (tr.type === 'statBelow') {
       var sv2 = tr.stat === 'budget' ? (G.budget||0) : (stats[tr.stat]||50);
       if (sv2 < tr.threshold) matched.push(t);
-    } else if (tr.type === 'momentumUp') {
-      if (getStatMomentum(tr.stat) > 0) matched.push(t);
-    } else if (tr.type === 'momentumDown') {
-      if (getStatMomentum(tr.stat) < 0) matched.push(t);
     } else if (tr.type === 'coalitionFormed') {
       if (gazetteEvents.some(function(e){return e.type==='coalitionFormed' && e.round===G.round})) matched.push(t);
     } else if (tr.type === 'coalitionBroken') {
@@ -3714,6 +3963,7 @@ function shuffle(arr) {
   for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
   return a;
 }
+var generateGazetteHeadlines = pickGazetteHeadlines;
 
 // ═══ NOTIFICATION STACKING ═══
 function positionNotification(el) {
@@ -4128,6 +4378,14 @@ function showBreakingNews(bn) {
     var align = getMissionAlignment(c);
     var badge = missionBadgeHTML(c);
     var locked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
+    var traitTag = '';
+    if (locked) {
+      var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+      traitTag = '<span class="choice-trait-tag locked">\U0001f512 Requires ' + traitName + ' trait</span>';
+    } else if (c.requiresUnlock) {
+      var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+      traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
+    }
     var bCost = c.budgetCost || 0;
     var cantAfford = bCost > 0 && bCost > G.budget;
     var polLocked = isChoicePoliticallyLocked(c);
@@ -4139,7 +4397,7 @@ function showBreakingNews(bn) {
     var polTag = renderPoliticalTag(c);
     var choiceAdv = renderChoiceAdvisorQuote(c);
     var costTag = bCost > 0 ? '<span class="choice-budget-tag' + (cantAfford?' unaffordable':'') + '">\ud83d\udcb0 ' + bCost + ' gelt' + (cantAfford?' (insufficient)':'') + '</span>' : '';
-    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + esc(c.text) + badge + coalWarn + polTag + costTag + cloutTag + (locked?' \ud83d\udd12':'') + choiceAdv + '</button>';
+    return '<button class="bn-choice' + (isDisabled?' locked':'') + '" ' + (isDisabled?'disabled':'onclick="pickBreakingChoice('+ci+')"') + '>' + esc(c.text) + badge + coalWarn + polTag + costTag + cloutTag + traitTag + choiceAdv + '</button>';
   }).join('');
   screen.innerHTML =
     '<div class="bn-ticker-bar"><span class="bn-ticker-label">\u26a0 BREAKING</span><span class="bn-ticker-scroll">Developing story \u2014 community response underway</span></div>' +
@@ -4208,7 +4466,7 @@ function pickBreakingChoice(ci) {
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
-  else if(obfx < 0) { G.budget += obfx; G.budgetSpentThisYear += Math.abs(obfx); budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
+  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
   recordEvent('choiceMade', {scenarioId:bn.id, choiceIndex:ci});
@@ -4524,41 +4782,12 @@ function closeCoalitionPopover() {
   overlays.forEach(function(o){o.remove()});
 }
 
-// ═══ STAT MOMENTUM ═══
+// ═══ STAT HISTORY (for end-screen deltas) ═══
 function recordStatSnapshot() {
   if (!G.statHistory) G.statHistory = [];
   var snap = {};
   Object.keys(G.stats||{}).forEach(function(k){snap[k]=G.stats[k]});
     snapshotSegments();
   G.statHistory.push(snap);
-}
-function getStatMomentum(statId) {
-  var history = G.statHistory || [];
-  var window = GAME_DATA.config.momentumWindow || 2;
-  if (history.length < window + 1) return 0;
-  var recent = history.slice(-window-1);
-  var allUp = true, allDown = true;
-  for (var i = 1; i < recent.length; i++) {
-    if ((recent[i][statId]||50) <= (recent[i-1][statId]||50)) allUp = false;
-    if ((recent[i][statId]||50) >= (recent[i-1][statId]||50)) allDown = false;
-  }
-  if (allUp) return 1;
-  if (allDown) return -1;
-  return 0;
-}
-function applyMomentum() {
-  var bonus = GAME_DATA.config.momentumBonus || 1;
-  var penalty = GAME_DATA.config.momentumPenalty || 1;
-  (GAME_DATA.stats||[]).forEach(function(s) {
-    var m = getStatMomentum(s.id);
-    if (m > 0) G.stats[s.id] = Math.min(100, (G.stats[s.id]||50) + bonus);
-    else if (m < 0) G.stats[s.id] = Math.max(0, (G.stats[s.id]||50) - penalty);
-  });
-}
-function momentumArrow(statId) {
-  var m = getStatMomentum(statId);
-  if (m > 0) return '<span class="stat-trend up">\u2191</span>';
-  if (m < 0) return '<span class="stat-trend down">\u2193</span>';
-  return '<span class="stat-trend flat">\u2192</span>';
 }
 

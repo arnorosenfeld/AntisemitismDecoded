@@ -417,7 +417,31 @@
     ],
     "advisorSlots": 3,
     "advisorBonusStacking": "best",
-    "gamePassword": "playtest2025"
+    "gamePassword": "playtest2025",
+    "outgoingED": {
+      "name": "Avi Rosen",
+      "role": "Outgoing Executive Director",
+      "portrait": "art/advisors/avi_rosen"
+    },
+    "popupMessages": {
+      "onboarding": [
+        {"mood": "neutral", "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching.", "label": "What do I need to know?"},
+        {"mood": "neutral", "msg": "You have <strong>3 actions</strong> each round. Click an object on your desk to spend one. Your phone is free — inbox messages don't cost actions.", "label": "Got it. What am I trying to do?"},
+        {"mood": "concerned", "msg": "Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 15 or below, the board calls an emergency meeting and your tenure ends immediately.", "label": "How do I win?"},
+        {"mood": "approving", "msg": "At year's end, the board evaluates your overall performance. Score above <strong>75</strong> and you'll be offered a promotion to a national organization. Stay above <strong>30</strong> and you keep your job. Below that… well, don't go below that. Your mission stars also significantly impact your score — stay true to your stated priorities.", "label": "Any other advice?"},
+        {"mood": "neutral", "msg": "You have a <strong>gelt</strong> (budget) you can invest in your organization — marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost actions but they do cost money.", "label": "One more thing?"},
+        {"mood": "concerned", "msg": "One more thing — there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.", "label": "Let's do this →"}
+      ],
+      "statDangerOrange": "Heads up — your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
+      "statDangerRed": "🚨 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
+      "investmentSuggestion": "Your <strong>{stat}</strong> is in trouble. Consider using investments to help — check the investment bar for options that boost {stat}.",
+      "missionStarLow": "Your mission stars are dangerously low. The board expects you to stay true to your stated priorities — losing all your stars means losing their confidence.",
+      "missionStarMax": "You've earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.",
+      "geltCrisis": "Your gelt is critically low. Some choices may be unavailable until finances improve.",
+      "centristClout": "Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly.",
+      "communityCloutBonus": "⚡ +{amount} Clout from your position near the community's political center.",
+      "communityCloutBonusCentrist": "⚡ +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate."
+    }
   },
   "stats": [
     {

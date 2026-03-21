@@ -252,7 +252,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
   <div class="login-box">
     <h1><span style="color:var(--ink)">Mission</span> <span style="color:var(--gold)">Critical</span></h1>
     <p>Antisemitism Decoded — Content Editor</p>
-    <input type="password" id="login-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" autofocus />
+    <input type="password" id="login-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" autofocus autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" />
     <div id="login-error" class="login-error"></div>
     <button class="btn btn-primary" onclick="doLogin()">Enter Editor</button>
   </div>
@@ -298,7 +298,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <div class="nav-section">Advanced</div>
         <button class="nav-item" onclick="showPanel('politics', this)">⚖️ Political Mechanics</button>
-        <button class="nav-item" onclick="showPanel('advisors', this)">🧑‍⚖️ Advisor Pool</button>
+        <button class="nav-item" onclick="showPanel('advisors', this)">👥 Characters</button>
         <button class="nav-item" onclick="showPanel('gazette', this)">📰 Jewish Gazette</button>
         <button class="nav-item" onclick="showPanel('breaking', this)">🚨 Breaking News</button>
         <button class="nav-item" onclick="showPanel('coalitions', this)">🤝 Coalitions</button>
@@ -724,9 +724,18 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- ADVISORS PANEL -->
         <div id="panel-advisors" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Configure the advisor pool — characters who provide counsel on high-stakes scenarios. Players select a subset of these at game start. Each advisor brings stat modifiers, political leanings, and expertise.</p>
-          <div class="item-list" id="advisors-list"></div>
-          <button class="add-btn" onclick="addAdvisor()">+ Add New Advisor</button>
+          <div class="form-section">
+            <h3>Advisors</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Player-selectable advisors who provide counsel, stat bonuses, and scenario recommendations.</p>
+            <div class="item-list" id="advisors-list"></div>
+            <button class="add-btn" onclick="addAdvisor()">+ Add Advisor</button>
+          </div>
+          <div class="form-section" style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
+            <h3>Other Characters</h3>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Non-advisor characters who appear in tutorials, coaching, and conversations. Includes the outgoing ED and conversation NPCs.</p>
+            <div class="item-list" id="other-characters-list"></div>
+            <button class="add-btn" onclick="addOtherCharacter()">+ Add Character</button>
+          </div>
         </div>
 
         <!-- GAZETTE PANEL -->
@@ -12978,7 +12987,7 @@ const PANEL_TITLES = {
   orgs: 'Local Organizations', 'nat-orgs': 'National Organizations', missions: 'Missions',
   actions: 'Actions', scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios', segments: 'Segments',
   scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration', politics: 'Political Mechanics',
-  advisors: 'Advisor Pool', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
+  advisors: 'Characters', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
   investments: 'Investments', conversations: 'Conversations', tooltips: 'Tooltips & Popups'
 };
 var _populatedPanels = {};
@@ -13161,7 +13170,7 @@ function renderTraitForm(t, i) {
   const stats = GD.stats || [];
   return `<div class="item-edit-form" id="tr-form-${i}" style="display:none">
     <div class="form-row"><div class="form-group"><label>Name</label><input id="tr-name-${i}" value="${esc(t.name)}" /></div><div class="form-group"><label>Description</label><input id="tr-desc-${i}" value="${esc(t.description)}" /></div></div>
-    <div class="form-group" style="margin-bottom:8px"><label>Unlocks Choices (comma-sep IDs)</label><input id="tr-unlocks-${i}" value="${(t.unlocksChoices||[]).join(',')}" /></div>
+    <div class="form-group" style="margin-bottom:8px"><label>Internal ID</label><input id="tr-id-${i}" value="${esc(t.id)}" readonly style="background:#eee;color:var(--muted);font-family:monospace;font-size:12px" /><div class="form-hint">Auto-generated identifier — used to link this trait to choice locks. Do not change.</div></div>
     <div class="stat-inputs cols-4" style="margin-bottom:11px">
       ${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="tr-fx-${i}-${s.id}" value="${(t.statModifiers||{})[s.id]||0}" /></div>`).join('')}
     </div>
@@ -13172,7 +13181,6 @@ function saveTrait(i) {
   const t = GD.characterTraits[i];
   t.name = document.getElementById('tr-name-'+i).value;
   t.description = document.getElementById('tr-desc-'+i).value;
-  t.unlocksChoices = document.getElementById('tr-unlocks-'+i).value.split(',').map(s=>s.trim()).filter(Boolean);
   t.statModifiers = {};
   (GD.stats||[]).forEach(s => { const v = parseInt(document.getElementById('tr-fx-'+i+'-'+s.id)?.value)||0; if(v!==0) t.statModifiers[s.id]=v; });
   localStorage.setItem('gd_cache', JSON.stringify(GD)); setStatus('Trait saved.','success'); populateTraits();
@@ -13448,7 +13456,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
   const aligned = c.missionAligned || [];
   const opposed = c.missionOpposed || [];
   const outcomes = c.outcomes || [{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
-  var hasPol = (c.politicalLean !== undefined && c.politicalLean !== 0) || (c.cloutEffect !== undefined && c.cloutEffect !== 0);
+  var hasPol = (c.politicalLean !== undefined && c.politicalLean !== 0) || (c.cloutEffect !== undefined && c.cloutEffect !== 0) || (c.cloutCost !== undefined && c.cloutCost !== 0);
   return `<div class="choice-editor" id="${prefix}-choice-${si}-${ci}">
     <div class="choice-editor-header">
       <span class="choice-letter">${String.fromCharCode(65+ci)}</span>
@@ -13457,7 +13465,6 @@ function renderChoiceEditor(c, si, ci, prefix) {
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
     <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option><option value="master_fundraiser"${c.requiresUnlock==='master_fundraiser'?' selected':''}>Master Fundraiser</option><option value="grassroots_organizer"${c.requiresUnlock==='grassroots_organizer'?' selected':''}>Grassroots Organizer</option><option value="jewish_scholar"${c.requiresUnlock==='jewish_scholar'?' selected':''}>Jewish Scholar</option><option value="political_operator"${c.requiresUnlock==='political_operator'?' selected':''}>Political Operator</option><option value="media_savvy"${c.requiresUnlock==='media_savvy'?' selected':''}>Media Savvy</option><option value="burnout_survivor"${c.requiresUnlock==='burnout_survivor'?' selected':''}>Burnout Survivor</option></select><div class="form-hint">Which character trait unlocks this choice</div></div>
     <div class="form-group" style="margin-bottom:6px"><label>Gelt Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Gelt units spent if player picks this choice</div></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">Clout spent when player picks this choice (0 = free)</div></div>
     <div class="pol-impact-box${hasPol?' active':''}">
       <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
         <input type="checkbox" id="${prefix}-cpol-${si}-${ci}" ${hasPol?'checked':''} style="accent-color:#6366f1" /> ⚖️ Political Impact
@@ -13468,6 +13475,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
           <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${c.israelLean||0}" min="-10" max="10" /><div class="form-hint">-10=dovish, +10=hawkish, 0=none</div></div>
           <div class="form-group"><label>Clout Effect</label><input type="number" id="${prefix}-cpolclout-${si}-${ci}" value="${c.cloutEffect||0}" min="-10" max="10" /><div class="form-hint">Political capital gained/lost</div></div>
           <div class="form-group"><label>Min Clout Required</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = no requirement</div></div>
+          <div class="form-group"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">Clout spent when player picks this choice (0 = free)</div></div>
         </div>
       </div>
     </div>
@@ -13499,6 +13507,7 @@ function addOutcome(si, ci, prefix) {
   c.outcomes.push({text:'',effects:{},weight:50,conditions:[],contextNote:''});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
   repopulateForPrefix(prefix);
+  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 function deleteOutcome(si,ci,oi,prefix) {
   const list = getListForPrefix(prefix);
@@ -13506,6 +13515,7 @@ function deleteOutcome(si,ci,oi,prefix) {
   list[si].choices[ci].outcomes.splice(oi,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));
   repopulateForPrefix(prefix);
+  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 function editConditions(si,ci,oi,prefix) {
   const list = getListForPrefix(prefix);
@@ -13594,12 +13604,14 @@ function addChoice(si, prefix) {
   list[si].choices.push({id:'c'+list[si].choices.length,text:'',requiresUnlock:null,missionAligned:[],missionOpposed:[],outcomes:[{text:'',effects:{},weight:100,conditions:[],contextNote:''}]});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
   repopulateForPrefix(prefix);
+  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 function deleteChoice(si,ci,prefix) {
   const list = getListForPrefix(prefix);
   list[si].choices.splice(ci,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));
   repopulateForPrefix(prefix);
+  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 function deleteScenario(i,prefix) {
   if(!confirm('Delete?'))return;
@@ -13648,7 +13660,7 @@ function renderInboxForm(s, i) {
     </div>
     <div class="form-group" style="margin-bottom:8px"><label>Applicable Organizations</label><div class="checkbox-grid">${allOrgs.map(o=>`<label class="checkbox-item"><input type="checkbox" id="ib-apporg-${i}-${o.id}" ${appOrgs.includes(o.id)?'checked':''} />${esc(o.name)}</label>`).join('')}</div><div class="form-hint">If none checked, available to all orgs</div></div>
     <div class="form-row three">
-      <div class="form-group"><label>Expires In (rounds, 0=never)</label><input type="number" id="ib-expires-${i}" value="${s.expiresIn||0}" min="0" /><div class="form-hint">Rounds before this inbox item auto-resolves with the expired outcome (0 = never)</div></div>
+      <div class="form-group"><label>Expires in X actions (blank = never)</label><input type="number" id="ib-expires-${i}" value="${s.expiresIn||0}" min="0" /><div class="form-hint">Actions before this inbox item auto-resolves with the expired outcome (0 = never)</div></div>
     </div>
     <details style="margin:8px 0;border:1px solid var(--border);padding:8px;background:#fdf8f0"><summary style="font-size:11px;font-weight:700;cursor:pointer;color:var(--gold)">Expired Outcome (if player ignores this inbox item)</summary>
       <div class="form-group" style="margin:8px 0 6px"><label>Expired Text</label><textarea id="ib-exptext-${i}" rows="2">${esc(expOut.text||'')}</textarea></div>
@@ -14082,8 +14094,6 @@ function savePoliticsConfig() {
 }
 
 // ═══ ADVISOR POOL PANEL ═══
-var ADV_PERSONALITIES = ['cautious','idealist','pragmatist','principled','strategic','activist','transactional','calculated'];
-var ADV_EXPERTISE_OPTS = ['fundraise','community','advocacy','governance','crisis','donors'];
 
 function setDirty() { localStorage.setItem('gd_cache', JSON.stringify(GD)); }
 
@@ -14094,6 +14104,7 @@ function populateAdvisors(){
   list.innerHTML = pool.map(function(a,i){
     return renderAdvisorCard(a,i) + renderAdvisorForm(a,i);
   }).join('');
+  populateOtherCharacters();
 }
 
 var PORTRAIT_CHARS = [];
@@ -14158,6 +14169,98 @@ function selectPortrait(i, path){
   }
 }
 
+function populateOtherCharacters() {
+  var list = document.getElementById('other-characters-list');
+  if (!list) return;
+  var html = '';
+  
+  // Outgoing ED
+  var ed = GD.config.outgoingED || { name: 'Avi Rosen', role: 'Outgoing Executive Director', portrait: '' };
+  html += '<div class="item-card" id="oc-card-ed" onclick="toggleEdit('oc','ed')">' +
+    '<span class="expand-icon" id="oc-exp-ed">▸</span>' +
+    '<div class="item-card-info"><div class="item-card-name">' + (ed.portrait ? '<img src="'+esc(ed.portrait)+'/neutral.png" style="width:24px;height:24px;object-fit:cover;object-position:top;border-radius:3px;vertical-align:middle;margin-right:6px">' : '') + esc(ed.name) + ' — ' + esc(ed.role || 'Outgoing ED') + '</div>' +
+    '<div class="item-card-desc">Tutorial guide, coaching warnings</div></div></div>';
+  
+  html += '<div class="item-edit-form" id="oc-form-ed" style="display:none">' +
+    '<div class="form-row"><div class="form-group"><label>Name</label><input id="oc-name-ed" value="' + esc(ed.name) + '" /></div>' +
+    '<div class="form-group"><label>Role</label><input id="oc-role-ed" value="' + esc(ed.role || '') + '" /></div></div>' +
+    renderPortraitPickerOC(ed, 'ed') +
+    '<div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveOutgoingED()">Save</button></div></div>';
+  
+  // Conversation NPCs
+  var convs = GD.conversations || [];
+  convs.forEach(function(conv, ci) {
+    if (conv.type !== 'character') return;
+    var char = conv.character || {};
+    html += '<div class="item-card" id="oc-card-conv'+ci+'" onclick="toggleEdit('oc','conv'+ci+'')">' +
+      '<span class="expand-icon" id="oc-exp-conv'+ci+'">▸</span>' +
+      '<div class="item-card-info"><div class="item-card-name">' + esc(char.name || 'Unknown') + ' — ' + esc(char.role || '') + '</div>' +
+      '<div class="item-card-desc">Conversation: ' + esc(conv.id) + '</div></div></div>';
+    
+    html += '<div class="item-edit-form" id="oc-form-conv'+ci+'" style="display:none">' +
+      '<div class="form-row"><div class="form-group"><label>Name</label><input id="oc-name-conv'+ci+'" value="' + esc(char.name || '') + '" /></div>' +
+      '<div class="form-group"><label>Role</label><input id="oc-role-conv'+ci+'" value="' + esc(char.role || '') + '" /></div></div>' +
+      '<div class="form-group"><label>Context</label><input id="oc-ctx-conv'+ci+'" value="' + esc(char.context || '') + '" /></div>' +
+      '<div style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="saveConvCharacter('+ci+')">Save</button></div></div>';
+  });
+  
+  list.innerHTML = html;
+}
+
+function renderPortraitPickerOC(char, id) {
+  var current = char.portrait || '';
+  var previewHtml = current ?
+    '<img src="'+esc(current)+'/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">' :
+    '<span style="font-size:12px;color:var(--muted);padding:12px">No portrait</span>';
+  var gridHtml = ALL_PORTRAITS.map(function(cid) {
+    var path = 'art/advisors/' + cid;
+    var isCurrent = current === path;
+    var style = 'width:40px;height:46px;object-fit:cover;object-position:top;border-radius:4px;cursor:pointer;border:1px solid #ddd';
+    if (isCurrent) style += ';outline:3px solid var(--gold);outline-offset:-2px';
+    return '<img src="' + path + '/neutral.png" onclick="selectPortraitOC('' + id + '','' + path + '')" style="' + style + '" title="' + cid + '">';
+  }).join('');
+  return '<div class="form-group" style="margin-bottom:14px"><label>Portrait</label>' +
+    '<div style="display:flex;align-items:flex-start;gap:14px">' +
+    '<div id="oc-portrait-preview-' + id + '">' + previewHtml + '</div>' +
+    '<div style="flex:1"><div style="display:flex;flex-wrap:wrap;gap:6px" id="oc-portrait-grid-' + id + '">' + gridHtml + '</div>' +
+    '<input type="hidden" id="oc-portrait-' + id + '" value="' + esc(current) + '" /></div></div></div>';
+}
+
+function selectPortraitOC(id, path) {
+  document.getElementById('oc-portrait-' + id).value = path;
+  var previewEl = document.getElementById('oc-portrait-preview-' + id);
+  if (path) {
+    previewEl.innerHTML = '<img src="' + path + '/neutral.png" style="width:48px;height:55px;object-fit:cover;object-position:top;border-radius:6px;border:2px solid var(--gold)">';
+  } else {
+    previewEl.innerHTML = '<span style="font-size:12px;color:var(--muted);padding:12px">No portrait</span>';
+  }
+}
+
+function saveOutgoingED() {
+  if (!GD.config.outgoingED) GD.config.outgoingED = {};
+  GD.config.outgoingED.name = document.getElementById('oc-name-ed').value;
+  GD.config.outgoingED.role = document.getElementById('oc-role-ed').value;
+  GD.config.outgoingED.portrait = document.getElementById('oc-portrait-ed').value;
+  setDirty();
+  setStatus('Outgoing ED saved.', 'success');
+}
+
+function saveConvCharacter(ci) {
+  var conv = (GD.conversations || [])[ci];
+  if (!conv || conv.type !== 'character') return;
+  if (!conv.character) conv.character = {};
+  conv.character.name = document.getElementById('oc-name-conv' + ci).value;
+  conv.character.role = document.getElementById('oc-role-conv' + ci).value;
+  conv.character.context = document.getElementById('oc-ctx-conv' + ci).value;
+  setDirty();
+  setStatus('Character saved.', 'success');
+}
+
+function addOtherCharacter() {
+  // Not implemented — other characters are created through conversations
+  setStatus('Other characters are created by adding conversations with character type.', 'info');
+}
+
 function renderAdvisorCard(a, i){
   var typeBadge = a.type === 'external' ? '<span class="tag tag-blue">External</span>' : '<span class="tag tag-green">Internal</span>';
   var modChips = Object.entries(a.statModifiers||{}).map(function(e){
@@ -14168,13 +14271,12 @@ function renderAdvisorCard(a, i){
   return '<div class="item-card" id="adv-card-'+i+'" onclick="toggleEdit(\'adv\','+i+')">'+
     '<span class="expand-icon" id="adv-exp-'+i+'">▸</span>'+
     '<div class="item-card-info"><div class="item-card-name">'+portraitHtml+esc(a.name)+' — '+esc(a.role)+'</div>'+
-    '<div class="item-card-desc">'+typeBadge+' '+modChips+' · '+esc(a.personality)+' · Lean: '+a.politicalLean+' · Clout: '+a.cloutBonus+'</div></div>'+
+    '<div class="item-card-desc">'+typeBadge+' '+modChips+' · Lean: '+a.politicalLean+' · Clout: '+a.cloutBonus+'</div></div>'+
     '<div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteAdvisor('+i+')">Delete</button></div></div>';
 }
 
 function renderAdvisorForm(a, i){
   var stats = GD.stats||[];
-  var expertise = a.expertise || [];
   return '<div class="item-edit-form" id="adv-form-'+i+'" style="display:none">'+
     '<div class="form-row">'+
       '<div class="form-group"><label>Name</label><input id="adv-name-'+i+'" value="'+esc(a.name)+'" /></div>'+
@@ -14184,7 +14286,6 @@ function renderAdvisorForm(a, i){
     '<div class="form-group" style="margin-bottom:11px"><label>Bio</label><textarea id="adv-bio-'+i+'" rows="2">'+esc(a.bio||'')+'</textarea></div>'+
     '<div class="form-row three">'+
       '<div class="form-group"><label>Type</label><select id="adv-type-'+i+'"><option value="internal"'+(a.type==='internal'?' selected':'')+'>Internal</option><option value="external"'+(a.type==='external'?' selected':'')+'>External</option></select></div>'+
-      '<div class="form-group"><label>Personality</label><select id="adv-pers-'+i+'">'+ADV_PERSONALITIES.map(function(p){return '<option value="'+p+'"'+(a.personality===p?' selected':'')+'>'+p+'</option>';}).join('')+'</select></div>'+
       '<div class="form-group"><label>ID</label><input id="adv-id-'+i+'" value="'+esc(a.id)+'" /></div>'+
     '</div>'+
     '<div class="form-section" style="margin-top:12px;margin-bottom:12px"><label class="section-label">Stat Modifiers</label>'+
@@ -14196,10 +14297,6 @@ function renderAdvisorForm(a, i){
       '<div class="form-group"><label>Clout Bonus</label><input type="number" id="adv-clout-'+i+'" value="'+(a.cloutBonus||0)+'" min="0" max="15" /></div>'+
       '<div class="form-group"><label>Gelt Bonus</label><input type="number" id="adv-budget-'+i+'" value="'+(a.budgetBonus||0)+'" min="0" max="10" /></div>'+
     '</div>'+
-    '<div style="margin:12px 0"><label class="section-label">Expertise</label>'+
-    '<div class="checkbox-grid">'+ADV_EXPERTISE_OPTS.map(function(e){
-      return '<label class="checkbox-item"><input type="checkbox" id="adv-exp-'+i+'-'+e+'" '+(expertise.includes(e)?'checked':'')+' />'+e+'</label>';
-    }).join('')+'</div></div>'+
     '<div class="form-section" style="margin-top:12px"><label class="section-label">End-Game Quotes (by grade)</label>'+
     '<div class="form-hint" style="margin-bottom:8px">What this advisor says on the year-end screen for each grade. Leave blank for default.</div>'+
     '<div class="form-row"><div class="form-group"><label>Grade A</label><input id="adv-endquote-'+i+'-A" value="'+esc((a.endGameQuotes||{}).A||'')+'" placeholder="Outstanding work..." /></div>'+
@@ -14223,7 +14320,6 @@ function saveAdvisor(i){
   if(portraitVal) a.portrait = portraitVal; else delete a.portrait;
   a.bio = document.getElementById('adv-bio-'+i).value;
   a.type = document.getElementById('adv-type-'+i).value;
-  a.personality = document.getElementById('adv-pers-'+i).value;
   a.politicalLean = parseInt(document.getElementById('adv-lean-'+i).value)||0;
   a.cloutBonus = parseInt(document.getElementById('adv-clout-'+i).value)||0;
   a.budgetBonus = parseInt(document.getElementById('adv-budget-'+i).value)||0;
@@ -14231,10 +14327,6 @@ function saveAdvisor(i){
   (GD.stats||[]).forEach(function(s){
     var v = parseInt(document.getElementById('adv-mod-'+i+'-'+s.id)?.value)||0;
     if(v) a.statModifiers[s.id] = v;
-  });
-  a.expertise = ADV_EXPERTISE_OPTS.filter(function(e){
-    var el = document.getElementById('adv-exp-'+i+'-'+e);
-    return el && el.checked;
   });
   // End-game quotes
   var endQuotes = {};
@@ -14633,6 +14725,7 @@ function addAdvisorQuote(si, prefix){
   s.advisorQuotes.push({advisorId:'',text:'',mood:'neutral',recommendsChoice:null,effectModifier:{},explicit:true});
   setDirty();
   prefix==='sc'?populateScenarios():populateInbox();
+  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 
 function deleteAdvisorQuote(si, qi, prefix){
@@ -14641,6 +14734,7 @@ function deleteAdvisorQuote(si, qi, prefix){
   s.advisorQuotes.splice(qi,1);
   setDirty();
   prefix==='sc'?populateScenarios():populateInbox();
+  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 
 function readAdvisorQuotes(si, prefix){
@@ -15127,7 +15221,6 @@ function populateSegments() {
       '</div>' +
       '<div class="form-row three">' +
       '<div class="form-group"><label>Base Start Approval</label><input type="number" id="seg-base-'+i+'" value="'+seg.baseStartApproval+'" min="20" max="80" /><div class="form-hint">Default approval rating at game start before political alignment adjustments</div></div>' +
-      '<div class="form-group"><label>Donation Rate</label><input type="number" step="0.01" id="seg-don-'+i+'" value="'+seg.donationRate+'" min="0" max="1" /><div class="form-hint">Multiplier for this segment\'s contribution to donor stat income</div></div>' +
       '<div class="form-group"><label>Floor / Ceiling</label><input id="seg-fc-'+i+'" value="'+seg.floor+'/'+seg.ceiling+'" /><div class="form-hint">Min/max percentage this segment can be weighted in org segment weights</div></div>' +
       '</div>' +
       '</div>';
@@ -15145,7 +15238,6 @@ function saveSegments() {
     seg.israelCenter = parseInt(document.getElementById('seg-ilcenter-'+i).value) || 50;
     seg.israelComfortRange = parseInt(document.getElementById('seg-ilcomfort-'+i).value) || 20;
     seg.baseStartApproval = parseInt(document.getElementById('seg-base-'+i).value) || seg.baseStartApproval;
-    seg.donationRate = parseFloat(document.getElementById('seg-don-'+i).value) || seg.donationRate;
     var fc = (document.getElementById('seg-fc-'+i).value || '').split('/');
     if (fc.length === 2) { seg.floor = parseInt(fc[0])||5; seg.ceiling = parseInt(fc[1])||30; }
   });

@@ -81,7 +81,6 @@ if (!GAME_DATA.advisorPool && GAME_DATA.advisors) {
       statModifiers: a.statModifiers || {},
       politicalLean: a.politicalLean || 0,
       cloutBonus: a.cloutBonus || 0,
-      expertise: a.expertise || [],
       budgetBonus: a.budgetBonus || 0
     });
   });
@@ -1018,7 +1017,7 @@ function toggleHelpPanel() {
 // ═══════════════ IN-GAME COACHING WARNINGS ═══════════════
 // Each unique warning fires at most once across the entire game.
 // They fire readily in Year 1, and any that haven't fired yet can still fire in later years.
-var OUTGOING_ED = { name: 'Avi Rosen', emoji: '\ud83d\udc68\u200d\ud83d\udcbc', portrait: 'art/advisors/avi_rosen' };
+var OUTGOING_ED = null;
 
 var COACHING_MESSAGES = {
   stat_yellow: [
@@ -1106,13 +1105,16 @@ function updateStatDanger() {
     if (G._dangerWarningsShown[key]) return;
     G._dangerWarningsShown[key] = true;
 
+    var pm = GAME_DATA.config.popupMessages || {};
     if (d.level === 'red') {
       setTimeout(function() {
-        showCoachingWarning('\ud83d\udea8 The board has called an emergency meeting. Your <strong>' + d.stat.label + '</strong> is critically low at ' + d.value + '. If it drops to ' + (GAME_DATA.config.failureBarThreshold || 15) + ', your tenure ends immediately.', 'red');
+        var msg = (pm.statDangerRed || '\ud83d\udea8 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.').replace('{stat}', d.stat.label).replace('{value}', d.value).replace('{threshold}', GAME_DATA.config.failureBarThreshold || 15);
+        showCoachingWarning(msg, 'red');
       }, 500);
     } else {
       setTimeout(function() {
-        showCoachingWarning('Heads up \u2014 your <strong>' + d.stat.label + '</strong> is getting low at ' + d.value + '. Keep an eye on it before the board starts asking questions.', 'yellow');
+        var msg = (pm.statDangerOrange || 'Heads up \u2014 your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.').replace('{stat}', d.stat.label).replace('{value}', d.value);
+        showCoachingWarning(msg, 'yellow');
       }, 500);
     }
 
@@ -1121,45 +1123,18 @@ function updateStatDanger() {
     if (!G._dangerWarningsShown[investKey]) {
       G._dangerWarningsShown[investKey] = true;
       setTimeout(function() {
-        showCoachingWarning('Your <strong>' + d.stat.label + '</strong> is in trouble. Consider using investments to help — check the investment bar for options that boost ' + d.stat.label + '.', 'yellow');
+        var msg = (pm.investmentSuggestion || 'Your <strong>{stat}</strong> is in trouble. Consider using investments to help \u2014 check the investment bar for options that boost {stat}.').replace(/\{stat\}/g, d.stat.label);
+        showCoachingWarning(msg, 'yellow');
       }, 2500 + dangerStats.indexOf(d) * 1000);
     }
   });
 }
 
 // ═══════════════ ONBOARDING TUTORIAL ═══════════════
-var ONBOARDING_STEPS = [
-  {
-    mood: 'neutral',
-    msg: 'Let me be honest with you about what you\'re walking into. This job is a balancing act \u2014 and the board is always watching.',
-    label: 'What do I need to know?'
-  },
-  {
-    mood: 'neutral',
-    msg: 'You have <strong>3 actions</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don\'t cost actions.',
-    label: 'Got it. What am I trying to do?'
-  },
-  {
-    mood: 'concerned',
-    msg: 'Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 15 or below, the board calls an emergency meeting and your tenure ends immediately.',
-    label: 'How do I win?'
-  },
-  {
-    mood: 'approving',
-    msg: 'At year\'s end, the board evaluates your overall performance. Score above <strong>75</strong> and you\'ll be offered a promotion to a national organization. Stay above <strong>30</strong> and you keep your job. Below that\u2026 well, don\'t go below that. Your mission stars also significantly impact your score \u2014 stay true to your stated priorities.',
-    label: 'Any other advice?'
-  },
-  {
-    mood: 'neutral',
-    msg: 'You have a <strong>gelt</strong> (budget) you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don\'t cost actions but they do cost money.',
-    label: 'One more thing?'
-  },
-  {
-    mood: 'concerned',
-    msg: 'One more thing \u2014 there are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.',
-    label: 'Let\'s do this \u2192'
-  }
-];
+function getOnboardingSteps() {
+  var pm = GAME_DATA.config.popupMessages || {};
+  return pm.onboarding || [];
+}
 
 function isFirstPlay() {
   return !localStorage.getItem('ad_onboarded');
@@ -1171,7 +1146,8 @@ function showOnboarding() {
 }
 
 function showOnboardingStep(idx) {
-  if (idx >= ONBOARDING_STEPS.length) {
+  var steps = getOnboardingSteps();
+  if (idx >= steps.length) {
     localStorage.setItem('ad_onboarded', '1');
     var overlay = document.getElementById('onboarding-overlay');
     if (overlay) overlay.remove();
@@ -1185,7 +1161,7 @@ function showOnboardingStep(idx) {
     overlay.className = 'onboarding-overlay';
     document.body.appendChild(overlay);
   }
-  var step = ONBOARDING_STEPS[idx];
+  var step = steps[idx];
   var div = document.createElement('div');
   div.className = 'game-notification onboarding-notif';
   div.style.background = '#f0f4ff';
@@ -1197,7 +1173,7 @@ function showOnboardingStep(idx) {
     '<div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + advPortrait(OUTGOING_ED, step.mood, 36) + ' ' + OUTGOING_ED.name + '</div>' +
     '<div style="font-size:12px;line-height:1.6;margin-bottom:10px">' + step.msg + '</div>' +
     '<div style="display:flex;justify-content:space-between;align-items:center">' +
-      '<span style="font-size:10px;color:#8899bb">' + (idx + 1) + ' of ' + ONBOARDING_STEPS.length + '</span>' +
+      '<span style="font-size:10px;color:#8899bb">' + (idx + 1) + ' of ' + steps.length + '</span>' +
       '<button style="background:#1a1a2e;color:#faf8f4;border:none;padding:6px 14px;font-family:\'Merriweather Sans\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:0.5px" onclick="event.stopPropagation();this.closest(\'.onboarding-notif\').remove();showOnboardingStep(' + (idx + 1) + ')">' + step.label + '</button>' +
     '</div>';
   document.body.appendChild(div);
@@ -1215,11 +1191,11 @@ function checkCoachingWarnings() {
   // Mission star alerts
   if (G.missionStars <= 1 && G.missionStars > 0 && !G._coachWarningsLifetime['stars_low']) {
     G._coachWarningsLifetime['stars_low'] = true;
-    setTimeout(function() { showCoachingWarning('Your mission stars are dangerously low. The board expects you to stay true to your stated priorities \u2014 losing all your stars means losing their confidence.', 'yellow'); }, 800);
+    setTimeout(function() { var pm = GAME_DATA.config.popupMessages || {}; showCoachingWarning(pm.missionStarLow || 'Your mission stars are dangerously low. The board expects you to stay true to your stated priorities \u2014 losing all your stars means losing their confidence.', 'yellow'); }, 800);
   }
   if (G.missionStars >= (GAME_DATA.config.missionMaxStars || 5) && !G._coachWarningsLifetime['stars_max']) {
     G._coachWarningsLifetime['stars_max'] = true;
-    setTimeout(function() { showCoachingWarning('You\u2019ve earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.', 'green');
+    setTimeout(function() { var pm = GAME_DATA.config.popupMessages || {}; showCoachingWarning(pm.missionStarMax || 'You\u2019ve earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.', 'green');
     }, 800);
   }
 
@@ -1283,7 +1259,7 @@ function startGame(){
   G.activeUnlocks=[];
   G.charTraits.forEach(tid=>{
     const t=GAME_DATA.characterTraits.find(t=>t.id===tid);
-    if(t) G.activeUnlocks=G.activeUnlocks.concat(t.unlocksChoices||[]);
+    if(t) G.activeUnlocks.push(t.id);
   });
   G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[]; G.promotionLevel=0;
   G.inboxMessages=[]; G.coalitionStrikes={};
@@ -1475,13 +1451,15 @@ function beginRound(){
     if (isCentrist && cloutBonus > 0) {
       var full = cloutBonus;
       cloutBonus = Math.max(1, Math.round(cloutBonus * 0.5));
+      var pm = GAME_DATA.config.popupMessages || {};
       if (full !== cloutBonus) {
-        showCoachingWarning('⚡ +' + cloutBonus + ' Clout from your position near the community\'s political center. You earned ' + cloutBonus + ' instead of ' + full + ' because centrist organizations build influence at half rate.', 'info');
+        showCoachingWarning((pm.communityCloutBonusCentrist || '⚡ +{amount} Clout from your position near the community\'s political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate.').replace(/\{amount\}/g, cloutBonus).replace(/\{full\}/g, full), 'info');
       } else {
-        showCoachingWarning('⚡ +' + cloutBonus + ' Clout from your position near the community\'s political center.', 'info');
+        showCoachingWarning((pm.communityCloutBonus || '⚡ +{amount} Clout from your position near the community\'s political center.').replace(/\{amount\}/g, cloutBonus), 'info');
       }
     } else if (cloutBonus > 0) {
-      showCoachingWarning('⚡ +' + cloutBonus + ' Clout from your position near the community\'s political center.', 'info');
+      var pm = GAME_DATA.config.popupMessages || {};
+      showCoachingWarning((pm.communityCloutBonus || '⚡ +{amount} Clout from your position near the community\'s political center.').replace(/\{amount\}/g, cloutBonus), 'info');
     }
     G.politicalClout = Math.min(100, G.politicalClout + cloutBonus);
   }
@@ -1528,7 +1506,8 @@ function beginRound(){
     } else if(G.budget <= 10) {
       var div = document.createElement('div');
       div.className = 'game-notification notif-warning';
-      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">⚠️ Gelt Crisis</div><div style="font-size:12px;opacity:0.9">Your gelt is critically low. Some choices may be unavailable until finances improve.</div>';
+      var pm = GAME_DATA.config.popupMessages || {};
+      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">⚠️ Gelt Crisis</div><div style="font-size:12px;opacity:0.9">' + (pm.geltCrisis || 'Your gelt is critically low. Some choices may be unavailable until finances improve.') + '</div>';
       div.onclick = function(){div.remove()};
       document.body.appendChild(div);
       positionNotification(div);
@@ -2059,6 +2038,7 @@ function recordNotableMoment(scenario, choice, outcome, isBreaking) {
     title: scenario.title,
     choiceText: (choice.text || '').substring(0, 80),
     outcomeText: (outcome.text || '').substring(0, 120),
+    headline: outcome.headline || null,
     round: G.round,
     complexity: scenario.complexity || 3,
     isBreaking: !!isBreaking,
@@ -3334,7 +3314,8 @@ function applyPoliticalEffects(choice) {
       var reduced = Math.max(1, Math.round(cloutGain * 0.5));
       G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + reduced));
       chips += '<span class="chip chip-pol-clout">' + (reduced > 0 ? '+' : '') + reduced + ' Clout <span style="font-size:8px;opacity:0.7">(centrist penalty 50%)</span></span>';
-      G._lastPoliticalContext = 'Your decision would have earned +' + cloutGain + ' clout, but the centrist penalty reduced it to +' + reduced + '. Organizations closer to the political center build influence more slowly.';
+      var pm = GAME_DATA.config.popupMessages || {};
+      G._lastPoliticalContext = (pm.centristClout || 'Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly.').replace('{full}', cloutGain).replace('{reduced}', reduced);
     } else {
       G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutGain));
       chips += '<span class="chip chip-pol-clout">' + (cloutGain > 0 ? '+' : '') + cloutGain + ' Clout</span>';
@@ -3497,6 +3478,7 @@ function inferPoliticalLean(choice, scenario) {
 }
 
 // ═══════════════ BOOT ═══════════════
+OUTGOING_ED = GAME_DATA.config.outgoingED || { name: 'Avi Rosen', portrait: 'art/advisors/avi_rosen' };
 initIntro(); initChar(); initOrg();
 
 // ═══ ADVISOR SYSTEM ═══
@@ -3918,7 +3900,21 @@ function showGazette() {
   overlay.innerHTML = '<div class="gazette"><div class="gazette-header"><span class="gazette-title">\u2721 The Jewish Gazette</span><span class="gazette-date">' + esc(dateStr) + '</span></div><div class="gazette-body">' + storiesHtml + '<button class="gazette-continue" onclick="this.closest(\'.gazette-overlay\').remove();endRoundContinue()">Continue \u2192</button></div></div>';
   document.body.appendChild(overlay);
 }
+function getOrgName() {
+  var allOrgs = (GAME_DATA.organizations || []).concat(GAME_DATA.nationalOrganizations || []);
+  var org = allOrgs.find(function(o) { return o.id === G.orgId; });
+  return org ? org.name : 'your organization';
+}
 function pickGazetteHeadlines() {
+  // Check outcome-level headlines from this round's notable moments
+  var outcomeHeadlines = [];
+  (G.notableMoments || []).forEach(function(m) {
+    if (m.round === G.round && m.headline) {
+      var text = m.headline.replace(/\{orgName\}/g, getOrgName());
+      outcomeHeadlines.push({ headline: text });
+    }
+  });
+
   var templates = GAME_DATA.gazetteTemplates || [];
   var matched = [];
   var stats = G.stats || {};
@@ -3944,8 +3940,9 @@ function pickGazetteHeadlines() {
       if ((G.missionStars||0) <= 1) matched.push(t);
     }
   });
-  // Pick up to 2 matched + 1 generic filler
-  var picked = shuffle(matched).slice(0, 2);
+  // Combine: outcome headlines first, then template matches, then generics
+  var picked = outcomeHeadlines.slice(0, 2);
+  picked = picked.concat(shuffle(matched).slice(0, 3 - picked.length));
   if (picked.length < 3) {
     var generics = templates.filter(function(t){return t.trigger.type==='generic'});
     picked = picked.concat(shuffle(generics).slice(0, 3 - picked.length));

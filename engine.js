@@ -655,15 +655,9 @@ function initIntro() {
     var introScreen = document.getElementById('intro-screen');
     function checkScrollHint() {
       if (!introScreen || !introScreen.classList.contains('active')) { scrollHint.classList.add('hidden'); return; }
-      var bottomEl = document.getElementById('lp-bottom') || document.getElementById('lp-ticker');
-      if (bottomEl) {
-        var rect = bottomEl.getBoundingClientRect();
-        var visible = rect.top < window.innerHeight + 50;
-        scrollHint.classList.toggle('hidden', visible);
-      }
-      // Also hide if we're near the absolute bottom
-      var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 50);
-      if (atBottom) scrollHint.classList.add('hidden');
+      // Simple approach: can the user still scroll down?
+      var canScroll = document.documentElement.scrollHeight > (window.innerHeight + window.scrollY + 80);
+      scrollHint.classList.toggle('hidden', !canScroll);
     }
     window.addEventListener('scroll', checkScrollHint, { passive: true });
     window.addEventListener('resize', checkScrollHint);

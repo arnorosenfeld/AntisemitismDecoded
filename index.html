@@ -2344,7 +2344,7 @@ const GAME_DATA = {
   "missions": [
     {
       "id": "antisemitism_all",
-      "name": "Combat Antisemitism from All Directions",
+      "name": "Combat Antisemitism Across the Political Spectrum",
       "description": "Your organization fights antisemitism wherever it comes from — far right, far left, and everywhere in between.",
       "availableTo": [
         "center",
@@ -2352,7 +2352,8 @@ const GAME_DATA = {
         "nat_center"
       ],
       "statBonus": {
-        "trust": 3
+        "trust": 5,
+        "morale": 2
       }
     },
     {
@@ -2366,7 +2367,8 @@ const GAME_DATA = {
         "nat_center"
       ],
       "statBonus": {
-        "donors": -5
+        "morale": -2,
+        "donors": 10
       }
     },
     {
@@ -2380,12 +2382,14 @@ const GAME_DATA = {
         "nat_center"
       ],
       "statBonus": {
-        "trust": 5
+        "trust": 8,
+        "morale": 2,
+        "donors": -5
       }
     },
     {
       "id": "israel_security",
-      "name": "Strengthen US-Israel Relations",
+      "name": "Defend Israel",
       "description": "Your primary mission is securing American political and financial support for Israel.",
       "availableTo": [
         "right",
@@ -2394,19 +2398,21 @@ const GAME_DATA = {
         "nat_center"
       ],
       "statBonus": {
-        "donors": 8,
-        "trust": -3
+        "trust": -5,
+        "donors": 15
       }
     },
     {
       "id": "israel_peace",
-      "name": "Advocate for Israeli-Palestinian Peace",
-      "description": "You push for a two-state solution, lifting the blockade, and accountability for both sides.",
+      "name": "Advocate for Peace and Justice in the Middle East",
+      "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
       "availableTo": [
         "left",
         "nat_left"
       ],
       "statBonus": {
+        "trust": -5,
+        "morale": 5,
         "donors": -10
       }
     },
@@ -2420,6 +2426,7 @@ const GAME_DATA = {
         "nat_left"
       ],
       "statBonus": {
+        "trust": 2,
         "morale": 8,
         "donors": -5
       }
@@ -2437,7 +2444,8 @@ const GAME_DATA = {
         "nat_jcc"
       ],
       "statBonus": {
-        "morale": 5
+        "morale": 5,
+        "donors": 5
       }
     },
     {
@@ -2468,7 +2476,8 @@ const GAME_DATA = {
         "nat_jcc"
       ],
       "statBonus": {
-        "trust": 5
+        "trust": 5,
+        "morale": -5
       }
     }
   ],

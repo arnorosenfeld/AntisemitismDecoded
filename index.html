@@ -1574,51 +1574,10 @@ const GAME_DATA = {
     "failureScoreThreshold": 30,
     "promotionThreshold": 75,
     "inboxPerRound": 2,
-    "scoreWeights": {
-      "trust": 0.33,
-      "morale": 0.33,
-      "donors": 0.34
-    },
-    "roundNames": [
-      {
-        "year": "Year 1",
-        "round": "Round 1",
-        "hebrew": "Elul",
-        "english": "September"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 2",
-        "hebrew": "Tishrei",
-        "english": "October — High Holidays"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 3",
-        "hebrew": "Kislev",
-        "english": "December"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 4",
-        "hebrew": "Shevat",
-        "english": "February"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 5",
-        "hebrew": "Nisan",
-        "english": "April"
-      },
-      {
-        "year": "Year 1",
-        "round": "Round 6",
-        "hebrew": "Sivan",
-        "english": "June"
-      }
-    ],
+    "scoreWeights": {},
+    "roundNames": [],
     "editorPassword": "admin1234",
-    "missionStarPoints": 1,
+    "missionStarPoints": 3,
     "pageText": {
       "introScreen": {
         "kicker": "Antisemitism Decoded: The Game",
@@ -1800,6 +1759,7 @@ const GAME_DATA = {
         "revealStakes": "Deliver results and you’ll be promoted to lead a national organization with higher stakes and a bigger stage. Lose the trust of your community, burn through your budget, or let morale collapse — and your board will fire you.",
         "ctaButtonPost": "That was day one. Ready for twelve months? →",
         "ctaTagline": "Choose your organization, build your team, and begin.",
+        "bottomText": "Choose your organization, build your advisory team, set your priorities — then face twelve months of decisions that will test every alliance you have.",
         "depthLabel": "Powered by real data about the Jewish community",
         "depthItems": [
           {
@@ -1845,7 +1805,6 @@ const GAME_DATA = {
             "text": "Jewish Org Defends Politician After ‘Globalist’ Remarks"
           }
         ],
-        "bottomText": "Choose your organization, build your advisory team, set your priorities — then face twelve months of decisions that will test every alliance you have.",
         "tickerHeadlines": [
           "Director Issues Swift Condemnation of Campus Antisemitism",
           "Organization Accepts $300K Restricted Gift Amid Staff Concerns",
@@ -1874,16 +1833,14 @@ const GAME_DATA = {
       },
       "gameScreen": {
         "actionHeading": "Choose Your Next Action",
-        "noApMessage": "No action points remaining. Click \"End Round\" to continue.",
-        "endRoundButton": "End Round →"
+        "endRoundButton": "End Round →",
+        "noApMessage": "No action points remaining. Click \"End Round\" to continue."
       },
       "endScreen": {
-        "anotherYearTitle": "End of Year",
         "failureTitle": "Your Tenure Has Ended",
+        "anotherYearTitle": "End of Year",
         "promotionTitle": "You've Been Promoted",
-        "retirementTitle": "A Distinguished Career",
-        "playAgainButton": "Play Again →",
-        "startOverButton": "Start Over"
+        "retirementTitle": "A Distinguished Career"
       },
       "promoScreen": {
         "heading": "A Larger Stage Awaits",
@@ -1893,12 +1850,23 @@ const GAME_DATA = {
         "stepLabel": "Step 5 of 6 — Advisory Team",
         "heading": "Build Your Advisory Team",
         "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
+      },
+      "briefingScreen": {
+        "stepLabel": "",
+        "heading": "",
+        "description": "",
+        "advisorName": "",
+        "advisorRole": "",
+        "openingQuote": "",
+        "closingQuote": "",
+        "helpButtonLabel": "",
+        "items": []
       }
     },
     "coalitionStrikeMax": 3,
     "budgetConfig": {
       "startingBudget": 100,
-      "operatingCostPerRound": 12,
+      "operatingCostPerRound": 8,
       "baseIncomePerRound": 5,
       "fundraisingStatId": "donors",
       "fundraisingIncomeMultiplier": 0.12,
@@ -1982,7 +1950,20 @@ const GAME_DATA = {
     ],
     "advisorSlots": 3,
     "advisorBonusStacking": "best",
-    "gamePassword": "playtest2025"
+    "gamePassword": "playtest2026",
+    "startingBudget": 500000,
+    "dangerOrangeThreshold": 25,
+    "dangerRedThreshold": 20,
+    "investmentsPerYear": 1,
+    "nationalInvestmentsPerYear": 2,
+    "politicsConfig": {
+      "optimalPosition": 40,
+      "sweetSpotRange": 10,
+      "rightPenaltyMult": 1.3,
+      "trapLow": 35,
+      "trapHigh": 65,
+      "centristCloutRate": 0.6
+    }
   },
   "stats": [
     {
@@ -1998,32 +1979,7 @@ const GAME_DATA = {
       "label": "Donors"
     }
   ],
-  "avatarEmojis": [
-    "👩",
-    "👨",
-    "👩‍💼",
-    "👨‍💼",
-    "👩‍🏫",
-    "👨‍🏫",
-    "👩‍⚖️",
-    "👨‍⚖️",
-    "🧕",
-    "👲",
-    "🧔",
-    "👩‍🦱",
-    "👨‍🦱",
-    "👩‍🦳",
-    "👨‍🦳",
-    "👵",
-    "🦁",
-    "🦊",
-    "🐺",
-    "🦉",
-    "🐻",
-    "🐼",
-    "🦅",
-    "✡️"
-  ],
+  "avatarEmojis": [],
   "characterTraits": [
     {
       "id": "community_insider",

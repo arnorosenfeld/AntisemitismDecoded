@@ -245,7 +245,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 .topbar-actions{display:flex;align-items:center;gap:12px}
 </style>
 </head>
-<body>
+<body autocomplete="off">
 
 <!-- LOGIN -->
 <div id="login-screen">
@@ -359,7 +359,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div class="form-row three">
               <div class="form-group"><label>GitHub Username</label><input type="text" id="gh-username" value="arnorosenfeld" /></div>
               <div class="form-group"><label>Repository Name</label><input type="text" id="gh-repo" value="AntisemitismDecoded" /></div>
-              <div class="form-group"><label>Personal Access Token</label><input type="password" id="gh-token" placeholder="ghp_..." /></div>
+              <div class="form-group"><label>Personal Access Token</label><input type="text" id="gh-token" placeholder="ghp_..." autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" /></div>
             </div>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <button class="btn btn-primary btn-sm" onclick="saveGithubConfig()">Save Settings</button>
@@ -376,8 +376,8 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
           <div class="form-section">
             <h3>Editor Password</h3>
             <div class="form-row">
-              <div class="form-group"><label>New Password</label><input type="password" id="gh-pw-new" placeholder="Enter new password" /></div>
-              <div class="form-group"><label>Confirm Password</label><input type="password" id="gh-pw-confirm" placeholder="Confirm new password" /></div>
+              <div class="form-group"><label>New Password</label><input type="text" id="gh-pw-new" placeholder="Enter new password" autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" /></div>
+              <div class="form-group"><label>Confirm Password</label><input type="text" id="gh-pw-confirm" placeholder="Confirm new password" autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" /></div>
             </div>
             <button class="btn btn-primary btn-sm" onclick="updatePassword()">Update Password</button>
             <div class="gh-pw-success" id="gh-pw-success">Password updated. Publish to GitHub for the change to take effect.</div>
@@ -13405,7 +13405,7 @@ const DEFAULT_GD = EDITOR_DATA;
 function doLogin() {
   var pw = document.getElementById('login-pw').value;
   if (pw === sessionPassword) {
-    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('login-screen').remove();
     document.getElementById('editor-screen').style.display = 'block';
     initEditor();
   } else {

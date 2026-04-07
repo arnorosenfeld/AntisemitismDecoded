@@ -14839,7 +14839,7 @@ function renderPortraitPickerOC(char, id) {
     var isCurrent = current === path;
     var style = 'width:40px;height:46px;object-fit:cover;object-position:top;border-radius:4px;cursor:pointer;border:1px solid #ddd';
     if (isCurrent) style += ';outline:3px solid var(--gold);outline-offset:-2px';
-    return '<img src="' + path + '/neutral.png" onclick="selectPortraitOC('' + id + '','' + path + '')" style="' + style + '" title="' + cid + '">';
+    return '<img src="' + path + '/neutral.png" onclick="selectPortraitOC(\'' + id + '\',\'' + path + '\')" style="' + style + '" title="' + cid + '">';
   }).join('');
   return '<div class="form-group" style="margin-bottom:14px"><label>Portrait</label>' +
     '<div style="display:flex;align-items:flex-start;gap:14px">' +

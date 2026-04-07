@@ -2053,7 +2053,7 @@ const GAME_DATA = {
   "organizations": [
     {
       "id": "left",
-      "name": "Jewish Voice for Justice",
+      "name": "Tikkun Olam Alliance",
       "badge": "Progressive",
       "badgeClass": "badge-left",
       "description": "A left-wing advocacy org focused on social justice, Palestinian rights, anti-racism, and progressive domestic policy.",
@@ -2084,11 +2084,12 @@ const GAME_DATA = {
         "youngAdults": 25,
         "olderAdults": 10
       },
-      "allocationPoints": 75
+      "allocationPoints": 75,
+      "startingBudget": 500000
     },
     {
       "id": "right",
-      "name": "Am Tzion Institute",
+      "name": "Israel Action Committee",
       "badge": "Conservative",
       "badgeClass": "badge-right",
       "description": "A right-wing pro-Israel advocacy org focused on combating left-wing antisemitism and supporting strong US-Israel ties.",
@@ -2119,11 +2120,12 @@ const GAME_DATA = {
         "youngAdults": 10,
         "olderAdults": 30
       },
-      "allocationPoints": 75
+      "allocationPoints": 75,
+      "startingBudget": 500000
     },
     {
       "id": "center",
-      "name": "Jewish Civic Partnership",
+      "name": "Jewish Federation of Metroland",
       "badge": "Centrist",
       "badgeClass": "badge-center",
       "description": "A centrist advocacy org seeking bipartisan coalitions on antisemitism, Israel, and Jewish continuity.",
@@ -2147,9 +2149,6 @@ const GAME_DATA = {
       "scenarioCategories": [
         "centrist"
       ],
-      "budgetOverrides": {
-        "startingBudgetBonus": 3
-      },
       "segmentWeights": {
         "orthodox": 12,
         "conservative_denom": 20,
@@ -2158,22 +2157,23 @@ const GAME_DATA = {
         "youngAdults": 14,
         "olderAdults": 20
       },
-      "allocationPoints": 85
+      "allocationPoints": 85,
+      "startingBudget": 500000
     },
     {
       "id": "jcc",
-      "name": "Lakeview JCC",
+      "name": "Ashford JCC",
       "badge": "Apolitical",
       "badgeClass": "badge-apolitical",
-      "description": "A community hub providing programs, childcare, fitness, and cultural events for Jews of all backgrounds.",
+      "description": "A community hub providing programs, childcare, fitness, and cultural events for Jews of all backgrounds in a city without much Jewish infrastructure.",
       "traits": [
         "Pluralistic mandate: serve all Jews",
         "Budget driven by membership revenue",
         "Apolitical pressure: controversy is costly"
       ],
       "statModifiers": {
-        "morale": 5,
-        "trust": 5
+        "trust": 5,
+        "morale": 5
       },
       "politicalTilt": [
         "center"
@@ -2196,7 +2196,8 @@ const GAME_DATA = {
         "youngAdults": 18,
         "olderAdults": 14
       },
-      "allocationPoints": 80
+      "allocationPoints": 80,
+      "startingBudget": 500000
     }
   ],
   "nationalOrganizations": [

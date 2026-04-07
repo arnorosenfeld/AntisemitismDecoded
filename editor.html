@@ -395,7 +395,6 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div class="form-row four">
               <div class="form-group"><label>Total Rounds</label><input type="number" id="cfg-totalRounds" min="1" max="24" /><div class="form-hint">Number of rounds in a full game year</div></div>
               <div class="form-group"><label>Action Points / Round</label><input type="number" id="cfg-actionPointsPerRound" min="1" max="10" /><div class="form-hint">Action points the player gets each round to spend on scenarios</div></div>
-              <div class="form-group"><label>Starting Budget ($)</label><input type="number" id="cfg-startingBudget" min="0" /></div>
               <div class="form-group"><label>Traits to Select</label><input type="number" id="cfg-traitsToSelect" min="1" max="5" /><div class="form-hint">How many character traits the player picks at game start</div></div>
             </div>
             <div class="form-row four">
@@ -13766,7 +13765,6 @@ function populateConfig() {
   const c = GD.config;
   document.getElementById('cfg-totalRounds').value = c.totalRounds || 6;
   document.getElementById('cfg-actionPointsPerRound').value = c.actionPointsPerRound || 3;
-  document.getElementById('cfg-startingBudget').value = c.startingBudget || 500000;
   document.getElementById('cfg-traitsToSelect').value = c.traitsToSelect || 2;
   document.getElementById('cfg-missionStartStars').value = c.missionStartStars || 3;
   document.getElementById('cfg-missionMaxStars').value = c.missionMaxStars || 5;
@@ -13826,7 +13824,6 @@ function saveConfig() {
   const c = GD.config;
   c.totalRounds = parseInt(document.getElementById('cfg-totalRounds').value) || 6;
   c.actionPointsPerRound = parseInt(document.getElementById('cfg-actionPointsPerRound').value) || 3;
-  c.startingBudget = parseInt(document.getElementById('cfg-startingBudget').value) || 500000;
   c.traitsToSelect = parseInt(document.getElementById('cfg-traitsToSelect').value) || 2;
   c.missionStartStars = parseInt(document.getElementById('cfg-missionStartStars').value) || 3;
   c.missionMaxStars = parseInt(document.getElementById('cfg-missionMaxStars').value) || 5;
@@ -13957,13 +13954,12 @@ function renderOrgForm(o, i, prefix) {
         <label class="checkbox-item"><input type="checkbox" id="${prefix}-scat-${i}-apolitical" ${scats.includes('apolitical')?'checked':''} />Apolitical</label>
       </div>
     </div>
-    <div class="form-row"><div class="form-group"><label>Starting Budget</label><input type="number" id="${prefix}-budget-${i}" value="${o.startingBudget||500000}" /><div class="form-hint">Initial funding level displayed to players (cosmetic — actual budget uses abstract units in config)</div></div>
-    <div class="form-group"><label>Promo Eligible (comma-sep)</label><input id="${prefix}-promo-${i}" value="${(o.promotionEligible||[]).join(',')}" /><div class="form-hint">IDs of national orgs this org can be promoted to (e.g., nat_aipac,nat_adl)</div></div></div>
     <div class="form-row three" style="margin-bottom:11px">
-      <div class="form-group"><label>Budget Override: Starting</label><input type="number" id="${prefix}-bo-start-${i}" value="${(o.budgetOverrides||{}).startingBudget||''}" placeholder="Default: 100" /><div class="form-hint">Override the global starting budget for this org (leave blank for default)</div></div>
-      <div class="form-group"><label>Budget Override: Op Cost/Rnd</label><input type="number" id="${prefix}-bo-opcost-${i}" value="${(o.budgetOverrides||{}).operatingCost||''}" placeholder="Default: 8" /><div class="form-hint">Override operating cost per round for this org</div></div>
-      <div class="form-group"><label>Budget Override: Base Income</label><input type="number" id="${prefix}-bo-income-${i}" value="${(o.budgetOverrides||{}).baseIncome||''}" placeholder="Default: 5" /><div class="form-hint">Override base income per round for this org</div></div>
+      <div class="form-group"><label>Starting Budget</label><input type="number" id="${prefix}-budget-${i}" value="${o.startingBudget||100}" /><div class="form-hint">Gelt units this org starts with (shown on org selection screen)</div></div>
+      <div class="form-group"><label>Op Cost / Round</label><input type="number" id="${prefix}-bo-opcost-${i}" value="${(o.budgetOverrides||{}).operatingCost||''}" placeholder="Default: ${(GD.config.budgetConfig||{}).operatingCostPerRound||8}" /><div class="form-hint">Override operating cost per round (blank = global default)</div></div>
+      <div class="form-group"><label>Base Income / Round</label><input type="number" id="${prefix}-bo-income-${i}" value="${(o.budgetOverrides||{}).baseIncome||''}" placeholder="Default: ${(GD.config.budgetConfig||{}).baseIncomePerRound||5}" /><div class="form-hint">Override base income per round (blank = global default)</div></div>
     </div>
+    <div class="form-row"><div class="form-group"><label>Promo Eligible (comma-sep)</label><input id="${prefix}-promo-${i}" value="${(o.promotionEligible||[]).join(',')}" /><div class="form-hint">IDs of national orgs this org can be promoted to (e.g., nat_aipac,nat_adl)</div></div></div>
     <label class="section-label">Stat Modifiers</label><div class="form-hint" style="margin-bottom:6px">Starting stat bonuses/penalties when player picks this org</div>
     <div class="stat-inputs cols-4" style="margin-bottom:11px">
       ${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-fx-${i}-${s.id}" value="${(o.statModifiers||{})[s.id]||0}" /></div>`).join('')}
@@ -13995,12 +13991,11 @@ function saveOrg(i, prefix) {
   o.description = document.getElementById(prefix+'-desc-'+i).value;
   o.traits = document.getElementById(prefix+'-traits-'+i).value.split('\n').filter(Boolean);
   o.politicalTilt = [document.getElementById(prefix+'-tilt-'+i).value];
-  o.startingBudget = parseInt(document.getElementById(prefix+'-budget-'+i).value)||500000;
-  // Budget overrides
-  var boStart = parseInt(document.getElementById(prefix+'-bo-start-'+i)?.value);
+  o.startingBudget = parseInt(document.getElementById(prefix+'-budget-'+i).value)||100;
+  // Budget overrides (per-org operating cost and income)
   var boOp = parseInt(document.getElementById(prefix+'-bo-opcost-'+i)?.value);
   var boInc = parseInt(document.getElementById(prefix+'-bo-income-'+i)?.value);
-  if(boStart || boOp || boInc) { o.budgetOverrides = {}; if(boStart) o.budgetOverrides.startingBudget = boStart; if(boOp) o.budgetOverrides.operatingCost = boOp; if(boInc) o.budgetOverrides.baseIncome = boInc; }
+  if(boOp || boInc) { if(!o.budgetOverrides) o.budgetOverrides = {}; if(boOp) o.budgetOverrides.operatingCost = boOp; if(boInc) o.budgetOverrides.baseIncome = boInc; }
   else { delete o.budgetOverrides; }
   o.promotionEligible = document.getElementById(prefix+'-promo-'+i)?.value.split(',').map(s=>s.trim()).filter(Boolean) || [];
   const allCats = ['progressive','centrist','conservative','apolitical'];
@@ -14028,11 +14023,11 @@ function deleteOrg(i, prefix) {
 }
 function deleteNatOrg(i) { deleteOrg(i,'norg'); }
 function addLocalOrg() {
-  GD.organizations.push({id:'org_'+Date.now(),name:'New Organization',badge:'Local',badgeClass:'badge-center',description:'',traits:[],statModifiers:{},politicalTilt:['center'],scenarioCategories:['centrist'],startingBudget:500000,orgLevel:'local',promotionEligible:[],segmentWeights:{},allocationPoints:10});
+  GD.organizations.push({id:'org_'+Date.now(),name:'New Organization',badge:'Local',badgeClass:'badge-center',description:'',traits:[],statModifiers:{},politicalTilt:['center'],scenarioCategories:['centrist'],startingBudget:100,orgLevel:'local',promotionEligible:[],segmentWeights:{},allocationPoints:10});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); populateOrgs(); refreshDependentPanels('orgs');
 }
 function addNatOrg() {
-  GD.nationalOrganizations.push({id:'nat_'+Date.now(),name:'New Nat Org',badge:'National',badgeClass:'badge-center',description:'',traits:[],statModifiers:{},politicalTilt:['center'],scenarioCategories:['centrist'],startingBudget:2000000,orgLevel:'national'});
+  GD.nationalOrganizations.push({id:'nat_'+Date.now(),name:'New Nat Org',badge:'National',badgeClass:'badge-center',description:'',traits:[],statModifiers:{},politicalTilt:['center'],scenarioCategories:['centrist'],startingBudget:120,orgLevel:'national'});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); populateNatOrgs(); refreshDependentPanels('orgs');
 }
 

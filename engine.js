@@ -727,7 +727,7 @@ function initOrg(){
   document.getElementById('org-grid').innerHTML = GAME_DATA.organizations.map(o=>{
     const mods=Object.entries(o.statModifiers||{}).filter(([k])=>k!=='budget');
     const bc = GAME_DATA.config.budgetConfig || {};
-    const orgBudget = (o.budgetOverrides?.startingBudget) || bc.startingBudget || 100;
+    const orgBudget = o.startingBudget || bc.startingBudget || 100;
     return `<div class="card" id="oc-${o.id}" onclick="selectOrg('${o.id}')">
       <span class="card-badge ${o.badgeClass}">${o.badge}</span>
       <h3>${o.name}</h3>
@@ -772,7 +772,7 @@ function getOrgStartingBudget(orgId) {
   const allOrgs=[...GAME_DATA.organizations,...GAME_DATA.nationalOrganizations];
   const org=allOrgs.find(o=>o.id===orgId);
   const bc = GAME_DATA.config.budgetConfig || {};
-  return (org?.budgetOverrides?.startingBudget) || bc.startingBudget || 100;
+  return org?.startingBudget || bc.startingBudget || 100;
 }
 
 
@@ -1268,7 +1268,7 @@ function startGame(){
   // Initialize in-game budget (separate from priority allocation)
   var bc = GAME_DATA.config.budgetConfig || {};
   var orgBudgetOverrides = org.budgetOverrides || {};
-  G.budget = orgBudgetOverrides.startingBudget || bc.startingBudget || 100;
+  G.budget = org.startingBudget || bc.startingBudget || 100;
   // Apply trait budget bonuses
   G.charTraits.forEach(function(tid){
     var t = GAME_DATA.characterTraits.find(function(t){return t.id===tid});
@@ -1276,8 +1276,6 @@ function startGame(){
   });
   // Apply mission budget bonus
   if(mission.budgetBonus) G.budget += mission.budgetBonus;
-  // Apply org startingBudgetBonus
-  if(orgBudgetOverrides.startingBudgetBonus) G.budget += orgBudgetOverrides.startingBudgetBonus;
   
   // Apply selected advisor budget bonuses
   var pool = GAME_DATA.advisorPool || [];
@@ -1366,8 +1364,7 @@ function startPromoGame(){
   // Initialize budget for national org
   var bc = GAME_DATA.config.budgetConfig || {};
   var orgBudgetOverrides = org.budgetOverrides || {};
-  G.budget = orgBudgetOverrides.startingBudget || bc.startingBudget || 120;
-  if(orgBudgetOverrides.startingBudgetBonus) G.budget += orgBudgetOverrides.startingBudgetBonus;
+  G.budget = org.startingBudget || bc.startingBudget || 120;
   G.budgetMax = G.budget;
   G.budgetIncomeThisYear = 0; G.budgetSpentThisYear = 0;
   G.orgOperatingCost = orgBudgetOverrides.operatingCost || bc.operatingCostPerRound || 8;
@@ -2879,7 +2876,7 @@ function showPromoScreen(){
   document.getElementById('promo-list').innerHTML=natOrgs.map(o=>{
     const mods=Object.entries(o.statModifiers||{}).filter(([k])=>k!=='budget');
     const bc = GAME_DATA.config.budgetConfig || {};
-    const orgBudget = (o.budgetOverrides?.startingBudget) || bc.startingBudget || 120;
+    const orgBudget = o.startingBudget || bc.startingBudget || 120;
     return `<div class="card" id="poc-${o.id}" onclick="selectPromoOrg('${o.id}')">
       <span class="card-badge ${o.badgeClass}">${o.badge}</span>
       <h3>${o.name}</h3>

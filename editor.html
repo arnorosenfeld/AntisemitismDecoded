@@ -14821,7 +14821,7 @@ function populateOtherCharacters() {
   
   // Outgoing ED
   var ed = GD.config.outgoingED || { name: 'Avi Rosen', role: 'Outgoing Executive Director', portrait: '' };
-  html += '<div class="item-card" id="oc-card-ed" onclick="toggleEdit('oc','ed')">' +
+  html += '<div class="item-card" id="oc-card-ed" onclick="toggleEdit(\'oc\',\'ed\')">' +
     '<span class="expand-icon" id="oc-exp-ed">▸</span>' +
     '<div class="item-card-info"><div class="item-card-name">' + (ed.portrait ? '<img src="'+esc(ed.portrait)+'/neutral.png" style="width:24px;height:24px;object-fit:cover;object-position:top;border-radius:3px;vertical-align:middle;margin-right:6px">' : '') + esc(ed.name) + ' — ' + esc(ed.role || 'Outgoing ED') + '</div>' +
     '<div class="item-card-desc">Tutorial guide, coaching warnings</div></div></div>';
@@ -14837,7 +14837,7 @@ function populateOtherCharacters() {
   convs.forEach(function(conv, ci) {
     if (conv.type !== 'character') return;
     var char = conv.character || {};
-    html += '<div class="item-card" id="oc-card-conv'+ci+'" onclick="toggleEdit('oc','conv'+ci+'')">' +
+    html += '<div class="item-card" id="oc-card-conv'+ci+'" onclick="toggleEdit(\'oc\',\'conv'+ci+'\')">' +
       '<span class="expand-icon" id="oc-exp-conv'+ci+'">▸</span>' +
       '<div class="item-card-info"><div class="item-card-name">' + esc(char.name || 'Unknown') + ' — ' + esc(char.role || '') + '</div>' +
       '<div class="item-card-desc">Conversation: ' + esc(conv.id) + '</div></div></div>';

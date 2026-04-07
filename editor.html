@@ -34,7 +34,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 .login-box .btn-primary:hover{background:#2a2a40}
 
 /* ── EDITOR LAYOUT ── */
-#editor-screen{display:block}
+#editor-screen{display:none}
 .editor-wrap{display:flex;min-height:100vh}
 
 /* ── SIDEBAR ── */
@@ -247,7 +247,16 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 </head>
 <body>
 
-<!-- LOGIN (disabled) -->
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1><span style="color:var(--ink)">Mission</span> <span style="color:var(--gold)">Critical</span></h1>
+    <p>Antisemitism Decoded — Content Editor</p>
+    <input type="password" id="login-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" autofocus autocomplete="off" data-lpignore="true" data-1p-ignore data-form-type="other" />
+    <div id="login-error" class="login-error"></div>
+    <button class="btn btn-primary" onclick="doLogin()">Enter Editor</button>
+  </div>
+</div>
 
 <!-- EDITOR -->
 <div id="editor-screen">
@@ -305,6 +314,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         </div>
         <button class="sf-ghost" onclick="toggleGhSettings()">⚙ GitHub Settings</button>
         <button class="sf-ghost" onclick="resetToDefaults()">↺ Reset to defaults</button>
+        <button class="sf-ghost" onclick="logout()" style="margin-top:.5rem">🚪 Log Out</button>
       </div>
     </div>
 
@@ -13391,10 +13401,26 @@ let sessionPassword = 'admin1234';
 // ═══ DEFAULT GAME DATA (seeds editor on first use, before GitHub is connected) ═══
 const DEFAULT_GD = EDITOR_DATA;
 
-// ═══ INIT (auto-load on page open) ═══
+// ═══ LOGIN ═══
+function doLogin() {
+  var pw = document.getElementById('login-pw').value;
+  if (pw === sessionPassword) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('editor-screen').style.display = 'block';
+    initEditor();
+  } else {
+    document.getElementById('login-error').textContent = 'Incorrect password.';
+  }
+}
+function logout() {
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('editor-screen').style.display = 'none';
+  document.getElementById('login-pw').value = '';
+  document.getElementById('login-error').textContent = '';
+}
 function initEditor() {
   loadStoredConfig();
-  const cached = localStorage.getItem('gd_cache');
+  var cached = localStorage.getItem('gd_cache');
   if (cached) {
     try { GD = JSON.parse(cached); sessionPassword = GD.config.editorPassword || sessionPassword; }
     catch(e) { GD = JSON.parse(JSON.stringify(DEFAULT_GD)); }
@@ -16063,8 +16089,6 @@ function deleteTooltip(i) {
   populateTooltips();
 }
 
-// ═══ AUTO-INIT ═══
-document.addEventListener('DOMContentLoaded', initEditor);
 </script>
 </body>
 </html>

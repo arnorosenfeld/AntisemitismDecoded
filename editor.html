@@ -13624,6 +13624,13 @@ function extractGameData(html) {
 async function saveToGithub() {
   if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) { toggleGhSettings(); setStatus('Configure GitHub settings first.', 'error'); return; }
   if (!GD) { setStatus('No game data loaded. Pull from GitHub first.', 'error'); return; }
+  // Save all panel data before publishing
+  try { saveConfig(); } catch(e) {}
+  try { saveText(); } catch(e) {}
+  try { savePoliticsConfig(); } catch(e) {}
+  try { saveMomentumConfig(); } catch(e) {}
+  try { saveSegments(); } catch(e) {}
+  try { saveAvatars(); } catch(e) {}
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }

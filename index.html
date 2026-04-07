@@ -2502,46 +2502,48 @@ const GAME_DATA = {
             "antisemitism_left",
             "antisemitism_right"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your statement is widely shared. Community members feel seen. Several new donors reach out.",
               "effects": {
                 "trust": 4,
-                "donors": 3,
-                "morale": 3
+                "morale": 3,
+                "donors": 3
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "Your comprehensive response is praised by many, but the aggressive stance alienates potential progressive allies. Some donors question whether the confrontational approach is sustainable.",
               "effects": {
                 "trust": 4,
                 "morale": 1,
                 "donors": -2
-              }
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": 3,
-            "olderAdults": 2,
-            "youngAdults": -2
+            "youngAdults": -2,
+            "olderAdults": 2
           }
         },
         {
           "id": "c1",
           "text": "Coordinate a coalition response with other civil rights organizations before speaking publicly.",
           "missionAligned": [
-            "social_justice",
             "antisemitism_all",
+            "social_justice",
             "diaspora_unity"
           ],
-          "requiresUnlock": "coalition_option",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -2551,34 +2553,37 @@ const GAME_DATA = {
                 "morale": 2
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "The intersectional approach builds bridges with other communities, but some in your base feel the Jewish-specific pain was minimized. An op-ed accuses you of 'universalizing antisemitism away.'",
               "effects": {
                 "trust": -1,
                 "morale": 2
-              }
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0,
           "segmentOverrides": {
-            "youngAdults": 3,
+            "orthodox": -2,
             "reform": 2,
             "unaffiliated": 2,
-            "orthodox": -2
+            "youngAdults": 3
           }
         },
         {
           "id": "c2",
           "text": "Organize a campus solidarity vigil and connect affected students to resources.",
           "missionAligned": [
-            "community_hub",
-            "antisemitism_all"
+            "antisemitism_all",
+            "community_hub"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -2588,26 +2593,29 @@ const GAME_DATA = {
                 "morale": 4
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -8
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "The internal community-building approach is warmly received by some, but critics say you're turning inward instead of confronting the real threat. A prominent columnist calls it 'retreat disguised as resilience.'",
               "effects": {
                 "trust": 2,
                 "morale": 3,
                 "donors": -2
-              }
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0
         },
         {
           "id": "c3",
           "text": "Wait for more information before acting. Issue a brief holding statement.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all",
             "antisemitism_left",
@@ -2619,18 +2627,32 @@ const GAME_DATA = {
               "text": "The perpetrator turns out to be a current student. Your caution was partly wise, but community members noticed the silence.",
               "effects": {
                 "trust": -3,
-                "donors": -3,
-                "morale": -2
+                "morale": -2,
+                "donors": -3
               },
-              "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "weight": 50,
+              "contextNote": "",
+              "conditions": []
+            },
+            {
+              "text": "A few days later, someone throws a rock through the building's window and police arrest a student who had been leading protests outside the building for months — the news confirms what many feared from the start, and people notice your reluctance to speak out forcefully from the start.",
+              "effects": {
+                "trust": -5,
+                "morale": -2,
+                "donors": -3
+              },
+              "weight": 50,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -4,
-            "olderAdults": -3,
-            "youngAdults": -2
+            "youngAdults": -2,
+            "olderAdults": -3
           }
         }
       ],
@@ -2644,16 +2666,18 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "We need to be visible but careful. A wrong word now could define us for years.",
-          "recommendsChoice": 0,
+          "mood": "concerned",
+          "recommendsChoice": 3,
           "effectModifier": {
             "trust": 2
           },
-          "explicit": false
+          "explicit": true
         },
         {
           "advisorId": "program_dir",
           "text": "The students need to hear from us TODAY. Not tomorrow, not after a committee meeting. Today.",
-          "recommendsChoice": 2,
+          "mood": "neutral",
+          "recommendsChoice": 0,
           "effectModifier": {
             "morale": 2
           },
@@ -2662,11 +2686,12 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "Three donors have already called. They want to see leadership, not hesitation.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "donors": 2
           },
-          "explicit": true
+          "explicit": false
         }
       ],
       "communityConsensus": 0.5
@@ -2687,110 +2712,123 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Accept the full restricted gift and launch the program as Harold envisions it.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The money stabilizes your budget significantly. But two senior staff members resign in protest over mission drift.",
+              "text": "The money stabilizes your budget significantly. But two senior staff members resign in protest over giving donors inappropriate control of the organization's work.",
               "effects": {
-                "donors": 4,
-                "morale": -5
+                "trust": -3,
+                "morale": -10,
+                "donors": 7
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 25
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0
         },
         {
           "id": "c1",
           "text": "Accept the gift but negotiate to modify the program's scope to align better with your mission.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "After difficult conversations, Harold agrees to modified terms. He is slightly less enthusiastic but still supportive.",
               "effects": {
-                "donors": 3,
-                "morale": 2,
-                "trust": 3
+                "trust": 5,
+                "morale": 4,
+                "donors": 7
               },
-              "weight": 70,
-              "conditions": [],
+              "weight": 80,
               "contextNote": "",
-              "budgetEffect": 15
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "The donor appreciates your honesty but reduces the gift by half. Your board chair asks whether principled stands are worth the budget impact.",
               "effects": {
-                "donors": -1,
+                "trust": 5,
                 "morale": 3,
-                "trust": 2
-              }
+                "donors": -5
+              },
+              "weight": 20,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0
         },
         {
           "id": "c2",
           "text": "Decline the restricted gift and have an honest conversation with Harold about your mission.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Harold ultimately respects your integrity. His annual gift remains. Word gets around that your organization holds firm on mission.",
               "effects": {
-                "donors": 4,
+                "trust": 4,
                 "morale": 4,
-                "trust": 4
+                "donors": 4
               },
               "weight": 70,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             },
             {
-              "weight": 30,
-              "text": "The compromise satisfies the donor, but word gets out that you negotiated naming rights. Other donors feel slighted, and staff question whether the organization's values are for sale.",
+              "text": "Harold agrees to an unrestricted gift in exchange for naming rights to a new wing of your offices. Other donors feel slighted, and staff question whether the organization's values are for sale.",
               "effects": {
-                "donors": 2,
-                "morale": -2,
-                "trust": 2
-              }
+                "trust": -4,
+                "morale": -4,
+                "donors": -2
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 5,
+          "politicalLean": 0,
+          "cloutEffect": 0
         },
         {
           "id": "c3",
           "text": "Accept and immediately find a matching unrestricted donor to protect your core work.",
           "missionAligned": [],
-          "requiresUnlock": "major_gift_option",
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "You accept Harold's gift AND secure a matching unrestricted gift. The new program runs but your core work is fully protected.",
+              "text": "You accept Harold's gift AND secure a matching unrestricted gift. The new program Harold wanted is created but your core work is fully protected.",
               "effects": {
-                "donors": 6,
+                "trust": 4,
                 "morale": 3,
-                "trust": 4
+                "donors": 8
               },
-              "weight": 65,
-              "conditions": [],
+              "weight": 70,
               "contextNote": "",
-              "budgetEffect": 30
+              "conditions": []
             },
             {
-              "weight": 35,
-              "text": "You secure the donation, but the donor's public profile attracts scrutiny. A local paper runs a piece questioning whether the gift comes with strings attached. Staff worry about mission drift.",
+              "text": "You secure a donation that allows you to protect your core work while spinning up Harold's pet project, but the additional money requires fundraising from some shady characters and their background attracts scrutiny from your staff. Meanwhile, a local paper runs a piece questioning whether Harold's gift came with strings attached. Staff worry that you're drifting from your core mission.",
               "effects": {
-                "donors": 4,
-                "morale": -2,
-                "trust": -1
-              }
+                "trust": -4,
+                "morale": -6,
+                "donors": 4
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0,
+          "requiresUnlock": "master_fundraiser"
         }
       ],
       "categories": [
@@ -2803,6 +2841,7 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "$300K is transformational money. We can make almost anything work with that.",
+          "mood": "approving",
           "recommendsChoice": 0,
           "effectModifier": {
             "donors": 3
@@ -2811,7 +2850,8 @@ const GAME_DATA = {
         },
         {
           "advisorId": "program_dir",
-          "text": "If we take restricted money for the wrong program, we lose the staff who do our actual work.",
+          "text": "If we take money to do work we don't even care about, we won't be able to fund the staff who do our most important work.",
+          "mood": "disapproving",
           "recommendsChoice": 2,
           "effectModifier": {
             "morale": 2
@@ -2821,9 +2861,11 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "Harold has been with us for 15 years. We need to handle this without burning bridges.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
-            "trust": 2
+            "trust": 2,
+            "donors": 2
           },
           "explicit": false
         }
@@ -2834,7 +2876,7 @@ const GAME_DATA = {
       "id": "israel_statement",
       "tag": "Israel",
       "title": "A Request for a Statement on the Latest Conflict",
-      "body": "Following renewed fighting in Gaza, young professionals in your community circulate a letter urging you to issue a statement. Some want condemnation of Israeli military actions. Others want unequivocal solidarity with Israel. Your board is divided.",
+      "body": "Following renewed fighting in Gaza, young professionals in your community circulate a letter urging Jewish organizations to condemn the Israeli military's actions. Your staff and board are divided on whether you should say anything — and, if you do speak out, what the statement should say.",
       "applicableOrgs": [
         "left",
         "right",
@@ -2844,45 +2886,49 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Issue a statement of solidarity with Israel's right to self-defense, without addressing civilian casualties.",
+          "text": "Reject the request made in the letter, and issue a statement defending Israel that does not mention civilian casualties in Gaza.",
           "missionAligned": [
+            "antisemitism_left",
             "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_peace",
-            "social_justice"
+            "social_justice",
+            "diaspora_unity"
           ],
           "outcomes": [
             {
               "text": "Your right-leaning donors and board members are relieved. Several progressive staff members express deep disappointment.",
               "effects": {
-                "donors": 4,
-                "morale": -4,
-                "trust": -3
+                "trust": -4,
+                "morale": -5,
+                "donors": 6
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 5
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 7,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": 5,
-            "olderAdults": 3,
             "reform": -3,
+            "unaffiliated": -4,
             "youngAdults": -5,
-            "unaffiliated": -4
-          }
+            "olderAdults": 3
+          },
+          "cloutCost": 2,
+          "israelLean": 7
         },
         {
           "id": "c1",
-          "text": "Issue a statement expressing concern for all civilian casualties on both sides, calling for a ceasefire.",
+          "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
             "israel_peace",
             "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
           ],
@@ -2891,56 +2937,63 @@ const GAME_DATA = {
               "text": "Progressive community members are energized. Several major donors freeze their gifts pending clarification.",
               "effects": {
                 "trust": 3,
-                "donors": -6,
-                "morale": 4
+                "morale": 3,
+                "donors": -6
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -10
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -4,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -6,
-            "olderAdults": -4,
             "reform": 2,
+            "unaffiliated": 3,
             "youngAdults": 5,
-            "unaffiliated": 3
-          }
+            "olderAdults": -4
+          },
+          "israelLean": -3
         },
         {
           "id": "c2",
-          "text": "Issue a carefully balanced statement affirming Israel's security while acknowledging humanitarian concerns.",
+          "text": "Issue a statement that affirms Israel's right to defend itself while acknowledging humanitarian concerns.",
           "missionAligned": [
-            "diaspora_unity"
+            "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Almost everyone finds something to criticize. A few people appreciate the nuance. No one forwards it.",
               "effects": {
-                "trust": -2,
-                "donors": -2,
-                "morale": -2
+                "trust": -4,
+                "morale": -4,
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 2,
+          "cloutEffect": -5,
           "segmentOverrides": {
             "orthodox": -2,
             "youngAdults": 2
-          }
+          },
+          "israelLean": 3
         },
         {
           "id": "c3",
-          "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life.",
+          "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity"
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
           ],
-          "requiresUnlock": "halachic_option",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -2950,24 +3003,30 @@ const GAME_DATA = {
                 "morale": 3
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": []
             },
             {
-              "weight": 35,
               "text": "Your carefully worded statement satisfies no one. Progressive members call it cowardly; pro-Israel donors call it weak. The middle ground turns out to be a lonely place.",
               "effects": {
-                "trust": 1,
-                "morale": 1,
-                "donors": -1
-              }
+                "trust": -3,
+                "morale": -2,
+                "donors": -4
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0
         }
       ],
       "categories": [
-        "all"
+        "progressive",
+        "centrist",
+        "conservative"
       ],
       "orgLevel": "both",
       "complexity": 3,
@@ -2975,7 +3034,8 @@ const GAME_DATA = {
       "advisorQuotes": [
         {
           "advisorId": "board_chair",
-          "text": "Whatever we say will be screenshot'd and shared out of context. Let's be precise.",
+          "text": "Whatever we say will be shared out of context. Let's be precise.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "trust": 2
@@ -2985,6 +3045,7 @@ const GAME_DATA = {
         {
           "advisorId": "program_dir",
           "text": "Our young professionals are watching. Silence is a statement too.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "morale": 2
@@ -2994,6 +3055,7 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "I need to be honest — two of our top five donors have already told me what they expect us to say.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "donors": 3
@@ -3001,7 +3063,7 @@ const GAME_DATA = {
           "explicit": false
         }
       ],
-      "communityConsensus": 0.5
+      "communityConsensus": 0
     },
     {
       "id": "staff_burnout",

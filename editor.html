@@ -13624,13 +13624,13 @@ function extractGameData(html) {
 async function saveToGithub() {
   if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) { toggleGhSettings(); setStatus('Configure GitHub settings first.', 'error'); return; }
   if (!GD) { setStatus('No game data loaded. Pull from GitHub first.', 'error'); return; }
-  // Save all panel data before publishing
-  try { saveConfig(); } catch(e) {}
-  try { saveText(); } catch(e) {}
-  try { savePoliticsConfig(); } catch(e) {}
-  try { saveMomentumConfig(); } catch(e) {}
-  try { saveSegments(); } catch(e) {}
-  try { saveAvatars(); } catch(e) {}
+  // Save panel data before publishing — only if the panel form was populated
+  try { if (document.getElementById('cfg-totalRounds').value) saveConfig(); } catch(e) {}
+  try { if (document.getElementById('txt-gamePassword').value) saveText(); } catch(e) {}
+  try { if (document.getElementById('cfg-politicalEnabled')) savePoliticsConfig(); } catch(e) {}
+  try { if (document.getElementById('cfg-momentumEnabled')) saveMomentumConfig(); } catch(e) {}
+  try { if (document.getElementById('seg-table')) saveSegments(); } catch(e) {}
+  try { var at = document.getElementById('avatars-textarea'); if (at && at.value) saveAvatars(); } catch(e) {}
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }

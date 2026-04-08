@@ -4285,18 +4285,19 @@ const GAME_DATA = {
       "id": "holocaust_curriculum",
       "tag": "Policy",
       "title": "Holocaust Education Under Attack",
-      "body": "A state legislator has introduced a bill to remove Holocaust education from the mandatory curriculum, calling it ‘politically motivated content.’ The bill has surprising bipartisan support from both culture-war conservatives and progressives who want the curriculum to focus on ‘a broader range of genocides.’ You have one week before the committee vote.",
+      "body": "A state legislator has introduced a bill to remove Holocaust education from the mandatory curriculum, calling it \"politically motivated content.\" The bill has surprising bipartisan support from both culture-war conservatives and progressives who want the curriculum to focus on \"a broader range of genocides.\" You have one week before the committee vote.",
       "applicableOrgs": [
         "left",
         "right",
         "center",
         "jcc"
       ],
-      "communityConsensus": 0.85,
+      "communityConsensus": 0.75,
       "advisorQuotes": [
         {
           "advisorId": "rabbi_scholar",
           "text": "This is not a political issue. This is about historical truth and the obligation of ‘zachor’ — remember. We fight this with everything we have.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 3,
@@ -4307,6 +4308,7 @@ const GAME_DATA = {
         {
           "advisorId": "political_consultant",
           "text": "We need to frame this as education, not identity politics. The moment this becomes ‘Jews demanding special treatment,’ we lose.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "trust": 2
@@ -4320,9 +4322,12 @@ const GAME_DATA = {
           "text": "Lead a massive public campaign: op-eds, survivor testimony at the statehouse, social media blitz, and a rally on the capitol steps.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_left",
+            "antisemitism_right",
+            "jewish_identity",
+            "community_hub",
+            "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4333,47 +4338,57 @@ const GAME_DATA = {
                 "donors": 4
               },
               "weight": 49,
-              "conditions": [],
               "contextNote": "Three Holocaust survivors testified. The footage goes viral.",
-              "budgetEffect": -12
+              "conditions": [],
+              "cloutEffect": 7
             },
             {
-              "text": "The campaign is intense but the bill passes committee anyway. However, the governor signals a veto thanks to the public pressure you generated.",
+              "text": "The campaign generates attention but doesn't stop the bill from passing. However, the governor signals a veto thanks to the public pressure you generated.",
               "effects": {
                 "trust": 4,
                 "morale": 3,
                 "donors": 3
               },
               "weight": 21,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -12
+              "conditions": [],
+              "cloutEffect": 5
             },
             {
-              "weight": 30,
-              "text": "Your campaign succeeds in getting the curriculum adopted, but a vocal parents' group accuses you of politicizing education. The controversy energizes opponents and drains your staff.",
+              "text": "Your campaign succeeds in blocking the curriculum changes, but a vocal parents' group accuses you of politicizing education. The controversy energizes opponents and drains your staff.",
               "effects": {
                 "trust": 3,
-                "morale": -2,
+                "morale": -4,
                 "donors": 2
-              }
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -3
             }
           ],
+          "budgetCost": 5,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 25
+          },
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 4,
-            "conservative_denom": 2
-          }
+            "conservative_denom": 2,
+            "olderAdults": 4
+          },
+          "cloutCost": 10
         },
         {
           "id": "c1",
-          "text": "Build a broad coalition including educators, veterans groups, and civil rights organizations to oppose the bill through institutional channels.",
+          "text": "Build a broad coalition including educators, interfaith groups, and civil rights organizations to oppose the bill.",
           "missionAligned": [
             "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
             "social_justice",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4383,107 +4398,137 @@ const GAME_DATA = {
                 "morale": 4,
                 "donors": 2
               },
-              "weight": 70,
-              "conditions": [],
+              "weight": 80,
               "contextNote": "",
-              "budgetEffect": -6
+              "conditions": [],
+              "cloutEffect": 3
             },
             {
-              "weight": 30,
-              "text": "The broad coalition succeeds in getting the curriculum passed, but community members feel the specifically Jewish aspects were diluted to please other groups.",
+              "text": "The coalition succeeds in blocking the most problematic changes to the curriculum, but community members feel the focus on Jewish suffering during the Holocaust was still diluted to please other groups.",
               "effects": {
                 "trust": 1,
                 "morale": 2,
-                "donors": -1
-              }
+                "donors": -4
+              },
+              "weight": 20,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -4,
+          "politicalRequirement": {
+            "minClout": 40
+          },
           "segmentOverrides": {
-            "youngAdults": 2,
             "reform": 2,
-            "unaffiliated": 2
-          }
+            "unaffiliated": 2,
+            "youngAdults": 2
+          },
+          "requiresUnlock": "grassroots_organizer",
+          "cloutCost": 6
         },
         {
           "id": "c2",
           "text": "Focus on a behind-the-scenes approach: meet privately with swing-vote legislators and offer to help them craft an improved curriculum rather than fighting the bill directly.",
           "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
             "jewish_identity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "politicalLean": 0,
-          "cloutEffect": 5,
           "outcomes": [
             {
               "text": "Two legislators flip. The bill is amended into an expanded genocide education mandate that actually strengthens Holocaust teaching. A quiet but significant win.",
               "effects": {
-                "trust": 3,
-                "morale": 2,
-                "donors": 1
+                "trust": 5,
+                "morale": 4,
+                "donors": 2
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "Your political relationships proved decisive here.",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": 3
             },
             {
-              "weight": 30,
               "text": "Your focus on Jewish community education is appreciated internally, but you miss the window to influence the public school curriculum. A rival org fills the gap and gets the credit.",
               "effects": {
-                "trust": 1,
-                "morale": 1,
-                "donors": -1
-              }
+                "trust": -1,
+                "morale": -2,
+                "donors": -3
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -6
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 50
+          },
+          "cloutCost": 10
         },
         {
           "id": "c3",
           "text": "Issue a public statement opposing the bill but let the state education association take the lead. Preserve your political capital for fights closer to your core mission.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "jewish_identity",
-            "antisemitism_all"
+            "antisemitism_all",
+            "antisemitism_left",
+            "antisemitism_right",
+            "social_justice",
+            "jewish_identity"
           ],
           "outcomes": [
             {
               "text": "The education association’s campaign is disorganized and the bill advances. Community members ask why you didn’t do more.",
               "effects": {
                 "trust": -3,
-                "morale": -2
+                "morale": -2,
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": [],
+              "cloutEffect": -7
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": -4,
-            "olderAdults": -4,
-            "conservative_denom": -2
+            "conservative_denom": -2,
+            "olderAdults": -4
           }
         }
-      ]
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 4,
+      "highStakes": false
     },
     {
       "id": "police_partnership",
       "tag": "Internal",
       "title": "Security Partnership with Police Sparks Staff Revolt",
-      "body": "After a string of threats, you’ve been offered a formal security partnership with the local police department — dedicated patrols, direct lines, priority response. Half your staff signs a letter opposing the partnership, citing police violence against communities of color. Two board members who are civil rights attorneys support the staff. Your security consultant says the threats are credible and escalating.",
+      "body": "After a string of threats, you’ve been offered a formal security partnership with the local police department — dedicated patrols, a direct hotline and priority response. Half your staff signs a letter opposing the partnership, citing police violence against communities of color. A board member who is civil rights attorneys support the staff. Your security consultant says the threats are credible and escalating.",
       "applicableOrgs": [
         "left",
         "right",
         "center",
         "jcc"
       ],
-      "communityConsensus": 0.3,
+      "communityConsensus": 0.25,
       "advisorQuotes": [
         {
           "advisorId": "community_organizer",
           "text": "If we partner with a police department that our Black and Brown neighbors don’t trust, we’re choosing our safety over theirs. That’s not who we are.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "morale": 3
@@ -4493,6 +4538,7 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "Our first obligation is the physical safety of every person who walks through our doors. Full stop.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -4504,58 +4550,54 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Accept the partnership. Security is non-negotiable and the threats are real. Address staff concerns with a town hall.",
-          "missionAligned": [
-            "antisemitism_all"
-          ],
-          "requiresUnlock": null,
+          "missionAligned": [],
           "missionOpposed": [
             "social_justice"
           ],
-          "politicalLean": 3,
-          "segmentOverrides": {
-            "orthodox": 8,
-            "olderAdults": 5,
-            "youngAdults": -4,
-            "reform": -2
-          },
           "outcomes": [
             {
-              "text": "The partnership is implemented. Security improves immediately. Three progressive staff members resign, and a local BLM chapter issues a statement of disappointment.",
+              "text": "The partnership is implemented. Security improves immediately. Three progressive staff members resign, and a local racial justice group issues a statement of disappointment.",
               "effects": {
-                "trust": 3,
-                "morale": -4,
+                "morale": -6,
                 "donors": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 3,
+          "segmentOverrides": {
+            "orthodox": 8,
+            "reform": -2,
+            "youngAdults": -4,
+            "olderAdults": 5
+          }
         },
         {
           "id": "c1",
-          "text": "Accept the partnership but also fund a community safety initiative with local civil rights organizations, making it a two-track approach.",
+          "text": "Accept the partnership while launching a community safety initiative with local civil rights organizations.",
           "missionAligned": [
-            "antisemitism_all",
             "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "It’s expensive but it works. You get the security you need while demonstrating solidarity. Some on both sides still grumble, but most see the good faith.",
               "effects": {
                 "trust": 4,
-                "morale": 2,
-                "donors": -1
+                "morale": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -12
+              "conditions": [],
+              "cloutEffect": 3
             }
-          ]
+          ],
+          "budgetCost": 7,
+          "politicalLean": -2,
+          "requiresUnlock": "grassroots_organizer"
         },
         {
           "id": "c2",
@@ -4563,29 +4605,29 @@ const GAME_DATA = {
           "missionAligned": [
             "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "politicalLean": -4,
-          "segmentOverrides": {
-            "orthodox": -6,
-            "olderAdults": -4,
-            "youngAdults": 5,
-            "reform": 3
-          },
           "outcomes": [
             {
               "text": "Staff morale soars. Progressive allies praise your stance. But private security costs twice as much and some congregants feel less safe.",
               "effects": {
                 "trust": -1,
-                "morale": 4,
+                "morale": 6,
                 "donors": -2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -15
+              "conditions": [],
+              "cloutEffect": 4
             }
-          ]
+          ],
+          "budgetCost": 12,
+          "politicalLean": -4,
+          "segmentOverrides": {
+            "orthodox": -6,
+            "reform": 3,
+            "youngAdults": 5,
+            "olderAdults": -4
+          }
         },
         {
           "id": "c3",
@@ -4594,23 +4636,31 @@ const GAME_DATA = {
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The listening session is intense but productive. You end up with a modified partnership that most stakeholders can live with, but the two-week delay costs you during a threat spike.",
               "effects": {
-                "trust": 2,
+                "trust": 4,
                 "morale": 1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your security consultant is unhappy about the delay.",
-              "budgetEffect": -3
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         }
-      ]
+      ],
+      "categories": [
+        "progressive",
+        "centrist",
+        "apolitical"
+      ],
+      "orgLevel": "national",
+      "complexity": 4,
+      "highStakes": false
     },
     {
       "id": "interfaith_seder",

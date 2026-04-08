@@ -1565,7 +1565,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* GAME_DATA_START */
 const GAME_DATA = {
   "config": {
-    "totalRounds": 6,
+    "totalRounds": 5,
     "actionPointsPerRound": 3,
     "traitsToSelect": 2,
     "missionStartStars": 3,
@@ -1574,7 +1574,11 @@ const GAME_DATA = {
     "failureScoreThreshold": 30,
     "promotionThreshold": 75,
     "inboxPerRound": 2,
-    "scoreWeights": {},
+    "scoreWeights": {
+      "trust": 0.35,
+      "morale": 0.35,
+      "donors": 0.35
+    },
     "roundNames": [],
     "editorPassword": "admin1234",
     "missionStarPoints": 3,
@@ -1866,7 +1870,7 @@ const GAME_DATA = {
     "coalitionStrikeMax": 3,
     "budgetConfig": {
       "startingBudget": 100,
-      "operatingCostPerRound": 8,
+      "operatingCostPerRound": 5,
       "baseIncomePerRound": 5,
       "fundraisingStatId": "donors",
       "fundraisingIncomeMultiplier": 0.12,
@@ -1949,13 +1953,13 @@ const GAME_DATA = {
       }
     ],
     "advisorSlots": 3,
-    "advisorBonusStacking": "best",
+    "advisorBonusStacking": "stack",
     "gamePassword": "playtest2026",
     "startingBudget": 100,
     "dangerOrangeThreshold": 25,
     "dangerRedThreshold": 20,
-    "investmentsPerYear": 1,
-    "nationalInvestmentsPerYear": 2,
+    "investmentsPerYear": 2,
+    "nationalInvestmentsPerYear": 4,
     "politicsConfig": {
       "optimalPosition": 40,
       "sweetSpotRange": 10,

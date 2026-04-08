@@ -13629,7 +13629,6 @@ async function saveToGithub() {
   try { if (document.getElementById('cfg-politicalEnabled')) savePoliticsConfig(); } catch(e) {}
   try { if (document.getElementById('cfg-momentumEnabled')) saveMomentumConfig(); } catch(e) {}
   try { if (document.getElementById('seg-table')) saveSegments(); } catch(e) {}
-  try { var at = document.getElementById('avatars-textarea'); if (at && at.value) saveAvatars(); } catch(e) {}
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }

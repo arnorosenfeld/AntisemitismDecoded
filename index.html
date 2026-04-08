@@ -9734,13 +9734,15 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "If we say yes, half our donors walk. If we say no, we've just declared which Jews count as Jewish enough for our building. I don't like either option.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         },
         {
           "advisorId": "political_consultant",
           "text": "This is a legal question as much as a political one. If your policy says all Jewish orgs, and they're a Jewish org, denying them could open you to a discrimination claim.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "trust": 2
@@ -9756,44 +9758,42 @@ const GAME_DATA = {
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
           ],
-          "politicalLean": -3,
           "outcomes": [
             {
               "text": "The event happens. It's contentious but nonviolent. Pro-Israel donors are incandescent. Two board members resign. But several younger community members say it's the first time they've felt the JCC 'actually practices what it preaches about pluralism.'",
               "effects": {
                 "trust": -1,
-                "donors": -5,
-                "morale": 2
+                "morale": 2,
+                "donors": -5
               },
               "weight": 60,
-              "conditions": [],
               "contextNote": "The Federation puts a hold on your annual allocation 'pending review.'",
-              "budgetEffect": -3
+              "conditions": []
             },
             {
               "text": "The event is peaceful and well-attended. Media ignores it. The sky didn't fall. But the precedent is now set, and three other political groups immediately submit rental applications.",
               "effects": {
                 "trust": 1,
-                "donors": -3,
-                "morale": 1
+                "morale": 1,
+                "donors": -3
               },
               "weight": 40,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -1
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -3,
           "segmentOverrides": {
-            "youngAdults": 3,
-            "unaffiliated": 3,
-            "reform": 1,
             "orthodox": -5,
-            "olderAdults": -4,
-            "conservative_denom": -3
+            "conservative_denom": -3,
+            "reform": 1,
+            "unaffiliated": 3,
+            "youngAdults": 3,
+            "olderAdults": -4
           }
         },
         {
@@ -9802,7 +9802,6 @@ const GAME_DATA = {
           "missionAligned": [
             "jewish_identity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "community_hub"
           ],
@@ -9811,21 +9810,21 @@ const GAME_DATA = {
               "text": "JVP calls it 'a political litmus test dressed up as policy.' Your legal counsel says the new policy is defensible. Most members accept the framework. But the question of who defines 'building Jewish community' now haunts every rental application.",
               "effects": {
                 "trust": 1,
-                "morale": 0,
                 "donors": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 3,
-            "olderAdults": 2,
             "conservative_denom": 2,
+            "unaffiliated": -2,
             "youngAdults": -2,
-            "unaffiliated": -2
+            "olderAdults": 2
           }
         },
         {
@@ -9834,33 +9833,32 @@ const GAME_DATA = {
           "missionAligned": [
             "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "community_hub",
             "diaspora_unity"
           ],
-          "politicalLean": 4,
           "outcomes": [
             {
               "text": "Your donor base exhales. Pro-Israel groups praise you. JVP holds the event at a church instead and makes your rejection the centerpiece of their publicity. A dozen younger members quietly let their memberships lapse.",
               "effects": {
                 "trust": -2,
-                "donors": 4,
-                "morale": -1
+                "morale": -1,
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 4,
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 3,
             "conservative_denom": 2,
-            "youngAdults": -5,
+            "reform": -3,
             "unaffiliated": -4,
-            "reform": -3
+            "youngAdults": -5,
+            "olderAdults": 3
           }
         },
         {
@@ -9870,27 +9868,38 @@ const GAME_DATA = {
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "coalition_option",
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "JVP reluctantly agrees to the expanded format. The two-panel event is packed, heated, and ultimately productive. Your JCC is talked about for weeks as a space where real dialogue happened. It's exhausting, expensive, and impressive.",
               "effects": {
                 "trust": 5,
-                "morale": 3,
-                "donors": 0
+                "morale": 3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your organizing skills turned a potential crisis into the most important community event of the year.",
-              "budgetEffect": -8
+              "conditions": []
+            },
+            {
+              "text": "The dual-event format goes forward but it's a mess. The JVP panelists spend most of their time criticizing the JCC for moral bankruptcy, and protesters interrupt the second panel you had planned. Staff wonder what you were thinking and the board is outraged.",
+              "effects": {
+                "trust": -4,
+                "morale": -6,
+                "donors": -5
+              },
+              "weight": 50,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -8
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "youngAdults": 4,
+            "conservative_denom": 1,
             "reform": 3,
             "unaffiliated": 3,
-            "conservative_denom": 1,
+            "youngAdults": 4,
             "olderAdults": 1
           }
         }
@@ -9915,6 +9924,7 @@ const GAME_DATA = {
         {
           "advisorId": "rabbi_scholar",
           "text": "Tzniut is not a policy preference. It's a religious obligation for these women. Ending these hours would effectively ban Orthodox women from swimming here.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -9924,6 +9934,7 @@ const GAME_DATA = {
         {
           "advisorId": "media_strategist",
           "text": "The headline is bad. But the story underneath is actually beautiful — Jewish and Muslim women swimming together. We need to reframe this fast.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "trust": 2
@@ -9936,50 +9947,46 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Keep the women-only hours and defend them publicly as a religious accommodation. Make clear the JCC respects the modesty requirements of its diverse members.",
           "missionAligned": [
-            "community_hub",
-            "jewish_identity"
+            "jewish_identity",
+            "community_hub"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The complaining member cancels his membership and posts a negative review online. But the Orthodox and Muslim women who use those hours send a joint thank-you letter to your board. It's shared widely as a feel-good story.",
               "effects": {
                 "trust": 3,
-                "morale": 3,
-                "donors": 0
+                "morale": 3
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             },
             {
               "text": "A second complaint is filed, this time threatening legal action. Your lawyer says you're probably fine under religious accommodation law, but the legal review costs $5,000.",
               "effects": {
                 "trust": 1,
-                "morale": 1,
-                "donors": 0
+                "morale": 1
               },
               "weight": 30,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 5,
             "conservative_denom": 2,
             "reform": 1,
-            "olderAdults": 2,
-            "youngAdults": 1
+            "youngAdults": 1,
+            "olderAdults": 2
           }
         },
         {
           "id": "c1",
           "text": "Compromise: reduce women-only hours from two hours to one, and add a men-only hour to demonstrate equal treatment.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
             "community_hub"
           ],
@@ -9992,15 +9999,16 @@ const GAME_DATA = {
                 "donors": -1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "False equivalence is not compromise.",
-              "budgetEffect": 0
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": -3,
-            "youngAdults": -1,
-            "reform": -1
+            "reform": -1,
+            "youngAdults": -1
           }
         },
         {
@@ -10010,7 +10018,6 @@ const GAME_DATA = {
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -10020,29 +10027,40 @@ const GAME_DATA = {
                 "morale": 4,
                 "donors": 2
               },
-              "weight": 100,
-              "conditions": [],
+              "weight": 60,
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
+            },
+            {
+              "text": "A reporter shows up but only wants to ask the women about their views on Israel. It gets awkward quick, and several of the women stop showing up after being forced into an uncomfortable conversation in front of a journalist.",
+              "effects": {
+                "trust": -3,
+                "morale": -5
+              },
+              "weight": 40,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -6
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 3,
+            "conservative_denom": 2,
             "reform": 2,
-            "youngAdults": 2,
             "unaffiliated": 2,
-            "olderAdults": 2,
-            "conservative_denom": 2
+            "youngAdults": 2,
+            "olderAdults": 2
           }
         },
         {
           "id": "c3",
           "text": "Draft a formal religious accommodation policy grounded in both halacha and civil rights law — creating a legal and moral framework that protects these hours permanently.",
           "missionAligned": [
-            "community_hub",
-            "jewish_identity"
+            "jewish_identity",
+            "community_hub"
           ],
-          "requiresUnlock": "halachic_option",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -10053,18 +10071,20 @@ const GAME_DATA = {
                 "donors": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your Jewish learning protected a community practice for generations.",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 5,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 5,
             "conservative_denom": 3,
             "reform": 2,
-            "olderAdults": 2,
-            "youngAdults": 1
-          }
+            "youngAdults": 1,
+            "olderAdults": 2
+          },
+          "requiresUnlock": "jewish_scholar"
         }
       ]
     },
@@ -10072,21 +10092,22 @@ const GAME_DATA = {
       "id": "jcc_preschool_teacher",
       "tag": "Internal",
       "title": "The Preschool Teacher's Posts",
-      "body": "A parent in your JCC preschool has forwarded you screenshots from a teacher's personal Instagram account. The teacher — beloved by kids and parents, three years on staff — has posted a series of stories calling Israel 'a genocidal apartheid state,' sharing graphic images from Gaza, and writing 'Zionism is racism.' The parent says: 'I'm not sending my four-year-old to be taught by someone who hates our people.' The teacher has never brought politics into the classroom.",
+      "body": "A parent in your JCC preschool has forwarded you screenshots from a teacher's personal Instagram account. The teacher — beloved by kids and parents, three years on staff — has posted a series of stories calling Israel \"a genocidal apartheid state,\" sharing graphic images from Gaza, and writing \"Zionism is racism.\" The parent says: \"I'm not sending my four-year-old to be taught by someone who hates our people.\" The teacher has never brought politics into the classroom.",
       "applicableOrgs": [
         "jcc"
       ],
       "categories": [
-        "all"
+        "apolitical"
       ],
       "orgLevel": "both",
-      "complexity": 4,
+      "complexity": 5,
       "highStakes": true,
-      "communityConsensus": 0.3,
+      "communityConsensus": 0.15,
       "advisorQuotes": [
         {
           "advisorId": "program_dir",
           "text": "She's our best early childhood teacher. The kids love her. She's never said a word about politics in the classroom. If we fire her for her Instagram, what are we?",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "morale": 3
@@ -10096,6 +10117,7 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "Seven parents have emailed me since yesterday. This is going to be a tidal wave. We need to act before it becomes unmanageable.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "donors": 2
@@ -10108,36 +10130,37 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Terminate the teacher. A JCC preschool teacher who publicly calls Zionism racism cannot represent your institution, regardless of what happens in the classroom.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "antisemitism_left",
+            "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "community_hub"
+            "israel_peace",
+            "social_justice"
           ],
-          "politicalLean": 3,
           "outcomes": [
             {
               "text": "The teacher is fired. Most parents are relieved. Your staff is shaken — several question whether they need to self-censor their own views to keep their jobs. The teacher hires a lawyer. Three younger staff members start job-hunting.",
               "effects": {
                 "trust": 1,
-                "donors": 3,
-                "morale": -5
+                "morale": -7,
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "A labor reporter is asking questions about your termination process.",
-              "budgetEffect": -4
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 3,
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 3,
             "conservative_denom": 2,
-            "youngAdults": -3,
+            "reform": -1,
             "unaffiliated": -2,
-            "reform": -1
-          }
+            "youngAdults": -3,
+            "olderAdults": 3
+          },
+          "israelLean": 6
         },
         {
           "id": "c1",
@@ -10145,103 +10168,113 @@ const GAME_DATA = {
           "missionAligned": [
             "community_hub"
           ],
-          "requiresUnlock": null,
-          "missionOpposed": [],
+          "missionOpposed": [
+            "antisemitism_left",
+            "israel_security"
+          ],
           "outcomes": [
             {
-              "text": "She agrees to make her accounts private and is grateful you didn't fire her. Most parents accept the resolution. Two parents pull their kids anyway, calling it 'insufficient.' Your staff's trust in you as a fair employer deepens.",
+              "text": "She agrees to make her accounts private and is grateful you didn't fire her. Most parents accept the resolution. Two parents pull their kids anyway, calling it \"insufficient.\" Your staff's trust in you as a fair employer deepens.",
               "effects": {
                 "trust": 2,
-                "morale": 3,
+                "morale": 4,
                 "donors": -1
               },
               "weight": 60,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             },
             {
               "text": "She refuses, saying it's a free speech issue and she won't be silenced. Now you're back to square one, but with the added complication that you tried to negotiate and failed.",
               "effects": {
-                "trust": -1,
-                "morale": -2,
+                "trust": -4,
+                "morale": -3,
                 "donors": -1
               },
               "weight": 40,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": [],
+              "cloutEffect": -5
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -2,
           "segmentOverrides": {
-            "reform": 2,
-            "youngAdults": 2,
-            "unaffiliated": 1,
             "orthodox": -2,
+            "reform": 2,
+            "unaffiliated": 1,
+            "youngAdults": 2,
             "olderAdults": -1
-          }
+          },
+          "cloutCost": 5,
+          "israelLean": -1
         },
         {
           "id": "c2",
-          "text": "Do nothing about the teacher but institute a new social media policy for all staff going forward. Address the systemic question without singling out one employee.",
+          "text": "Do nothing about the teacher but institute a new social media policy for all staff going forward.",
           "missionAligned": [],
-          "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The policy satisfies your lawyers. But the complaining parents see it as dodging the question. 'We don't want a policy — we want action,' one emails the board. Three families withdraw from the preschool.",
+              "text": "The policy satisfies your lawyers. But the complaining parents see it as dodging the question. \"We don't want a policy — we want action,\" one emails the board. Three families withdraw from the preschool.",
               "effects": {
-                "trust": -3,
-                "donors": -2,
-                "morale": 0
+                "trust": -4,
+                "donors": -2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": -3,
-            "olderAdults": -2,
+            "unaffiliated": 1,
             "youngAdults": 1,
-            "unaffiliated": 1
+            "olderAdults": -2
           }
         },
         {
           "id": "c3",
-          "text": "Handle the conversation with the teacher yourself — with the care and empathy of someone who's navigated institutional crisis before. Explain what's at stake, listen to her perspective, and collaboratively develop a resolution both sides can live with.",
+          "text": "Publicly defend the teacher's right to share her views, but work to quietly reassure the parents that you're handling the issue internally. Ask the teacher to delete some of the most inflammatory posts and be more careful about what she shares going forward.",
           "missionAligned": [
             "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "staff_support_option",
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "Your one-on-one conversation is compassionate and direct. She didn't realize the impact of her posts on preschool families. She volunteers to make her accounts private and writes a personal note to concerned parents — not retracting her views, but acknowledging the complexity. Parents are moved. Staff is relieved.",
+              "text": "Your one-on-one conversations are effective. The parents are placated and the teacher says she didn't realize the impact of her posts on preschool families. She volunteers to make her accounts private and writes a personal note to concerned parents — not retracting her views, but acknowledging the complexity. Parents are moved. Staff is relieved.",
               "effects": {
-                "trust": 4,
-                "morale": 5,
-                "donors": 1
+                "trust": 6,
+                "morale": 6,
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your experience with burnout and institutional care made this conversation possible.",
-              "budgetEffect": 0
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 40
+          },
           "segmentOverrides": {
-            "reform": 3,
-            "youngAdults": 3,
+            "orthodox": 1,
             "conservative_denom": 2,
+            "reform": 3,
             "unaffiliated": 2,
-            "olderAdults": 1,
-            "orthodox": 1
-          }
+            "youngAdults": 3,
+            "olderAdults": 1
+          },
+          "cloutCost": 15
         }
+      ],
+      "channel": [
+        "monitor",
+        "keys"
       ]
     }
   ],

@@ -3080,60 +3080,68 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Offer meaningful raises funded by drawing down reserves, and hire a part-time events coordinator.",
-          "missionAligned": [],
-          "requiresUnlock": null,
+          "missionAligned": [
+            "israel_peace",
+            "social_justice"
+          ],
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The events go well. Staff morale surges. Your reserves are leaner than your board wanted.",
               "effects": {
-                "morale": 7,
-                "trust": 3
+                "trust": 3,
+                "morale": 7
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -15
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "Staff appreciate the new benefits, but the generous package strains the budget more than expected. Some board members grumble about fiscal responsibility.",
               "effects": {
-                "morale": 5,
                 "trust": -1,
-                "donors": -2
-              }
+                "morale": 3,
+                "donors": -5
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 10,
+          "politicalLean": 0,
+          "cloutEffect": 0
         },
         {
           "id": "c1",
           "text": "Acknowledge the problem and promise a compensation review after the High Holidays, offering small bonuses now.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Staff appreciate being heard. The compensation review reveals how underpaid everyone is — creating pressure for next year.",
               "effects": {
-                "morale": 4,
-                "trust": 3
+                "trust": 2,
+                "morale": 2
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             },
             {
-              "weight": 30,
-              "text": "The restructuring helps some teams but displaces others. Two mid-level staffers leave, taking institutional knowledge with them. Rebuilding takes longer than expected.",
+              "text": "It sounds like a lot of talk and no action. Two mid-level staffers leave, taking institutional knowledge with them. Rebuilding takes longer than expected.",
               "effects": {
-                "morale": 2,
-                "trust": 1,
-                "donors": -1
-              }
+                "trust": -5,
+                "morale": -3
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 5,
+          "politicalLean": 0,
+          "cloutEffect": 0
         },
         {
           "id": "c2",
@@ -3141,24 +3149,25 @@ const GAME_DATA = {
           "missionAligned": [
             "community_hub"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "You find enough volunteers, but the burden falls on your most burned-out staff. One of them quits the week before the gala.",
+              "text": "You find enough volunteers, but the burden of managing them falls on your most burned-out staff. One of them quits the week before the gala.",
               "effects": {
-                "morale": -4,
+                "morale": -6,
                 "donors": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0,
           "segmentOverrides": {
-            "youngAdults": 3,
             "reform": 2,
+            "youngAdults": 3,
             "olderAdults": -2
           }
         },
@@ -3166,7 +3175,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
           "missionAligned": [],
-          "requiresUnlock": "staff_support_option",
           "missionOpposed": [
             "community_hub"
           ],
@@ -3174,27 +3182,31 @@ const GAME_DATA = {
             {
               "text": "Some donors are disappointed. But your team enters the year rested and turnover hits zero.",
               "effects": {
+                "trust": 2,
                 "morale": 6,
-                "donors": -4,
-                "trust": 2
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0
         }
       ],
       "categories": [
         "all"
       ],
       "orgLevel": "both",
-      "complexity": 3,
+      "complexity": 2,
       "highStakes": true,
       "advisorQuotes": [
         {
           "advisorId": "program_dir",
           "text": "I'm telling you right now — if we don't address comp, I'll lose my best people by December.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "morale": 3
@@ -3204,9 +3216,11 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "The board approved this budget. Drawing down reserves without authorization will be a governance issue.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
-            "trust": 2
+            "trust": 2,
+            "donors": 2
           },
           "explicit": true
         }

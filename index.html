@@ -13066,10 +13066,11 @@ const GAME_DATA = {
       "advisorId": "program_dir",
       "trigger": {
         "type": "beforeScenario",
-        "scenarioId": "staff_burnout"
+        "scenarioId": "staff_burnout",
+        "choiceIndex": null
       },
       "startDisposition": 60,
-      "totalNodes": 3,
+      "totalNodes": 4,
       "nodes": {
         "n0": {
           "characterLine": "Before you decide anything — I need you to hear something. Three of my people are in crisis. Real crisis. One is seeing a therapist for the first time because of this job. I don't say that lightly.",
@@ -13077,7 +13078,7 @@ const GAME_DATA = {
             {
               "text": "Avi, I hear you. Tell me specifically what your team needs to get through the High Holidays.",
               "approach": "Listen",
-              "dispositionDelta": 10,
+              "dispositionDelta": 5,
               "next": "n1_open"
             },
             {
@@ -13128,13 +13129,13 @@ const GAME_DATA = {
             {
               "text": "It won't be. And Avi — thank you for being the person who says the uncomfortable thing. That's why you're invaluable.",
               "approach": "Affirm",
-              "dispositionDelta": 8,
+              "dispositionDelta": 3,
               "next": "end"
             },
             {
               "text": "I'll have a concrete proposal within two weeks. You'll see it before the board does.",
               "approach": "Specific",
-              "dispositionDelta": 5,
+              "dispositionDelta": 7,
               "next": "end"
             }
           ]
@@ -13142,26 +13143,50 @@ const GAME_DATA = {
       },
       "outcomes": [
         {
-          "minDisposition": 70,
-          "modifiesAdvisorBonus": 1.5,
-          "text": "Avi leaves feeling genuinely heard. He'll go to bat for whatever you decide — and his team will feel it."
+          "minDisposition": 75,
+          "heading": "",
+          "text": "Avi leaves feeling genuinely heard. He'll go to bat for whatever you decide — and his team will feel it.",
+          "effects": {
+            "trust": 7,
+            "morale": 5
+          },
+          "budgetEffect": 0,
+          "modifiesAdvisorBonus": 1.5
+        },
+        {
+          "minDisposition": 60,
+          "heading": "",
+          "text": "Avi accepts your direction but is watching closely. His support for your decision is conditional.",
+          "effects": {
+            "trust": -7
+          },
+          "budgetEffect": 0,
+          "modifiesAdvisorBonus": 1
+        },
+        {
+          "minDisposition": 55,
+          "heading": "",
+          "text": "Avi is visibly frustrated. He'll comply but won't advocate for your approach with his team.",
+          "effects": {
+            "trust": -7,
+            "morale": -7
+          },
+          "budgetEffect": 0,
+          "modifiesAdvisorBonus": 0
         },
         {
           "minDisposition": 45,
-          "modifiesAdvisorBonus": 1,
-          "text": "Avi accepts your direction but is watching closely. His support for your decision is conditional."
-        },
-        {
-          "minDisposition": 25,
-          "modifiesAdvisorBonus": 0,
-          "text": "Avi is visibly frustrated. He'll comply but won't advocate for your approach with his team."
-        },
-        {
-          "minDisposition": 0,
-          "modifiesAdvisorBonus": -0.5,
-          "text": "Avi leaves the meeting angry. Two staff members will hear about this conversation within the hour."
+          "heading": "",
+          "text": "Avi leaves the meeting angry. Two staff members will hear about this conversation within the hour.",
+          "effects": {
+            "trust": -9,
+            "morale": -12
+          },
+          "budgetEffect": 0,
+          "modifiesAdvisorBonus": -0.5
         }
-      ]
+      ],
+      "applicableOrgs": []
     },
     {
       "id": "conv_rabbi_holocaust_ed",

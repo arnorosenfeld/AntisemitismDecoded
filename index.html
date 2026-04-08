@@ -2384,7 +2384,8 @@ const GAME_DATA = {
       "availableTo": [
         "center",
         "jcc",
-        "nat_center"
+        "nat_center",
+        "nat_jcc"
       ],
       "statBonus": {
         "trust": 5,
@@ -2396,10 +2397,12 @@ const GAME_DATA = {
       "name": "Counter Antisemitism and Anti-Zioinsm from the Progressive Left",
       "description": "You focus on left-wing antisemitism — in progressive movements, on campuses, and in political discourse.",
       "availableTo": [
-        "left",
+        "right",
         "center",
-        "nat_left",
-        "nat_center"
+        "jcc",
+        "nat_right",
+        "nat_center",
+        "nat_jcc"
       ],
       "statBonus": {
         "morale": -2,
@@ -2411,10 +2414,12 @@ const GAME_DATA = {
       "name": "Counter Far-Right Antisemitism and White Supremacy",
       "description": "You focus on right-wing and white nationalist antisemitism — the most statistically deadly threat to Jewish Americans.",
       "availableTo": [
-        "right",
+        "left",
         "center",
-        "nat_right",
-        "nat_center"
+        "jcc",
+        "nat_left",
+        "nat_center",
+        "nat_jcc"
       ],
       "statBonus": {
         "trust": 8,
@@ -2429,8 +2434,10 @@ const GAME_DATA = {
       "availableTo": [
         "right",
         "center",
+        "jcc",
         "nat_right",
-        "nat_center"
+        "nat_center",
+        "nat_jcc"
       ],
       "statBonus": {
         "trust": -5,
@@ -2443,10 +2450,14 @@ const GAME_DATA = {
       "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
       "availableTo": [
         "left",
-        "nat_left"
+        "center",
+        "jcc",
+        "nat_left",
+        "nat_center",
+        "nat_jcc"
       ],
       "statBonus": {
-        "trust": -5,
+        "trust": -3,
         "morale": 5,
         "donors": -10
       }
@@ -2454,27 +2465,28 @@ const GAME_DATA = {
     {
       "id": "social_justice",
       "name": "Jewish Social Justice Advocacy",
-      "description": "You ground your work in Jewish values — tikkun olam, tzedakah — applied to racial justice, immigrants' rights, and economic equality.",
+      "description": "You ground your work in Jewish values — tikkun olam and tzedakah — applied to racial justice, immigrant rights, and economic equality.",
       "availableTo": [
         "left",
+        "center",
         "jcc",
-        "nat_left"
+        "nat_left",
+        "nat_center",
+        "nat_jcc"
       ],
       "statBonus": {
         "trust": 2,
         "morale": 8,
-        "donors": -5
+        "donors": -3
       }
     },
     {
       "id": "jewish_identity",
       "name": "Jewish Identity and Continuity",
-      "description": "Your mission is keeping Jews Jewish — through education, culture, day schools, and fighting assimilation.",
+      "description": "Your mission is keeping Jews Jewish — through education, culture, day schools, and any form of engagement you can manage.",
       "availableTo": [
-        "right",
         "center",
         "jcc",
-        "nat_right",
         "nat_center",
         "nat_jcc"
       ],
@@ -2488,18 +2500,15 @@ const GAME_DATA = {
       "name": "Unite the Jewish Diaspora",
       "description": "You work to build bridges across denominations, politics, and geographies.",
       "availableTo": [
-        "left",
-        "right",
         "center",
         "jcc",
-        "nat_left",
-        "nat_right",
         "nat_center",
         "nat_jcc"
       ],
       "statBonus": {
         "trust": 5,
-        "morale": -5
+        "morale": -3,
+        "donors": 2
       }
     }
   ],

@@ -3406,7 +3406,6 @@ const GAME_DATA = {
             "israel_peace",
             "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_security",
             "diaspora_unity"
@@ -3415,31 +3414,34 @@ const GAME_DATA = {
             {
               "text": "You sign. Three major donors reduce their gifts. Your progressive coalition relationships deepen. Staff morale surges.",
               "effects": {
-                "donors": -7,
+                "trust": 4,
                 "morale": 6,
-                "trust": 4
+                "donors": -7
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -12
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -5,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -6,
-            "olderAdults": -4,
-            "youngAdults": 4,
+            "reform": 2,
             "unaffiliated": 3,
-            "reform": 2
-          }
+            "youngAdults": 4,
+            "olderAdults": -4
+          },
+          "cloutCost": 5,
+          "israelLean": -5
         },
         {
           "id": "c1",
-          "text": "Sign a modified version that advocates for accountability but not a full embargo.",
+          "text": "Sign a modified version that calls for limits on some offensive weapon shipments but not a full embargo.",
           "missionAligned": [
             "israel_peace"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
           ],
@@ -3447,47 +3449,56 @@ const GAME_DATA = {
             {
               "text": "Neither side is fully satisfied. The coalition lists you with an asterisk. Some donors accept the compromise.",
               "effects": {
-                "donors": -3,
-                "morale": 3
+                "morale": 3,
+                "donors": -3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -3,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -3,
-            "youngAdults": 2,
-            "unaffiliated": 2
-          }
+            "unaffiliated": 2,
+            "youngAdults": 2
+          },
+          "cloutCost": 2,
+          "israelLean": -3
         },
         {
           "id": "c2",
-          "text": "Decline as an organization but don't prevent staff from signing personally.",
+          "text": "Decline to endorse the letter as an organization but allow staff to sign in a personal capacity.",
           "missionAligned": [],
-          "requiresUnlock": null,
-          "missionOpposed": [],
+          "missionOpposed": [
+            "israel_security"
+          ],
           "outcomes": [
             {
               "text": "Several staff sign publicly. One donor withdraws citing organizational chaos.",
               "effects": {
-                "donors": -4,
+                "trust": -3,
                 "morale": 2,
-                "trust": -3
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": -2,
+          "cloutEffect": -5,
+          "israelLean": -1
         },
         {
           "id": "c3",
           "text": "Decline and explain your organization focuses on domestic Jewish advocacy, not foreign policy.",
-          "missionAligned": [],
-          "requiresUnlock": null,
+          "missionAligned": [
+            "israel_security"
+          ],
           "missionOpposed": [
             "israel_peace",
             "social_justice"
@@ -3496,25 +3507,32 @@ const GAME_DATA = {
             {
               "text": "Your progressive allies are deeply disappointed. One partner publicly criticizes you. Moderate donors are quietly relieved.",
               "effects": {
-                "donors": 4,
+                "trust": -4,
                 "morale": -4,
-                "trust": -4
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 3,
+          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": 3,
-            "olderAdults": 2,
+            "unaffiliated": -3,
             "youngAdults": -4,
-            "unaffiliated": -3
-          }
+            "olderAdults": 2
+          },
+          "cloutCost": 5,
+          "israelLean": 1
         }
       ],
       "categories": [
-        "progressive"
+        "progressive",
+        "centrist",
+        "apolitical"
       ],
       "orgLevel": "both",
       "complexity": 3,
@@ -3523,6 +3541,7 @@ const GAME_DATA = {
         {
           "advisorId": "program_dir",
           "text": "Our staff overwhelming supports this letter. If we don't sign, we'll have a credibility crisis internally.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "morale": 2
@@ -3532,6 +3551,7 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "I have three donors who will pull six-figure gifts if we sign anything related to an arms embargo.",
+          "mood": "neutral",
           "recommendsChoice": 3,
           "effectModifier": {
             "donors": 3
@@ -3541,18 +3561,19 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "This is the kind of issue where there is no safe choice. Only choices with different costs.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         }
       ],
-      "communityConsensus": 0.5
+      "communityConsensus": 0
     },
     {
       "id": "right_farright",
       "tag": "Crisis",
       "title": "Antisemitism from a Political Ally",
-      "body": "A prominent politician who has co-sponsored your events makes remarks widely characterized as antisemitic — dog-whistling about 'globalists' and dual loyalties. Several Jewish newspapers call on organizations to cut ties. This politician is influential in securing a federal grant your org depends on.",
+      "body": "A prominent politician who you've co-sponsored events with makes remarks widely characterized as antisemitic — dog-whistling about \"globalists\" and dual loyalty. Several Jewish newspapers call on organizations to cut ties but the politician has been influential in securing federal grants your organization depends on.",
       "applicableOrgs": [
         "right"
       ],
@@ -3561,117 +3582,133 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Publicly condemn the remarks and cut all ties, regardless of financial and political consequences.",
           "missionAligned": [
-            "antisemitism_right",
-            "antisemitism_all"
+            "antisemitism_all",
+            "antisemitism_right"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The condemnation is credible given the relationship. The grant is at risk, but your moral authority on antisemitism is strengthened substantially.",
               "effects": {
-                "trust": 6,
-                "donors": -4,
-                "morale": 4
+                "trust": 8,
+                "morale": 5
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -15
+              "conditions": []
             }
           ],
+          "budgetCost": 10,
+          "politicalLean": -3,
+          "cloutEffect": -5,
           "segmentOverrides": {
-            "youngAdults": 3,
+            "orthodox": -2,
             "reform": 2,
             "unaffiliated": 2,
-            "orthodox": -2
-          }
+            "youngAdults": 3
+          },
+          "cloutCost": 5
         },
         {
           "id": "c1",
           "text": "Issue a mild statement expressing concern while preserving the relationship.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_right",
-            "antisemitism_all"
+            "antisemitism_all",
+            "antisemitism_right"
           ],
           "outcomes": [
             {
-              "text": "Critics are not satisfied. Jewish newspapers run a piece on your tepid response.",
+              "text": "Critics are not satisfied. The Forward runs a piece on your tepid response.",
               "effects": {
                 "trust": -4,
-                "morale": -4
+                "morale": -2
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 2,
+          "cloutEffect": 3,
           "segmentOverrides": {
             "orthodox": 2,
-            "olderAdults": 2,
+            "reform": -2,
             "youngAdults": -3,
-            "reform": -2
+            "olderAdults": 2
           }
         },
         {
           "id": "c2",
-          "text": "Reach out privately, demanding a retraction as the price of continued partnership.",
+          "text": "Reach out privately, demanding the politician retract his comments and apologize as the price of continued partnership.",
           "missionAligned": [
+            "antisemitism_all",
             "antisemitism_right"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The politician issues a partial clarification. The private pressure eventually leaks, making the episode messier.",
+              "text": "The politician issues a partial clarification. The private pressure eventually leaks, making the episode messier but underscoring your influence with top elected officials.",
               "effects": {
-                "trust": -3,
-                "donors": -2
+                "trust": 2,
+                "morale": 5,
+                "donors": 7
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "cloutEffect": 0,
+          "politicalRequirement": {
+            "minClout": 30
+          },
+          "cloutCost": 10
         },
         {
           "id": "c3",
           "text": "Argue the remarks have been taken out of context and this politician is a true friend of the Jewish people.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all",
-            "antisemitism_right",
-            "antisemitism_left"
+            "antisemitism_left",
+            "antisemitism_right"
           ],
           "outcomes": [
             {
               "text": "A significant portion of your own community is alienated. Several rabbis refuse to attend future events.",
               "effects": {
                 "trust": -7,
-                "donors": 3,
-                "morale": -6
+                "morale": -6,
+                "donors": 3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 5
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 7,
+          "cloutEffect": -5,
+          "cloutCost": 5,
+          "israelLean": 5
         }
       ],
       "categories": [
+        "centrist",
         "conservative"
       ],
       "orgLevel": "both",
-      "complexity": 3,
+      "complexity": 4,
       "highStakes": true,
       "advisorQuotes": [
         {
           "advisorId": "board_chair",
           "text": "Our credibility on antisemitism is on the line. But that grant is 15% of our budget.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 3
@@ -3681,6 +3718,7 @@ const GAME_DATA = {
         {
           "advisorId": "program_dir",
           "text": "If we don't condemn this clearly, everything we say about antisemitism becomes hollow.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "morale": 2
@@ -3690,6 +3728,7 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "I can find replacement funding, but it'll take 6-8 months. Can we survive the gap?",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "donors": 2
@@ -3697,7 +3736,7 @@ const GAME_DATA = {
           "explicit": false
         }
       ],
-      "communityConsensus": 0.5
+      "communityConsensus": 0.25
     },
     {
       "id": "jcc_bomb_threat",

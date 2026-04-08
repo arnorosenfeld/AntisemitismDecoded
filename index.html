@@ -4823,7 +4823,7 @@ const GAME_DATA = {
       "id": "staff_social_media",
       "tag": "Internal",
       "title": "A Staff Member’s Personal Posts Cause a Firestorm",
-      "body": "Your communications director — excellent at her job — has been posting passionate pro-Israel content on her personal social media, including sharing IDF videos and calling anti-Zionism a form of antisemitism. A progressive Jewish group screencaps the posts and tags your organization, demanding you ‘address the extremism in your ranks.’ She says it’s her personal account and her personal views.",
+      "body": "Your communications director — excellent at her job — has been posting passionate pro-Israel content on her personal social media, including sharing IDF videos, calling anti-Zionism a form of antisemitism and a few posts that critics say dehumanize Palestinians. A progressive Jewish group screenshots the posts and tags your organization, demanding you \"address the extremism in your ranks.\" She says it’s her personal account and her personal views.",
       "applicableOrgs": [
         "left",
         "right",
@@ -4835,13 +4835,15 @@ const GAME_DATA = {
         {
           "advisorId": "program_dir",
           "text": "If we punish her for pro-Israel views on her own time, what message does that send about who’s welcome here?",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         },
         {
           "advisorId": "media_strategist",
           "text": "The optics are terrible either way. Fire her and we look like we caved to a pressure campaign. Defend her and we own every post she’s ever made.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "trust": 2
@@ -4854,9 +4856,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Publicly defend her right to personal expression and refuse to engage with the pressure campaign.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "politicalLean": 3,
           "outcomes": [
             {
               "text": "Your staff respects the principled stand. Conservative donors applaud you. But the progressive group escalates, and two partner organizations quietly distance themselves.",
@@ -4866,33 +4866,35 @@ const GAME_DATA = {
                 "donors": 2
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             },
             {
-              "weight": 35,
               "text": "Your defense of the staff member earns loyalty internally, but some progressive community members see it as protecting inflammatory speech. Social media backlash ensues.",
               "effects": {
                 "trust": -1,
                 "morale": 3,
                 "donors": 1
-              }
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 3,
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 2,
-            "youngAdults": -3,
             "reform": -2,
-            "unaffiliated": -2
+            "unaffiliated": -2,
+            "youngAdults": -3,
+            "olderAdults": 2
           }
         },
         {
           "id": "c1",
           "text": "Implement a new social media policy for all staff that requires a disclaimer separating personal views from organizational positions.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4902,19 +4904,18 @@ const GAME_DATA = {
                 "morale": -1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c2",
           "text": "Ask her to take down the most inflammatory posts as a condition of continued employment. Frame it as protecting the organization.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "politicalLean": -2,
           "outcomes": [
             {
               "text": "She takes down the posts but is deeply hurt. Morale drops as staff worry about being policed on their personal accounts. She starts job hunting quietly.",
@@ -4923,19 +4924,30 @@ const GAME_DATA = {
                 "morale": -4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
+            },
+            {
+              "text": "",
+              "effects": {},
+              "weight": 50,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": -2
         },
         {
           "id": "c3",
           "text": "Let her go. Her public persona has become inseparable from the organization’s brand, and the controversy is a distraction you can’t afford.",
-          "missionAligned": [],
-          "requiresUnlock": null,
-          "missionOpposed": [],
-          "politicalLean": -4,
+          "missionAligned": [
+            "israel_peace",
+            "social_justice"
+          ],
+          "missionOpposed": [
+            "israel_security"
+          ],
           "outcomes": [
             {
               "text": "The progressive group celebrates. Conservative media picks up the story: ‘Jewish Org Fires Employee for Supporting Israel.’ You’ve made national news for the wrong reason.",
@@ -4945,37 +4957,56 @@ const GAME_DATA = {
                 "donors": -3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Two other staff members quietly update their LinkedIn profiles.",
-              "budgetEffect": 0
+              "conditions": []
+            },
+            {
+              "text": "You made a principled decision. Some staff squirm and you know that you're likely to narrow the pool of future job applicants. But your organization has certain values, and her posts were not aligned with them.",
+              "effects": {
+                "trust": 6,
+                "morale": 1,
+                "donors": -2
+              },
+              "weight": 50,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -4,
           "segmentOverrides": {
             "orthodox": -5,
-            "olderAdults": -3,
             "conservative_denom": -3,
+            "reform": 1,
             "youngAdults": 2,
-            "reform": 1
+            "olderAdults": -3
           }
         }
-      ]
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": false
     },
     {
       "id": "antisemitism_data",
       "tag": "Strategy",
       "title": "How to Release a Damning Antisemitism Report",
-      "body": "Your research team has completed a comprehensive report showing antisemitic incidents in your region increased 47% last year. The data is solid, but the breakdown is politically uncomfortable: incidents from the far right are up 60%, while incidents tied to progressive spaces (campus protests, social media) are up 35%. How you frame and release this report will shape the public conversation.",
+      "body": "Your research team has completed a comprehensive report showing antisemitic incidents in your region increased 47% last year. The data is solid, but the breakdown is politically uncomfortable: incidents from the far right are up 60%, while incidents tied to progressives are up 35%. How you frame and release this report will shape the public conversation.",
       "applicableOrgs": [
         "left",
         "right",
         "center",
         "jcc"
       ],
-      "communityConsensus": 0.5,
+      "communityConsensus": 0.15,
       "advisorQuotes": [
         {
           "advisorId": "media_strategist",
           "text": "Lead with the total number. 47% is the headline. Let journalists pull the breakdown from the appendix. We don’t need to editorialize the data.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -4985,13 +5016,15 @@ const GAME_DATA = {
         {
           "advisorId": "political_consultant",
           "text": "Be careful. Every political faction will cherry-pick the numbers that indict the other side. The framing you choose in the press release IS the story.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         },
         {
           "advisorId": "rabbi_scholar",
           "text": "The truth doesn’t need spin. Release everything, let the data speak, and trust the community to handle uncomfortable truths.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "trust": 3
@@ -5004,161 +5037,189 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Lead with the overall 47% increase. Keep the breakdown in the full report but don’t highlight it in the press release or talking points.",
           "missionAligned": [
-            "antisemitism_all"
+            "antisemitism_all",
+            "diaspora_unity"
           ],
-          "requiresUnlock": null,
-          "missionOpposed": [],
+          "missionOpposed": [
+            "antisemitism_left",
+            "antisemitism_right"
+          ],
           "outcomes": [
             {
-              "text": "The 47% figure dominates coverage. The report is cited widely. But within days, partisans on both sides accuse you of burying data that implicates ‘their’ opponents.",
+              "text": "The 47% figure dominates coverage. The report is cited widely. But within days, partisans on both sides accuse you of burying data with inconvenient conclusions.",
               "effects": {
                 "trust": 4,
                 "donors": 3
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": -5
             },
             {
-              "weight": 35,
-              "text": "The comprehensive report gets media coverage, but experts critique your methodology. A rival organization publishes a rebuttal, and the whole effort looks less authoritative.",
+              "text": "The comprehensive report is less interesting and it receives little media coverage. A rival organization publishes a flimsier study a few weeks later and your team's hard work is forgotten.",
               "effects": {
-                "trust": 1,
-                "morale": -1,
-                "donors": 2
-              }
+                "trust": 2,
+                "morale": -6,
+                "donors": -3
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -6
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c1",
-          "text": "Release everything prominently — the overall number and the full political breakdown — and hold a press conference framing antisemitism as a threat from all directions.",
+          "text": "Release everything prominently — the overall number and the full political breakdown — and hold a press conference framing antisemitism as a threat coming equally from all directions.",
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right"
           ],
-          "requiresUnlock": null,
-          "missionOpposed": [],
+          "missionOpposed": [
+            "social_justice"
+          ],
           "outcomes": [
             {
-              "text": "The press conference is praised for honesty. Both left and right media quote the data that suits them. Your organization emerges as the credible, nonpartisan source.",
+              "text": "The press conference is praised for honesty. Activists on the left and right quote the data that suits them. Your organization emerges as a credible source.",
               "effects": {
                 "trust": 4,
                 "morale": 3,
                 "donors": 2
               },
               "weight": 60,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": [],
+              "cloutEffect": 7
             },
             {
-              "text": "The nuance is lost in the news cycle. Headlines read ‘Jewish Org Says Antisemitism Up From Left and Right’ — and both sides feel attacked. Your inbox fills with angry emails.",
+              "text": "The nuance is lost in the news cycle. Headlines read \"Jewish Org Says Antisemitism Up From Left and Right\" — and both sides feel attacked. Your inbox fills with angry emails.",
               "effects": {
                 "trust": 2,
                 "morale": -2,
                 "donors": -1
               },
               "weight": 40,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 1,
+          "israelLean": 3
         },
         {
           "id": "c2",
-          "text": "Emphasize the far-right data (60% increase) in the press release, since it represents the larger share of the threat.",
+          "text": "Emphasize the far-right increase in the press release, since it represents the larger share of the threat.",
           "missionAligned": [
-            "antisemitism_right"
+            "antisemitism_right",
+            "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_left"
+            "antisemitism_left",
+            "israel_security"
           ],
-          "politicalLean": -3,
           "outcomes": [
             {
               "text": "Progressive allies share the report widely. Conservative media accuses you of bias. Several right-leaning donors call to complain.",
               "effects": {
-                "trust": 2,
-                "morale": 2,
+                "trust": 4,
+                "morale": 3,
                 "donors": -2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -4,
           "segmentOverrides": {
-            "youngAdults": 3,
+            "orthodox": -3,
             "reform": 2,
             "unaffiliated": 2,
-            "orthodox": -3,
+            "youngAdults": 3,
             "olderAdults": -2
-          }
+          },
+          "israelLean": -5
         },
         {
           "id": "c3",
-          "text": "Emphasize the progressive-space data (35% increase) as the underreported story, since media already covers far-right antisemitism.",
+          "text": "Emphasize the left-wing antisemitism as the underreported story, since media already covers far-right antisemitism.",
           "missionAligned": [
-            "antisemitism_left"
+            "antisemitism_left",
+            "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_right"
+            "antisemitism_right",
+            "israel_peace",
+            "social_justice"
           ],
-          "politicalLean": 4,
           "outcomes": [
             {
               "text": "Conservative media loves it. You’re invited onto three cable news shows in one day. Progressive allies are furious, saying you’re weaponizing data to attack the left.",
               "effects": {
-                "trust": 1,
                 "morale": -1,
-                "donors": 3
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": -6
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 4,
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 3,
-            "youngAdults": -4,
             "reform": -3,
-            "unaffiliated": -2
-          }
+            "unaffiliated": -2,
+            "youngAdults": -4,
+            "olderAdults": 3
+          },
+          "israelLean": 5
         }
-      ]
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "national",
+      "complexity": 4,
+      "channel": [
+        "monitor",
+        "folder"
+      ],
+      "highStakes": false
     },
     {
       "id": "rival_org",
       "tag": "Crisis",
       "title": "A Rival Jewish Organization Attacks You Publicly",
-      "body": "A competing Jewish organization has published a scathing open letter accusing your organization of ‘failing the Jewish community’ by being too political, too cautious, or too compromised — depending on who you ask. The letter has 40 signatories including three rabbis. It’s trending in Jewish media. Your board is rattled.",
+      "body": "A competing Jewish organization has published a scathing open letter accusing your organization of \"failing the Jewish community\" by being too political, too cautious, and too compromised. The letter has 40 signatories including three rabbis. It’s trending in Jewish media. Your board is rattled.",
       "applicableOrgs": [
         "left",
         "right",
         "center",
         "jcc"
       ],
-      "communityConsensus": 0.4,
+      "communityConsensus": 0.1,
       "advisorQuotes": [
         {
           "advisorId": "dev_director",
           "text": "We need to respond, but carefully. Two of those signatories are former donors. This smells like a coordinated campaign, not a genuine critique.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         },
         {
           "advisorId": "board_chair",
           "text": "I know the executive director behind this. He’s been trying to poach our donors for two years. This is about market share, not mission.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "donors": 2
@@ -5169,33 +5230,32 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Publish a detailed, point-by-point rebuttal demonstrating your impact with hard data.",
+          "text": "Publish a detailed, point-by-point rebuttal disputing the letter's key arguments and demonstrating your impact with hard data.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "cloutEffect": 3,
           "outcomes": [
             {
               "text": "Your rebuttal is thorough and effective. Supporters rally around you. But the public fight between Jewish orgs becomes the story, and funders worry about communal dysfunction.",
               "effects": {
                 "trust": 2,
                 "morale": 3,
-                "donors": -1
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": [],
+              "cloutEffect": 2
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c1",
-          "text": "Take the high road. Release a brief statement reaffirming your mission and inviting the other org to collaborate rather than compete.",
+          "text": "Take the high road. Release a brief statement reaffirming your mission.",
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5206,56 +5266,62 @@ const GAME_DATA = {
                 "donors": 3
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             },
             {
-              "weight": 35,
-              "text": "The collaboration goes smoothly in public, but behind the scenes the rival org takes credit for joint wins. Your staff feels demoralized by the unequal partnership.",
+              "text": "The controversy fades from public view, but behind the scenes the rival org keeps bashing you to donors and some Jews in the community feel like they're making a political statement by engaging with you and stay away as a result.",
               "effects": {
-                "trust": 3,
-                "morale": -2,
-                "donors": 2
-              }
+                "morale": -4,
+                "donors": -1
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -6
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c2",
           "text": "Work the phones. Call every signatory personally, understand their concerns, and peel off as many as possible before responding publicly.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "cloutEffect": 5,
           "outcomes": [
             {
               "text": "You flip eight signatories who say they were pressured into signing. The letter’s credibility collapses. But it took three days of your time and the rival org now sees you as a threat.",
               "effects": {
                 "trust": 3,
-                "donors": 2
+                "donors": 4
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "Your political skills are noticed by people who matter.",
-              "budgetEffect": 0
+              "conditions": [],
+              "cloutEffect": 8
             },
             {
-              "weight": 30,
-              "text": "Focusing on your strengths works strategically, but some see it as conceding territory. A board member asks if you're 'retreating rather than competing.'",
+              "text": "Focusing on your strengths works strategically, but some see it as conceding territory. A board member asks if you're \"retreating rather than competing.\"",
               "effects": {
                 "trust": 1,
-                "donors": -1,
-                "morale": 1
-              }
+                "morale": 1,
+                "donors": -2
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": 2
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "requiresUnlock": "political_operator"
         },
         {
           "id": "c3",
           "text": "Ignore it completely. Don’t dignify it with a response. Let your work speak for itself.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5265,13 +5331,22 @@ const GAME_DATA = {
                 "donors": -2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": [],
+              "cloutEffect": -4
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         }
-      ]
+      ],
+      "categories": [
+        "centrist",
+        "apolitical"
+      ],
+      "orgLevel": "both",
+      "complexity": 4,
+      "highStakes": false
     },
     {
       "id": "celebrity_antisemitism",

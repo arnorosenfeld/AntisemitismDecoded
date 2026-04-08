@@ -3277,38 +3277,37 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Convene a facilitated conversation between the two with an outside mediator.",
-          "missionAligned": [
-            "diaspora_unity"
-          ],
-          "requiresUnlock": null,
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The mediator earns both parties' trust. Neither is fully satisfied but both agree to remain on the board.",
               "effects": {
                 "trust": 3,
-                "donors": 2,
-                "morale": 4
+                "morale": 4,
+                "donors": 2
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "Your transparent approach earns trust from some board members, but the losing faction feels publicly humiliated. One resigns and takes two major donors with them.",
               "effects": {
                 "trust": 2,
-                "morale": 3,
-                "donors": -3
-              }
+                "donors": -5
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
+            "orthodox": -2,
             "reform": 2,
             "youngAdults": 2,
-            "orthodox": -2,
             "olderAdults": -2
           }
         },
@@ -3316,34 +3315,37 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Meet with each board member individually, listening carefully but refusing to take sides.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Both feel heard. The conflict simmers but doesn't boil over. You earn a reputation for steadiness.",
               "effects": {
-                "trust": 4,
-                "morale": 3
+                "trust": 2
               },
               "weight": 70,
+              "contextNote": "",
               "conditions": [],
-              "contextNote": ""
+              "cloutEffect": 3
             },
             {
-              "weight": 30,
               "text": "The quiet resolution preserves board harmony but leaves the underlying issues unresolved. Staff see it as conflict avoidance and lose confidence in leadership.",
               "effects": {
-                "trust": 3,
-                "morale": -1
-              }
+                "trust": -2,
+                "morale": -5
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -2
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c2",
           "text": "Side with the board member whose position you actually agree with and say so.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
             "diaspora_unity"
           ],
@@ -3355,46 +3357,54 @@ const GAME_DATA = {
                 "donors": -4
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 2,
-            "olderAdults": 3,
+            "reform": -2,
             "youngAdults": -3,
-            "reform": -2
+            "olderAdults": 3
           }
         },
         {
           "id": "c3",
           "text": "Quietly engineer a public honor for one of them, making it impossible to continue the feud without looking petty.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The feud ends quickly. Neither board member figures out how it happened. Pure political craft.",
               "effects": {
                 "trust": 3,
-                "donors": 4,
-                "morale": 4
+                "morale": 4,
+                "donors": 4
               },
-              "weight": 70,
-              "conditions": [],
+              "weight": 80,
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             },
             {
-              "weight": 30,
               "text": "Your mediation works on the surface, but the underlying tensions remain. Both factions feel you sided with the other, and donor confidence wavers as rumors of board dysfunction leak.",
               "effects": {
                 "trust": 1,
-                "donors": -1,
-                "morale": 3
-              }
+                "morale": 3,
+                "donors": -1
+              },
+              "weight": 20,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 35
+          },
+          "cloutCost": 5
         }
       ],
       "categories": [
@@ -3407,6 +3417,7 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "I've seen board conflicts destroy organizations. This needs to be contained fast.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -3416,6 +3427,7 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "Between them, they represent $180K in annual giving. We can't afford to lose either.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "donors": 2
@@ -3460,7 +3472,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": -5,
-          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -6,
             "reform": 2,
@@ -3494,7 +3505,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": -3,
-          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -3,
             "unaffiliated": 2,
@@ -3525,7 +3535,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": -2,
-          "cloutEffect": -5,
           "israelLean": -1
         },
         {
@@ -3553,7 +3562,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 3,
-          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": 3,
             "unaffiliated": -3,
@@ -3934,103 +3942,116 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Call the journalist and offer a full sit-down interview, sharing everything openly.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The piece runs. It is critical in places but fair. Your openness is noted. The story does less damage than feared.",
               "effects": {
-                "trust": 4,
-                "donors": -2,
+                "trust": 5,
                 "morale": 3
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c1",
           "text": "Decline to comment and prepare a rapid response for the day of publication.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The piece is harsher than expected. Your no-comment is featured prominently.",
+              "text": "The piece is harsher than expected. Your decision not to comment  is featured prominently.",
               "effects": {
                 "trust": -4,
-                "donors": -3,
-                "morale": -3
+                "morale": -3,
+                "donors": -3
               },
               "weight": 100,
-              "conditions": [],
-              "contextNote": ""
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
         },
         {
           "id": "c2",
           "text": "Pitch a counter-story to a more sympathetic outlet to run the same day.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "Both stories run the same day. The dueling narratives create confusion.",
+              "text": "Both stories run the same day. The dueling narratives create confusion, and makes the reporters who wrote both stories distrust you.",
               "effects": {
-                "trust": -2,
-                "morale": 2
+                "trust": -6,
+                "morale": -2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 25
+          },
+          "cloutCost": 5
         },
         {
           "id": "c3",
           "text": "Use your media relationships to get advance notice of key claims and prepare a surgical rebuttal.",
           "missionAligned": [],
-          "requiresUnlock": "press_option",
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "You rebut two factual errors before publication. The editor runs corrections. The story lands with much less impact.",
               "effects": {
                 "trust": 4,
-                "donors": 3,
-                "morale": 4
+                "morale": 4,
+                "donors": 3
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": []
             },
             {
-              "weight": 35,
               "text": "Your media strategy generates positive coverage, but the reporter's follow-up piece digs into old organizational issues. The net result is mixed — visibility up, but so is scrutiny.",
               "effects": {
                 "trust": 3,
-                "donors": 1,
-                "morale": -2
-              }
+                "morale": -2,
+                "donors": 1
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": []
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 35
+          },
+          "requiresUnlock": "media_savvy",
+          "cloutCost": 10
         }
       ],
       "categories": [
         "all"
       ],
       "orgLevel": "both",
-      "complexity": 3,
+      "complexity": 4,
       "highStakes": true,
       "advisorQuotes": [
         {
           "advisorId": "board_chair",
           "text": "We've been through bad press before. The key is controlling the narrative, not hiding from it.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -4040,6 +4061,7 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "Our spring gala is in six weeks. Bad press right now could cost us $50K in ticket sales.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "donors": 2
@@ -4053,16 +4075,17 @@ const GAME_DATA = {
       "id": "campus_divestment",
       "tag": "Crisis",
       "title": "Campus Divestment Vote",
-      "body": "The student government at the largest university in your area has scheduled a vote on a resolution demanding the university divest from companies doing business with Israel. Jewish students are panicking. The campus Hillel director is begging you to intervene. Several progressive allies in your coalition are publicly supporting the resolution.",
+      "body": "The student government at the largest university in your area has scheduled a vote on a resolution demanding the university divest from companies doing business with Israel. Some Jewish students are panicking, others are campaigning for it to pass. The campus Hillel director is begging you to intervene. Several progressive allies in your coalition are publicly supporting the resolution.",
       "applicableOrgs": [
         "left",
         "center"
       ],
-      "communityConsensus": 0.2,
+      "communityConsensus": 0,
       "advisorQuotes": [
         {
           "advisorId": "political_consultant",
           "text": "This is a lose-lose. If you fight it loudly, you look like you’re suppressing free speech. If you stay quiet, Jewish students feel abandoned.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "trust": 2
@@ -4072,13 +4095,15 @@ const GAME_DATA = {
         {
           "advisorId": "community_organizer",
           "text": "Some of these student activists are our people. Young Jews who care about Palestinian rights. We can’t treat them as the enemy.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         },
         {
           "advisorId": "board_chair",
           "text": "Our donors are watching this very closely. Three board members have already called me.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "donors": 2
@@ -4091,56 +4116,64 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Launch a full-court press against the resolution: lobby student senators, organize counter-testimony, and mobilize alumni donors to pressure the administration.",
           "missionAligned": [
+            "antisemitism_left",
             "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "social_justice"
+            "israel_peace",
+            "social_justice",
+            "community_hub",
+            "diaspora_unity"
           ],
-          "politicalLean": 4,
           "outcomes": [
             {
-              "text": "The resolution fails by three votes. Pro-divestment students accuse you of silencing Palestinian voices. Jewish students are relieved but the campus climate worsens.",
+              "text": "The resolution fails by three votes. Pro-divestment students accuse you of silencing their voices. The pro-Jewish students are relieved but the campus climate worsens and some anti-Zionist Jews drift further away from Hillel.",
               "effects": {
-                "trust": 3,
-                "donors": 4,
-                "morale": -2
+                "trust": 2,
+                "morale": -2,
+                "donors": 5
               },
               "weight": 60,
-              "conditions": [],
               "contextNote": "Several progressive organizations quietly note your tactics.",
-              "budgetEffect": -8
+              "conditions": [],
+              "cloutEffect": 5
             },
             {
-              "text": "The resolution passes anyway despite your opposition, and your organization is now publicly identified as the face of the losing side.",
+              "text": "The resolution passes despite your opposition, and your organization is now publicly identified as the face of the losing side.",
               "effects": {
-                "trust": -3,
-                "donors": 2,
-                "morale": -3
+                "trust": -4,
+                "morale": -4,
+                "donors": 2
               },
               "weight": 40,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -8
+              "conditions": [],
+              "cloutEffect": -5
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 4,
           "segmentOverrides": {
             "orthodox": 5,
-            "olderAdults": 3,
-            "youngAdults": -5,
+            "reform": -2,
             "unaffiliated": -3,
-            "reform": -2
-          }
+            "youngAdults": -5,
+            "olderAdults": 3
+          },
+          "cloutCost": 5,
+          "israelLean": 7
         },
         {
           "id": "c1",
-          "text": "Support Jewish students in testifying about how the resolution affects campus climate, without taking an organizational position on divestment itself.",
+          "text": "Support Jewish students across the political spectrum in testifying about how the resolution affects campus climate, without taking an organizational position on divestment itself.",
           "missionAligned": [
             "antisemitism_all",
-            "community_hub"
+            "community_hub",
+            "diaspora_unity"
           ],
-          "requiresUnlock": null,
-          "missionOpposed": [],
+          "missionOpposed": [
+            "israel_security"
+          ],
           "outcomes": [
             {
               "text": "Jewish students feel supported. Your nuanced position frustrates both hardliners and progressives but earns respect from the university administration.",
@@ -4149,83 +4182,104 @@ const GAME_DATA = {
                 "morale": 3
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": 5
             },
             {
-              "weight": 35,
-              "text": "Your student support programming is appreciated, but activists on both sides accuse you of trying to sidestep the real issue. A campus newspaper op-ed calls your approach 'performative neutrality.'",
+              "text": "Your student support programming is appreciated, but activists on both sides accuse you of trying to sidestep the real issue. A campus newspaper op-ed calls your approach \"performative neutrality.\"",
               "effects": {
-                "trust": 1,
-                "morale": 2,
+                "trust": -2,
+                "morale": -3,
                 "donors": -1
-              }
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -2,
+          "politicalRequirement": {
+            "minClout": 25
+          },
           "segmentOverrides": {
-            "youngAdults": 3,
+            "orthodox": -2,
             "reform": 2,
-            "orthodox": -2
-          }
+            "youngAdults": 3
+          },
+          "requiresUnlock": "grassroots_organizer",
+          "israelLean": -2
         },
         {
           "id": "c2",
-          "text": "Organize a counter-programming event: a campus dialogue on antisemitism, Islamophobia, and how divestment debates affect real students on both sides.",
+          "text": "Organize counter-programming: a campus dialogue on antisemitism, Islamophobia, and how divestment debates affect real students on both sides.",
           "missionAligned": [
             "social_justice",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
           ],
-          "politicalLean": -3,
           "outcomes": [
             {
-              "text": "The event draws 200 students and earns a glowing write-up in the campus paper. Several donors are furious you didn’t fight the resolution directly.",
+              "text": "The event draws 200 students and earns a glowing write-up in the campus paper. Several donors are furious you didn’t fight the resolution.",
               "effects": {
-                "trust": 2,
-                "morale": 4,
-                "donors": -3
+                "trust": 3,
+                "morale": 5,
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": []
             }
           ],
+          "budgetCost": 10,
+          "politicalLean": -3,
           "segmentOverrides": {
-            "youngAdults": 4,
-            "unaffiliated": 3,
-            "reform": 2,
             "orthodox": -4,
+            "reform": 2,
+            "unaffiliated": 3,
+            "youngAdults": 4,
             "olderAdults": -2
-          }
+          },
+          "israelLean": -2
         },
         {
           "id": "c3",
-          "text": "Stay out of it publicly. The university’s internal politics aren’t your fight. Focus on supporting Jewish students through direct services.",
+          "text": "Stay out of it. The university’s internal politics aren’t your fight. Focus on supporting Jewish students through direct services.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_all"
+            "antisemitism_left",
+            "israel_security",
+            "israel_peace"
           ],
           "outcomes": [
             {
               "text": "Some appreciate your restraint. Others call it cowardice. Jewish students on campus feel you weren’t there when they needed you.",
               "effects": {
-                "trust": -2,
-                "morale": -1
+                "trust": -4,
+                "morale": -3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": [],
+              "cloutEffect": -5
             }
-          ]
+          ],
+          "budgetCost": 0,
+          "politicalLean": -3,
+          "israelLean": -2
         }
-      ]
+      ],
+      "categories": [
+        "progressive",
+        "centrist",
+        "apolitical"
+      ],
+      "orgLevel": "both",
+      "complexity": 5,
+      "highStakes": false
     },
     {
       "id": "holocaust_curriculum",

@@ -1963,6 +1963,11 @@ const GAME_DATA = {
       "trapLow": 35,
       "trapHigh": 65,
       "centristCloutRate": 0.6
+    },
+    "outgoingED": {
+      "name": "Avi Rosen",
+      "role": "Outgoing Executive Director",
+      "portrait": "art/advisors/avi_rosen"
     }
   },
   "stats": [
@@ -12212,8 +12217,8 @@ const GAME_DATA = {
   "coalitionOffers": [
     {
       "id": "coal_interfaith",
-      "name": "Interfaith Alliance Partnership",
-      "description": "The local Interfaith Council wants a formal partnership. You'll co-host monthly events and they'll amplify your work to their 15,000-member network. But they expect you to remain neutral on Israel-Palestine issues in all public communications.",
+      "name": "Interfaith Alliance",
+      "description": "The local Interfaith Alliance has invited you to join. You'll co-host monthly events and they'll amplify your work to their 15,000-member network. But they expect you to remain neutral on the Israeli-Palestinian conflict in in all public communications.",
       "offeredByRound": 2,
       "benefits": {
         "perRound": {
@@ -12237,31 +12242,39 @@ const GAME_DATA = {
           "morale": -5,
           "donors": -3
         },
-        "text": "The Interfaith Alliance publicly ends the partnership, calling your Israel statement a 'betrayal of the neutral space we built together.'",
+        "text": "The Interfaith Alliance publicly ends the partnership, calling your Israel statement a \"betrayal of the neutral space we built together.\"",
         "cloutEffect": -8
       },
       "duration": 0,
-      "politicalLean": -2,
-      "acceptClout": 3,
+      "politicalLean": -4,
+      "acceptClout": 7,
       "breakCloutPenalty": -8,
       "declinePenalty": {
         "effects": {
-          "trust": -2
+          "trust": -2,
+          "morale": -5
         },
         "text": "Word spreads that you turned down the Interfaith Alliance. Some question your commitment to bridge-building."
-      }
+      },
+      "applicableOrgs": [
+        "left",
+        "center",
+        "jcc",
+        "nat_left",
+        "nat_center",
+        "nat_jcc"
+      ]
     },
     {
       "id": "coal_campus",
-      "name": "Campus Coalition Against Hate",
-      "description": "A coalition of campus organizations invites you to join their anti-hate alliance. You'll get direct access to college students and shared programming resources. But they require members to publicly support all coalition statements — even ones you might disagree with.",
+      "name": "Jews Against Campus Hate",
+      "description": "A coalition of Jewish organizations that fight antisemitism on campus invites you to join their \"anti-Jew hate alliance.\" You'll get direct access to college students and shared programming resources. But they require members to publicly support the coalition's positions — and they take a dim view of pro-Palestinian activism.",
       "offeredByRound": 3,
       "benefits": {
         "perRound": {
-          "trust": 2,
-          "donors": 2,
-          "morale": 1
-        }
+          "donors": 3
+        },
+        "budgetPerRound": 2
       },
       "constraints": [
         {
@@ -12277,25 +12290,33 @@ const GAME_DATA = {
           "morale": -5,
           "donors": -3
         },
-        "text": "The Campus Coalition votes to remove your organization, citing 'loss of community trust that undermines our shared mission.'",
+        "text": "The Campus Coalition votes to remove your organization, citing \"loss of community trust that undermines our shared mission.\"",
         "cloutEffect": -6
       },
-      "duration": 4,
-      "politicalLean": -3,
-      "acceptClout": 4,
+      "duration": 0,
+      "politicalLean": 5,
+      "acceptClout": 5,
       "breakCloutPenalty": -6,
       "declinePenalty": {
         "effects": {
           "trust": -1,
-          "morale": -1
+          "donors": -5
         },
-        "text": "Your staff is disappointed you passed on the campus partnership."
-      }
+        "text": "Your board is disappointed you passed on the campus partnership."
+      },
+      "applicableOrgs": [
+        "right",
+        "center",
+        "jcc",
+        "nat_right",
+        "nat_center",
+        "nat_jcc"
+      ]
     },
     {
       "id": "coal_donor_circle",
       "name": "Major Donor Collective",
-      "description": "A group of five major donors wants to form an advisory circle with guaranteed annual giving of $200K combined. In exchange, they want quarterly briefings and veto power over any public statement on Israel.",
+      "description": "A group of five major donors invites you to a new advisory circle with guaranteed annual giving of $200K combined. In exchange, they want quarterly briefings and veto power over any public statement on Israel and any controversial domestic policy positions.",
       "offeredByRound": 1,
       "benefits": {
         "perRound": {
@@ -12317,7 +12338,7 @@ const GAME_DATA = {
         "effects": {
           "donors": -12
         },
-        "text": "The Donor Collective withdraws all funding effective immediately. 'We had an agreement,' their letter reads. 'You broke it.'",
+        "text": "The Donor Collective withdraws all funding effective immediately. \"We had an agreement,\" their letter reads. \"You broke it.\"",
         "budgetEffect": -15,
         "cloutEffect": -10
       },
@@ -12327,7 +12348,7 @@ const GAME_DATA = {
       "breakCloutPenalty": -10,
       "declinePenalty": {
         "effects": {
-          "donors": -3
+          "donors": -7
         },
         "text": "The donor collective redirects their giving to a rival organization. You feel the budget impact immediately.",
         "budgetEffect": -5
@@ -12335,12 +12356,13 @@ const GAME_DATA = {
     },
     {
       "id": "coal_federation",
-      "name": "Federation Partnership Grant",
-      "description": "The Jewish Federation offers a 3-year partnership grant: $75K/year in unrestricted funding plus shared staff resources. But Federation partners must participate in community-wide campaigns and avoid public disagreements with Federation positions.",
+      "name": "Federation Partnership",
+      "description": "The National Network of Jewish Federations offers a 3-year partnership grant to your organization: $75K/year in unrestricted funding plus shared staff resources. But Federation partners must participate in community-wide campaigns and avoid public disagreements with Federation positions.",
       "offeredByRound": 2,
       "benefits": {
         "perRound": {
-          "trust": 2
+          "trust": 2,
+          "donors": 1
         },
         "budgetPerRound": 4
       },
@@ -12356,26 +12378,35 @@ const GAME_DATA = {
         "effects": {
           "trust": -5
         },
-        "text": "The Federation pauses the partnership grant, citing 'concerns about organizational stability.'",
+        "text": "The Federation pauses the partnership grant, citing \"concerns about organizational stability.\"",
         "budgetEffect": -10,
         "cloutEffect": -7
       },
-      "duration": 3,
-      "politicalLean": 1,
+      "duration": 5,
+      "politicalLean": 2,
       "acceptClout": 6,
       "breakCloutPenalty": -7,
       "declinePenalty": {
         "effects": {
-          "trust": -2
+          "trust": -2,
+          "donors": -4
         },
         "text": "The Federation notes your absence from the partnership program. You’re not invited to the next community planning meeting.",
         "budgetEffect": -3
-      }
+      },
+      "applicableOrgs": [
+        "right",
+        "center",
+        "jcc",
+        "nat_right",
+        "nat_center",
+        "nat_jcc"
+      ]
     },
     {
       "id": "coal_media",
-      "name": "Jewish Media Consortium",
-      "description": "Three Jewish media outlets offer you a regular column and guaranteed coverage of your events. In exchange, you give them exclusive access and first comment rights on any controversy. You can't talk to outside media first.",
+      "name": "Jewish Media Roundtable",
+      "description": "A major Jewish wire service offers you a regular column and guaranteed coverage of your events. In exchange, you give them exclusive access and first comment rights on any controversy. You can't talk to outside media first.",
       "offeredByRound": 3,
       "benefits": {
         "perRound": {
@@ -12402,11 +12433,12 @@ const GAME_DATA = {
       },
       "duration": 0,
       "politicalLean": 0,
-      "acceptClout": 4,
+      "acceptClout": 5,
       "breakCloutPenalty": -8,
       "declinePenalty": {
         "effects": {
-          "trust": -1
+          "trust": -2,
+          "morale": -5
         },
         "text": "The consortium runs a mild piece about organizations that “prefer to stay in the shadows.” It’s not hostile, but it stings."
       }
@@ -12433,8 +12465,8 @@ const GAME_DATA = {
       "description": "Run a targeted advertising campaign to raise your profile and attract supporters.",
       "budgetCost": 12,
       "effects": {
-        "donors": 4,
-        "trust": 2
+        "trust": 2,
+        "donors": 4
       },
       "outcomeText": "Your campaign reaches thousands of new potential supporters. Several reach out.",
       "maxUses": -1
@@ -12443,7 +12475,7 @@ const GAME_DATA = {
       "id": "inv_training",
       "name": "Staff Development",
       "icon": "📚",
-      "description": "Send your team to professional development training and leadership workshops.",
+      "description": "Send your team to professional development training and continuing education workshops.",
       "budgetCost": 10,
       "effects": {
         "morale": 5
@@ -12455,12 +12487,12 @@ const GAME_DATA = {
       "id": "inv_technology",
       "name": "Technology Upgrade",
       "icon": "💻",
-      "description": "Modernize your CRM, website, and internal systems.",
+      "description": "Modernize your database, website, and internal systems.",
       "budgetCost": 18,
       "effects": {
-        "donors": 2,
-        "morale": 2,
-        "trust": 1
+        "trust": 2,
+        "morale": 5,
+        "donors": 3
       },
       "outcomeText": "Operations run smoother. Your digital presence is significantly improved.",
       "maxUses": 1
@@ -12473,10 +12505,10 @@ const GAME_DATA = {
       "budgetCost": 20,
       "effects": {
         "trust": 4,
-        "donors": 3
+        "donors": 4
       },
       "outcomeText": "The event draws strong attendance and media coverage. Your organization is the talk of the community.",
-      "maxUses": -1
+      "maxUses": 2
     },
     {
       "id": "inv_reserve",
@@ -12486,7 +12518,7 @@ const GAME_DATA = {
       "budgetCost": 15,
       "effects": {},
       "outcomeText": "Your reserve fund grows. The board approves — fiscal responsibility matters.",
-      "budgetReturn": 20,
+      "budgetReturn": 25,
       "budgetReturnDelay": 3,
       "maxUses": 2
     }
@@ -14279,7 +14311,8 @@ const GAME_DATA = {
         }
       ]
     }
-  ]
+  ],
+  "tooltips": []
 };
 /* GAME_DATA_END */
 

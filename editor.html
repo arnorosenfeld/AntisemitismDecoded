@@ -220,7 +220,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 /* ── MISSION ALIGNMENT SECTION ── */
 .mission-align-section{margin-bottom:12px}
 .mission-align-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0}
-.mission-align-row span{width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mission-align-row span{flex:1;min-width:0}
 .mission-align-row select{font-size:11px;padding:4px 8px;border:1px solid var(--border);background:var(--white)}
 
 /* ── CONVERSATION NODE ── */
@@ -14046,7 +14046,7 @@ function renderMissionForm(m, i) {
   return `<div class="item-edit-form" id="mis-form-${i}" style="display:none">
     <div class="form-row"><div class="form-group"><label>ID</label><input id="mis-id-${i}" value="${esc(m.id)}" /></div><div class="form-group"><label>Name</label><input id="mis-name-${i}" value="${esc(m.name)}" /></div></div>
     <div class="form-group" style="margin-bottom:11px"><label>Description</label><textarea id="mis-desc-${i}" rows="2">${esc(m.description)}</textarea></div>
-    <div class="form-group" style="margin-bottom:11px"><label>Available To (comma-sep org IDs)</label><input id="mis-avail-${i}" value="${(m.availableTo||[]).join(',')}" /></div>
+    <div class="form-group" style="margin-bottom:11px"><label>Available To</label><div style="display:flex;flex-wrap:wrap;gap:6px 14px">${(GD.organizations||[]).concat(GD.nationalOrganizations||[]).map(o=>`<label class="checkbox-item"><input type="checkbox" id="mis-avail-${i}-${o.id}" ${(m.availableTo||[]).includes(o.id)?'checked':''} />${esc(o.name)}</label>`).join('')}</div></div>
     <div class="stat-inputs cols-4" style="margin-bottom:11px">
       ${stats.map(s=>`<div class="stat-input-group"><label>${s.label} bonus</label><input type="number" id="mis-fx-${i}-${s.id}" value="${(m.statBonus||{})[s.id]||0}" /></div>`).join('')}
     </div>
@@ -14058,7 +14058,7 @@ function saveMission(i) {
   m.id = document.getElementById('mis-id-'+i).value;
   m.name = document.getElementById('mis-name-'+i).value;
   m.description = document.getElementById('mis-desc-'+i).value;
-  m.availableTo = document.getElementById('mis-avail-'+i).value.split(',').map(s=>s.trim()).filter(Boolean);
+  m.availableTo = (GD.organizations||[]).concat(GD.nationalOrganizations||[]).filter(function(o){return document.getElementById('mis-avail-'+i+'-'+o.id)?.checked}).map(function(o){return o.id});
   m.statBonus = {};
   (GD.stats||[]).forEach(s => { const v = parseInt(document.getElementById('mis-fx-'+i+'-'+s.id)?.value)||0; if(v!==0) m.statBonus[s.id]=v; });
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Mission saved.','success'); populateMissions(); refreshDependentPanels('missions');
@@ -14100,12 +14100,12 @@ function renderScenarioForm(s, i, prefix) {
       <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /><div class="form-hint">1-5 rating affecting when scenarios appear — higher complexity appears in later rounds</div></div>
     </div>
     <div class="form-row three" style="margin-top:8px">
-      <div class="form-group"><label>Channel</label><select id="${prefix}-channel-${i}">
-        <option value="any" ${(s.channel||'any')==='any'?'selected':''}>Any</option>
-        <option value="monitor" ${s.channel==='monitor'?'selected':''}>Monitor (Digital)</option>
-        <option value="folder" ${s.channel==='folder'?'selected':''}>Folder (Memos)</option>
-        <option value="keys" ${s.channel==='keys'?'selected':''}>Keys (In-Person)</option>
-      </select><div class="form-hint">Which desk object this scenario appears in (default: any)</div></div>
+      <div class="form-group"><label>Channel</label><div style="display:flex;flex-wrap:wrap;gap:6px 14px">
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-any" ${(!s.channel||s.channel==='any')?'checked':''} onchange="toggleChannelAny('${prefix}',${i})" />Any</label>
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-monitor" ${(Array.isArray(s.channel)?s.channel.includes('monitor'):s.channel==='monitor')?'checked':''} />Monitor (Digital)</label>
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-folder" ${(Array.isArray(s.channel)?s.channel.includes('folder'):s.channel==='folder')?'checked':''} />Folder (Memos)</label>
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-keys" ${(Array.isArray(s.channel)?s.channel.includes('keys'):s.channel==='keys')?'checked':''} />Keys (In-Person)</label>
+      </div><div class="form-hint">Which desk objects this scenario can appear in</div></div>
     </div>
     ${renderConsensusField(s, i, prefix)}
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
@@ -14137,7 +14137,6 @@ function renderChoiceEditor(c, si, ci, prefix) {
         <div class="form-row three" style="margin-bottom:4px">
           <div class="form-group"><label>Political Lean</label><input type="number" id="${prefix}-cpollean-${si}-${ci}" value="${c.politicalLean||0}" min="-10" max="10" /><div class="form-hint">-10=hard left, +10=hard right, 0=none</div></div>
           <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${c.israelLean||0}" min="-10" max="10" /><div class="form-hint">-10=dovish, +10=hawkish, 0=none</div></div>
-          <div class="form-group"><label>Clout Effect</label><input type="number" id="${prefix}-cpolclout-${si}-${ci}" value="${c.cloutEffect||0}" min="-10" max="10" /><div class="form-hint">Political capital gained/lost</div></div>
           <div class="form-group"><label>Min Clout Required</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = no requirement</div></div>
           <div class="form-group"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">Clout spent when player picks this choice (0 = free)</div></div>
         </div>
@@ -14160,7 +14159,7 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
     <div class="outcome-card-header"><span class="outcome-card-title">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
     <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /><div class="form-hint">Probability weight — higher weight = more likely when multiple outcomes exist</div></div><div class="form-group"><label>Context Note</label><input id="${prefix}-onote-${si}-${ci}-${oi}" value="${esc(o.contextNote||'')}" placeholder="optional info box" /><div class="form-hint">Optional info box shown to the player explaining deeper implications</div></div></div>
-    <div class="stat-inputs cols-4" style="margin-bottom:5px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-ofx-${si}-${ci}-${oi}-${s.id}" value="${(o.effects||{})[s.id]||0}" /></div>`).join('')}</div>
+    <div class="stat-inputs cols-4" style="margin-bottom:5px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-ofx-${si}-${ci}-${oi}-${s.id}" value="${(o.effects||{})[s.id]||0}" /></div>`).join('')}<div class="stat-input-group"><label>Clout</label><input type="number" id="${prefix}-oclout-${si}-${ci}-${oi}" value="${o.cloutEffect||0}" min="-10" max="10" /></div></div>
     <div style="font-size:10px;color:var(--muted);margin-top:8px">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
   </div>`;
 }
@@ -14170,8 +14169,9 @@ function addOutcome(si, ci, prefix) {
   if(!c.outcomes) c.outcomes=[{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
   c.outcomes.push({text:'',effects:{},weight:50,conditions:[],contextNote:''});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
+  var scrollY = document.querySelector('.editor-main').scrollTop;
   repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
+  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
 }
 function deleteOutcome(si,ci,oi,prefix) {
   const list = getListForPrefix(prefix);
@@ -14202,8 +14202,14 @@ function saveScenario(i, prefix) {
   if(!s.categories.length) s.categories=['all'];
   s.orgLevel = document.getElementById(prefix+'-lvl-'+i)?.value||'both';
   s.complexity = parseInt(document.getElementById(prefix+'-cplx-'+i)?.value)||3;
-  s.channel = document.getElementById(prefix+'-channel-'+i)?.value || 'any';
-  if(s.channel === 'any') delete s.channel; // keep data clean
+  var anyChecked = document.getElementById(prefix+'-channel-'+i+'-any')?.checked;
+  if(anyChecked) { delete s.channel; }
+  else {
+    var channels = ['monitor','folder','keys'].filter(function(ch){return document.getElementById(prefix+'-channel-'+i+'-'+ch)?.checked});
+    if(channels.length === 0 || channels.length === 3) { delete s.channel; }
+    else if(channels.length === 1) { s.channel = channels[0]; }
+    else { s.channel = channels; }
+  }
   // Community consensus
   var consensusEl = document.getElementById(prefix+'-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
@@ -14221,7 +14227,6 @@ function saveScenario(i, prefix) {
     // Political impact fields
     var polLean = parseInt(document.getElementById(prefix+'-cpollean-'+i+'-'+ci)?.value)||0;
     var israelLean = parseInt(document.getElementById(prefix+'-cpolleanil-'+i+'-'+ci)?.value)||0;
-    var polClout = parseInt(document.getElementById(prefix+'-cpolclout-'+i+'-'+ci)?.value)||0;
     var polMinClout = parseInt(document.getElementById(prefix+'-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
@@ -14232,11 +14237,14 @@ function saveScenario(i, prefix) {
       const effects={};
       (GD.stats||[]).forEach(st=>{const v=parseInt(document.getElementById(prefix+'-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
       const existingO = (list[i]?.choices?.[ci]?.outcomes||[])[oi];
-      outcomes.push({text:document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById(prefix+'-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById(prefix+'-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]});
+      var oClout = parseInt(document.getElementById(prefix+'-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
+      var outcomeObj = {text:document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById(prefix+'-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById(prefix+'-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
+      if(oClout) outcomeObj.cloutEffect = oClout;
+      outcomes.push(outcomeObj);
       oi++;
     }
     var segOv = readSegOverrides(prefix, i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
     if (unlock) choice.requiresUnlock = unlock;
     else delete choice.requiresUnlock;
     if (cloutCost > 0) choice.cloutCost = cloutCost;
@@ -14691,6 +14699,12 @@ function saveMomentumConfig(){
 }
 
 // ═══ POLITICAL MECHANICS ═══
+function toggleChannelAny(prefix, i) {
+  var anyBox = document.getElementById(prefix+'-channel-'+i+'-any');
+  if(anyBox && anyBox.checked) {
+    ['monitor','folder','keys'].forEach(function(ch){ document.getElementById(prefix+'-channel-'+i+'-'+ch).checked = false; });
+  }
+}
 function togglePolFields(prefix, si, ci) {
   var cb = document.getElementById(prefix+'-cpol-'+si+'-'+ci);
   var fields = document.getElementById(prefix+'-polfields-'+si+'-'+ci);
@@ -15320,7 +15334,7 @@ function renderAdvisorQuotesEditor(scenario, si, prefix){
     html += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">';
     html += '<select class="aq-advisor" id="'+prefix+'-aqadv-'+si+'-'+qi+'" style="font-size:12px;padding:4px;min-width:160px">';
     html += '<option value="">— Select Advisor —</option>';
-    pool.forEach(function(a){ html += '<option value="'+a.id+'"'+(q.advisorId===a.id?' selected':'')+'>'+a.emoji+' '+esc(a.name)+'</option>'; });
+    pool.forEach(function(a){ html += '<option value="'+a.id+'"'+(q.advisorId===a.id?' selected':'')+'>'+ esc(a.name)+'</option>'; });
     html += '</select>';
     html += '<button class="btn btn-danger btn-sm" style="margin-left:auto;padding:3px 8px;font-size:10px" onclick="deleteAdvisorQuote('+si+','+qi+',\''+prefix+'\')">✕</button>';
     html += '</div>';

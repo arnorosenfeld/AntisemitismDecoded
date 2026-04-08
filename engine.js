@@ -1722,10 +1722,15 @@ function distributeScenarios() {
     var sc = GAME_DATA.scenarios.find(function(s) { return s.id === scenarioId; });
     if (!sc) return;
     var ch = sc.channel || 'any';
-    if (ch !== 'any' && G.channelQueues[ch]) {
-      G.channelQueues[ch].push(scenarioId);
+    var allowedChannels = Array.isArray(ch) ? ch : (ch !== 'any' && G.channelQueues[ch]) ? [ch] : null;
+    if (allowedChannels) {
+      // Pick the allowed channel with fewest items
+      var min = allowedChannels.reduce(function(a, b) {
+        return (G.channelQueues[a]||[]).length <= (G.channelQueues[b]||[]).length ? a : b;
+      });
+      G.channelQueues[min].push(scenarioId);
     } else {
-      // Distribute to channel with fewest items
+      // Any channel — distribute to channel with fewest items
       var min = channels.reduce(function(a, b) {
         return G.channelQueues[a].length <= G.channelQueues[b].length ? a : b;
       });
@@ -2060,8 +2065,8 @@ function chooseScenario(sid,idx){
 
   // Apply political lean/clout
   inferPoliticalLean(c, s);
-  var polChips = applyPoliticalEffects(c);
-  
+  var polChips = applyPoliticalEffects(c, outcome);
+
   // Political outcome flavor text (only for political scenarios)
 
   // Apply budgetEffect from outcome
@@ -2227,7 +2232,7 @@ function chooseInbox(sid,idx){
 
   // Apply political lean/clout
   inferPoliticalLean(c, s);
-  var polChips = applyPoliticalEffects(c);
+  var polChips = applyPoliticalEffects(c, outcome);
 
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
@@ -3233,10 +3238,10 @@ function isInBipartisanTrap() {
 
 
 // Apply political lean from a choice
-function applyPoliticalEffects(choice) {
+function applyPoliticalEffects(choice, outcome) {
   G._lastPoliticalContext = null;
   var lean = choice.politicalLean || 0; // negative = left, positive = right
-  var cloutGain = choice.cloutEffect || 0;
+  var cloutGain = (outcome && outcome.cloutEffect) || choice.cloutEffect || 0;
   var chips = '';
   
   if (lean !== 0) {
@@ -4396,7 +4401,7 @@ function pickBreakingChoice(ci) {
   var chips = applyEffects(modifiedEffects, choice, bn);
   // Apply political lean/clout
   inferPoliticalLean(choice, bn);
-  var polChips = applyPoliticalEffects(choice);
+  var polChips = applyPoliticalEffects(choice, outcome);
   // Apply budgetEffect from outcome
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }

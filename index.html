@@ -16073,15 +16073,9 @@ function beginRound(){
   updateHUD();
   updateInboxPanel();
   
-  // Between-round flow: coalition offer → ticker update → main
+  // Between-round flow: ticker update → main (coalition offers now on end-of-round screen only)
   if(G.round > 1) {
-    // Feed gazette headlines into ticker
     feedTickerHeadlines();
-    var coalOffer = checkCoalitionOffers();
-    if(coalOffer){
-        showCoalitionOffer(coalOffer);
-      return;
-    }
   }
   afterCoalitionCheck();
 }
@@ -16968,6 +16962,14 @@ function showRoundTransition() {
       });
     }
     var declineText = declineParts.length > 0 ? declineParts.join(', ') : '';
+    var breakParts = [];
+    var breakClout = co.breakCloutPenalty || 0;
+    var breakFx = (co.violationPenalty||{}).effects || {};
+    var breakBudget = (co.violationPenalty||{}).budgetEffect || 0;
+    if (breakClout) breakParts.push('-' + breakClout + ' Clout');
+    Object.entries(breakFx).forEach(function(e) { var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0]; if(e[1] < 0) breakParts.push(e[1] + ' ' + lbl); });
+    if (breakBudget < 0) breakParts.push(breakBudget + ' Gelt');
+    var breakText = breakParts.length ? breakParts.join(', ') : '';
 
     coalitionHtml = '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Coalition Opportunity</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
       '<div id="rt-coalition" style="background:var(--white);border:2px solid var(--gold);padding:20px 24px;margin-bottom:24px">' +
@@ -16978,9 +16980,10 @@ function showRoundTransition() {
         '</div>' +
         '<div style="font-size:13px;line-height:1.7;color:#3a3528;margin-bottom:14px">' + esc(co.description) + '</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
-          '<div style="background:#f8f5ef;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Benefits (per round)</div><div style="font-size:12px;color:#2d6a4f">' + benefitParts.join(', ') + '</div></div>' +
-          '<div style="background:#f8f5ef;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Constraint</div><div style="font-size:12px;color:#c0392b">' + esc(constraintText) + '</div></div>' +
+          '<div style="background:#ede8dc;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Benefits (per round)</div><div style="font-size:12px;color:#2d6a4f">' + benefitParts.join(', ') + '</div></div>' +
+          '<div style="background:#ede8dc;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Constraint</div><div style="font-size:12px;color:#c0392b">' + esc(constraintText) + '</div></div>' +
         '</div>' +
+        (breakText ? '<div style="background:#f5e6e6;padding:8px 12px;margin-bottom:16px;font-size:12px;color:#8b1a1a"><strong>If broken:</strong> ' + breakText + '</div>' : '') +
         '<div style="display:flex;gap:12px;justify-content:center">' +
           '<button class="btn btn-gold" onclick="acceptCoalitionTransition(\'' + esc(co.id) + '\')">' + 'Accept Partnership \u2192</button>' +
           '<button class="btn btn-secondary" onclick="declineCoalitionTransition(\'' + esc(co.id) + '\')" style="position:relative">' +

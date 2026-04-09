@@ -14145,6 +14145,10 @@ function renderChoiceEditor(c, si, ci, prefix) {
           <div class="form-group"><label>Min Clout Required</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = no requirement</div></div>
           <div class="form-group"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">Clout spent when player picks this choice (0 = free)</div></div>
         </div>
+        <div class="form-row three" style="margin-bottom:4px;margin-top:4px">
+          <div class="form-group"><label>Min Political Position</label><input type="number" id="${prefix}-cpolminpos-${si}-${ci}" value="${(c.politicalRequirement||{}).minPosition||''}" min="0" max="100" placeholder="0 (far left)" /><div class="form-hint">Org must be at least this far right (0-100, blank = no min)</div></div>
+          <div class="form-group"><label>Max Political Position</label><input type="number" id="${prefix}-cpolmaxpos-${si}-${ci}" value="${(c.politicalRequirement||{}).maxPosition||''}" min="0" max="100" placeholder="100 (far right)" /><div class="form-hint">Org can't be further right than this (0-100, blank = no max)</div></div>
+        </div>
       </div>
     </div>
     <div class="mission-align-section"><label class="section-label" style="margin-top:0">Mission Alignment</label>
@@ -14152,6 +14156,9 @@ function renderChoiceEditor(c, si, ci, prefix) {
       const st = aligned.includes(m.id)?'aligned':opposed.includes(m.id)?'opposed':'neutral';
       return `<div class="mission-align-row"><span>${esc(m.name)}</span><select id="${prefix}-calign-${si}-${ci}-${m.id}"><option value="neutral" ${st==='neutral'?'selected':''}>Neutral</option><option value="aligned" ${st==='aligned'?'selected':''}>✓ Aligned</option><option value="opposed" ${st==='opposed'?'selected':''}>✗ Opposed</option></select></div>`;
     }).join('')}</div></div>
+    <details style="margin:8px 0"><summary style="font-size:11px;font-weight:700;cursor:pointer;color:var(--gold)">Endangers Coalitions (${(c.endangersCoalition||[]).length} set)</summary>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px">${(GD.coalitionOffers||[]).map(co=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cendanger-${si}-${ci}-${co.id}" ${(c.endangersCoalition||[]).includes(co.id)?'checked':''} />${esc(co.name)}</label>`).join('')}</div>
+    </details>
     <label class="section-label">Outcomes (${outcomes.length})</label>
     ${outcomes.map((o,oi)=>renderOutcomeEditor(si,ci,oi,o,prefix)).join('')}
     <button class="add-btn" style="padding:6px;font-size:11px;margin-top:4px" onclick="addOutcome(${si},${ci},'${prefix}')">+ Add Outcome</button>
@@ -14235,6 +14242,10 @@ function saveScenario(i, prefix) {
     var polMinClout = parseInt(document.getElementById(prefix+'-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
+    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
+    if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var cloutCost = parseInt(document.getElementById(prefix+'-ccloutcost-'+i+'-'+ci)?.value) || 0;
     const outcomes=[];
     let oi=0;
@@ -14255,6 +14266,8 @@ function saveScenario(i, prefix) {
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
     if (israelLean !== 0) choice.israelLean = israelLean; else delete choice.israelLean;
+    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById(prefix+'-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
     s.choices.push(choice);
     ci++;
   }
@@ -14398,6 +14411,10 @@ function saveInbox(i) {
     var polMinClout = parseInt(document.getElementById('ib-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
+    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
+    if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var cloutCost = parseInt(document.getElementById('ib-ccloutcost-'+i+'-'+ci)?.value) || 0;
     const outcomes=[];
     let oi=0;
@@ -15137,6 +15154,10 @@ function saveBreaking(i){
     var polMinClout = parseInt(document.getElementById('bn-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
+    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
+    if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var outcomes=[];
     var oi=0;
     while(document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi)) {

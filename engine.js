@@ -754,7 +754,7 @@ function initMission(){
     const locked=!m.availableTo.includes(G.orgId);
     const chips=Object.entries(m.statBonus||{}).map(([k,v])=>`<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${k}</span>`).join('');
     return `<div class="mission-card ${locked?'locked':''}" id="mc-${m.id}" onclick="${locked?'':` selectMission('${m.id}')`}">
-      <h3>${m.name}${locked?' <span style="font-size:10px;color:var(--muted);font-weight:400">(not available for your org)</span>':''}</h3>
+      <h3>${m.name}</h3>
       <p>${m.description}</p>
       ${!locked&&chips?`<div class="chip-row">${chips}</div>`:''}
     </div>`;
@@ -1008,7 +1008,7 @@ function toggleHelpPanel() {
           '<div style="margin-bottom:10px"><strong>\u2b50 Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. They boost your year-end score.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udcb0 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices cost gelt.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udc65 Segments:</strong> Community Trust is the weighted average of how different groups feel about you. A decision that thrills one group may alienate another.</div>' +
-          '<div><strong>\u2696\ufe0f Political Capital:</strong> Your political position and clout affect which coalitions, allies, and choices are available to you.</div>' +
+          '<div><strong>\u2696\ufe0f Clout:</strong> Your political position and clout affect which coalitions, allies, and choices are available to you.</div>' +
         '</div>';
     }
   }
@@ -1950,15 +1950,16 @@ function renderScenario(s){
         ${valid.map((c,i)=>{
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
-          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 -'+bCost+' Gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
           var cCost = c.cloutCost || 0;
           var hasClout = cCost <= G.politicalClout;
           var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
           var traitLocked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
           var traitTag = '';
           if (traitLocked) {
-            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
-            traitTag = '<span class="choice-trait-tag locked">\U0001f512 Requires ' + traitName + ' trait</span>';
+            var traitObj = (GAME_DATA.characterTraits||[]).find(function(t){return t.id===c.requiresUnlock});
+            var traitName = traitObj ? traitObj.name : (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<div class="choice-lock-banner">\U0001f512 Requires ' + traitName + '</div>';
           } else if (c.requiresUnlock) {
             var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
             traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
@@ -1966,12 +1967,14 @@ function renderScenario(s){
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
           var isLocked = lockBudget || !hasClout || lockPolitical || traitLocked;
+          var lockBanner = traitLocked ? traitTag : lockPolitical ? '<div class="choice-lock-banner">🔒 ' + getPoliticalLockReason(c) + '</div>' : !hasClout ? '<div class="choice-lock-banner">🔒 Not enough clout</div>' : lockBudget ? '<div class="choice-lock-banner">🔒 Not enough Gelt</div>' : '';
           var recBadge = getAdvisorRecommendationBadge(s, i);
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled':''}onclick="chooseScenario('${s.id}',${i})">
+            ${lockBanner}
             <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
             ${costTag}
             ${cloutTag}
-            ${traitTag}
+            ${!traitLocked ? traitTag : ''}
             ${missionBadgeHTML(c)}
             ${renderPoliticalTag(c)}
             ${renderCoalitionWarnings(c)}
@@ -1989,8 +1992,8 @@ function recordNotableMoment(scenario, choice, outcome, isBreaking) {
   Object.values(outcome.effects || {}).forEach(function(v) { statImpact += Math.abs(v); });
   G.notableMoments.push({
     title: scenario.title,
-    choiceText: (choice.text || '').substring(0, 80),
-    outcomeText: (outcome.text || '').substring(0, 120),
+    choiceText: choice.text || '',
+    outcomeText: outcome.text || '',
     headline: outcome.headline || null,
     round: G.round,
     complexity: scenario.complexity || 3,
@@ -2147,15 +2150,16 @@ function renderInbox(s){
         ${valid.map((c,i)=>{
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
-          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 -'+bCost+' Gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
           var cCost = c.cloutCost || 0;
           var hasClout = cCost <= G.politicalClout;
           var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
           var traitLocked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
           var traitTag = '';
           if (traitLocked) {
-            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
-            traitTag = '<span class="choice-trait-tag locked">\U0001f512 Requires ' + traitName + ' trait</span>';
+            var traitObj = (GAME_DATA.characterTraits||[]).find(function(t){return t.id===c.requiresUnlock});
+            var traitName = traitObj ? traitObj.name : (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<div class="choice-lock-banner">\U0001f512 Requires ' + traitName + '</div>';
           } else if (c.requiresUnlock) {
             var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
             traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
@@ -2163,11 +2167,13 @@ function renderInbox(s){
           var lockBudget = bCost > 0 && !canAfford;
           var lockPolitical = isChoicePoliticallyLocked(c);
           var isLocked = lockBudget || !hasClout || lockPolitical || traitLocked;
+          var lockBanner = traitLocked ? traitTag : lockPolitical ? '<div class="choice-lock-banner">🔒 ' + getPoliticalLockReason(c) + '</div>' : !hasClout ? '<div class="choice-lock-banner">🔒 Not enough clout</div>' : lockBudget ? '<div class="choice-lock-banner">🔒 Not enough Gelt</div>' : '';
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled ':''}onclick="chooseInbox('${s.id}',${i})">
+            ${lockBanner}
             <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
             ${costTag}
             ${cloutTag}
-            ${traitTag}
+            ${!traitLocked ? traitTag : ''}
             ${missionBadgeHTML(c)}
             ${renderPoliticalTag(c)}
             ${renderCoalitionWarnings(c)}
@@ -2756,7 +2762,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
     html += '<div class="end-spectrum"><div class="end-spectrum-dot start" style="left:' + startPos + '%"></div><div class="end-spectrum-dot end" style="left:' + Math.round(G.politicalPosition) + '%"></div></div>';
     html += '<div class="end-spectrum-labels"><span>Far Left</span><span>Left</span><span>Center</span><span>Right</span><span>Far Right</span></div>';
-    html += '<div class="end-pol-summary">' + shiftText + ' · Now: <strong>' + posLabel + '</strong> · Political Capital: \u26A1' + Math.round(G.politicalClout) + ' (' + cloutText + ')</div>';
+    html += '<div class="end-pol-summary">' + shiftText + ' · Now: <strong>' + posLabel + '</strong> · Clout: \u26A1' + Math.round(G.politicalClout) + ' (' + cloutText + ')</div>';
     html += '</div>';
   }
 
@@ -3298,11 +3304,11 @@ function getPoliticalLockReason(choice) {
   if (!choice.politicalRequirement) return '';
   var req = choice.politicalRequirement;
   if (req.maxPosition !== undefined && G.politicalPosition > req.maxPosition) 
-    return 'Too right-leaning (' + getPositionLabel(G.politicalPosition) + ')';
+    return 'Your organization is too far right for this option';
   if (req.minPosition !== undefined && G.politicalPosition < req.minPosition) 
-    return 'Too left-leaning (' + getPositionLabel(G.politicalPosition) + ')';
+    return 'Your organization is too far left for this option';
   if (req.minClout !== undefined && G.politicalClout < req.minClout) 
-    return 'Insufficient political clout (' + Math.round(G.politicalClout) + '/' + req.minClout + ')';
+    return 'Not enough clout';
   return '';
 }
 
@@ -3315,10 +3321,9 @@ function renderPoliticalTag(choice) {
   else if (lean < 0) tags += '<span class="choice-pol-tag lean-left">← Leans Left</span>';
   else if (lean > 3) tags += '<span class="choice-pol-tag lean-right">Right ➡</span>';
   else if (lean > 0) tags += '<span class="choice-pol-tag lean-right">Leans Right →</span>';
-  if (clout >= 5) tags += '<span class="choice-pol-tag lean-center">⚡+Clout</span>';
   // Political lock indicator
   if (isChoicePoliticallyLocked(choice)) {
-    tags += '<span class="choice-pol-tag" style="background:#ead4d4;color:#4a1a1a">🔒 ' + getPoliticalLockReason(choice) + '</span>';
+    tags += '<div class="choice-lock-banner">🔒 ' + getPoliticalLockReason(choice) + '</div>';
   }
   return tags;
 }
@@ -3526,7 +3531,7 @@ function getAdvisorBonus(scenario, choiceIndex) {
     var chips = Object.entries(modifiedEffect).map(function(e) {
       var sign = e[1] > 0 ? '+' : '';
       var statLabel = (GAME_DATA.stats.find(function(s){return s.id === e[0]}) || {}).label || e[0];
-      return '<span class="chip chip-advisor">' + sign + e[1] + ' ' + statLabel + ' (' + (adv ? adv.name.split(' ')[0] : '?') + ')</span>';
+      return '<span class="chip chip-advisor">' + sign + e[1] + ' ' + statLabel + ' (followed ' + (adv ? adv.name.split(' ')[0] : '?') + '\'s advice)</span>';
     }).join('');
     // Build human-readable explanation
     var advName = adv ? adv.name.split(' ')[0] : 'Your advisor';
@@ -3549,7 +3554,8 @@ function getAdvisorBonus(scenario, choiceIndex) {
     Object.entries(combined).forEach(function(e) {
       var sign = e[1] > 0 ? '+' : '';
       var statLabel = (GAME_DATA.stats.find(function(s){return s.id === e[0]}) || {}).label || e[0];
-      chipParts.push('<span class="chip chip-advisor">' + sign + e[1] + ' ' + statLabel + ' (advisors)</span>');
+      var advNames = matching.map(function(q){ var a = pool.find(function(p){return p.id===q.advisorId}); return a ? a.name.split(' ')[0] : '?'; });
+      chipParts.push('<span class="chip chip-advisor">' + sign + e[1] + ' ' + statLabel + ' (followed ' + advNames.join(' & ') + '\'s advice)</span>');
     });
     var stackExplanation = '<span style="color:#7a5800;font-size:12px;font-style:italic">Your advisors collectively influenced this outcome.</span>';
     return { effects: combined, chips: chipParts.join(''), explanation: stackExplanation };

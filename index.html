@@ -838,6 +838,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .choice-trait-tag { display: inline-block; font-size: 10px; font-weight: 600; margin-top: 4px; }
 .choice-trait-tag.locked { color: #999; }
 .choice-trait-tag.unlocked { color: #2d6a4f; }
+.choice-lock-banner { display: block; background: #ead4d4; color: #4a1a1a; font-size: 11px; font-weight: 700; padding: 4px 10px; margin: -8px -14px 8px -14px; border-radius: 6px 6px 0 0; text-align: center; }
 
 /* ═══ STAT MOMENTUM ═══ */
 .stat-trend{font-size:10px;margin-left:4px;font-weight:700}
@@ -1389,7 +1390,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   <div class="hud" id="hud-el" style="display:none">
     <div class="hud-inner">
       <div class="hud-politics" id="hud-politics">
-        <span class="hud-politics-label">Political Capital</span>
+        <span class="hud-politics-label">Clout</span>
         <div class="pol-spectrum">
           <div class="pol-marker-glow" id="pol-marker-glow"></div>
           <div class="pol-marker" id="pol-marker"></div>
@@ -1399,9 +1400,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
           <span class="pol-clout-label" id="pol-clout-val">0</span>
         </div>
         <div class="pol-detail" id="pol-detail">
-          <div class="pol-detail-title">⚖️ Political Capital</div>
+          <div class="pol-detail-title">⚖️ Clout</div>
           <div class="pol-detail-row"><span>Clout</span><span id="pol-d-clout">0</span></div>
-          <div class="pol-detail-desc" id="pol-d-clout-desc">Clout is your political capital. Spend it to unlock powerful choices and manage coalition relationships. Build it through politically savvy decisions.</div>
+          <div class="pol-detail-desc" id="pol-d-clout-desc">Clout represents your political influence. Spend it to unlock powerful choices and manage coalition relationships. Build it through politically savvy decisions.</div>
           <div id="pol-d-position-num" style="text-align:center;font-family:'Merriweather',serif;font-weight:900;font-size:16px;color:#fff;margin-bottom:4px"></div>
           <div class="pol-detail-spectrum"><div class="pol-detail-marker" id="pol-d-marker"></div></div>
           <div class="pol-detail-labels"><span>← Left</span><span>Center</span><span>Right →</span></div>
@@ -15331,7 +15332,7 @@ function initMission(){
     const locked=!m.availableTo.includes(G.orgId);
     const chips=Object.entries(m.statBonus||{}).map(([k,v])=>`<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${k}</span>`).join('');
     return `<div class="mission-card ${locked?'locked':''}" id="mc-${m.id}" onclick="${locked?'':` selectMission('${m.id}')`}">
-      <h3>${m.name}${locked?' <span style="font-size:10px;color:var(--muted);font-weight:400">(not available for your org)</span>':''}</h3>
+      <h3>${m.name}</h3>
       <p>${m.description}</p>
       ${!locked&&chips?`<div class="chip-row">${chips}</div>`:''}
     </div>`;
@@ -15535,7 +15536,7 @@ function toggleHelpPanel() {
           '<div style="margin-bottom:10px"><strong>\u2b50 Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. They boost your year-end score.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udcb0 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices cost gelt.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udc65 Segments:</strong> Community Trust is the weighted average of how different groups feel about you. A decision that thrills one group may alienate another.</div>' +
-          '<div><strong>\u2696\ufe0f Political Capital:</strong> Your political position and clout affect which coalitions, allies, and choices are available to you.</div>' +
+          '<div><strong>\u2696\ufe0f Clout:</strong> Your political position and clout affect which coalitions, allies, and choices are available to you.</div>' +
         '</div>';
     }
   }
@@ -16136,8 +16137,8 @@ function recordNotableMoment(scenario, choice, outcome, isBreaking) {
   Object.values(outcome.effects || {}).forEach(function(v) { statImpact += Math.abs(v); });
   G.notableMoments.push({
     title: scenario.title,
-    choiceText: (choice.text || '').substring(0, 80),
-    outcomeText: (outcome.text || '').substring(0, 120),
+    choiceText: choice.text || '',
+    outcomeText: outcome.text || '',
     headline: outcome.headline || null,
     round: G.round,
     complexity: scenario.complexity || 3,
@@ -16502,15 +16503,16 @@ function renderScenario(s){
         ${valid.map((c,i)=>{
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
-          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 -'+bCost+' Gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
           var cCost = c.cloutCost || 0;
           var hasClout = cCost <= G.politicalClout;
           var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
           var traitLocked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
           var traitTag = '';
           if (traitLocked) {
-            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
-            traitTag = '<span class="choice-trait-tag locked">\uD83D\uDD12 Requires ' + traitName + ' trait</span>';
+            var traitObj = (GAME_DATA.characterTraits||[]).find(function(t){return t.id===c.requiresUnlock});
+            var traitName = traitObj ? traitObj.name : (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<div class="choice-lock-banner">\uD83D\uDD12 Requires ' + traitName + '</div>';
           } else if (c.requiresUnlock) {
             var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
             traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
@@ -16673,15 +16675,16 @@ function renderInbox(s){
         ${valid.map((c,i)=>{
           var bCost = c.budgetCost || 0;
           var canAfford = bCost <= G.budget;
-          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 '+bCost+' gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
+          var costTag = bCost > 0 ? '<span class="choice-budget-tag'+ (!canAfford?' unaffordable':'') +'">💰 -'+bCost+' Gelt'+ (!canAfford?' (insufficient)':'') +'</span>' : '';
           var cCost = c.cloutCost || 0;
           var hasClout = cCost <= G.politicalClout;
           var cloutTag = cCost > 0 ? '<span class="choice-clout-tag' + (!hasClout ? ' unaffordable' : '') + '">⚡ ' + cCost + ' clout' + (!hasClout ? ' (insufficient — you have ' + Math.round(G.politicalClout) + ')' : '') + '</span>' : '';
           var traitLocked = c.requiresUnlock && !(G.activeUnlocks||[]).includes(c.requiresUnlock);
           var traitTag = '';
           if (traitLocked) {
-            var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
-            traitTag = '<span class="choice-trait-tag locked">\uD83D\uDD12 Requires ' + traitName + ' trait</span>';
+            var traitObj = (GAME_DATA.characterTraits||[]).find(function(t){return t.id===c.requiresUnlock});
+            var traitName = traitObj ? traitObj.name : (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+            traitTag = '<div class="choice-lock-banner">\uD83D\uDD12 Requires ' + traitName + '</div>';
           } else if (c.requiresUnlock) {
             var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
             traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
@@ -17275,7 +17278,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
     html += '<div class="end-spectrum"><div class="end-spectrum-dot start" style="left:' + startPos + '%"></div><div class="end-spectrum-dot end" style="left:' + Math.round(G.politicalPosition) + '%"></div></div>';
     html += '<div class="end-spectrum-labels"><span>Far Left</span><span>Left</span><span>Center</span><span>Right</span><span>Far Right</span></div>';
-    html += '<div class="end-pol-summary">' + shiftText + ' · Now: <strong>' + posLabel + '</strong> · Political Capital: \u26A1' + Math.round(G.politicalClout) + ' (' + cloutText + ')</div>';
+    html += '<div class="end-pol-summary">' + shiftText + ' · Now: <strong>' + posLabel + '</strong> · Clout: \u26A1' + Math.round(G.politicalClout) + ' (' + cloutText + ')</div>';
     html += '</div>';
   }
 
@@ -17817,11 +17820,11 @@ function getPoliticalLockReason(choice) {
   if (!choice.politicalRequirement) return '';
   var req = choice.politicalRequirement;
   if (req.maxPosition !== undefined && G.politicalPosition > req.maxPosition) 
-    return 'Too right-leaning (' + getPositionLabel(G.politicalPosition) + ')';
+    return 'Your organization is too far right for this option';
   if (req.minPosition !== undefined && G.politicalPosition < req.minPosition) 
-    return 'Too left-leaning (' + getPositionLabel(G.politicalPosition) + ')';
+    return 'Your organization is too far left for this option';
   if (req.minClout !== undefined && G.politicalClout < req.minClout) 
-    return 'Insufficient political clout (' + Math.round(G.politicalClout) + '/' + req.minClout + ')';
+    return 'Not enough clout';
   return '';
 }
 
@@ -17834,10 +17837,9 @@ function renderPoliticalTag(choice) {
   else if (lean < 0) tags += '<span class="choice-pol-tag lean-left">← Leans Left</span>';
   else if (lean > 3) tags += '<span class="choice-pol-tag lean-right">Right ➡</span>';
   else if (lean > 0) tags += '<span class="choice-pol-tag lean-right">Leans Right →</span>';
-  if (clout >= 5) tags += '<span class="choice-pol-tag lean-center">⚡+Clout</span>';
   // Political lock indicator
   if (isChoicePoliticallyLocked(choice)) {
-    tags += '<span class="choice-pol-tag" style="background:#ead4d4;color:#4a1a1a">🔒 ' + getPoliticalLockReason(choice) + '</span>';
+    tags += '<div class="choice-lock-banner">🔒 ' + getPoliticalLockReason(choice) + '</div>';
   }
   return tags;
 }

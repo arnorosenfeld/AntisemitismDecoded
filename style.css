@@ -832,6 +832,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .choice-trait-tag { display: inline-block; font-size: 10px; font-weight: 600; margin-top: 4px; }
 .choice-trait-tag.locked { color: #999; }
 .choice-trait-tag.unlocked { color: #2d6a4f; }
+.choice-lock-banner { display: block; background: #ead4d4; color: #4a1a1a; font-size: 11px; font-weight: 700; padding: 4px 10px; margin: -8px -14px 8px -14px; border-radius: 6px 6px 0 0; text-align: center; }
 
 /* ═══ STAT MOMENTUM ═══ */
 .stat-trend{font-size:10px;margin-left:4px;font-weight:700}

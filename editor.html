@@ -423,6 +423,11 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div class="form-row three">
               <div class="form-group"><label>Polarization Multiplier</label><input type="number" id="cfg-polarizationMultiplier" min="1" max="3" step="0.1" /><div class="form-hint">How much harder negative political alignment hits vs positive (1.0 = symmetric, 1.5 = 50% harder to lose trust than gain it). Default: 1.5</div></div>
             </div>
+            <div class="form-row three" style="margin-top:8px">
+              <div class="form-group"><label>Left Tilt Starting Position</label><input type="number" id="cfg-tiltPos-left" min="0" max="100" /><div class="form-hint">Political position for left-leaning national orgs (0=far left, 100=far right). Default: 25</div></div>
+              <div class="form-group"><label>Center Tilt Starting Position</label><input type="number" id="cfg-tiltPos-center" min="0" max="100" /><div class="form-hint">Default: 50</div></div>
+              <div class="form-group"><label>Right Tilt Starting Position</label><input type="number" id="cfg-tiltPos-right" min="0" max="100" /><div class="form-hint">Default: 75</div></div>
+            </div>
           </div>
 
           <div class="form-section">
@@ -14692,10 +14697,19 @@ function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&
 function populateMomentumConfig(){
   var c = GD.config;
   document.getElementById('cfg-polarizationMultiplier').value = c.polarizationMultiplier || 1.5;
+  var tp = c.tiltPositions || {};
+  document.getElementById('cfg-tiltPos-left').value = tp.left || 25;
+  document.getElementById('cfg-tiltPos-center').value = tp.center || 50;
+  document.getElementById('cfg-tiltPos-right').value = tp.right || 75;
 }
 function saveMomentumConfig(){
   var c = GD.config;
   c.polarizationMultiplier = parseFloat(document.getElementById('cfg-polarizationMultiplier').value) || 1.5;
+  c.tiltPositions = {
+    left: parseInt(document.getElementById('cfg-tiltPos-left').value) || 25,
+    center: parseInt(document.getElementById('cfg-tiltPos-center').value) || 50,
+    right: parseInt(document.getElementById('cfg-tiltPos-right').value) || 75
+  };
 }
 
 // ═══ POLITICAL MECHANICS ═══
@@ -14979,8 +14993,10 @@ function saveAdvisor(i){
   a.name = document.getElementById('adv-name-'+i).value;
   a.role = document.getElementById('adv-role-'+i).value;
   a.emoji = document.getElementById('adv-emoji-'+i).value;
-  var portraitVal = document.getElementById('adv-portrait-'+i)?.value || '';
-  if(portraitVal) a.portrait = portraitVal; else delete a.portrait;
+  var portraitEl = document.getElementById('adv-portrait-'+i);
+  if(portraitEl && portraitEl.value) a.portrait = portraitEl.value;
+  else if(portraitEl && !portraitEl.value && a.portrait) { /* keep existing portrait */ }
+  else if(portraitEl) delete a.portrait;
   a.bio = document.getElementById('adv-bio-'+i).value;
   a.type = document.getElementById('adv-type-'+i).value;
   a.politicalLean = parseInt(document.getElementById('adv-lean-'+i).value)||0;

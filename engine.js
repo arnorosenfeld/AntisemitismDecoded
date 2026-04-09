@@ -1359,8 +1359,9 @@ function startPromoGame(){
     G.stats[s.id] = Math.max(0, Math.min(100, base + alloc + promoBonus));
   });
   G.missionStars=GAME_DATA.config.missionStartStars||3;
-  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[]; G.promotionLevel=1;
-  G.inboxMessages=[]; G.coalitionStrikes={};
+  G.round=0; G.history=[]; G.promotionLevel=1;
+  // Preserve usedScenarioIds and usedInboxIds so scenarios don't repeat from local level
+  G.inboxMessages=[];
   // Initialize budget for national org
   var bc = GAME_DATA.config.budgetConfig || {};
   var orgBudgetOverrides = org.budgetOverrides || {};
@@ -1374,8 +1375,12 @@ function startPromoGame(){
   G.investmentPool = totalRounds * (bc.nationalInvestmentsPerYear || 2);
   G.investmentsUsed = 0;
   G.pendingReserves = [];
-  // Carry forward political position, boost clout for national level
-  G.politicalPosition = G.politicalPosition; // keep from local
+  // Reset political position based on national org's tilt
+  var tiltPositions = GAME_DATA.config.tiltPositions || {left:25, center:50, right:75};
+  var orgTilt = (Array.isArray(org.politicalTilt) ? org.politicalTilt[0] : org.politicalTilt) || 'center';
+  G.politicalPosition = tiltPositions[orgTilt] || 50;
+  // Reset coalitions for national level
+  G.activeCoalitions = []; G.declinedCoalitions = []; G.brokenCoalitions = []; G.coalitionStrikes = {};
   // Initialize constituency segments for national org
   initSegmentApprovals(G.orgId);
 
@@ -2878,18 +2883,18 @@ function showPromoScreen(){
     const tilts = Array.isArray(o.politicalTilt) ? o.politicalTilt : [o.politicalTilt];
     return eligible.some(e => tilts.includes(e));
   });
+  document.getElementById('promo-next-btn').disabled = true;
   document.getElementById('promo-list').innerHTML=natOrgs.map(o=>{
     const mods=Object.entries(o.statModifiers||{}).filter(([k])=>k!=='budget');
     const bc = GAME_DATA.config.budgetConfig || {};
     const orgBudget = o.startingBudget || bc.startingBudget || 120;
     return `<div class="card" id="poc-${o.id}" onclick="selectPromoOrg('${o.id}')">
-      <span class="card-badge ${o.badgeClass}">${o.badge}</span>
+      <span class="card-badge ${o.badgeClass}">${(o.badge||'').replace(/\s*National\s*/i,'')}</span>
       <h3>${o.name}</h3>
       <p style="margin-bottom:0">${o.description}</p>
       ${o.traits?.length?`<ul class="card-traits">${o.traits.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}
       <div class="org-budget-tag">💰 Starting Budget: ${orgBudget}</div>
       ${mods.length?`<div class="card-mods">${mods.map(([k,v])=>`<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${k}</span>`).join('')}</div>`:''}
-      <div style="margin-top:14px"><button class="btn btn-primary btn-sm">Select This Organization →</button></div>
     </div>`;
   }).join('');
   showScreen('promo-screen');
@@ -2897,6 +2902,12 @@ function showPromoScreen(){
 
 function selectPromoOrg(id){
   G.orgId=id;
+  document.querySelectorAll('#promo-list .card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('poc-'+id)?.classList.add('selected');
+  document.getElementById('promo-next-btn').disabled=false;
+}
+function confirmPromoOrg(){
+  if(!G.orgId) return;
   _isPromotionFlow = true;
   showScreen('mission-screen');
 }

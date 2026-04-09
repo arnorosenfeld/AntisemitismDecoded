@@ -1557,6 +1557,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       <p id="promo-intro">Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you.</p>
     </div>
     <div class="promo-list" id="promo-list"></div>
+    <div class="nav-row" style="margin-top:22px"><button class="btn btn-primary" id="promo-next-btn" disabled onclick="confirmPromoOrg()">Next →</button></div>
   </div>
 </div>
 
@@ -12765,6 +12766,7 @@ const GAME_DATA = {
       "id": "board_chair",
       "name": "Rachel Steinberg",
       "role": "Board Chair",
+      "portrait": "art/advisors/rachel_steinberg",
       "bio": "20 years in Jewish communal governance. Thinks in terms of risk, reputation, and fiduciary duty.",
       "type": "internal",
       "statModifiers": {
@@ -12778,6 +12780,7 @@ const GAME_DATA = {
       "id": "program_dir",
       "name": "Avi Kessler",
       "role": "Program Director",
+      "portrait": "art/advisors/avi_kessler",
       "bio": "Former campus Hillel director. Believes the mission comes first, always. Staff love him.",
       "type": "internal",
       "statModifiers": {
@@ -12791,6 +12794,7 @@ const GAME_DATA = {
       "id": "dev_director",
       "name": "Miriam Gold",
       "role": "Development Director",
+      "portrait": "art/advisors/miriam_gold",
       "bio": "Raised $40M across three organizations. Knows every major donor by name and preference.",
       "type": "internal",
       "statModifiers": {
@@ -12804,6 +12808,7 @@ const GAME_DATA = {
       "id": "rabbi_scholar",
       "name": "Rabbi David Friedman",
       "role": "Senior Rabbi, Congregation Beth Israel",
+      "portrait": "art/advisors/rabbi_friedman",
       "type": "external",
       "bio": "Orthodox-trained, pluralistic in practice. Deep Talmudic knowledge and a reputation for moral clarity that crosses denominational lines.",
       "statModifiers": {
@@ -12817,6 +12822,7 @@ const GAME_DATA = {
       "id": "political_consultant",
       "name": "Sarah Feld",
       "role": "Political Consultant",
+      "portrait": "art/advisors/sarah_feld",
       "type": "external",
       "bio": "Former congressional chief of staff. Knows every elected official in the state and half the ones in Washington. Thinks three moves ahead.",
       "statModifiers": {
@@ -12830,6 +12836,7 @@ const GAME_DATA = {
       "id": "community_organizer",
       "name": "Tali Navarro",
       "role": "Community Organizer",
+      "portrait": "art/advisors/tali_navarro",
       "type": "external",
       "bio": "Built the largest Jewish young adult network in the region from scratch. Speaks for a generation that doesn’t show up to galas but will march in the rain.",
       "statModifiers": {
@@ -12844,6 +12851,7 @@ const GAME_DATA = {
       "id": "major_donor_rep",
       "name": "Leonard Katz",
       "role": "Philanthropic Advisor",
+      "portrait": "art/advisors/leonard_katz",
       "type": "external",
       "bio": "Manages giving strategy for three family foundations worth $400M combined. Pragmatic, well-connected, and always thinking about ROI.",
       "statModifiers": {
@@ -12857,6 +12865,7 @@ const GAME_DATA = {
       "id": "media_strategist",
       "name": "Noa Landover",
       "role": "Media Strategist",
+      "portrait": "art/advisors/noa_berman",
       "type": "external",
       "bio": "Former editor at the Forward, now a crisis communications consultant. Controls narratives for a living. Never says anything by accident.",
       "statModifiers": {
@@ -15877,8 +15886,8 @@ function startPromoGame(){
     G.stats[s.id] = Math.max(0, Math.min(100, base + alloc + promoBonus));
   });
   G.missionStars=GAME_DATA.config.missionStartStars||3;
-  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[]; G.promotionLevel=1;
-  G.inboxMessages=[]; G.coalitionStrikes={};
+  G.round=0; G.history=[]; G.promotionLevel=1;
+  G.inboxMessages=[];
   // Initialize budget for national org
   var bc = GAME_DATA.config.budgetConfig || {};
   var orgBudgetOverrides = org.budgetOverrides || {};
@@ -15892,8 +15901,12 @@ function startPromoGame(){
   G.investmentPool = totalRounds * (bc.nationalInvestmentsPerYear || 2);
   G.investmentsUsed = 0;
   G.pendingReserves = [];
-  // Carry forward political position, boost clout for national level
-  G.politicalPosition = G.politicalPosition; // keep from local
+  // Reset political position based on national org's tilt
+  var tiltPositions = GAME_DATA.config.tiltPositions || {left:25, center:50, right:75};
+  var orgTilt = (Array.isArray(org.politicalTilt) ? org.politicalTilt[0] : org.politicalTilt) || 'center';
+  G.politicalPosition = tiltPositions[orgTilt] || 50;
+  // Reset coalitions for national level
+  G.activeCoalitions = []; G.declinedCoalitions = []; G.brokenCoalitions = []; G.coalitionStrikes = {};
   // Initialize constituency segments for national org
   initSegmentApprovals(G.orgId);
 
@@ -17388,18 +17401,18 @@ function showPromoScreen(){
     const tilts = Array.isArray(o.politicalTilt) ? o.politicalTilt : [o.politicalTilt];
     return eligible.some(e => tilts.includes(e));
   });
+  document.getElementById('promo-next-btn').disabled = true;
   document.getElementById('promo-list').innerHTML=natOrgs.map(o=>{
     const mods=Object.entries(o.statModifiers||{}).filter(([k])=>k!=='budget');
     const bc = GAME_DATA.config.budgetConfig || {};
     const orgBudget = o.startingBudget || bc.startingBudget || 120;
     return `<div class="card" id="poc-${o.id}" onclick="selectPromoOrg('${o.id}')">
-      <span class="card-badge ${o.badgeClass}">${o.badge}</span>
+      <span class="card-badge ${o.badgeClass}">${(o.badge||'').replace(/\s*National\s*/i,'')}</span>
       <h3>${o.name}</h3>
       <p style="margin-bottom:0">${o.description}</p>
       ${o.traits?.length?`<ul class="card-traits">${o.traits.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}
       <div class="org-budget-tag">💰 Starting Budget: ${orgBudget}</div>
       ${mods.length?`<div class="card-mods">${mods.map(([k,v])=>`<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${k}</span>`).join('')}</div>`:''}
-      <div style="margin-top:14px"><button class="btn btn-primary btn-sm">Select This Organization →</button></div>
     </div>`;
   }).join('');
   showScreen('promo-screen');
@@ -17407,6 +17420,12 @@ function showPromoScreen(){
 
 function selectPromoOrg(id){
   G.orgId=id;
+  document.querySelectorAll('#promo-list .card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('poc-'+id)?.classList.add('selected');
+  document.getElementById('promo-next-btn').disabled=false;
+}
+function confirmPromoOrg(){
+  if(!G.orgId) return;
   _isPromotionFlow = true;
   showScreen('mission-screen');
 }

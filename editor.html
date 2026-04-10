@@ -158,7 +158,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
 /* ── CHOICES EDITOR ── */
 .choices-editor{display:flex;flex-direction:column;gap:12px;margin-top:11px}
-.choice-editor{background:var(--white);border:1px solid var(--border);padding:16px;position:relative;min-width:0;overflow:hidden}
+.choice-editor{background:var(--white);border:1px solid var(--border);padding:16px;position:relative;min-width:0}
 .choice-editor-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
 .choice-letter{font-family:'Merriweather',Georgia,serif;font-weight:900;font-size:17px;color:var(--gold)}
 
@@ -215,8 +215,10 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 /* ── POLITICAL IMPACT BOX ── */
 .pol-impact-box{margin-bottom:12px;padding:12px;border:1.5px solid var(--border);background:var(--white);min-width:0}
 .pol-impact-box.active{border-color:var(--gold);background:#f8f6ff}
-.pol-fields .form-group{min-width:0}
-.pol-fields input[type=number]{min-width:0;width:100%;text-align:center;padding:7px 4px;font-weight:700}
+.pol-fields{display:flex;flex-wrap:wrap;gap:10px 16px;margin-bottom:6px}
+.pol-fields .form-group{flex:0 0 auto;width:90px}
+.pol-fields .form-group label{font-size:9px;letter-spacing:1px}
+.pol-fields .form-group input[type=number]{width:100%;box-sizing:border-box;text-align:center;padding:6px 4px;font-weight:700;font-size:13px}
 .pol-fields .form-hint{font-size:9px;line-height:1.3}
 .pol-impact-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer}
 
@@ -19432,17 +19434,13 @@ function renderChoiceEditor(c, si, ci, prefix) {
         <input type="checkbox" id="${prefix}-cpol-${si}-${ci}" ${hasPol?'checked':''} style="accent-color:#6366f1" /> ⚖️ Political Impact
       </label>
       <div id="${prefix}-polfields-${si}-${ci}" style="display:${hasPol?'block':'none'}">
-        <div class="form-row four pol-fields" style="margin-bottom:4px">
-          <div class="form-group"><label>Political Lean</label><input type="number" id="${prefix}-cpollean-${si}-${ci}" value="${c.politicalLean||0}" min="-10" max="10" /><div class="form-hint">-10=left, +10=right</div></div>
-          <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${c.israelLean||0}" min="-10" max="10" /><div class="form-hint">-10=dovish, +10=hawkish</div></div>
-          <div class="form-group"><label>Min Clout Req</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = no req</div></div>
+        <div class="pol-fields">
+          <div class="form-group"><label>Pol Lean</label><input type="number" id="${prefix}-cpollean-${si}-${ci}" value="${c.politicalLean||0}" min="-10" max="10" /><div class="form-hint">-10 to +10</div></div>
+          <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${c.israelLean||0}" min="-10" max="10" /><div class="form-hint">-10 to +10</div></div>
+          <div class="form-group"><label>Min Clout</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = none</div></div>
           <div class="form-group"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">0 = free</div></div>
-        </div>
-        <div class="form-row four pol-fields" style="margin-bottom:4px;margin-top:4px">
-          <div class="form-group"><label>Min Pol Position</label><input type="number" id="${prefix}-cpolminpos-${si}-${ci}" value="${(c.politicalRequirement||{}).minPosition||''}" min="0" max="100" placeholder="0" /><div class="form-hint">0-100, blank=none</div></div>
-          <div class="form-group"><label>Max Pol Position</label><input type="number" id="${prefix}-cpolmaxpos-${si}-${ci}" value="${(c.politicalRequirement||{}).maxPosition||''}" min="0" max="100" placeholder="100" /><div class="form-hint">0-100, blank=none</div></div>
-          <div></div>
-          <div></div>
+          <div class="form-group"><label>Min Pol Pos</label><input type="number" id="${prefix}-cpolminpos-${si}-${ci}" value="${(c.politicalRequirement||{}).minPosition||''}" min="0" max="100" placeholder="0" /><div class="form-hint">blank = none</div></div>
+          <div class="form-group"><label>Max Pol Pos</label><input type="number" id="${prefix}-cpolmaxpos-${si}-${ci}" value="${(c.politicalRequirement||{}).maxPosition||''}" min="0" max="100" placeholder="100" /><div class="form-hint">blank = none</div></div>
         </div>
       </div>
     </div>

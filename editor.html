@@ -825,10 +825,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <div id="panel-tooltips" class="panel">
           <div class="form-section">
             <h3>Tooltips & Popup Messages</h3>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Manage in-game popup messages — coaching warnings, tutorial steps, danger alerts, and custom notifications. Each tooltip has a speaker, message text, trigger condition, and display style.</p>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Edit all in-game popup messages — onboarding tutorial, stat danger warnings, mission star alerts, gelt crisis, clout messages, and randomly-picked coaching messages. These are pulled directly from <code>config.popupMessages</code> and <code>config.coachingMessages</code> in data.json. Use placeholders like <code>{stat}</code>, <code>{value}</code>, <code>{amount}</code>, <code>{full}</code>, and <code>{threshold}</code> where supported.</p>
             <div id="tooltips-list"></div>
-            <button class="add-btn" onclick="addTooltip()">+ Add Custom Tooltip</button>
-            <div style="margin-top:14px"><button class="btn btn-primary" onclick="saveTooltips()">Save Tooltips</button></div>
+            <div style="margin-top:14px"><button class="btn btn-primary" onclick="saveTooltips()">Save All Messages</button></div>
           </div>
         </div>
 
@@ -16438,109 +16437,218 @@ function readSegOverrides(prefix, si, ci) {
 }
 
 // ═══ TOOLTIPS & POPUPS ═══
+// ═══ TOOLTIPS / POPUP MESSAGES PANEL ═══
+// Edits the popupMessages and coachingMessages blocks in data.json config.
+// Organized into sections: Onboarding, Stat Warnings, Mission Stars, Other,
+// and Coaching Messages (random pools).
+
+var TOOLTIP_SECTIONS = [
+  {
+    title: 'Onboarding (Tutorial)',
+    description: 'Sequence of intro messages shown to new players. Each step has a mood, message body, and a button label that advances to the next step.',
+    type: 'onboarding',
+    key: 'onboarding'
+  },
+  {
+    title: 'Stat Danger Warnings',
+    description: 'Triggered when a core stat (trust/morale/donors) drops into the orange or red zone. Use {stat} for the stat label, {value} for the current value, and {threshold} for the failure threshold.',
+    type: 'fields',
+    fields: [
+      { key: 'statDangerOrange', label: 'Orange Warning', placeholders: ['{stat}', '{value}'] },
+      { key: 'statDangerRed', label: 'Red Warning', placeholders: ['{stat}', '{value}', '{threshold}'] },
+      { key: 'investmentSuggestion', label: 'Investment Suggestion', placeholders: ['{stat}'] }
+    ]
+  },
+  {
+    title: 'Mission Star Messages',
+    description: 'Triggered by mission star changes.',
+    type: 'fields',
+    fields: [
+      { key: 'missionStarLow', label: 'Mission Stars Low' },
+      { key: 'missionStarMax', label: 'Mission Stars Maxed' }
+    ]
+  },
+  {
+    title: 'Gelt & Political Messages',
+    description: 'Various event-driven popups.',
+    type: 'fields',
+    fields: [
+      { key: 'geltCrisis', label: 'Gelt Crisis' },
+      { key: 'centristClout', label: 'Centrist Clout Penalty', placeholders: ['{full}', '{reduced}'] },
+      { key: 'communityCloutBonus', label: 'Community Clout Bonus', placeholders: ['{amount}'] },
+      { key: 'communityCloutBonusCentrist', label: 'Community Clout Bonus (Centrist)', placeholders: ['{amount}', '{full}'] }
+    ]
+  },
+  {
+    title: 'Coaching Messages',
+    description: 'Random pools of warnings the outgoing ED uses to coach the player. The engine picks one variant at random per trigger. Use {stat} for the affected stat label.',
+    type: 'pools',
+    pools: [
+      { key: 'stat_yellow', label: 'Stat Yellow Zone (variants)' },
+      { key: 'stat_red', label: 'Stat Red Zone (variants)' },
+      { key: 'penultimate_warning', label: 'Penultimate Round Warning (variants)' },
+      { key: 'final_round_avg', label: 'Final Round Average Warning (variants)' },
+      { key: 'final_round_stars', label: 'Final Round No Stars Warning (variants)' }
+    ]
+  }
+];
+
+function getPM() {
+  if(!GD.config) GD.config = {};
+  if(!GD.config.popupMessages) GD.config.popupMessages = {};
+  return GD.config.popupMessages;
+}
+
+function getCM() {
+  if(!GD.config) GD.config = {};
+  if(!GD.config.coachingMessages) GD.config.coachingMessages = {};
+  return GD.config.coachingMessages;
+}
+
 function populateTooltips() {
   var list = document.getElementById('tooltips-list');
   if (!list) return;
-  if (!GD.tooltips) GD.tooltips = [];
+  var pm = getPM();
+  var cm = getCM();
+  var html = '';
 
-  var html = '<div style="margin-bottom:16px;padding:12px;background:#f8f5ef;border:1px solid var(--border);font-size:12px;line-height:1.6;color:var(--muted)">' +
-    '<strong>Built-in tooltips</strong> (tutorial, danger warnings, coaching) are managed in the engine code. ' +
-    'Custom tooltips below can trigger at specific game events and display messages from any character.' +
-    '</div>';
+  TOOLTIP_SECTIONS.forEach(function(section) {
+    html += '<div style="margin-bottom:24px;padding:14px;background:#f8f5ef;border:1px solid var(--border)">';
+    html += '<h4 style="margin:0 0 4px;font-family:\'Merriweather\',Georgia,serif;font-size:14px">'+esc(section.title)+'</h4>';
+    html += '<p style="font-size:11px;color:var(--muted);margin:0 0 12px;line-height:1.5">'+section.description+'</p>';
 
-  GD.tooltips.forEach(function(t, i) {
-    var pool = GD.advisorPool || [];
-    html += '<div class="item-card" id="tip-card-'+i+'" onclick="toggleEdit(\'tip\','+i+')">' +
-      '<span class="expand-icon" id="tip-exp-'+i+'">▸</span>' +
-      '<div class="item-card-info"><div class="item-card-name">' + esc(t.speaker || 'Custom') + ': ' + esc((t.message||'').substring(0,50)) + '...</div>' +
-      '<div class="item-card-desc">Trigger: ' + esc(t.trigger || 'manual') + ' · ' + (t.greyOut ? 'Screen greys out' : 'No overlay') + '</div></div>' +
-      '<div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteTooltip('+i+')">Delete</button></div></div>';
-
-    html += '<div class="item-edit-form" id="tip-form-'+i+'" style="display:none">' +
-      '<div class="form-row three">' +
-        '<div class="form-group"><label>Speaker</label><select id="tip-speaker-'+i+'">' +
-          '<option value="Avi Rosen"' + (t.speaker==='Avi Rosen'?' selected':'') + '>Avi Rosen (Outgoing ED)</option>' +
-          pool.map(function(a){ return '<option value="'+esc(a.name)+'"'+(t.speaker===a.name?' selected':'')+'>'+esc(a.name)+'</option>'; }).join('') +
-          '<option value="System"' + (t.speaker==='System'?' selected':'') + '>System Message</option>' +
-        '</select></div>' +
-        '<div class="form-group"><label>Trigger</label><select id="tip-trigger-'+i+'">' +
-          '<option value="roundStart"' + (t.trigger==='roundStart'?' selected':'') + '>Round Start</option>' +
-          '<option value="statDanger"' + (t.trigger==='statDanger'?' selected':'') + '>Stat Enters Danger</option>' +
-          '<option value="scenarioComplete"' + (t.trigger==='scenarioComplete'?' selected':'') + '>After Scenario</option>' +
-          '<option value="coalitionJoin"' + (t.trigger==='coalitionJoin'?' selected':'') + '>Coalition Joined</option>' +
-          '<option value="coalitionBreak"' + (t.trigger==='coalitionBreak'?' selected':'') + '>Coalition Broken</option>' +
-          '<option value="starChange"' + (t.trigger==='starChange'?' selected':'') + '>Mission Star Change</option>' +
-          '<option value="custom"' + (t.trigger==='custom'?' selected':'') + '>Custom Event</option>' +
-        '</select></div>' +
-        '<div class="form-group"><label>Style</label><select id="tip-style-'+i+'">' +
-          '<option value="info"' + (t.style==='info'?' selected':'') + '>Info (blue)</option>' +
-          '<option value="yellow"' + (t.style==='yellow'?' selected':'') + '>Warning (yellow)</option>' +
-          '<option value="red"' + (t.style==='red'?' selected':'') + '>Danger (red)</option>' +
-          '<option value="green"' + (t.style==='green'?' selected':'') + '>Success (green)</option>' +
-        '</select></div>' +
-      '</div>' +
-      '<div class="form-group" style="margin-bottom:8px"><label>Message</label><textarea id="tip-message-'+i+'" rows="3" style="font-size:12px">'+esc(t.message||'')+'</textarea></div>' +
-      '<div class="form-row three">' +
-        '<div class="form-group"><label>Grey Out Screen</label><select id="tip-greyout-'+i+'"><option value="false"' + (!t.greyOut?' selected':'') + '>No</option><option value="true"' + (t.greyOut?' selected':'') + '>Yes</option></select><div class="form-hint">If yes, the rest of the screen dims behind the tooltip</div></div>' +
-        '<div class="form-group"><label>Speaker Mood</label><select id="tip-mood-'+i+'">' +
-          '<option value="neutral"' + ((t.mood||'neutral')==='neutral'?' selected':'') + '>Neutral</option>' +
-          '<option value="approving"' + (t.mood==='approving'?' selected':'') + '>Approving</option>' +
-          '<option value="concerned"' + (t.mood==='concerned'?' selected':'') + '>Concerned</option>' +
-          '<option value="disapproving"' + (t.mood==='disapproving'?' selected':'') + '>Disapproving</option>' +
-          '<option value="excited"' + (t.mood==='excited'?' selected':'') + '>Excited</option>' +
-        '</select></div>' +
-        '<div class="form-group"><label>Fire Once</label><select id="tip-once-'+i+'"><option value="true"' + (t.fireOnce!==false?' selected':'') + '>Yes</option><option value="false"' + (t.fireOnce===false?' selected':'') + '>No (every time)</option></select><div class="form-hint">If yes, only shows once per game</div></div>' +
-      '</div>' +
-      '<div class="form-group"><label>Condition (optional)</label><input id="tip-condition-'+i+'" value="'+esc(t.condition||'')+'" placeholder="e.g., round=2, stat_trust<30, scenario=ai_moderation" /><div class="form-hint">Optional condition for when this tooltip triggers. Leave blank for always.</div></div>' +
-      '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveTooltip('+i+')">Save</button></div>' +
-    '</div>';
+    if(section.type === 'onboarding') {
+      var steps = pm.onboarding || [];
+      steps.forEach(function(step, idx) {
+        html += '<div style="background:white;border:1px solid var(--border);padding:10px;margin-bottom:8px">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+        html += '<strong style="font-size:11px;color:var(--muted)">Step '+(idx+1)+'</strong>';
+        html += '<button class="btn btn-danger btn-sm" onclick="deleteOnboardingStep('+idx+')">×</button>';
+        html += '</div>';
+        html += '<div class="form-row three" style="margin-bottom:6px">';
+        html += '<div class="form-group"><label>Mood</label><select id="ob-mood-'+idx+'">';
+        ['neutral','approving','concerned','disapproving','excited'].forEach(function(m){
+          html += '<option value="'+m+'"'+(step.mood===m?' selected':'')+'>'+m+'</option>';
+        });
+        html += '</select></div>';
+        html += '<div class="form-group"><label>Button Label</label><input id="ob-label-'+idx+'" value="'+esc(step.label||'')+'" /></div>';
+        html += '<div></div>';
+        html += '</div>';
+        html += '<div class="form-group" style="margin-bottom:0"><label>Message (HTML allowed)</label><textarea id="ob-msg-'+idx+'" rows="3" style="font-size:12px">'+esc(step.msg||'')+'</textarea></div>';
+        html += '</div>';
+      });
+      html += '<button class="add-btn" style="margin-top:6px;width:auto;padding:8px 14px" onclick="addOnboardingStep()">+ Add Step</button>';
+    } else if(section.type === 'fields') {
+      section.fields.forEach(function(f) {
+        html += '<div class="form-group" style="margin-bottom:10px">';
+        html += '<label>'+esc(f.label);
+        if(f.placeholders) html += ' <span style="color:var(--muted);font-weight:400;font-size:10px">— supports: '+f.placeholders.join(', ')+'</span>';
+        html += '</label>';
+        html += '<textarea id="pm-'+f.key+'" rows="2" style="font-size:12px">'+esc(pm[f.key]||'')+'</textarea>';
+        html += '</div>';
+      });
+    } else if(section.type === 'pools') {
+      section.pools.forEach(function(p) {
+        var variants = cm[p.key] || [];
+        html += '<div style="background:white;border:1px solid var(--border);padding:10px;margin-bottom:8px">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+        html += '<strong style="font-size:11px;text-transform:uppercase;letter-spacing:1px">'+esc(p.label)+'</strong>';
+        html += '<button class="add-btn" style="width:auto;padding:4px 10px;font-size:10px" onclick="addCoachVariant(\''+p.key+'\')">+ Add Variant</button>';
+        html += '</div>';
+        if(variants.length === 0) {
+          html += '<div style="font-size:11px;color:var(--muted);font-style:italic">No variants — using engine defaults.</div>';
+        }
+        variants.forEach(function(v, idx) {
+          html += '<div style="display:flex;gap:6px;margin-bottom:4px">';
+          html += '<textarea id="cm-'+p.key+'-'+idx+'" rows="2" style="font-size:12px;flex:1">'+esc(v)+'</textarea>';
+          html += '<button class="btn btn-danger btn-sm" style="align-self:flex-start" onclick="deleteCoachVariant(\''+p.key+'\','+idx+')">×</button>';
+          html += '</div>';
+        });
+      });
+    }
+    html += '</div>';
   });
 
   list.innerHTML = html;
 }
 
-function addTooltip() {
-  if (!GD.tooltips) GD.tooltips = [];
-  GD.tooltips.push({
-    speaker: 'Avi Rosen',
-    trigger: 'roundStart',
-    style: 'info',
-    message: '',
-    greyOut: false,
-    mood: 'neutral',
-    fireOnce: true,
-    condition: ''
-  });
-  setDirty();
-  populateTooltips();
+function addOnboardingStep() {
+  var pm = getPM();
+  if(!pm.onboarding) pm.onboarding = [];
+  // Capture existing edits before re-rendering
+  readOnboardingFromDOM();
+  pm.onboarding.push({mood:'neutral', msg:'', label:'Continue'});
+  setDirty(); populateTooltips();
 }
 
-function saveTooltip(i) {
-  if (!GD.tooltips || !GD.tooltips[i]) return;
-  var t = GD.tooltips[i];
-  t.speaker = document.getElementById('tip-speaker-'+i).value;
-  t.trigger = document.getElementById('tip-trigger-'+i).value;
-  t.style = document.getElementById('tip-style-'+i).value;
-  t.message = document.getElementById('tip-message-'+i).value;
-  t.greyOut = document.getElementById('tip-greyout-'+i).value === 'true';
-  t.mood = document.getElementById('tip-mood-'+i).value;
-  t.fireOnce = document.getElementById('tip-once-'+i).value !== 'false';
-  t.condition = document.getElementById('tip-condition-'+i).value;
-  setDirty();
-  setStatus('Tooltip saved.', 'success');
-  populateTooltips();
+function deleteOnboardingStep(idx) {
+  if(!confirm('Delete this onboarding step?')) return;
+  var pm = getPM();
+  readOnboardingFromDOM();
+  if(pm.onboarding) pm.onboarding.splice(idx, 1);
+  setDirty(); populateTooltips();
+}
+
+function readOnboardingFromDOM() {
+  var pm = getPM();
+  if(!pm.onboarding) return;
+  pm.onboarding.forEach(function(step, idx) {
+    var moodEl = document.getElementById('ob-mood-'+idx);
+    var msgEl = document.getElementById('ob-msg-'+idx);
+    var labelEl = document.getElementById('ob-label-'+idx);
+    if(moodEl) step.mood = moodEl.value;
+    if(msgEl) step.msg = msgEl.value;
+    if(labelEl) step.label = labelEl.value;
+  });
+}
+
+function addCoachVariant(poolKey) {
+  var cm = getCM();
+  if(!cm[poolKey]) cm[poolKey] = [];
+  readCoachFromDOM();
+  cm[poolKey].push('');
+  setDirty(); populateTooltips();
+}
+
+function deleteCoachVariant(poolKey, idx) {
+  if(!confirm('Delete this variant?')) return;
+  var cm = getCM();
+  readCoachFromDOM();
+  if(cm[poolKey]) cm[poolKey].splice(idx, 1);
+  setDirty(); populateTooltips();
+}
+
+function readCoachFromDOM() {
+  var cm = getCM();
+  TOOLTIP_SECTIONS.forEach(function(section) {
+    if(section.type !== 'pools') return;
+    section.pools.forEach(function(p) {
+      var variants = cm[p.key] || [];
+      variants.forEach(function(_, idx) {
+        var el = document.getElementById('cm-'+p.key+'-'+idx);
+        if(el) variants[idx] = el.value;
+      });
+    });
+  });
+}
+
+function readPopupFieldsFromDOM() {
+  var pm = getPM();
+  TOOLTIP_SECTIONS.forEach(function(section) {
+    if(section.type !== 'fields') return;
+    section.fields.forEach(function(f) {
+      var el = document.getElementById('pm-'+f.key);
+      if(el) pm[f.key] = el.value;
+    });
+  });
 }
 
 function saveTooltips() {
+  readOnboardingFromDOM();
+  readPopupFieldsFromDOM();
+  readCoachFromDOM();
   setDirty();
-  setStatus('All tooltips saved.', 'success');
-}
-
-function deleteTooltip(i) {
-  if (!confirm('Delete this tooltip?')) return;
-  GD.tooltips.splice(i, 1);
-  setDirty();
-  populateTooltips();
+  setStatus('All popup messages saved.', 'success');
 }
 
 </script>

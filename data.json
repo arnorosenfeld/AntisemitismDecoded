@@ -455,6 +455,30 @@
       "centristClout": "Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly.",
       "communityCloutBonus": "\u26a1 +{amount} Clout from your position near the community's political center.",
       "communityCloutBonusCentrist": "\u26a1 +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate."
+    },
+    "coachingMessages": {
+      "stat_yellow": [
+        "Keep an eye on {stat}. If it drops much further, the board will start asking questions.",
+        "{stat} is slipping. You may want to prioritize it in your next action.",
+        "Your {stat} is getting into uncomfortable territory. The board notices these trends."
+      ],
+      "stat_red": [
+        "\ud83d\udea8 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "\ud83d\udea8 {stat} is in the danger zone. One more bad outcome and you could be out.",
+        "\ud83d\udea8 Crisis warning: {stat} is near the point of no return."
+      ],
+      "final_round_stars": [
+        "You\u2019re heading into the final round with no mission stars. The board will see this as a failure of vision \u2014 regardless of your other numbers.",
+        "Zero mission stars going into the last round. Without a clear mission, the board has no reason to renew your contract."
+      ],
+      "final_round_avg": [
+        "Your stats are averaging below 40 heading into the final round. At this rate, the board won\u2019t renew your contract.",
+        "The numbers aren\u2019t good. You need a strong final round to avoid a bad year-end review."
+      ],
+      "penultimate_warning": [
+        "{stat} is below 35 with two rounds to go. You still have time to turn this around \u2014 but not much.",
+        "Heads up: {stat} is trending low. Consider making it a priority over the next two rounds."
+      ]
     }
   },
   "stats": [

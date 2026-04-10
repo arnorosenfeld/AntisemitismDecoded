@@ -1582,267 +1582,55 @@ const GAME_DATA = {
     "missionStarPoints": 3,
     "pageText": {
       "introScreen": {
-        "kicker": "Antisemitism Decoded: The Game",
-        "title": "Your First Week on the Job",
-        "scenarioTitle": "Swastikas Painted on the Jewish Student Center",
-        "scenarioBody": "It’s 7 AM on a Tuesday. Your phone is already ringing. Swastikas were spray-painted on the Hillel building at the university last night. The campus rabbi is asking where your organization stands. A reporter from the Jewish Telegraphic Agency wants a quote by noon. Your board chair is texting — she thinks you should wait for the police investigation. Three of your staff members are Jewish college graduates; one is crying in the break room.",
-        "choicesLabel": "What do you do?",
-        "choices": [
-          {
-            "text": "Issue a strong public condemnation immediately — name it as antisemitism, demand university accountability",
-            "outcome": "Your statement makes the evening news. The campus rabbi thanks you publicly, but your board chair is furious you didn’t consult her first. Three Reform congregations share your statement; the Orthodox council says you’re grandstanding. A local columnist calls it “exactly the moral clarity we need.” Your development director warns that two major donors have gone quiet.",
-            "chips": [
-              {
-                "label": "+6 Trust",
-                "cls": "chip-green"
-              },
-              {
-                "label": "−3 Donors",
-                "cls": "chip-red"
-              },
-              {
-                "label": "+2 Morale",
-                "cls": "chip-green"
-              },
-              {
-                "label": "+1 Mission",
-                "cls": "chip-gold"
-              }
-            ],
-            "polShift": -8,
-            "polLabel": "Shifted Left",
-            "polClass": "pol-shift-left",
-            "segments": [
-              {
-                "name": "Orthodox",
-                "val": -4,
-                "pct": 38
-              },
-              {
-                "name": "Conservative",
-                "val": 2,
-                "pct": 58
-              },
-              {
-                "name": "Reform",
-                "val": 8,
-                "pct": 72
-              },
-              {
-                "name": "Unaffiliated",
-                "val": 5,
-                "pct": 62
-              },
-              {
-                "name": "Young Jews",
-                "val": 9,
-                "pct": 74
-              },
-              {
-                "name": "Older Jews",
-                "val": -2,
-                "pct": 46
-              }
-            ]
-          },
-          {
-            "text": "Coordinate a joint response with the Interfaith Council and campus civil rights groups first",
-            "outcome": "It takes 36 hours to assemble the coalition statement, and by then the news cycle has partly moved on. But when the joint statement drops, it carries the signatures of 14 organizations — churches, mosques, the NAACP chapter, campus groups. The Jewish Forward runs it as a model for interfaith response. Your staff feels proud. The Orthodox council quietly signs on.",
-            "chips": [
-              {
-                "label": "+4 Trust",
-                "cls": "chip-green"
-              },
-              {
-                "label": "+3 Morale",
-                "cls": "chip-green"
-              },
-              {
-                "label": "+1 Mission",
-                "cls": "chip-gold"
-              }
-            ],
-            "polShift": -2,
-            "polLabel": "Slightly Left",
-            "polClass": "pol-shift-left",
-            "segments": [
-              {
-                "name": "Orthodox",
-                "val": 1,
-                "pct": 52
-              },
-              {
-                "name": "Conservative",
-                "val": 4,
-                "pct": 62
-              },
-              {
-                "name": "Reform",
-                "val": 3,
-                "pct": 60
-              },
-              {
-                "name": "Unaffiliated",
-                "val": 2,
-                "pct": 56
-              },
-              {
-                "name": "Young Jews",
-                "val": 3,
-                "pct": 60
-              },
-              {
-                "name": "Older Jews",
-                "val": 3,
-                "pct": 60
-              }
-            ]
-          },
-          {
-            "text": "Focus inward — organize support for affected students and staff before making any public statement",
-            "outcome": "You spend the day at the university. You sit with the crying students, bring in a counselor, order lunch for the Hillel staff. Your program director organizes an emergency support circle. It’s the right thing to do — but by 3 PM, Twitter is asking why your organization hasn’t said anything. A competing org issues a fiery statement and gets all the press. Your board chair approves, but the campus rabbi feels abandoned.",
-            "chips": [
-              {
-                "label": "+8 Morale",
-                "cls": "chip-green"
-              },
-              {
-                "label": "−5 Trust",
-                "cls": "chip-red"
-              },
-              {
-                "label": "−2 Donors",
-                "cls": "chip-red"
-              }
-            ],
-            "polShift": 0,
-            "polLabel": "No Shift",
-            "polClass": "pol-shift-center",
-            "segments": [
-              {
-                "name": "Orthodox",
-                "val": 2,
-                "pct": 55
-              },
-              {
-                "name": "Conservative",
-                "val": -1,
-                "pct": 48
-              },
-              {
-                "name": "Reform",
-                "val": -4,
-                "pct": 40
-              },
-              {
-                "name": "Unaffiliated",
-                "val": -3,
-                "pct": 42
-              },
-              {
-                "name": "Young Jews",
-                "val": -6,
-                "pct": 34
-              },
-              {
-                "name": "Older Jews",
-                "val": 4,
-                "pct": 62
-              }
-            ]
-          }
-        ],
-        "transitionText": "That was day one. You have twelve months to go.",
-        "revealDivider": "Every choice has consequences",
-        "revealTitle": "Antisemitism Decoded:",
-        "revealTitleAccent": "The Game",
-        "revealSubtitle": "A leadership simulator for an impossible job",
-        "revealPremise": "You’ve just been hired to lead a Jewish organization at one of the most polarized times in Jewish history. Your donors want one thing, your staff wants another, and every constituency in the community thinks you should be doing something else.",
-        "revealStakes": "Deliver results and you’ll be promoted to lead a national organization with higher stakes and a bigger stage. Lose the trust of your community, burn through your budget, or let morale collapse — and your board will fire you.",
-        "ctaButtonPost": "That was day one. Ready for twelve months? →",
-        "ctaTagline": "Choose your organization, build your team, and begin.",
-        "bottomText": "Choose your organization, build your advisory team, set your priorities — then face twelve months of decisions that will test every alliance you have.",
-        "depthLabel": "Powered by real data about the Jewish community",
-        "depthItems": [
-          {
-            "icon": "📊",
-            "title": "6 Demographic Segments",
-            "desc": "Orthodox, Conservative, Reform, unaffiliated, young Jews, older Jews — each with distinct political centers and comfort ranges drawn from communal survey data"
-          },
-          {
-            "icon": "⚖️",
-            "title": "Political Position Engine",
-            "desc": "Move along a 100-point left-right spectrum while accumulating and spending clout — your position shapes which coalitions you can join and what choices you can make"
-          },
-          {
-            "icon": "🎭",
-            "title": "Real-World Dilemmas",
-            "desc": "Scenarios drawn from actual crises faced by Jewish communal leaders — from campus antisemitism to donor conflicts to Israel policy, with no easy answers"
-          }
-        ],
-        "headlinesLabel": "Headlines from past playthroughs",
-        "headlines": [
-          {
-            "pub": "Jewish Telegraphic Agency",
-            "text": "Director Declines Major Gift, Cites Mission Integrity"
-          },
-          {
-            "pub": "The Jewish Forward",
-            "text": "‘Both Sides’ Statement Draws Fire from All Directions"
-          },
-          {
-            "pub": "Haaretz",
-            "text": "Progressive Org Signs Arms Embargo Letter"
-          },
-          {
-            "pub": "Jewish Community Gazette",
-            "text": "Organization Cuts Ties with Politician Over Antisemitic Remarks"
-          },
-          {
-            "pub": "eJewish Philanthropy",
-            "text": "Community Trust in Local Leadership at All-Time High"
-          },
-          {
-            "pub": "The Jerusalem Post",
-            "text": "Jewish Org Defends Politician After ‘Globalist’ Remarks"
-          }
-        ],
+        "kicker": "That was day one. You have twelve months to go.",
+        "title": "Every choice has consequences",
+        "scenarioTitle": "Antisemitism Decoded:",
+        "scenarioBody": "Deliver results and you’ll be promoted to lead a national organization with higher stakes and a bigger stage. Lose the trust of your community, burn through your budget, or let morale collapse — and your board will fire you.",
+        "choicesLabel": "A leadership simulator for an impossible job",
+        "choices": [],
+        "transitionText": "",
+        "revealDivider": "That was day one. Ready for twelve months? →",
+        "revealTitle": "Choose your organization, build your team, and begin.",
+        "revealTitleAccent": "Headlines from past playthroughs",
+        "revealSubtitle": "Powered by real data about the Jewish community",
+        "revealPremise": "Director Issues Swift Condemnation of Campus Antisemitism\nOrganization Accepts $300K Restricted Gift Amid Staff Concerns\n‘Both Sides’ Statement Draws Fire from All Directions\nProgressive Jewish Org Signs Arms Embargo Letter\nCommunity Trust in Local Jewish Leadership at All-Time High\nJewish Org Defends Politician After ‘Globalist’ Remarks\nDirector Declines Major Gift, Cites Mission Integrity\nShooting at Synagogue in Neighboring City",
+        "revealStakes": "",
+        "ctaButtonPost": "Who Are You?",
+        "ctaTagline": "",
+        "bottomText": "",
+        "depthLabel": "Who Are You?",
+        "depthItems": [],
+        "headlinesLabel": "Step 2 of 6 — Organization",
+        "headlines": [],
         "tickerHeadlines": [
-          "Director Issues Swift Condemnation of Campus Antisemitism",
-          "Organization Accepts $300K Restricted Gift Amid Staff Concerns",
-          "‘Both Sides’ Statement Draws Fire from All Directions",
-          "Progressive Jewish Org Signs Arms Embargo Letter",
-          "Community Trust in Local Jewish Leadership at All-Time High",
-          "Jewish Org Defends Politician After ‘Globalist’ Remarks",
-          "Director Declines Major Gift, Cites Mission Integrity",
-          "Shooting at Synagogue in Neighboring City"
+          "Each organization comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
         ]
       },
       "charScreen": {
-        "stepLabel": "Step 1 of 6 — Character Creation",
-        "heading": "Who Are You?",
-        "description": "Your background and traits shape how the community responds to you — and what options open up when crises hit."
-      },
-      "orgScreen": {
-        "stepLabel": "Step 2 of 6 — Organization",
-        "heading": "Choose Your Organization",
-        "description": "Each organization comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
-      },
-      "missionScreen": {
         "stepLabel": "Step 3 of 6 — Mission",
         "heading": "What Is Your Mission?",
         "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned ✓, Mission Opposed ✗, or neutral — and you'll see it before you choose."
       },
+      "orgScreen": {
+        "stepLabel": "",
+        "heading": "",
+        "description": ""
+      },
+      "missionScreen": {
+        "stepLabel": "",
+        "heading": "",
+        "description": ""
+      },
       "gameScreen": {
-        "actionHeading": "Choose Your Next Action",
-        "endRoundButton": "End Round →",
-        "noApMessage": "No action points remaining. Click \"End Round\" to continue."
+        "actionHeading": "A Distinguished Career",
+        "endRoundButton": "",
+        "noApMessage": ""
       },
       "endScreen": {
-        "failureTitle": "Your Tenure Has Ended",
-        "anotherYearTitle": "End of Year",
-        "promotionTitle": "You've Been Promoted",
-        "retirementTitle": "A Distinguished Career"
+        "failureTitle": "",
+        "anotherYearTitle": "",
+        "promotionTitle": "",
+        "retirementTitle": ""
       },
       "promoScreen": {
         "heading": "A Larger Stage Awaits",
@@ -1854,14 +1642,14 @@ const GAME_DATA = {
         "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
       },
       "briefingScreen": {
-        "stepLabel": "",
+        "stepLabel": "Choose Your Next Action",
         "heading": "",
         "description": "",
-        "advisorName": "",
-        "advisorRole": "",
+        "advisorName": "Choose Your Next Action",
+        "advisorRole": "End Round →",
         "openingQuote": "",
         "closingQuote": "",
-        "helpButtonLabel": "",
+        "helpButtonLabel": "End of Year",
         "items": []
       }
     },
@@ -1952,7 +1740,7 @@ const GAME_DATA = {
     ],
     "advisorSlots": 5,
     "advisorBonusStacking": "best",
-    "gamePassword": "playtest2026",
+    "gamePassword": "Antisemitism Decoded:",
     "startingBudget": 100,
     "dangerOrangeThreshold": 75,
     "dangerRedThreshold": 20,
@@ -2914,7 +2702,7 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Reject the request made in the letter, and issue a statement defending Israel that does not mention civilian casualties in Gaza.",
+          "text": "Reject the request made in the letter, and issue a statement defending Israel against criticism — including by the Jews who organized the open letter — without mentioning civilian casualties in Gaza.",
           "missionAligned": [
             "antisemitism_left",
             "israel_security"
@@ -2939,7 +2727,9 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 7,
-          "cloutEffect": 0,
+          "politicalRequirement": {
+            "minPosition": 40
+          },
           "segmentOverrides": {
             "orthodox": 5,
             "reform": -3,
@@ -2975,7 +2765,9 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": -4,
-          "cloutEffect": 0,
+          "politicalRequirement": {
+            "maxPosition": 60
+          },
           "segmentOverrides": {
             "orthodox": -6,
             "reform": 2,
@@ -3007,7 +2799,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 2,
-          "cloutEffect": -5,
           "segmentOverrides": {
             "orthodox": -2,
             "youngAdults": 2
@@ -3019,7 +2810,6 @@ const GAME_DATA = {
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
             "jewish_identity",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3048,13 +2838,16 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 0,
-          "cloutEffect": 0
+          "politicalRequirement": {
+            "minPosition": 40,
+            "maxPosition": 60
+          }
         }
       ],
       "categories": [
-        "progressive",
         "centrist",
-        "conservative"
+        "conservative",
+        "apolitical"
       ],
       "orgLevel": "both",
       "complexity": 3,
@@ -3091,7 +2884,11 @@ const GAME_DATA = {
           "explicit": false
         }
       ],
-      "communityConsensus": 0
+      "communityConsensus": 0,
+      "groupId": "group_israel_statement",
+      "politicalRange": {
+        "min": 40
+      }
     },
     {
       "id": "staff_burnout",
@@ -10299,6 +10096,198 @@ const GAME_DATA = {
         "monitor",
         "keys"
       ]
+    },
+    {
+      "id": "israel_statement_variant_1775849084837",
+      "tag": "Israel",
+      "title": "A Request for a Statement on the Latest Conflict (variant)",
+      "body": "Following renewed fighting in Gaza, young professionals in your community circulate a letter urging Jewish organizations to condemn the Israeli military's actions as \"genocide.\" Your staff and board are uncomfortable with how Israel is prosecuting the war — but deeply divided on whether you should use that terminology.",
+      "applicableOrgs": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Issue a statement supporting Israel's right to defend itself while criticizing tactics that have resulted in a high civilian death toll. Ignore the \"genocide\" claim altogether.",
+          "missionAligned": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "israel_peace",
+            "social_justice",
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "Your right-leaning donors and board members are relieved. Several progressive staff members express deep disappointment.",
+              "effects": {
+                "trust": -4,
+                "morale": -5,
+                "donors": 6
+              },
+              "weight": 100,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 7,
+          "segmentOverrides": {
+            "orthodox": 5,
+            "reform": -3,
+            "unaffiliated": -4,
+            "youngAdults": -5,
+            "olderAdults": 3
+          },
+          "cloutCost": 2,
+          "israelLean": 7
+        },
+        {
+          "id": "c1",
+          "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
+          "missionAligned": [
+            "israel_peace",
+            "social_justice"
+          ],
+          "missionOpposed": [
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "Progressive community members are energized. Several major donors freeze their gifts pending clarification.",
+              "effects": {
+                "trust": 3,
+                "morale": 3,
+                "donors": -6
+              },
+              "weight": 100,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": -4,
+          "segmentOverrides": {
+            "orthodox": -6,
+            "reform": 2,
+            "unaffiliated": 3,
+            "youngAdults": 5,
+            "olderAdults": -4
+          },
+          "israelLean": -3
+        },
+        {
+          "id": "c2",
+          "text": "Issue a statement that affirms Israel's right to defend itself while acknowledging humanitarian concerns.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Almost everyone finds something to criticize. A few people appreciate the nuance. No one forwards it.",
+              "effects": {
+                "trust": -4,
+                "morale": -4,
+                "donors": -4
+              },
+              "weight": 100,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 2,
+          "segmentOverrides": {
+            "orthodox": -2,
+            "youngAdults": 2
+          },
+          "israelLean": 3
+        },
+        {
+          "id": "c3",
+          "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
+          "missionAligned": [
+            "jewish_identity",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The statement is widely praised by rabbis across denominations. It sidesteps the political fight and elevates the conversation.",
+              "effects": {
+                "trust": 4,
+                "morale": 3
+              },
+              "weight": 65,
+              "contextNote": "",
+              "conditions": []
+            },
+            {
+              "text": "Your carefully worded statement satisfies no one. Progressive members call it cowardly; pro-Israel donors call it weak. The middle ground turns out to be a lonely place.",
+              "effects": {
+                "trust": -3,
+                "morale": -2,
+                "donors": -4
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0
+        }
+      ],
+      "categories": [
+        "progressive",
+        "centrist",
+        "apolitical"
+      ],
+      "orgLevel": "both",
+      "complexity": 4,
+      "highStakes": true,
+      "advisorQuotes": [
+        {
+          "advisorId": "board_chair",
+          "text": "Whatever we say will be shared out of context. Let's be precise.",
+          "mood": "neutral",
+          "recommendsChoice": 2,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": false
+        },
+        {
+          "advisorId": "program_dir",
+          "text": "Our young professionals are watching. Silence is a statement too.",
+          "mood": "neutral",
+          "recommendsChoice": 1,
+          "effectModifier": {
+            "morale": 2
+          },
+          "explicit": false
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "I need to be honest — two of our top five donors have already told me what they expect us to say.",
+          "mood": "neutral",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "donors": 3
+          },
+          "explicit": false
+        }
+      ],
+      "communityConsensus": 0,
+      "groupId": "group_israel_statement",
+      "politicalRange": {
+        "max": 40
+      }
     }
   ],
   "inboxScenarios": [

@@ -1570,17 +1570,13 @@ const GAME_DATA = {
     "totalRounds": 5,
     "actionPointsPerRound": 3,
     "traitsToSelect": 2,
-    "missionStartStars": 3,
-    "missionMaxStars": 5,
-    "failureBarThreshold": 15,
+    "missionStartStars": 25,
+    "missionMaxStars": 20,
+    "failureBarThreshold": 30,
     "failureScoreThreshold": 30,
     "promotionThreshold": 75,
     "inboxPerRound": 2,
-    "scoreWeights": {
-      "trust": 0.35,
-      "morale": 0.35,
-      "donors": 0.35
-    },
+    "scoreWeights": {},
     "roundNames": [],
     "editorPassword": "admin1234",
     "missionStarPoints": 3,
@@ -1954,11 +1950,11 @@ const GAME_DATA = {
         "ceiling": 30
       }
     ],
-    "advisorSlots": 3,
-    "advisorBonusStacking": "stack",
+    "advisorSlots": 5,
+    "advisorBonusStacking": "best",
     "gamePassword": "playtest2026",
     "startingBudget": 100,
-    "dangerOrangeThreshold": 25,
+    "dangerOrangeThreshold": 75,
     "dangerRedThreshold": 20,
     "investmentsPerYear": 2,
     "nationalInvestmentsPerYear": 4,
@@ -1974,6 +1970,11 @@ const GAME_DATA = {
       "name": "Avi Rosen",
       "role": "Outgoing Executive Director",
       "portrait": "art/advisors/avi_rosen"
+    },
+    "tiltPositions": {
+      "left": 3,
+      "center": 50,
+      "right": 3
     }
   },
   "stats": [
@@ -2562,7 +2563,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 0,
-          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": 3,
             "youngAdults": -2,
@@ -2602,7 +2602,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 0,
-          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -2,
             "reform": 2,
@@ -2614,8 +2613,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Organize a campus solidarity vigil and connect affected students to resources.",
           "missionAligned": [
-            "antisemitism_all",
-            "community_hub"
+            "antisemitism_all"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -2642,8 +2640,7 @@ const GAME_DATA = {
             }
           ],
           "budgetCost": 0,
-          "politicalLean": 0,
-          "cloutEffect": 0
+          "politicalLean": 0
         },
         {
           "id": "c3",
@@ -2652,8 +2649,7 @@ const GAME_DATA = {
           "missionOpposed": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "community_hub"
+            "antisemitism_right"
           ],
           "outcomes": [
             {
@@ -2681,7 +2677,6 @@ const GAME_DATA = {
           ],
           "budgetCost": 0,
           "politicalLean": 0,
-          "cloutEffect": 0,
           "segmentOverrides": {
             "orthodox": -4,
             "youngAdults": -2,
@@ -8641,12 +8636,13 @@ const GAME_DATA = {
         "center"
       ],
       "categories": [
-        "centrist"
+        "centrist",
+        "apolitical"
       ],
       "orgLevel": "both",
       "complexity": 5,
       "highStakes": true,
-      "communityConsensus": 0.25,
+      "communityConsensus": 0,
       "endangersCoalition": [
         "coal_interfaith"
       ],
@@ -8654,6 +8650,7 @@ const GAME_DATA = {
         {
           "advisorId": "rabbi_scholar",
           "text": "The IHRA definition is imperfect, but it's the only internationally recognized framework we have. The question is whether 'imperfect but real' beats 'ideal but imaginary.'",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -8663,6 +8660,7 @@ const GAME_DATA = {
         {
           "advisorId": "community_organizer",
           "text": "If we support IHRA, we lose our progressive coalition partners overnight. I've spent two years building those relationships.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "morale": 2
@@ -8675,40 +8673,43 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Support the IHRA adoption. It's the most widely recognized definition of antisemitism and your community needs this protection, even if it's imperfect.",
           "missionAligned": [
-            "antisemitism_all",
+            "antisemitism_left",
             "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
-            "social_justice"
-          ],
-          "politicalLean": 3,
-          "endangersCoalition": [
-            "coal_interfaith",
-            "coal_campus"
+            "antisemitism_right",
+            "israel_peace",
+            "social_justice",
+            "diaspora_unity"
           ],
           "outcomes": [
             {
               "text": "The council adopts IHRA with your testimony cited prominently. Pro-Israel donors celebrate. Your interfaith and progressive coalition partners withdraw from two joint programs. Your centrist brand is now questioned by the left.",
               "effects": {
                 "trust": 2,
-                "donors": 4,
-                "morale": -1
+                "morale": -1,
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "You've taken a side. The center may not hold.",
-              "budgetEffect": -2
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 7,
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 3,
             "conservative_denom": 2,
-            "youngAdults": -4,
+            "reform": -1,
             "unaffiliated": -3,
-            "reform": -1
-          }
+            "youngAdults": -4,
+            "olderAdults": 3
+          },
+          "israelLean": 7,
+          "endangersCoalition": [
+            "coal_interfaith",
+            "coal_campus"
+          ]
         },
         {
           "id": "c1",
@@ -8717,106 +8718,114 @@ const GAME_DATA = {
             "antisemitism_all",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "Your amendment is actually considered by the council. Pro-Israel hardliners call it 'gutting the definition.' ACLU types call it 'still problematic.' But three centrist council members rally behind your version. It passes narrowly.",
+              "text": "Your amendment is actually considered by the council. Pro-Israel hardliners call it \"gutting the definition.\" ACLU types complain that it's \"still problematic.\" But three council members who were waffling on endorsing the full definition rally behind your version. It passes narrowly.",
               "effects": {
                 "trust": 4,
                 "morale": 2,
                 "donors": -1
               },
               "weight": 55,
-              "conditions": [],
               "contextNote": "Centrism as legislative craft, not just vibes.",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": 5
             },
             {
               "text": "Your amended version fails. Neither side was willing to compromise. The original IHRA definition passes without your support, and you're left looking ineffective — unable to influence an outcome you tried to shape.",
               "effects": {
-                "trust": -2,
-                "morale": -2,
-                "donors": -2
+                "trust": -5,
+                "morale": -4,
+                "donors": -4
               },
               "weight": 45,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": -8
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 2,
           "segmentOverrides": {
             "conservative_denom": 3,
             "reform": 2,
-            "olderAdults": 1,
-            "youngAdults": 1
-          }
+            "youngAdults": 1,
+            "olderAdults": 1
+          },
+          "cloutCost": 7,
+          "israelLean": 2
         },
         {
           "id": "c2",
           "text": "Oppose the adoption and advocate for a different framework — one that addresses antisemitism without the Israel-related controversies. Propose the Nexus Document as an alternative.",
           "missionAligned": [
             "antisemitism_all",
+            "antisemitism_right",
+            "israel_peace",
             "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
+            "antisemitism_left",
             "israel_security"
           ],
-          "politicalLean": -3,
           "outcomes": [
             {
               "text": "Your advocacy for an alternative framework is intellectually respected but politically outmatched. IHRA passes anyway. Pro-Israel donors are livid. But progressive partners deepen their trust in you significantly.",
               "effects": {
-                "trust": 1,
-                "morale": 2,
-                "donors": -4
+                "trust": 7,
+                "donors": -5
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -4,
           "segmentOverrides": {
-            "youngAdults": 3,
-            "unaffiliated": 3,
-            "reform": 2,
             "orthodox": -4,
+            "reform": 2,
+            "unaffiliated": 3,
+            "youngAdults": 3,
             "olderAdults": -2
-          }
+          },
+          "cloutCost": 12,
+          "israelLean": -7
         },
         {
           "id": "c3",
           "text": "Invoke Jewish textual tradition to draft a new, original framework that draws on IHRA, Nexus, and Jerusalem Declaration — positioning it as emerging from Jewish scholarly consensus rather than political camps.",
           "missionAligned": [
             "antisemitism_all",
-            "diaspora_unity",
-            "jewish_identity"
+            "jewish_identity",
+            "diaspora_unity"
           ],
-          "requiresUnlock": "halachic_option",
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your framework is published with endorsements from three rabbis across denominations. The council delays the vote to consider it. National Jewish media covers it as 'a third way.' It may not win this fight, but it changes the terms of the debate.",
               "effects": {
-                "trust": 5,
-                "morale": 4,
-                "donors": 2
+                "trust": 8,
+                "morale": 6,
+                "donors": 4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your Jewish learning produced something no policy shop could have written.",
-              "budgetEffect": -5
+              "conditions": [],
+              "cloutEffect": 9
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 3,
             "conservative_denom": 3,
             "reform": 3,
-            "olderAdults": 2,
-            "youngAdults": 2
-          }
+            "youngAdults": 2,
+            "olderAdults": 2
+          },
+          "requiresUnlock": "jewish_scholar"
         }
       ]
     },
@@ -8824,21 +8833,23 @@ const GAME_DATA = {
       "id": "center_donor_ultimatum",
       "tag": "Development",
       "title": "The Centrist Donor Exodus",
-      "body": "Three of your most reliable moderate donors — who together represent 25% of your annual giving — have scheduled a joint call with you. They're frustrated. 'We gave to you because you were above the fray,' one writes in the meeting request. 'But lately you seem paralyzed. We want to see decisive leadership, not endless balance. If you can't show us a clear direction in the next quarter, we're moving our giving to organizations that actually do things.'",
+      "body": "Three of your most reliable moderate donors — who together represent 25% of your annual giving — have scheduled a joint call with you. They're frustrated. \"We gave to you because you were above the fray,\" one writes in the meeting request. \"But lately you seem paralyzed. We want to see decisive leadership, not endless balance. If you can't show us a clear direction in the next quarter, we're moving our giving to organizations that actually do things.\"",
       "applicableOrgs": [
         "center"
       ],
       "categories": [
-        "centrist"
+        "centrist",
+        "apolitical"
       ],
       "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
-      "communityConsensus": 0.4,
+      "communityConsensus": 0.35,
       "advisorQuotes": [
         {
           "advisorId": "dev_director",
           "text": "They're not wrong. Our last three public statements were so balanced they said nothing. Donors want to fund impact, not diplomacy.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "donors": 3
@@ -8848,6 +8859,7 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "If we lurch in any direction to keep three donors, we'll lose the twenty donors who fund us BECAUSE we're centrist.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "trust": 2
@@ -8859,40 +8871,37 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Present the donors with a bold new initiative — pick a concrete issue (campus safety, interfaith coalition, community security) and commit to being the best in the country at it.",
-          "missionAligned": [
-            "antisemitism_all"
-          ],
-          "requiresUnlock": null,
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your pitch works. The donors are energized by the specificity. Two increase their gifts; one holds steady. But the initiative commits you to a resource-intensive program that will stretch your team.",
               "effects": {
                 "trust": 2,
-                "donors": 4,
-                "morale": -1
+                "donors": 4
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -8
+              "conditions": [],
+              "cloutEffect": 3
             },
             {
-              "text": "The donors like the idea but want to see results first. They cut giving by half 'until the initiative proves itself.' You have funding for the pilot but not the full program.",
+              "text": "The donors like the idea but want to see results first. They cut giving by half \"until the initiative proves itself.\" You have funding for the pilot but not the full program.",
               "effects": {
-                "trust": 1,
-                "donors": -1,
-                "morale": 0
+                "morale": -5,
+                "donors": -2
               },
               "weight": 30,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -5
+              "conditions": [],
+              "cloutEffect": -4
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "olderAdults": 2,
-            "conservative_denom": 2
+            "conservative_denom": 2,
+            "olderAdults": 2
           }
         },
         {
@@ -8901,33 +8910,32 @@ const GAME_DATA = {
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "One donor is moved by your conviction and stays. The other two leave, citing 'philosophical differences.' You've lost 15% of annual giving but preserved your identity.",
+              "text": "One donor is moved by your conviction and stays. The other two leave, citing \"philosophical differences.\" You've lost 15% of annual giving but preserved your identity.",
               "effects": {
                 "trust": 2,
-                "donors": -3,
-                "morale": 2
+                "morale": 2,
+                "donors": -7
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Integrity has a price tag. Today it's 15% of your budget.",
-              "budgetEffect": -8
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "reform": 1,
             "conservative_denom": 1,
+            "reform": 1,
             "olderAdults": 1
           }
         },
         {
           "id": "c2",
-          "text": "Offer the donors a seat at the table — create a 'Strategic Advisory Council' that gives major donors input on organizational direction in exchange for multi-year commitments.",
+          "text": "Offer the donors a seat at the table — create a Strategic Advisory Council that gives major donors input on organizational direction in exchange for multi-year commitments.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [
             "diaspora_unity"
           ],
@@ -8935,58 +8943,61 @@ const GAME_DATA = {
             {
               "text": "All three donors sign three-year pledges. But the advisory council quickly becomes a shadow board, pushing you toward positions that serve their interests. Your staff feels the mission drifting.",
               "effects": {
-                "trust": -2,
-                "donors": 5,
-                "morale": -3
+                "trust": -4,
+                "morale": -5,
+                "donors": 5
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Donor access can become donor control.",
-              "budgetEffect": 12
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "youngAdults": -2,
             "unaffiliated": -2,
+            "youngAdults": -2,
             "olderAdults": 2
           }
         },
         {
           "id": "c3",
-          "text": "Proactively present a diversified funding plan that reduces dependence on any single donor group — new foundation grants, a grassroots small-donor campaign, and a planned giving program.",
+          "text": "Proactively present a diversified funding plan to the board that reduces dependence on any single donor group — new foundation grants, a grassroots small-donor campaign, and a planned giving program.",
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your comprehensive plan impresses all three donors. One stays, one leaves, one increases — but more importantly, you launch a small-donor campaign that brings in 200 new supporters at the grassroots level. You're less vulnerable now.",
               "effects": {
                 "trust": 3,
-                "donors": 2,
-                "morale": 3
+                "morale": 3,
+                "donors": 5
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your fundraising expertise turned a threat into structural change.",
-              "budgetEffect": 3
+              "conditions": [],
+              "cloutEffect": 3
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "youngAdults": 2,
-            "unaffiliated": 2,
             "reform": 1,
+            "unaffiliated": 2,
+            "youngAdults": 2,
             "olderAdults": 1
-          }
+          },
+          "requiresUnlock": "master_fundraiser"
         }
       ]
     },
     {
       "id": "center_bipartisan_hijack",
       "tag": "Policy",
-      "title": "The Bipartisan Bill Gets Hijacked",
-      "body": "You spent eight months helping craft a bipartisan antisemitism awareness bill — co-sponsored by a Democrat and a Republican. It was your signature achievement. Now, hours before the floor vote, the Republican co-sponsor has added a last-minute amendment that includes language about 'anti-Israel activity on campuses' that would effectively classify BDS organizing as antisemitism. The Democrat says she'll pull her co-sponsorship if the amendment stays. Both legislators are calling you.",
+      "title": "Bipartisan Bill Gets Hijacked",
+      "body": "You spent eight months helping craft a bipartisan antisemitism awareness bill — co-sponsored by a Democrat and a Republican. It was your signature achievement. Now, hours before the floor vote, the Republican co-sponsor has added a last-minute amendment that includes language about \"anti-Israel activity on campuses\" that would effectively classify BDS organizing as antisemitism. The Democrat says she'll pull her co-sponsorship if the amendment stays. Both legislators are calling you.",
       "applicableOrgs": [
         "center"
       ],
@@ -8996,11 +9007,12 @@ const GAME_DATA = {
       "orgLevel": "both",
       "complexity": 5,
       "highStakes": true,
-      "communityConsensus": 0.3,
+      "communityConsensus": 0.15,
       "advisorQuotes": [
         {
           "advisorId": "political_consultant",
           "text": "Eight months of work. If this bill dies, it's not coming back in this session. Sometimes you take a flawed win over a principled loss.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "donors": 2
@@ -9010,6 +9022,7 @@ const GAME_DATA = {
         {
           "advisorId": "community_organizer",
           "text": "If we let this amendment through, every progressive org in the city will say we were always secretly pro-IHRA hardliners pretending to be centrist.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "trust": 2
@@ -9023,25 +9036,24 @@ const GAME_DATA = {
           "text": "Publicly oppose the amendment. Call on the Republican to withdraw it to save the bipartisan bill you all worked on together.",
           "missionAligned": [
             "antisemitism_all",
-            "diaspora_unity"
+            "antisemitism_left",
+            "israel_peace",
+            "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
           ],
-          "politicalLean": -2,
           "outcomes": [
             {
-              "text": "The Republican is furious and withdraws from the bill entirely, calling you 'ungrateful.' The bill dies. Eight months of work, gone. But progressive partners say your stand proved your centrist credentials are real.",
+              "text": "The Republican is furious and withdraws from the bill entirely, calling you \"ungrateful.\" The bill dies. Eight months of work, gone. But progressive partners say your stand proved your centrist credentials are real.",
               "effects": {
                 "trust": 3,
-                "morale": -3,
-                "donors": -2
+                "morale": -3
               },
               "weight": 55,
+              "contextNote": "The bill's death makes local news. You're quoted calling it \"a tragedy of partisan politics.\"",
               "conditions": [],
-              "contextNote": "The bill's death makes local news. You're quoted calling it 'a tragedy of partisan politics.'",
-              "budgetEffect": -2
+              "cloutEffect": 3
             },
             {
               "text": "The Republican agrees to withdraw the amendment under pressure. The original bill passes. Both legislators credit you. Your reputation as an honest broker is cemented.",
@@ -9051,51 +9063,61 @@ const GAME_DATA = {
                 "donors": 2
               },
               "weight": 45,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": [],
+              "cloutEffect": 7
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -2,
+          "politicalRequirement": {
+            "minClout": 45
+          },
           "segmentOverrides": {
-            "youngAdults": 3,
+            "orthodox": -2,
             "reform": 2,
             "unaffiliated": 2,
-            "orthodox": -2,
+            "youngAdults": 3,
             "olderAdults": -1
-          }
+          },
+          "cloutCost": 10,
+          "israelLean": -3
         },
         {
           "id": "c1",
           "text": "Quietly accept the amendment. A flawed bill that passes is better than a perfect bill that dies. You can work to amend it later.",
           "missionAligned": [
+            "antisemitism_left",
             "israel_security"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [
+            "israel_peace",
             "social_justice"
           ],
-          "politicalLean": 3,
           "outcomes": [
             {
-              "text": "The bill passes with the amendment. Pro-Israel groups celebrate. The Democrat calls you a 'sellout' on MSNBC. Your progressive credibility is badly damaged. Amending the bill 'later' proves impossible.",
+              "text": "The bill passes with the amendment. Pro-Israel groups celebrate. The Democrat calls you a \"sellout\" on MSNBC. Your progressive credibility is badly damaged. Amending the bill \"later\" proves impossible.",
               "effects": {
                 "trust": -3,
-                "donors": 3,
-                "morale": -2
+                "morale": -2,
+                "donors": 3
               },
               "weight": 100,
+              "contextNote": "\"We'll fix it later\" is the most expensive lie in politics.",
               "conditions": [],
-              "contextNote": "'We'll fix it later' is the most expensive lie in politics.",
-              "budgetEffect": 0
+              "cloutEffect": -3
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 3,
           "segmentOverrides": {
             "orthodox": 3,
-            "olderAdults": 2,
-            "youngAdults": -4,
+            "reform": -2,
             "unaffiliated": -3,
-            "reform": -2
-          }
+            "youngAdults": -4,
+            "olderAdults": 2
+          },
+          "israelLean": 4
         },
         {
           "id": "c2",
@@ -9104,7 +9126,6 @@ const GAME_DATA = {
             "antisemitism_all",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9114,10 +9135,10 @@ const GAME_DATA = {
                 "morale": -2,
                 "donors": -1
               },
-              "weight": 60,
-              "conditions": [],
+              "weight": 40,
               "contextNote": "",
-              "budgetEffect": -1
+              "conditions": [],
+              "cloutEffect": -5
             },
             {
               "text": "Both agree to a two-week delay. You spend 14 brutal days negotiating. The final compromise isn't perfect, but both co-sponsors stay on. The bill passes with genuine bipartisan support.",
@@ -9126,17 +9147,23 @@ const GAME_DATA = {
                 "morale": 2,
                 "donors": 1
               },
-              "weight": 40,
-              "conditions": [],
+              "weight": 60,
               "contextNote": "",
-              "budgetEffect": -4
+              "conditions": [],
+              "cloutEffect": 5
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "politicalRequirement": {
+            "minClout": 25
+          },
           "segmentOverrides": {
             "conservative_denom": 2,
             "reform": 1,
             "olderAdults": 1
-          }
+          },
+          "cloutCost": 7
         },
         {
           "id": "c3",
@@ -9145,51 +9172,55 @@ const GAME_DATA = {
             "antisemitism_all",
             "diaspora_unity"
           ],
-          "requiresUnlock": "political_option",
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The side deal works. The Republican gets his Israel resolution (symbolic, but he can fundraise off it). The amendment is withdrawn. The original bipartisan bill passes cleanly. Pure political craft saved eight months of work.",
+              "text": "The side deal works. The Republican gets a symbolic Israel resolution to fundraise off. The amendment is withdrawn. The original bipartisan bill passes cleanly. Pure political craft saved eight months of work.",
               "effects": {
                 "trust": 5,
                 "morale": 4,
                 "donors": 3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your political instincts saved the bill and kept both sides at the table.",
-              "budgetEffect": -3
+              "conditions": [],
+              "cloutEffect": 10
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 2,
           "segmentOverrides": {
+            "orthodox": 1,
             "conservative_denom": 3,
             "reform": 3,
-            "olderAdults": 2,
             "youngAdults": 2,
-            "orthodox": 1
-          }
+            "olderAdults": 2
+          },
+          "requiresUnlock": "political_operator",
+          "israelLean": 3
         }
       ]
     },
     {
       "id": "center_enabling_accusation",
       "tag": "Media",
-      "title": "The 'Enabler' Profile",
-      "body": "A national Jewish magazine has published a long profile of your organization titled 'The Radical Center: How Centrism Enables Extremism.' The piece argues that your refusal to take sides on Israel, antisemitism definitions, and political alliances 'gives cover to both far-left antisemites and far-right nationalists.' It quotes unnamed board members, former staff, and rival org leaders. It's going viral. Your phone hasn't stopped ringing.",
+      "title": "The \"Enabler\" Profile",
+      "body": "A national magazine has published a long profile of your organization titled \"The Radical Center: How Centrism Enables Extremism.\" The piece argues that your refusal to take sides on Israel, antisemitism definitions, and political alliances \"gives cover to both far-left antisemites and far-right nationalists.\" It quotes unnamed board members, former staff, and rival org leaders. It's going viral. Your phone hasn't stopped ringing.",
       "applicableOrgs": [
         "center"
       ],
       "categories": [
-        "centrist"
+        "apolitical"
       ],
       "orgLevel": "both",
-      "complexity": 3,
+      "complexity": 5,
       "highStakes": true,
-      "communityConsensus": 0.3,
+      "communityConsensus": 0.25,
       "advisorQuotes": [
         {
           "advisorId": "media_strategist",
           "text": "Never punch down at a magazine piece. It lives for two days unless you extend its life by responding. Let it die.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "trust": 2
@@ -9199,6 +9230,7 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "The unnamed board member quotes are what worry me. Someone on our own board is feeding this narrative. That's an internal problem.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "donors": 2
@@ -9209,76 +9241,80 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Write a forceful op-ed rebuttal defending centrism as a philosophy of conviction, not cowardice — with specific examples of what your approach has actually accomplished.",
+          "text": "Write a forceful statement defending your attempt to stay out of political debates as a philosophy of conviction, not cowardice — with specific examples of what your approach has actually accomplished.",
           "missionAligned": [
+            "antisemitism_all",
+            "jewish_identity",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "Your rebuttal is published in the same magazine. It's passionate and well-argued. It extends the story's life by a week but shifts the narrative. Several prominent moderates share it as 'the best defense of Jewish centrism I've read.'",
+              "text": "Your rebuttal is published in the same magazine. It's passionate and well-argued. It extends the story's life by a week but shifts the narrative. Several prominent moderates share it as 'the best defense of Jewish centrism I've read.\"",
               "effects": {
                 "trust": 3,
                 "morale": 3,
                 "donors": 1
               },
               "weight": 55,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -1
+              "conditions": [],
+              "cloutEffect": 5
             },
             {
-              "text": "Your rebuttal is seen as defensive and thin-skinned. The journalist tweets 'they proved my point' with a link to your piece. The story now has legs for another two weeks.",
+              "text": "Your rebuttal is seen as defensive and thin-skinned. The journalist who wrote the original piece tweets \"they proved my point\" with a link to your piece. The story now has legs for another two weeks.",
               "effects": {
-                "trust": -2,
-                "morale": -1,
-                "donors": -1
+                "trust": -4,
+                "morale": -3,
+                "donors": -2
               },
               "weight": 45,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -1
+              "conditions": [],
+              "cloutEffect": -5
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "conservative_denom": 2,
-            "olderAdults": 2,
-            "reform": 1
+            "reform": 1,
+            "olderAdults": 2
           }
         },
         {
           "id": "c1",
-          "text": "Ignore the article publicly but address the internal leak. Hold a board meeting to discuss the unnamed quotes and reaffirm organizational unity.",
+          "text": "Ignore the article publicly but address the internal leaks. Hold a board meeting to discuss the unnamed quotes and reaffirm organizational unity.",
           "missionAligned": [],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The board meeting is tense. Two members admit to speaking with the journalist 'off the record.' One resigns. The internal bleeding stops but the article's narrative goes unchallenged publicly.",
+              "text": "The board meeting is tense. Two members admit to speaking with the journalist \"off the record.\" One resigns. The internal bleeding stops but the article's narrative goes unchallenged publicly.",
               "effects": {
-                "trust": -1,
-                "morale": 1,
-                "donors": 0
+                "trust": -4,
+                "morale": -1,
+                "donors": -4
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": [],
+              "cloutEffect": -5
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "olderAdults": 1,
-            "conservative_denom": 1
+            "conservative_denom": 1,
+            "olderAdults": 1
           }
         },
         {
           "id": "c2",
-          "text": "Don't respond to the article at all. Focus your energy on a public initiative that demonstrates the value of centrism through action rather than argument.",
+          "text": "Don't respond to the article at all. Focus your energy on a public initiative that demonstrates the value of your work through action rather than argument.",
           "missionAligned": [
-            "antisemitism_all"
+            "antisemitism_all",
+            "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9289,47 +9325,50 @@ const GAME_DATA = {
                 "donors": 1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "The best response to criticism is often just doing good work.",
-              "budgetEffect": -6
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "reform": 1,
             "conservative_denom": 1,
+            "reform": 1,
             "youngAdults": 1,
             "olderAdults": 1
           }
         },
         {
           "id": "c3",
-          "text": "Reach out to the journalist privately. Offer exclusive access to your next major initiative in exchange for a follow-up piece that shows centrism in action. Turn a critic into an embedded reporter.",
+          "text": "Reach out to the journalist privately. Offer exclusive access to your next major initiative in exchange for a follow-up piece that shows your organization in action. Turn a critic into an embedded reporter.",
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "press_option",
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The journalist agrees. Her follow-up piece — 'Inside the Centrist Experiment' — is nuanced and ultimately sympathetic. She sees the compromises up close and writes about them with respect. The two pieces together tell a fuller story.",
               "effects": {
-                "trust": 4,
-                "morale": 3,
-                "donors": 2
+                "trust": 5,
+                "morale": 4,
+                "donors": 3
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your media instincts turned a hit piece into a long-form profile.",
-              "budgetEffect": -2
+              "conditions": [],
+              "cloutEffect": 5
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "reform": 2,
             "conservative_denom": 2,
+            "reform": 2,
+            "unaffiliated": 1,
             "youngAdults": 2,
-            "olderAdults": 2,
-            "unaffiliated": 1
-          }
+            "olderAdults": 2
+          },
+          "requiresUnlock": "media_savvy"
         }
       ]
     },
@@ -9342,7 +9381,7 @@ const GAME_DATA = {
         "jcc"
       ],
       "categories": [
-        "all"
+        "apolitical"
       ],
       "orgLevel": "both",
       "complexity": 4,
@@ -9352,6 +9391,7 @@ const GAME_DATA = {
         {
           "advisorId": "board_chair",
           "text": "The flag has been there for 37 years. Every JCC in America has one. Removing it would make national news — and not the kind we want.",
+          "mood": "neutral",
           "recommendsChoice": 2,
           "effectModifier": {
             "donors": 2
@@ -9361,13 +9401,15 @@ const GAME_DATA = {
         {
           "advisorId": "program_dir",
           "text": "I have three preschool families who've told me they're not re-enrolling because of this. That's $45,000 in tuition.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         },
         {
           "advisorId": "rabbi_scholar",
           "text": "A JCC is a beit am — a house of the people. ALL the people. The question isn't whether you love Israel. The question is whether every Jew who walks through your doors feels welcome.",
+          "mood": "neutral",
           "recommendsChoice": 1,
           "effectModifier": {
             "trust": 2
@@ -9379,71 +9421,63 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Remove the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, it needs to go.",
-          "missionAligned": [
-            "community_hub"
-          ],
-          "requiresUnlock": null,
+          "missionAligned": [],
           "missionOpposed": [
             "israel_security",
             "jewish_identity"
           ],
-          "politicalLean": -4,
           "outcomes": [
             {
               "text": "The flag comes down. National Jewish media covers it. Your JCC is called 'anti-Israel' by pro-Israel groups and praised as 'brave' by progressives. 40 older members cancel. 15 younger families join. The net is negative — for now.",
               "effects": {
                 "trust": -3,
-                "donors": -4,
-                "morale": 2
+                "morale": 2,
+                "donors": -4
               },
               "weight": 60,
-              "conditions": [],
               "contextNote": "The story is picked up by a conservative news outlet and goes national.",
-              "budgetEffect": -5
+              "conditions": []
             },
             {
               "text": "Removing the flag sparks a broader conversation. Other JCCs call asking how you handled it. Within six months, your preschool enrollment is up 20%. The young families who joined become your most engaged members.",
               "effects": {
                 "trust": 1,
-                "donors": -2,
-                "morale": 3
+                "morale": 3,
+                "donors": -2
               },
               "weight": 40,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -4,
           "segmentOverrides": {
-            "youngAdults": 4,
-            "unaffiliated": 3,
             "orthodox": -6,
-            "olderAdults": -5,
-            "conservative_denom": -3
+            "conservative_denom": -3,
+            "unaffiliated": 3,
+            "youngAdults": 4,
+            "olderAdults": -5
           }
         },
         {
           "id": "c1",
           "text": "Create a new 'identity wall' in the lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
           "missionAligned": [
-            "community_hub",
             "jewish_identity",
             "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The identity wall becomes a talking point — some love it, others see it as a dodge. But the petition energy dissipates. Both sides claim partial victory. Your preschool families stay.",
               "effects": {
                 "trust": 3,
-                "morale": 3,
-                "donors": 0
+                "morale": 3
               },
               "weight": 70,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -4
+              "conditions": []
             },
             {
               "text": "Hardliners on both sides hate the compromise. The counter-petition group says you 'demoted' the Israeli flag. The original petitioners say you 'surrounded it with distractions.' But most members appreciate the effort.",
@@ -9453,17 +9487,18 @@ const GAME_DATA = {
                 "donors": -1
               },
               "weight": 30,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -4
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "reform": 3,
             "conservative_denom": 2,
+            "reform": 3,
+            "unaffiliated": 1,
             "youngAdults": 1,
-            "olderAdults": 1,
-            "unaffiliated": 1
+            "olderAdults": 1
           }
         },
         {
@@ -9473,42 +9508,37 @@ const GAME_DATA = {
             "israel_security",
             "jewish_identity"
           ],
-          "requiresUnlock": null,
-          "missionOpposed": [
-            "community_hub"
-          ],
-          "politicalLean": 3,
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The older members are relieved. The younger petitioners feel unheard. Three preschool families leave for a secular alternative. A local blog writes about the JCC being 'stuck in the past.'",
               "effects": {
                 "trust": -1,
-                "donors": 2,
-                "morale": -1
+                "morale": -1,
+                "donors": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -2
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 3,
           "segmentOverrides": {
             "orthodox": 4,
-            "olderAdults": 4,
             "conservative_denom": 2,
-            "youngAdults": -4,
+            "reform": -2,
             "unaffiliated": -3,
-            "reform": -2
+            "youngAdults": -4,
+            "olderAdults": 4
           }
         },
         {
           "id": "c3",
           "text": "Address the community directly — hold a moderated town hall on what the flag means, what the JCC means, and what it means to be a pluralistic Jewish space. Let the community decide together, using your staff support skills to hold the room.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "staff_support_option",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9519,18 +9549,19 @@ const GAME_DATA = {
                 "donors": 2
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your experience managing difficult group dynamics turned a potential disaster into community building.",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "reform": 3,
+            "orthodox": 1,
             "conservative_denom": 2,
-            "youngAdults": 3,
-            "olderAdults": 2,
+            "reform": 3,
             "unaffiliated": 2,
-            "orthodox": 1
+            "youngAdults": 3,
+            "olderAdults": 2
           }
         }
       ]
@@ -9544,7 +9575,7 @@ const GAME_DATA = {
         "jcc"
       ],
       "categories": [
-        "all"
+        "apolitical"
       ],
       "orgLevel": "both",
       "complexity": 4,
@@ -9554,6 +9585,7 @@ const GAME_DATA = {
         {
           "advisorId": "program_dir",
           "text": "These LGBTQ families are some of our most active members. If we cancel this, we're telling them they don't belong here.",
+          "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
             "morale": 3
@@ -9563,8 +9595,9 @@ const GAME_DATA = {
         {
           "advisorId": "dev_director",
           "text": "The Orthodox families aren't just members — two of them are significant donors. And word will spread to their community fast.",
+          "mood": "neutral",
           "recommendsChoice": null,
-          "effectModifier": null,
+          "effectModifier": {},
           "explicit": false
         }
       ],
@@ -9573,12 +9606,9 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Proceed with all planned Pride programming. A JCC that serves all Jews means ALL Jews, including LGBTQ families.",
           "missionAligned": [
-            "community_hub",
             "social_justice"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
-          "politicalLean": -3,
           "outcomes": [
             {
               "text": "Pride Month is a hit. Attendance is strong. The LGBTQ families are thrilled and several new members join specifically because of the programming. The three Orthodox families leave. The Orthodox community whispers that your JCC isn't for them.",
@@ -9588,9 +9618,8 @@ const GAME_DATA = {
                 "donors": -2
               },
               "weight": 65,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             },
             {
               "text": "The story makes the local paper. Conservative commentators call it 'another institution captured by the radical left.' Your membership numbers are a wash — gains offset by losses — but the controversy exhausts your staff.",
@@ -9600,27 +9629,25 @@ const GAME_DATA = {
                 "donors": -1
               },
               "weight": 35,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": -3,
           "segmentOverrides": {
-            "youngAdults": 4,
-            "unaffiliated": 3,
-            "reform": 3,
             "orthodox": -5,
-            "olderAdults": -1,
-            "conservative_denom": -2
+            "conservative_denom": -2,
+            "reform": 3,
+            "unaffiliated": 3,
+            "youngAdults": 4,
+            "olderAdults": -1
           }
         },
         {
           "id": "c1",
           "text": "Scale back the most visible elements. Keep the film screening and support groups but cancel the drag story hour and reduce the decorations. Frame it as 'appropriate for all our families.'",
-          "missionAligned": [
-            "community_hub"
-          ],
-          "requiresUnlock": null,
+          "missionAligned": [],
           "missionOpposed": [
             "social_justice"
           ],
@@ -9633,60 +9660,57 @@ const GAME_DATA = {
                 "donors": 1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "",
-              "budgetEffect": 0
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 2,
-            "olderAdults": 1,
-            "youngAdults": -3,
+            "reform": -2,
             "unaffiliated": -3,
-            "reform": -2
+            "youngAdults": -3,
+            "olderAdults": 1
           }
         },
         {
           "id": "c2",
           "text": "Proceed with programming but add complementary events: a 'Torah and Identity' series, a traditional family Shabbat, and other content that signals the JCC serves the full spectrum of Jewish life.",
           "missionAligned": [
-            "community_hub",
-            "diaspora_unity",
-            "jewish_identity"
+            "jewish_identity",
+            "diaspora_unity"
           ],
-          "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
             {
               "text": "The expanded calendar satisfies most members. Pride programming happens alongside traditional programming. One Orthodox family stays; two leave but say they 'appreciate the effort.' Your schedule is brutal — your staff is stretched incredibly thin.",
               "effects": {
                 "trust": 3,
-                "morale": -1,
-                "donors": 0
+                "morale": -1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Pluralism is exhausting to administer.",
-              "budgetEffect": -7
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
-            "reform": 2,
-            "conservative_denom": 2,
-            "youngAdults": 1,
             "orthodox": 1,
-            "olderAdults": 1,
-            "unaffiliated": 1
+            "conservative_denom": 2,
+            "reform": 2,
+            "unaffiliated": 1,
+            "youngAdults": 1,
+            "olderAdults": 1
           }
         },
         {
           "id": "c3",
           "text": "Before the board meeting, personally reach out to the Orthodox families — not to negotiate, but to listen. Acknowledge their discomfort while explaining why the JCC must be inclusive. Your empathy skills might keep them in the building.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
-          "requiresUnlock": "staff_support_option",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9697,18 +9721,19 @@ const GAME_DATA = {
                 "donors": 1
               },
               "weight": 100,
-              "conditions": [],
               "contextNote": "Your burnout survivor's empathy did what policy memos couldn't.",
-              "budgetEffect": -3
+              "conditions": []
             }
           ],
+          "budgetCost": 0,
+          "politicalLean": 0,
           "segmentOverrides": {
             "orthodox": 2,
-            "reform": 3,
-            "youngAdults": 3,
             "conservative_denom": 2,
-            "olderAdults": 1,
-            "unaffiliated": 2
+            "reform": 3,
+            "unaffiliated": 2,
+            "youngAdults": 3,
+            "olderAdults": 1
           }
         }
       ]

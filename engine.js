@@ -64,7 +64,6 @@ let G = {
   // Advisor system
   selectedAdvisors: [],
   advisorBonusLog: [],
-  currentAdvisorBonusMultiplier: 1.0,
   notableMoments: [],
   advisorChoiceLog: [],
   investmentsFrozen: false,
@@ -86,7 +85,6 @@ if (!GAME_DATA.advisorPool && GAME_DATA.advisors) {
   });
 }
 if (!GAME_DATA.config.advisorSlots) GAME_DATA.config.advisorSlots = 3;
-if (!GAME_DATA.config.advisorBonusStacking) GAME_DATA.config.advisorBonusStacking = 'best';
 if (!GAME_DATA.conversations) GAME_DATA.conversations = [];
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1264,7 +1262,6 @@ function startGame(){
   G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[]; G.promotionLevel=0;
   G.inboxMessages=[]; G.coalitionStrikes={};
   G.advisorBonusLog = [];
-  G.currentAdvisorBonusMultiplier = 1.0;
   // Initialize in-game budget (separate from priority allocation)
   var bc = GAME_DATA.config.budgetConfig || {};
   var orgBudgetOverrides = org.budgetOverrides || {};
@@ -1932,8 +1929,6 @@ function renderScenario(s){
   // Auto-infer political lean for choices
   valid.forEach(function(c){ inferPoliticalLean(c, s); });
   const advisorHtml = renderAdvisorQuotes(s);
-  // Reset advisor bonus multiplier for new scenario
-  G.currentAdvisorBonusMultiplier = 1.0;
   document.getElementById('game-inner').innerHTML=`
     <div class="event-card">
       <span class="event-tag">${s.tag}</span>
@@ -2045,9 +2040,6 @@ function chooseScenario(sid,idx){
     advisorContextNote = advisorBonus.explanation || '';
     G.advisorBonusLog.push({scenarioId: s.id, choiceIndex: idx, effects: advisorBonus.effects});
   }
-  // Reset advisor bonus multiplier after use
-  G.currentAdvisorBonusMultiplier = 1.0;
-
   // Log advisor recommendations for end-screen
   if (!G.advisorChoiceLog) G.advisorChoiceLog = [];
   var scenarioQuotes = s.advisorQuotes || [];
@@ -2216,7 +2208,6 @@ function chooseInbox(sid,idx){
     advisorContextNote = advisorBonus.explanation || '';
     G.advisorBonusLog.push({scenarioId: s.id, choiceIndex: idx, effects: advisorBonus.effects});
   }
-  G.currentAdvisorBonusMultiplier = 1.0;
 
   // Log advisor recommendations for end-screen
   if (!G.advisorChoiceLog) G.advisorChoiceLog = [];
@@ -3526,11 +3517,9 @@ function getAdvisorBonus(scenario, choiceIndex) {
       return currTotal > prevTotal ? curr : prev;
     });
     var adv = pool.find(function(a){return a.id === best.advisorId});
-    // Apply advisor conversation multiplier
-    var multiplier = G.currentAdvisorBonusMultiplier || 1.0;
     var modifiedEffect = {};
     Object.entries(best.effectModifier).forEach(function(e) {
-      modifiedEffect[e[0]] = Math.round(e[1] * multiplier);
+      modifiedEffect[e[0]] = e[1];
     });
     var chips = Object.entries(modifiedEffect).map(function(e) {
       var sign = e[1] > 0 ? '+' : '';
@@ -3548,10 +3537,9 @@ function getAdvisorBonus(scenario, choiceIndex) {
   } else {
     // Stack all
     var combined = {};
-    var multiplier = G.currentAdvisorBonusMultiplier || 1.0;
     matching.forEach(function(q) {
       Object.entries(q.effectModifier).forEach(function(e) {
-        combined[e[0]] = (combined[e[0]] || 0) + Math.round(e[1] * multiplier);
+        combined[e[0]] = (combined[e[0]] || 0) + e[1];
       });
     });
     var chipParts = [];
@@ -3824,11 +3812,6 @@ function resolveConversation() {
   }
   // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
 
-  // For advisor conversations, store the multiplier
-  if (conv.type === 'advisor' && outcome.modifiesAdvisorBonus !== undefined) {
-    G.currentAdvisorBonusMultiplier = outcome.modifiesAdvisorBonus;
-  }
-  
   updateHUD();
 }
 
@@ -4402,7 +4385,6 @@ function pickBreakingChoice(ci) {
     advisorContextNote = advisorBonus.explanation || '';
     G.advisorBonusLog.push({scenarioId: bn.id, choiceIndex: ci, effects: advisorBonus.effects});
   }
-  G.currentAdvisorBonusMultiplier = 1.0;
 
   // Log advisor recommendations for end-screen
   if (!G.advisorChoiceLog) G.advisorChoiceLog = [];

@@ -21707,9 +21707,51 @@ function getCM() {
   return GD.config.coachingMessages;
 }
 
+// Restore any popupMessage/coachingMessage entries that are missing
+// or empty in the user's cache, pulling fresh content from defaults.
+// Called on every populateTooltips() so empty fields auto-recover.
+function ensureTooltipDefaults() {
+  if(!DEFAULT_GD || !DEFAULT_GD.config) return;
+  var pm = getPM();
+  var cm = getCM();
+  var defPM = DEFAULT_GD.config.popupMessages || {};
+  var defCM = DEFAULT_GD.config.coachingMessages || {};
+  function isEmpty(v) {
+    if(v === undefined || v === null) return true;
+    if(typeof v === 'string' && v.trim() === '') return true;
+    if(Array.isArray(v) && v.length === 0) return true;
+    return false;
+  }
+  // popupMessages: backfill any missing/empty top-level keys
+  Object.keys(defPM).forEach(function(k) {
+    if(isEmpty(pm[k])) {
+      pm[k] = JSON.parse(JSON.stringify(defPM[k]));
+    } else if(Array.isArray(defPM[k]) && Array.isArray(pm[k])) {
+      // For arrays of objects (e.g., onboarding), backfill any entries
+      // that are missing required fields like msg.
+      var allEmpty = pm[k].every(function(item) {
+        if(!item || typeof item !== 'object') return true;
+        return isEmpty(item.msg);
+      });
+      if(allEmpty) pm[k] = JSON.parse(JSON.stringify(defPM[k]));
+    }
+  });
+  // coachingMessages: backfill any missing/empty pools
+  Object.keys(defCM).forEach(function(k) {
+    if(isEmpty(cm[k])) {
+      cm[k] = JSON.parse(JSON.stringify(defCM[k]));
+    } else if(Array.isArray(cm[k])) {
+      // If every variant is an empty string, restore defaults
+      var allBlank = cm[k].every(function(v){ return isEmpty(v); });
+      if(allBlank) cm[k] = JSON.parse(JSON.stringify(defCM[k]));
+    }
+  });
+}
+
 function populateTooltips() {
   var list = document.getElementById('tooltips-list');
   if (!list) return;
+  ensureTooltipDefaults();
   var pm = getPM();
   var cm = getCM();
   var html = '';

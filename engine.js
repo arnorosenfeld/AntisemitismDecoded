@@ -2094,10 +2094,10 @@ function chooseScenario(sid,idx){
 
   // Political outcome flavor text (only for political scenarios)
 
-  // Apply budgetEffect from outcome
+  // Apply budgetEffect from outcome (positive or negative)
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
-  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
+  else if(obfx < 0) { G.budget += obfx; budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
 
@@ -2261,10 +2261,10 @@ function chooseInbox(sid,idx){
   inferPoliticalLean(c, s);
   var polChips = applyPoliticalEffects(c, outcome);
 
-  // Apply budgetEffect from outcome
+  // Apply budgetEffect from outcome (positive or negative)
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
-  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
+  else if(obfx < 0) { G.budget += obfx; budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
 
@@ -4462,10 +4462,10 @@ function pickBreakingChoice(ci) {
   // Apply political lean/clout
   inferPoliticalLean(choice, bn);
   var polChips = applyPoliticalEffects(choice, outcome);
-  // Apply budgetEffect from outcome
+  // Apply budgetEffect from outcome (positive or negative)
   var obfx = outcome.budgetEffect || 0;
   if(obfx > 0) { G.budget += obfx; G.budgetIncomeThisYear += obfx; budgetChip += '<span class="chip chip-pos">+' + obfx + ' Gelt</span>'; }
-  // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
+  else if(obfx < 0) { G.budget += obfx; budgetChip += '<span class="chip chip-neg">' + obfx + ' Gelt</span>'; }
   if(G.budget < 0) G.budget = 0;
   if(G.budget > G.budgetMax) G.budgetMax = G.budget;
   recordEvent('choiceMade', {scenarioId:bn.id, choiceIndex:ci});

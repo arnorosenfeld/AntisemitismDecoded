@@ -21658,19 +21658,29 @@ var TOOLTIP_SECTIONS = [
 ];
 
 function backfillMissingConfig() {
-  // Ensure GD has every config key that DEFAULT_GD has, without
-  // overwriting non-empty user values. Empty strings, empty arrays,
-  // and undefined values all get backfilled — this handles cases
-  // where stale caches saved empty fields before defaults were synced.
+  // Ensure GD has every key that DEFAULT_GD has, without overwriting
+  // non-empty user values. Empty strings, empty arrays, and
+  // undefined/null values all get backfilled — this handles caches
+  // that saved empty fields, lost arrays, or missed new sub-keys
+  // when defaults were updated.
   if(!GD || !DEFAULT_GD) return;
-  if(!GD.config) GD.config = {};
-  var defaultConfig = DEFAULT_GD.config || {};
   function isEmpty(v) {
     if(v === undefined || v === null) return true;
     if(typeof v === 'string' && v === '') return true;
     if(Array.isArray(v) && v.length === 0) return true;
     return false;
   }
+  // Backfill top-level keys (scenarios, inboxScenarios, conversations,
+  // breakingNews, etc.) so users with stale or corrupted caches recover
+  // their content automatically.
+  Object.keys(DEFAULT_GD).forEach(function(key) {
+    if(isEmpty(GD[key])) {
+      GD[key] = JSON.parse(JSON.stringify(DEFAULT_GD[key]));
+    }
+  });
+  // Backfill config sub-keys (popupMessages.onboarding, etc.)
+  if(!GD.config) GD.config = {};
+  var defaultConfig = DEFAULT_GD.config || {};
   Object.keys(defaultConfig).forEach(function(key) {
     if(isEmpty(GD.config[key])) {
       GD.config[key] = JSON.parse(JSON.stringify(defaultConfig[key]));

@@ -220,8 +220,8 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 /* ── MISSION ALIGNMENT SECTION ── */
 .mission-align-section{margin-bottom:12px}
 .mission-align-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 6px}
-.mission-align-row:nth-child(even){background:#f5f4f0}
-.mission-align-row span{width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mission-align-row:nth-child(even){background:#e8e6df}
+.mission-align-row span{width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mission-align-row select{font-size:11px;padding:4px 8px;border:1px solid var(--border);background:var(--white)}
 
 /* ── CONVERSATION NODE ── */
@@ -555,9 +555,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
               </div>
             </details>
             <div class="seg-config-grid" id="segments-config-grid"></div>
-            <div style="margin-top:14px;display:flex;gap:8px">
+            <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
               <button class="btn btn-primary" onclick="saveSegments()">Save Segment Config</button>
-              <button class="add-btn" onclick="addSegment()">+ Add Segment</button>
+              <button class="add-btn" style="width:auto" onclick="addSegment()">+ Add Segment</button>
               <button class="btn btn-sm" style="margin-left:auto;color:var(--muted);border:1px solid var(--border);background:none" onclick="resetSegmentsToDefaults()">Reset to Defaults</button>
             </div>
           </div>

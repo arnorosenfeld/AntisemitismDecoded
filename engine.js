@@ -407,6 +407,13 @@ function scenarioApplies(scenario) {
   const orgLvl = org.orgLevel || (GAME_DATA.nationalOrganizations.find(o=>o.id===G.orgId) ? 'national' : 'local');
   if (level !== 'both' && level !== orgLvl) return false;
   
+  // Check political range
+  if (scenario.politicalRange) {
+    var pos = G.politicalPosition;
+    if (scenario.politicalRange.min != null && pos < scenario.politicalRange.min) return false;
+    if (scenario.politicalRange.max != null && pos > scenario.politicalRange.max) return false;
+  }
+
   // Check categories
   const cats = scenario.categories || ['all'];
   if (cats.includes('all')) return true;
@@ -1889,6 +1896,14 @@ function deskAction(channel) {
   if (!sc) { renderMain(); return; }
 
   G.usedScenarioIds.push(sc.id);
+  // Group exclusivity: mark all other variants in the same group as used
+  if (sc.groupId) {
+    GAME_DATA.scenarios.forEach(function(s) {
+      if (s.groupId === sc.groupId && s.id !== sc.id && !G.usedScenarioIds.includes(s.id)) {
+        G.usedScenarioIds.push(s.id);
+      }
+    });
+  }
   G.history.push('Round ' + G.round + ' — Desk: ' + channel);
 
   // Check for breaking news BEFORE normal scenario
@@ -1918,7 +1933,11 @@ function processQueue(){
   const [type,id]=G.pendingQueue.shift().split(':');
   if(type==='scenario'){
     const s=GAME_DATA.scenarios.find(x=>x.id===id);
-    if(s){G.usedScenarioIds.push(s.id);renderScenario(s);return;}
+    if(s){
+      G.usedScenarioIds.push(s.id);
+      if(s.groupId){GAME_DATA.scenarios.forEach(function(x){if(x.groupId===s.groupId&&x.id!==s.id&&!G.usedScenarioIds.includes(x.id))G.usedScenarioIds.push(x.id);});}
+      renderScenario(s);return;
+    }
   }
   processQueue();
 }

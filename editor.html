@@ -217,6 +217,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 .pol-impact-box.active{border-color:var(--gold);background:#f8f6ff}
 .pol-impact-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer}
 
+/* ── SCENARIO GROUPS ── */
+.scenario-group{border-left:3px solid #6366f1;margin-bottom:16px;padding-left:12px}
+.scenario-group-header{font-family:'Merriweather Sans',sans-serif;font-size:12px;font-weight:700;color:#6366f1;letter-spacing:1px;text-transform:uppercase;padding:6px 0;margin-bottom:4px}
 /* ── MISSION ALIGNMENT SECTION ── */
 .mission-align-section{margin-bottom:12px}
 .mission-align-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 6px}
@@ -522,7 +525,33 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- SCENARIOS PANEL -->
         <div id="panel-scenarios" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Scenarios are the main event cards triggered by player actions. Each choice has three-tier mission alignment (aligned/opposed/neutral), and scenarios target political categories — the mission IDs for which that choice counts as aligned. If the list is empty, the choice is never mission-aligned.</p>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Scenarios are the main event cards triggered by player actions. Each choice has three-tier mission alignment (aligned/opposed/neutral), and scenarios target political categories — the mission IDs for which that choice counts as aligned. If the list is empty, the choice is never mission-aligned.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px;background:#f5f4f0;border:1px solid var(--border)">
+            <input type="text" id="sc-search" placeholder="Search by title or ID..." oninput="filterScenarios()" style="flex:1;min-width:160px;padding:6px 10px;font-size:12px;border:1px solid var(--border)" />
+            <select id="sc-filter-cat" onchange="filterScenarios()" style="font-size:11px;padding:5px">
+              <option value="">All Categories</option>
+              <option value="progressive">Progressive</option>
+              <option value="centrist">Centrist</option>
+              <option value="conservative">Conservative</option>
+              <option value="apolitical">Apolitical</option>
+            </select>
+            <select id="sc-filter-level" onchange="filterScenarios()" style="font-size:11px;padding:5px">
+              <option value="">All Levels</option>
+              <option value="local">Local</option>
+              <option value="national">National</option>
+              <option value="both">Both</option>
+            </select>
+            <select id="sc-filter-cplx" onchange="filterScenarios()" style="font-size:11px;padding:5px">
+              <option value="">All Complexity</option>
+              <option value="1">★1</option><option value="2">★2</option><option value="3">★3</option><option value="4">★4</option><option value="5">★5</option>
+            </select>
+            <select id="sc-filter-group" onchange="filterScenarios()" style="font-size:11px;padding:5px">
+              <option value="">All (Grouped & Standalone)</option>
+              <option value="grouped">Grouped Only</option>
+              <option value="standalone">Standalone Only</option>
+            </select>
+            <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="checkbox" id="sc-view-grouped" onchange="populateScenarios()" /> Grouped View</label>
+          </div>
           <div class="item-list" id="scenarios-list"></div>
           <button class="add-btn" onclick="addScenario()">+ Add New Scenario</button>
         </div>
@@ -14047,16 +14076,101 @@ function addMission() {
 
 // ═══ SCENARIOS ═══ (#2,6,7: categories, 3-tier alignment, multi-outcomes, complexity)
 function populateScenarios() {
-  document.getElementById('scenarios-list').innerHTML = GD.scenarios.map((s,i) => renderScenarioCard(s,i,'sc') + renderScenarioForm(s,i,'sc')).join('');
+  var scenarios = GD.scenarios || [];
+  var grouped = document.getElementById('sc-view-grouped')?.checked;
+  var html = '';
+  if(grouped) {
+    // Collect groups
+    var groups = {};
+    var standalone = [];
+    scenarios.forEach(function(s, i) {
+      if(s.groupId) {
+        if(!groups[s.groupId]) groups[s.groupId] = [];
+        groups[s.groupId].push({s:s, i:i});
+      } else {
+        standalone.push({s:s, i:i});
+      }
+    });
+    // Render groups
+    Object.keys(groups).sort().forEach(function(gid) {
+      html += '<div class="scenario-group">';
+      html += '<div class="scenario-group-header">Group: '+esc(gid)+' <span style="font-weight:400;color:var(--muted)">('+groups[gid].length+' variants)</span></div>';
+      groups[gid].forEach(function(item) {
+        if(scenarioMatchesFilters(item.s)) {
+          html += renderScenarioCard(item.s, item.i, 'sc') + renderScenarioForm(item.s, item.i, 'sc');
+        }
+      });
+      html += '</div>';
+    });
+    // Render standalone
+    if(standalone.length) {
+      standalone.forEach(function(item) {
+        if(scenarioMatchesFilters(item.s)) {
+          html += renderScenarioCard(item.s, item.i, 'sc') + renderScenarioForm(item.s, item.i, 'sc');
+        }
+      });
+    }
+  } else {
+    scenarios.forEach(function(s, i) {
+      if(scenarioMatchesFilters(s)) {
+        html += renderScenarioCard(s, i, 'sc') + renderScenarioForm(s, i, 'sc');
+      }
+    });
+  }
+  document.getElementById('scenarios-list').innerHTML = html;
+}
+
+function scenarioMatchesFilters(s) {
+  var search = (document.getElementById('sc-search')?.value||'').toLowerCase();
+  if(search && !(s.title||'').toLowerCase().includes(search) && !(s.id||'').toLowerCase().includes(search)) return false;
+  var catFilter = document.getElementById('sc-filter-cat')?.value||'';
+  if(catFilter && !(s.categories||['all']).includes(catFilter)) return false;
+  var levelFilter = document.getElementById('sc-filter-level')?.value||'';
+  if(levelFilter && (s.orgLevel||'both') !== levelFilter) return false;
+  var cplxFilter = document.getElementById('sc-filter-cplx')?.value||'';
+  if(cplxFilter && (s.complexity||3) !== parseInt(cplxFilter)) return false;
+  var groupFilter = document.getElementById('sc-filter-group')?.value||'';
+  if(groupFilter === 'grouped' && !s.groupId) return false;
+  if(groupFilter === 'standalone' && s.groupId) return false;
+  return true;
+}
+
+function filterScenarios() {
+  populateScenarios();
+}
+
+function duplicateAsVariant(i, prefix) {
+  var list = prefix==='sc' ? GD.scenarios : GD.inboxScenarios;
+  var orig = list[i];
+  var copy = JSON.parse(JSON.stringify(orig));
+  copy.id = orig.id + '_variant_' + Date.now();
+  copy.title = (orig.title||'') + ' (variant)';
+  if(!copy.groupId) copy.groupId = 'group_' + orig.id;
+  // If original didn't have a groupId, set it now
+  if(!orig.groupId) { orig.groupId = copy.groupId; }
+  list.push(copy);
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  populateScenarios();
+  setStatus('Variant created — edit the new scenario\'s choices and political range.', 'success');
 }
 function renderScenarioCard(s, i, prefix) {
   const cats = (s.categories||['all']).join(', ');
   const cplx = s.complexity||3;
+  var badges = esc(s.tag||'') + ' · ' + cats + ' · ' + (s.orgLevel||'both') + ' · ★' + cplx + ' · ' + (s.choices||[]).length + ' choices';
+  if(s.groupId) badges += ' · <span style="color:#6366f1;font-weight:600">group: '+esc(s.groupId)+'</span>';
+  if(s.politicalRange) {
+    var pr = s.politicalRange;
+    badges += ' · <span style="color:#b45309">pol: '+(pr.min!=null?pr.min:'0')+'–'+(pr.max!=null?pr.max:'100')+'</span>';
+  }
   return `<div class="item-card" id="${prefix}-card-${i}" onclick="toggleEdit('${prefix}',${i})">
     <span class="expand-icon" id="${prefix}-exp-${i}">▸</span>
     <div class="item-card-info"><div class="item-card-name">${esc(s.title||s.subject||'Untitled')}</div>
-    <div class="item-card-desc">${esc(s.tag||'')} · ${cats} · ${s.orgLevel||'both'} · ★${cplx} · ${(s.choices||[]).length} choices</div></div>
-    <div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteScenario(${i},'${prefix}')">Delete</button></div>
+    <div style="font-family:monospace;font-size:10px;color:var(--muted);margin-bottom:2px">${esc(s.id||'')}</div>
+    <div class="item-card-desc">${badges}</div></div>
+    <div class="item-card-actions">
+      <button class="btn btn-sm" style="font-size:9px;padding:4px 8px;background:none;border:1px solid var(--border);color:var(--muted);margin-right:4px" onclick="event.stopPropagation();duplicateAsVariant(${i},'${prefix}')" title="Duplicate as variant">Duplicate</button>
+      <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteScenario(${i},'${prefix}')">Delete</button>
+    </div>
   </div>`;
 }
 function renderScenarioForm(s, i, prefix) {
@@ -14066,6 +14180,12 @@ function renderScenarioForm(s, i, prefix) {
     <div class="form-row three">
       <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Unique identifier — used in triggers, conversations, and coalition links</div></div>
       <div class="form-group"><label>Tag</label><input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label shown above the scenario (e.g., 'Crisis', 'Opportunity', 'Dilemma')</div></div>
+      <div class="form-group"><label>Variant Group</label><input id="${prefix}-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. bds_event" /><div class="form-hint">Scenarios with the same group ID are variants — only one from each group fires per game</div></div>
+    </div>
+    <div class="form-row three">
+      <div class="form-group"><label>Political Range Min</label><input type="number" id="${prefix}-polmin-${i}" value="${s.politicalRange?s.politicalRange.min:''}" placeholder="0" min="0" max="100" /><div class="form-hint">Min political position to see this scenario (blank = no minimum)</div></div>
+      <div class="form-group"><label>Political Range Max</label><input type="number" id="${prefix}-polmax-${i}" value="${s.politicalRange?s.politicalRange.max:''}" placeholder="100" min="0" max="100" /><div class="form-hint">Max political position to see this scenario (blank = no maximum)</div></div>
+      <div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Title</label><input id="${prefix}-title-${i}" value="${esc(s.title||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="${prefix}-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
@@ -14178,6 +14298,16 @@ function saveScenario(i, prefix) {
   const s = list[i];
   s.id = document.getElementById(prefix+'-id-'+i)?.value||s.id;
   s.tag = document.getElementById(prefix+'-tag-'+i)?.value||'';
+  // Group and political range
+  var groupVal = document.getElementById(prefix+'-group-'+i)?.value||'';
+  if(groupVal) s.groupId = groupVal; else delete s.groupId;
+  var polMinVal = document.getElementById(prefix+'-polmin-'+i)?.value;
+  var polMaxVal = document.getElementById(prefix+'-polmax-'+i)?.value;
+  if(polMinVal !== '' || polMaxVal !== '') {
+    s.politicalRange = {};
+    if(polMinVal !== '') s.politicalRange.min = parseInt(polMinVal);
+    if(polMaxVal !== '') s.politicalRange.max = parseInt(polMaxVal);
+  } else { delete s.politicalRange; }
   s.title = document.getElementById(prefix+'-title-'+i)?.value||s.title;
   s.body = document.getElementById(prefix+'-body-'+i)?.value||'';
   const allCats=['all','progressive','centrist','conservative','apolitical'];

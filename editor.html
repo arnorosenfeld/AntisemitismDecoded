@@ -827,7 +827,10 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <h3>Tooltips & Popup Messages</h3>
             <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Edit all in-game popup messages — onboarding tutorial, stat danger warnings, mission star alerts, gelt crisis, clout messages, and randomly-picked coaching messages. These are pulled directly from <code>config.popupMessages</code> and <code>config.coachingMessages</code> in data.json. Use placeholders like <code>{stat}</code>, <code>{value}</code>, <code>{amount}</code>, <code>{full}</code>, and <code>{threshold}</code> where supported.</p>
             <div id="tooltips-list"></div>
-            <div style="margin-top:14px"><button class="btn btn-primary" onclick="saveTooltips()">Save All Messages</button></div>
+            <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+              <button class="btn btn-primary" onclick="saveTooltips()">Save All Messages</button>
+              <button class="btn btn-sm" style="margin-left:auto;color:var(--muted);border:1px solid var(--border);background:none" onclick="resetTooltipsToDefaults()">Reset to Defaults</button>
+            </div>
           </div>
         </div>
 
@@ -21656,18 +21659,25 @@ var TOOLTIP_SECTIONS = [
 
 function backfillMissingConfig() {
   // Ensure GD has every config key that DEFAULT_GD has, without
-  // overwriting existing values. Used to gracefully upgrade cached
-  // GD when new config blocks are added.
+  // overwriting non-empty user values. Empty strings, empty arrays,
+  // and undefined values all get backfilled — this handles cases
+  // where stale caches saved empty fields before defaults were synced.
   if(!GD || !DEFAULT_GD) return;
   if(!GD.config) GD.config = {};
   var defaultConfig = DEFAULT_GD.config || {};
+  function isEmpty(v) {
+    if(v === undefined || v === null) return true;
+    if(typeof v === 'string' && v === '') return true;
+    if(Array.isArray(v) && v.length === 0) return true;
+    return false;
+  }
   Object.keys(defaultConfig).forEach(function(key) {
-    if(GD.config[key] === undefined || GD.config[key] === null) {
+    if(isEmpty(GD.config[key])) {
       GD.config[key] = JSON.parse(JSON.stringify(defaultConfig[key]));
     } else if(typeof defaultConfig[key] === 'object' && !Array.isArray(defaultConfig[key])) {
-      // Nested object — backfill missing sub-keys (e.g., popupMessages.geltCrisis)
+      // Nested object — backfill empty/missing sub-keys (e.g., popupMessages.geltCrisis)
       Object.keys(defaultConfig[key]).forEach(function(subKey) {
-        if(GD.config[key][subKey] === undefined) {
+        if(isEmpty(GD.config[key][subKey])) {
           GD.config[key][subKey] = JSON.parse(JSON.stringify(defaultConfig[key][subKey]));
         }
       });
@@ -21833,6 +21843,17 @@ function saveTooltips() {
   readCoachFromDOM();
   setDirty();
   setStatus('All popup messages saved.', 'success');
+}
+
+function resetTooltipsToDefaults() {
+  if(!confirm('Reset all popup messages and coaching messages to the built-in defaults? This will overwrite any local edits to these fields.')) return;
+  if(!DEFAULT_GD || !DEFAULT_GD.config) { alert('Defaults not available'); return; }
+  if(!GD.config) GD.config = {};
+  GD.config.popupMessages = JSON.parse(JSON.stringify(DEFAULT_GD.config.popupMessages || {}));
+  GD.config.coachingMessages = JSON.parse(JSON.stringify(DEFAULT_GD.config.coachingMessages || {}));
+  setDirty();
+  populateTooltips();
+  setStatus('Popup messages reset to defaults.', 'success');
 }
 
 </script>

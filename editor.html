@@ -219,8 +219,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
 /* ── MISSION ALIGNMENT SECTION ── */
 .mission-align-section{margin-bottom:12px}
-.mission-align-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0}
-.mission-align-row span{flex:1;min-width:0}
+.mission-align-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 6px}
+.mission-align-row:nth-child(even){background:#f5f4f0}
+.mission-align-row span{width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mission-align-row select{font-size:11px;padding:4px 8px;border:1px solid var(--border);background:var(--white)}
 
 /* ── CONVERSATION NODE ── */
@@ -557,6 +558,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div style="margin-top:14px;display:flex;gap:8px">
               <button class="btn btn-primary" onclick="saveSegments()">Save Segment Config</button>
               <button class="add-btn" onclick="addSegment()">+ Add Segment</button>
+              <button class="btn btn-sm" style="margin-left:auto;color:var(--muted);border:1px solid var(--border);background:none" onclick="resetSegmentsToDefaults()">Reset to Defaults</button>
             </div>
           </div>
         </div>
@@ -14068,7 +14070,7 @@ function renderScenarioForm(s, i, prefix) {
     <div class="form-group" style="margin-bottom:11px"><label>Title</label><input id="${prefix}-title-${i}" value="${esc(s.title||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="${prefix}-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
     <div class="form-row three">
-      <div class="form-group"><label>Categories</label><div class="form-hint">Political filters — scenario only appears for orgs matching these categories</div><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cat-${i}-${c}" ${cats.includes(c)?'checked':''} />${c}</label>`).join('')}</div></div>
+      <div class="form-group"><label>Categories</label><div class="form-hint">Political filters — scenario only appears for orgs matching these categories</div><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cat-${i}-${c}" ${cats.includes(c)?'checked':''} onchange="handleCatToggle('${prefix}-cat-${i}','${c}')" />${c}</label>`).join('')}</div></div>
       <div class="form-group"><label>Org Level</label><select id="${prefix}-lvl-${i}"><option value="both" ${(s.orgLevel||'both')==='both'?'selected':''}>Both</option><option value="local" ${s.orgLevel==='local'?'selected':''}>Local</option><option value="national" ${s.orgLevel==='national'?'selected':''}>National</option></select><div class="form-hint">Whether this scenario appears for local orgs, national orgs, or both</div></div>
       <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /><div class="form-hint">1-5 rating affecting when scenarios appear — higher complexity appears in later rounds</div></div>
     </div>
@@ -14316,7 +14318,7 @@ function renderInboxForm(s, i) {
     <div class="form-group" style="margin-bottom:11px"><label>Subject</label><input id="ib-subj-${i}" value="${esc(s.subject||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="ib-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
     <div class="form-row three">
-      <div class="form-group"><label>Categories</label><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="ib-cat-${i}-${c}" ${cats.includes(c)?'checked':''} />${c}</label>`).join('')}</div></div>
+      <div class="form-group"><label>Categories</label><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="ib-cat-${i}-${c}" ${cats.includes(c)?'checked':''} onchange="handleCatToggle('ib-cat-${i}','${c}')" />${c}</label>`).join('')}</div></div>
       <div class="form-group"><label>Org Level</label><select id="ib-lvl-${i}"><option value="both" ${(s.orgLevel||'both')==='both'?'selected':''}>Both</option><option value="local" ${s.orgLevel==='local'?'selected':''}>Local</option><option value="national" ${s.orgLevel==='national'?'selected':''}>National</option></select></div>
       <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="ib-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /></div>
     </div>
@@ -14669,6 +14671,21 @@ function saveStat(i) {
 }
 
 // ═══ TOGGLE & ESCAPE ═══
+function handleCatToggle(prefix, cat) {
+  var specificCats = ['progressive','centrist','conservative','apolitical'];
+  var allEl = document.getElementById(prefix+'-all');
+  if(cat === 'all') {
+    // Checking "all" unchecks all specific
+    if(allEl && allEl.checked) {
+      specificCats.forEach(function(c){ var el = document.getElementById(prefix+'-'+c); if(el) el.checked = false; });
+    }
+  } else {
+    // Checking a specific one unchecks "all"
+    var el = document.getElementById(prefix+'-'+cat);
+    if(el && el.checked && allEl) allEl.checked = false;
+  }
+}
+
 function toggleEdit(prefix, i) {
   const card = document.getElementById(prefix+'-card-'+i);
   const form = document.getElementById(prefix+'-form-'+i);
@@ -15081,7 +15098,7 @@ function renderBreakingForm(bn,i){
       '<div class="form-group"><label>Max Round</label><input type="number" id="bn-maxr-'+i+'" value="'+(bn.maxRound||6)+'" min="1" /><div class="form-hint">Round window when this event can appear</div></div>'+
     '</div>'+
     '<div class="form-row three">'+
-      '<div class="form-group"><label>Categories</label><div class="checkbox-grid">'+allCats.map(function(c){return '<label class="checkbox-item"><input type="checkbox" id="bn-cat-'+i+'-'+c+'" '+(cats.includes(c)?'checked':'')+' />'+c+'</label>'}).join('')+'</div></div>'+
+      '<div class="form-group"><label>Categories</label><div class="checkbox-grid">'+allCats.map(function(c){return '<label class="checkbox-item"><input type="checkbox" id="bn-cat-'+i+'-'+c+'" '+(cats.includes(c)?'checked':'')+' onchange="handleCatToggle(\'bn-cat-'+i+'\',\''+c+'\')" />'+c+'</label>'}).join('')+'</div></div>'+
       '<div class="form-group"><label>Org Level</label><select id="bn-lvl-'+i+'"><option value="both" '+((bn.orgLevel||'both')==='both'?'selected':'')+'>Both</option><option value="local" '+(bn.orgLevel==='local'?'selected':'')+'>Local</option><option value="national" '+(bn.orgLevel==='national'?'selected':'')+'>National</option></select></div>'+
       '<div class="form-group"><label>Complexity (1-5)</label><input type="number" id="bn-cplx-'+i+'" value="'+(bn.complexity||3)+'" min="1" max="5" /></div>'+
     '</div>'+
@@ -15974,6 +15991,22 @@ function addSegment() {
   if(!GD.config.segments) GD.config.segments = [];
   GD.config.segments.push({id:'seg_'+Date.now(),name:'New Segment',populationBaseline:10,politicalCenter:50,comfortRange:20,baseStartApproval:50,floor:5,ceiling:30});
   localStorage.setItem('gd_cache', JSON.stringify(GD)); populateSegments(); refreshDependentPanels('segments');
+}
+
+function resetSegmentsToDefaults() {
+  if(!confirm('Reset all segments to default values? This will overwrite your current segment configuration.')) return;
+  GD.config.segments = [
+    {id:'orthodox',name:'Orthodox',populationBaseline:11,politicalCenter:66,comfortRange:15,israelCenter:65,israelComfortRange:12,baseStartApproval:40,floor:5,ceiling:28},
+    {id:'conservative_denom',name:'Conservative',populationBaseline:19,politicalCenter:44,comfortRange:17,israelCenter:61,israelComfortRange:10,baseStartApproval:40,floor:8,ceiling:25},
+    {id:'reform',name:'Reform',populationBaseline:37,politicalCenter:33,comfortRange:14,israelCenter:52,israelComfortRange:13,baseStartApproval:40,floor:8,ceiling:30},
+    {id:'unaffiliated',name:'Unaffiliated',populationBaseline:29,politicalCenter:39,comfortRange:16,israelCenter:47,israelComfortRange:14,baseStartApproval:40,floor:5,ceiling:30},
+    {id:'youngAdults',name:'Young Jews',populationBaseline:23,politicalCenter:36,comfortRange:16,israelCenter:45,israelComfortRange:15,baseStartApproval:40,floor:8,ceiling:28},
+    {id:'olderAdults',name:'Older Jews',populationBaseline:29,politicalCenter:40,comfortRange:17,israelCenter:55,israelComfortRange:13,baseStartApproval:40,floor:8,ceiling:30}
+  ];
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  setStatus('Segments reset to defaults', 'success');
+  populateSegments();
+  refreshDependentPanels('segments');
 }
 
 function deleteSegment(i) {

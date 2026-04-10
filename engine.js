@@ -64,6 +64,7 @@ let G = {
   // Advisor system
   selectedAdvisors: [],
   advisorBonusLog: [],
+  usedConversationGroups: [],
   notableMoments: [],
   advisorChoiceLog: [],
   investmentsFrozen: false,
@@ -1269,6 +1270,7 @@ function startGame(){
   G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[]; G.promotionLevel=0;
   G.inboxMessages=[]; G.coalitionStrikes={};
   G.advisorBonusLog = [];
+  G.usedConversationGroups = [];
   // Initialize in-game budget (separate from priority allocation)
   var bc = GAME_DATA.config.budgetConfig || {};
   var orgBudgetOverrides = org.budgetOverrides || {};
@@ -1539,6 +1541,14 @@ function beginRound(){
   // #20: Don't show toast notifications on first round — wait until player takes first action
   picked.forEach(function(sc){
     G.usedInboxIds.push(sc.id);
+    // Group exclusivity: mark all other variants in the same group as used
+    if (sc.groupId) {
+      GAME_DATA.inboxScenarios.forEach(function(s) {
+        if (s.groupId === sc.groupId && s.id !== sc.id && !G.usedInboxIds.includes(s.id)) {
+          G.usedInboxIds.push(s.id);
+        }
+      });
+    }
     var msg = {id:sc.id, scenario:sc, unread:true, expired:false, timerRemaining: sc.expiresIn||null, deliveredRound:G.round, toastShown: false};
     G.inboxMessages.push(msg);
     if(G.actionsThisRound > 0 || G.round > 1) {
@@ -3574,14 +3584,27 @@ function getAdvisorBonus(scenario, choiceIndex) {
 }
 
 // ═══ CONVERSATION TRIGGERS ═══
+function conversationApplies(conv) {
+  // Check org applicability
+  if (conv.applicableOrgs && conv.applicableOrgs.length > 0 && !conv.applicableOrgs.includes(G.orgId)) return false;
+  // Check political range
+  if (conv.politicalRange) {
+    var pos = G.politicalPosition;
+    if (conv.politicalRange.min != null && pos < conv.politicalRange.min) return false;
+    if (conv.politicalRange.max != null && pos > conv.politicalRange.max) return false;
+  }
+  // Check group exclusivity — if another variant from this group has fired, skip
+  if (conv.groupId && G.usedConversationGroups && G.usedConversationGroups.includes(conv.groupId)) return false;
+  return true;
+}
+
 function checkAfterScenarioConversation(scenarioId, choiceIndex) {
   var convs = GAME_DATA.conversations || [];
   return convs.find(function(conv) {
     if (!conv.trigger || conv.trigger.type !== 'afterScenario') return false;
     if (conv.trigger.scenarioId !== scenarioId) return false;
     if (conv.trigger.choiceIndex !== null && conv.trigger.choiceIndex !== undefined && conv.trigger.choiceIndex !== choiceIndex) return false;
-    // Check org applicability
-    if (conv.applicableOrgs && conv.applicableOrgs.length > 0 && !conv.applicableOrgs.includes(G.orgId)) return false;
+    if (!conversationApplies(conv)) return false;
     // For advisor type, check if advisor is selected
     if (conv.type === 'advisor') {
       if (!G.selectedAdvisors || !G.selectedAdvisors.includes(conv.advisorId)) return false;
@@ -3600,8 +3623,7 @@ function checkBeforeScenarioConversation(scenarioId, advisorId) {
       if (conv.advisorId !== advisorId) return false;
       if (!G.selectedAdvisors || !G.selectedAdvisors.includes(conv.advisorId)) return false;
     }
-    // Check org applicability
-    if (conv.applicableOrgs && conv.applicableOrgs.length > 0 && !conv.applicableOrgs.includes(G.orgId)) return false;
+    if (!conversationApplies(conv)) return false;
     return true;
   }) || null;
 }
@@ -3612,7 +3634,13 @@ var convState = null; // current conversation state
 function showConversation(convId, callback) {
   var conv = (GAME_DATA.conversations || []).find(function(c){return c.id === convId});
   if (!conv) { if (callback) callback(); return; }
-  
+
+  // Mark conversation group as used (variant exclusivity)
+  if (conv.groupId) {
+    if (!G.usedConversationGroups) G.usedConversationGroups = [];
+    if (!G.usedConversationGroups.includes(conv.groupId)) G.usedConversationGroups.push(conv.groupId);
+  }
+
   var pool = GAME_DATA.advisorPool || GAME_DATA.advisors || [];
   var charName, charEmoji, charRole, charContext;
   

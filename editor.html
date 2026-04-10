@@ -291,9 +291,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <div class="nav-section">Gameplay</div>
         <button class="nav-item" onclick="showPanel('scenarios', this)">📰 Scenarios / Events</button>
         <button class="nav-item" onclick="showPanel('inbox', this)">📬 Inbox Scenarios</button>
+        <button class="nav-item" onclick="showPanel('conversations', this)">💬 Conversations</button>
         <button class="nav-item" onclick="showPanel('segments', this)">👥 Segments</button>
         <button class="nav-item" onclick="showPanel('scoring', this)">🏆 Scoring Thresholds</button>
-        <button class="nav-item" onclick="showPanel('conversations', this)">💬 Conversations</button>
 
         <div class="nav-section">Content</div>
         <button class="nav-item" onclick="showPanel('text', this)">📝 Page Text</button>
@@ -558,7 +558,33 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- INBOX PANEL -->
         <div id="panel-inbox" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Inbox scenarios appear as emails or messages during gameplay — styled differently from main event cards. Two are randomly queued per round and delivered after the first action and again later in the round. Like regular scenarios, each choice needs a <strong>missionAligned</strong> list.</p>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Inbox scenarios appear as emails or messages during gameplay — styled differently from main event cards. Two are randomly queued per round and delivered after the first action and again later in the round. Like regular scenarios, each choice needs a <strong>missionAligned</strong> list.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px;background:#f5f4f0;border:1px solid var(--border)">
+            <input type="text" id="ib-search" placeholder="Search by subject or ID..." oninput="filterInbox()" style="flex:1;min-width:160px;padding:6px 10px;font-size:12px;border:1px solid var(--border)" />
+            <select id="ib-filter-cat" onchange="filterInbox()" style="font-size:11px;padding:5px">
+              <option value="">All Categories</option>
+              <option value="progressive">Progressive</option>
+              <option value="centrist">Centrist</option>
+              <option value="conservative">Conservative</option>
+              <option value="apolitical">Apolitical</option>
+            </select>
+            <select id="ib-filter-level" onchange="filterInbox()" style="font-size:11px;padding:5px">
+              <option value="">All Levels</option>
+              <option value="local">Local</option>
+              <option value="national">National</option>
+              <option value="both">Both</option>
+            </select>
+            <select id="ib-filter-cplx" onchange="filterInbox()" style="font-size:11px;padding:5px">
+              <option value="">All Complexity</option>
+              <option value="1">★1</option><option value="2">★2</option><option value="3">★3</option><option value="4">★4</option><option value="5">★5</option>
+            </select>
+            <select id="ib-filter-group" onchange="filterInbox()" style="font-size:11px;padding:5px">
+              <option value="">All (Grouped & Standalone)</option>
+              <option value="grouped">Grouped Only</option>
+              <option value="standalone">Standalone Only</option>
+            </select>
+            <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="checkbox" id="ib-view-grouped" onchange="populateInbox()" /> Grouped View</label>
+          </div>
           <div class="item-list" id="inbox-list"></div>
           <button class="add-btn" onclick="addInboxScenario()">+ Add New Inbox Scenario</button>
         </div>
@@ -770,6 +796,20 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <!-- CONVERSATIONS PANEL -->
         <div id="panel-conversations" class="panel">
           <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Branching conversations with characters and advisors. These fire before or after scenarios, at round start, or standalone. Each conversation is a node tree where player responses affect disposition, leading to different outcomes.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px;background:#f5f4f0;border:1px solid var(--border)">
+            <input type="text" id="conv-search" placeholder="Search by ID or character..." oninput="filterConversations()" style="flex:1;min-width:160px;padding:6px 10px;font-size:12px;border:1px solid var(--border)" />
+            <select id="conv-filter-type" onchange="filterConversations()" style="font-size:11px;padding:5px">
+              <option value="">All Types</option>
+              <option value="character">Character</option>
+              <option value="advisor">Advisor</option>
+            </select>
+            <select id="conv-filter-group" onchange="filterConversations()" style="font-size:11px;padding:5px">
+              <option value="">All (Grouped & Standalone)</option>
+              <option value="grouped">Grouped Only</option>
+              <option value="standalone">Standalone Only</option>
+            </select>
+            <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="checkbox" id="conv-view-grouped" onchange="populateConversations()" /> Grouped View</label>
+          </div>
           <div class="item-list" id="conversations-list"></div>
           <button class="add-btn" onclick="addConversation()">+ Add New Conversation</button>
         </div>
@@ -14421,15 +14461,87 @@ function addScenario() {
 
 // ═══ INBOX ═══
 function populateInbox() {
-  document.getElementById('inbox-list').innerHTML = GD.inboxScenarios.map((s,i) => renderInboxCard(s,i) + renderInboxForm(s,i)).join('');
+  var scenarios = GD.inboxScenarios || [];
+  var grouped = document.getElementById('ib-view-grouped')?.checked;
+  var html = '';
+  if(grouped) {
+    var groups = {};
+    var standalone = [];
+    scenarios.forEach(function(s, i) {
+      if(s.groupId) {
+        if(!groups[s.groupId]) groups[s.groupId] = [];
+        groups[s.groupId].push({s:s, i:i});
+      } else {
+        standalone.push({s:s, i:i});
+      }
+    });
+    Object.keys(groups).sort().forEach(function(gid) {
+      html += '<div class="scenario-group">';
+      html += '<div class="scenario-group-header">Group: '+esc(gid)+' <span style="font-weight:400;color:var(--muted)">('+groups[gid].length+' variants)</span></div>';
+      groups[gid].forEach(function(item) {
+        if(inboxMatchesFilters(item.s)) html += renderInboxCard(item.s, item.i) + renderInboxForm(item.s, item.i);
+      });
+      html += '</div>';
+    });
+    standalone.forEach(function(item) {
+      if(inboxMatchesFilters(item.s)) html += renderInboxCard(item.s, item.i) + renderInboxForm(item.s, item.i);
+    });
+  } else {
+    scenarios.forEach(function(s, i) {
+      if(inboxMatchesFilters(s)) html += renderInboxCard(s, i) + renderInboxForm(s, i);
+    });
+  }
+  document.getElementById('inbox-list').innerHTML = html;
 }
+
+function inboxMatchesFilters(s) {
+  var search = (document.getElementById('ib-search')?.value||'').toLowerCase();
+  if(search && !(s.subject||'').toLowerCase().includes(search) && !(s.id||'').toLowerCase().includes(search)) return false;
+  var catFilter = document.getElementById('ib-filter-cat')?.value||'';
+  if(catFilter && !(s.categories||['all']).includes(catFilter)) return false;
+  var levelFilter = document.getElementById('ib-filter-level')?.value||'';
+  if(levelFilter && (s.orgLevel||'both') !== levelFilter) return false;
+  var cplxFilter = document.getElementById('ib-filter-cplx')?.value||'';
+  if(cplxFilter && (s.complexity||3) !== parseInt(cplxFilter)) return false;
+  var groupFilter = document.getElementById('ib-filter-group')?.value||'';
+  if(groupFilter === 'grouped' && !s.groupId) return false;
+  if(groupFilter === 'standalone' && s.groupId) return false;
+  return true;
+}
+
+function filterInbox() { populateInbox(); }
+
+function duplicateInboxAsVariant(i) {
+  var list = GD.inboxScenarios;
+  var orig = list[i];
+  var copy = JSON.parse(JSON.stringify(orig));
+  copy.id = orig.id + '_variant_' + Date.now();
+  copy.subject = (orig.subject||'') + ' (variant)';
+  if(!copy.groupId) copy.groupId = 'group_' + orig.id;
+  if(!orig.groupId) { orig.groupId = copy.groupId; }
+  list.push(copy);
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  populateInbox();
+  setStatus('Variant created — edit the new inbox scenario\'s choices and political range.', 'success');
+}
+
 function renderInboxCard(s, i) {
   const cats = (s.categories||['all']).join(', ');
+  var badges = esc(s.from||'') + ' · ' + cats + ' · ★' + (s.complexity||3) + ' · ' + (s.choices||[]).length + ' choices';
+  if(s.groupId) badges += ' · <span style="color:#6366f1;font-weight:600">group: '+esc(s.groupId)+'</span>';
+  if(s.politicalRange) {
+    var pr = s.politicalRange;
+    badges += ' · <span style="color:#b45309">pol: '+(pr.min!=null?pr.min:'0')+'–'+(pr.max!=null?pr.max:'100')+'</span>';
+  }
   return `<div class="item-card" id="ib-card-${i}" onclick="toggleEdit('ib',${i})">
     <span class="expand-icon" id="ib-exp-${i}">▸</span>
     <div class="item-card-info"><div class="item-card-name">${esc(s.subject||'Untitled')}</div>
-    <div class="item-card-desc">${esc(s.from||'')} · ${cats} · ★${s.complexity||3} · ${(s.choices||[]).length} choices</div></div>
-    <div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInbox(${i})">Delete</button></div>
+    <div style="font-family:monospace;font-size:10px;color:var(--muted);margin-bottom:2px">${esc(s.id||'')}</div>
+    <div class="item-card-desc">${badges}</div></div>
+    <div class="item-card-actions">
+      <button class="btn btn-sm" style="font-size:9px;padding:4px 8px;background:none;border:1px solid var(--border);color:var(--muted);margin-right:4px" onclick="event.stopPropagation();duplicateInboxAsVariant(${i})" title="Duplicate as variant">Duplicate</button>
+      <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInbox(${i})">Delete</button>
+    </div>
   </div>`;
 }
 function renderInboxForm(s, i) {
@@ -14444,6 +14556,11 @@ function renderInboxForm(s, i) {
       <div class="form-group"><label>ID</label><input id="ib-id-${i}" value="${esc(s.id)}" /></div>
       <div class="form-group"><label>Tag</label><input id="ib-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label (e.g., 'Email', 'Message', 'Urgent')</div></div>
       <div class="form-group"><label>From</label><input id="ib-from-${i}" value="${esc(s.from||'')}" /><div class="form-hint">Sender name shown in the inbox (e.g., 'Board Chair', 'Staff Slack')</div></div>
+    </div>
+    <div class="form-row three">
+      <div class="form-group"><label>Variant Group</label><input id="ib-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. donor_pressure" /><div class="form-hint">Scenarios with the same group ID are variants — only one fires per game</div></div>
+      <div class="form-group"><label>Political Range Min</label><input type="number" id="ib-polmin-${i}" value="${s.politicalRange?s.politicalRange.min:''}" placeholder="0" min="0" max="100" /><div class="form-hint">Min political position to see this scenario (blank = no minimum)</div></div>
+      <div class="form-group"><label>Political Range Max</label><input type="number" id="ib-polmax-${i}" value="${s.politicalRange?s.politicalRange.max:''}" placeholder="100" min="0" max="100" /><div class="form-hint">Max political position to see this scenario (blank = no maximum)</div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Subject</label><input id="ib-subj-${i}" value="${esc(s.subject||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="ib-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
@@ -14473,6 +14590,16 @@ function saveInbox(i) {
   const s = GD.inboxScenarios[i];
   s.id = document.getElementById('ib-id-'+i)?.value||s.id;
   s.tag = document.getElementById('ib-tag-'+i)?.value||'';
+  // Group and political range
+  var ibGroupVal = document.getElementById('ib-group-'+i)?.value||'';
+  if(ibGroupVal) s.groupId = ibGroupVal; else delete s.groupId;
+  var ibPolMin = document.getElementById('ib-polmin-'+i)?.value;
+  var ibPolMax = document.getElementById('ib-polmax-'+i)?.value;
+  if(ibPolMin !== '' || ibPolMax !== '') {
+    s.politicalRange = {};
+    if(ibPolMin !== '') s.politicalRange.min = parseInt(ibPolMin);
+    if(ibPolMax !== '') s.politicalRange.max = parseInt(ibPolMax);
+  } else { delete s.politicalRange; }
   s.from = document.getElementById('ib-from-'+i)?.value||'';
   s.subject = document.getElementById('ib-subj-'+i)?.value||'';
   s.body = document.getElementById('ib-body-'+i)?.value||'';
@@ -15591,9 +15718,72 @@ function populateConversations(){
   var list = document.getElementById('conversations-list');
   if(!list) return;
   var convs = GD.conversations || [];
-  list.innerHTML = convs.map(function(c,i){
-    return renderConversationCard(c,i) + renderConversationForm(c,i);
-  }).join('');
+  var grouped = document.getElementById('conv-view-grouped')?.checked;
+  var html = '';
+  if(grouped) {
+    var groups = {};
+    var standalone = [];
+    convs.forEach(function(c, i) {
+      if(c.groupId) {
+        if(!groups[c.groupId]) groups[c.groupId] = [];
+        groups[c.groupId].push({c:c, i:i});
+      } else {
+        standalone.push({c:c, i:i});
+      }
+    });
+    Object.keys(groups).sort().forEach(function(gid) {
+      html += '<div class="scenario-group">';
+      html += '<div class="scenario-group-header">Group: '+esc(gid)+' <span style="font-weight:400;color:var(--muted)">('+groups[gid].length+' variants)</span></div>';
+      groups[gid].forEach(function(item) {
+        if(conversationMatchesFilters(item.c)) html += renderConversationCard(item.c, item.i) + renderConversationForm(item.c, item.i);
+      });
+      html += '</div>';
+    });
+    standalone.forEach(function(item) {
+      if(conversationMatchesFilters(item.c)) html += renderConversationCard(item.c, item.i) + renderConversationForm(item.c, item.i);
+    });
+  } else {
+    convs.forEach(function(c, i) {
+      if(conversationMatchesFilters(c)) html += renderConversationCard(c, i) + renderConversationForm(c, i);
+    });
+  }
+  list.innerHTML = html;
+}
+
+function conversationMatchesFilters(c) {
+  var search = (document.getElementById('conv-search')?.value||'').toLowerCase();
+  if(search) {
+    var matchId = (c.id||'').toLowerCase().includes(search);
+    var matchName = '';
+    if(c.type==='advisor') {
+      var adv = (GD.advisorPool||[]).find(function(a){return a.id===c.advisorId});
+      matchName = adv ? adv.name.toLowerCase() : '';
+    } else {
+      matchName = ((c.character||{}).name||'').toLowerCase();
+    }
+    if(!matchId && !matchName.includes(search)) return false;
+  }
+  var typeFilter = document.getElementById('conv-filter-type')?.value||'';
+  if(typeFilter && c.type !== typeFilter) return false;
+  var groupFilter = document.getElementById('conv-filter-group')?.value||'';
+  if(groupFilter === 'grouped' && !c.groupId) return false;
+  if(groupFilter === 'standalone' && c.groupId) return false;
+  return true;
+}
+
+function filterConversations() { populateConversations(); }
+
+function duplicateConversationAsVariant(i) {
+  var list = GD.conversations;
+  var orig = list[i];
+  var copy = JSON.parse(JSON.stringify(orig));
+  copy.id = orig.id + '_variant_' + Date.now();
+  if(!copy.groupId) copy.groupId = 'group_' + orig.id;
+  if(!orig.groupId) { orig.groupId = copy.groupId; }
+  list.push(copy);
+  setDirty();
+  populateConversations();
+  setStatus('Variant created — edit the new conversation\'s political range or applicable orgs.', 'success');
 }
 
 function renderConversationCard(c, i){
@@ -15613,11 +15803,20 @@ function renderConversationCard(c, i){
   if(trig.choiceIndex!=null) trigDesc += ' [choice '+trig.choiceIndex+']';
   var nodeCount = Object.keys(c.nodes||{}).length;
   var outcomeCount = (c.outcomes||[]).length;
+  var badges = typeBadge+' '+esc(charName)+' · '+esc(trigDesc)+' · '+nodeCount+' nodes · '+outcomeCount+' outcomes';
+  if(c.groupId) badges += ' · <span style="color:#6366f1;font-weight:600">group: '+esc(c.groupId)+'</span>';
+  if(c.politicalRange) {
+    var pr = c.politicalRange;
+    badges += ' · <span style="color:#b45309">pol: '+(pr.min!=null?pr.min:'0')+'–'+(pr.max!=null?pr.max:'100')+'</span>';
+  }
   return '<div class="item-card" id="conv-card-'+i+'" onclick="toggleEdit(\'conv\','+i+')">'+
     '<span class="expand-icon" id="conv-exp-'+i+'">▸</span>'+
     '<div class="item-card-info"><div class="item-card-name">'+esc(c.id)+'</div>'+
-    '<div class="item-card-desc">'+typeBadge+' '+esc(charName)+' · '+esc(trigDesc)+' · '+nodeCount+' nodes · '+outcomeCount+' outcomes</div></div>'+
-    '<div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteConversation('+i+')">Delete</button></div></div>';
+    '<div class="item-card-desc">'+badges+'</div></div>'+
+    '<div class="item-card-actions">'+
+      '<button class="btn btn-sm" style="font-size:9px;padding:4px 8px;background:none;border:1px solid var(--border);color:var(--muted);margin-right:4px" onclick="event.stopPropagation();duplicateConversationAsVariant('+i+')" title="Duplicate as variant">Duplicate</button>'+
+      '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteConversation('+i+')">Delete</button>'+
+    '</div></div>';
 }
 
 function renderConversationForm(c, i){
@@ -15641,6 +15840,11 @@ function renderConversationForm(c, i){
   html += '<option value="advisor"'+(c.type==='advisor'?' selected':'')+'>Advisor</option>';
   html += '</select></div>';
   html += '<div class="form-group"><label>Start Disposition (0-100)</label><input type="number" id="conv-startdisp-'+i+'" value="'+(c.startDisposition||50)+'" min="0" max="100" /><div class="form-hint">Initial attitude (0=hostile, 50=neutral, 100=friendly)</div></div>';
+  html += '</div>';
+  html += '<div class="form-row three">';
+  html += '<div class="form-group"><label>Variant Group</label><input id="conv-group-'+i+'" value="'+esc(c.groupId||'')+'" placeholder="e.g. donor_pressure" /><div class="form-hint">Conversations with the same group ID are variants — only one fires per game</div></div>';
+  html += '<div class="form-group"><label>Political Range Min</label><input type="number" id="conv-polmin-'+i+'" value="'+(c.politicalRange?c.politicalRange.min:'')+'" placeholder="0" min="0" max="100" /><div class="form-hint">Min political position to fire this conversation (blank = no minimum)</div></div>';
+  html += '<div class="form-group"><label>Political Range Max</label><input type="number" id="conv-polmax-'+i+'" value="'+(c.politicalRange?c.politicalRange.max:'')+'" placeholder="100" min="0" max="100" /><div class="form-hint">Max political position to fire this conversation (blank = no maximum)</div></div>';
   html += '</div>';
 
   // ── Applicable Orgs ──
@@ -15794,6 +15998,16 @@ function saveConversation(i){
   c.id = document.getElementById('conv-id-'+i).value||c.id;
   c.type = document.getElementById('conv-type-'+i).value;
   c.startDisposition = parseInt(document.getElementById('conv-startdisp-'+i).value)||50;
+  // Group and political range
+  var convGroupVal = document.getElementById('conv-group-'+i)?.value||'';
+  if(convGroupVal) c.groupId = convGroupVal; else delete c.groupId;
+  var convPolMin = document.getElementById('conv-polmin-'+i)?.value;
+  var convPolMax = document.getElementById('conv-polmax-'+i)?.value;
+  if(convPolMin !== '' || convPolMax !== '') {
+    c.politicalRange = {};
+    if(convPolMin !== '') c.politicalRange.min = parseInt(convPolMin);
+    if(convPolMax !== '') c.politicalRange.max = parseInt(convPolMax);
+  } else { delete c.politicalRange; }
 
   // Applicable orgs
   var orgs = (GD.organizations||[]).concat(GD.nationalOrganizations||[]);

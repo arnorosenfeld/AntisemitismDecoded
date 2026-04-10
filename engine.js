@@ -3812,6 +3812,14 @@ function resolveConversation() {
   }
   // Negative budgetEffect from outcomes is no longer applied — gelt costs come from choice budgetCost only
 
+  // Apply political effects from conversation outcome
+  if (outcome.politicalLean) {
+    G.politicalPosition = Math.max(0, Math.min(100, G.politicalPosition + outcome.politicalLean));
+  }
+  if (outcome.cloutEffect) {
+    G.politicalClout = Math.max(0, G.politicalClout + outcome.cloutEffect);
+  }
+
   updateHUD();
 }
 

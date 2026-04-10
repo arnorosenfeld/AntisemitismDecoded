@@ -14158,8 +14158,9 @@ function deleteOutcome(si,ci,oi,prefix) {
   if((list[si].choices[ci].outcomes||[]).length<=1) return;
   list[si].choices[ci].outcomes.splice(oi,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));
+  var scrollY = document.querySelector('.editor-main').scrollTop;
   repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
+  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
 }
 function editConditions(si,ci,oi,prefix) {
   const list = getListForPrefix(prefix);
@@ -14262,15 +14263,17 @@ function addChoice(si, prefix) {
   const list = getListForPrefix(prefix);
   list[si].choices.push({id:'c'+list[si].choices.length,text:'',requiresUnlock:null,missionAligned:[],missionOpposed:[],outcomes:[{text:'',effects:{},weight:100,conditions:[],contextNote:''}]});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
+  var scrollY = document.querySelector('.editor-main').scrollTop;
   repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
+  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
 }
 function deleteChoice(si,ci,prefix) {
   const list = getListForPrefix(prefix);
   list[si].choices.splice(ci,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));
+  var scrollY = document.querySelector('.editor-main').scrollTop;
   repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
+  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
 }
 function deleteScenario(i,prefix) {
   if(!confirm('Delete this scenario?'))return;
@@ -15474,7 +15477,7 @@ function renderConversationForm(c, i){
   var stats = GD.stats||[];
   var pool = GD.advisorPool||[];
   var scenarios = GD.scenarios||[];
-  var orgs = GD.organizations||[];
+  var orgs = (GD.organizations||[]).concat(GD.nationalOrganizations||[]);
   var trig = c.trigger||{};
   var char = c.character||{};
   var applicableOrgs = c.applicableOrgs||[];
@@ -15530,13 +15533,20 @@ function renderConversationForm(c, i){
     html += '<option value="'+t+'"'+(trig.type===t?' selected':'')+'>'+t+'</option>';
   });
   html += '</select><div class="form-hint">When this conversation fires: afterScenario, beforeScenario, roundStart, or standalone</div></div>';
-  html += '<div class="form-group"><label>Scenario ID</label><select id="conv-trigscn-'+i+'">';
+  html += '<div class="form-group"><label>Scenario ID</label><select id="conv-trigscn-'+i+'" onchange="updateConvChoiceDropdown('+i+')">';
   html += '<option value="">— None —</option>';
   scenarios.forEach(function(s){
     html += '<option value="'+s.id+'"'+(trig.scenarioId===s.id?' selected':'')+'>'+esc(s.id)+' ('+esc(s.title||'')+')</option>';
   });
   html += '</select></div>';
-  html += '<div class="form-group"><label>Choice Index</label><input type="number" id="conv-trigci-'+i+'" value="'+(trig.choiceIndex!=null?trig.choiceIndex:'')+'" placeholder="blank = any" min="0" max="10" /><div class="form-hint">Which specific choice triggers this conversation (blank = any choice)</div></div>';
+  html += '<div class="form-group"><label>Choice</label><select id="conv-trigci-'+i+'" onchange=""><option value="">— Any choice —</option>';
+  var trigScenario = scenarios.find(function(s){return s.id===trig.scenarioId});
+  if(trigScenario && trigScenario.choices){
+    trigScenario.choices.forEach(function(ch, ci){
+      html += '<option value="'+ci+'"'+(trig.choiceIndex===ci?' selected':'')+'>'+ String.fromCharCode(65+ci)+'. '+esc((ch.text||'').substring(0,60))+'</option>';
+    });
+  }
+  html += '</select><div class="form-hint">Which specific choice triggers this conversation</div></div>';
   html += '</div></div>';
 
   // ── Node Editor ──
@@ -15549,12 +15559,8 @@ function renderConversationForm(c, i){
   html += '</div>';
 
   // ── Outcomes Editor ──
-  html += '<div style="margin-bottom:12px">';
-  html += '<label style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:8px">Outcomes ('+(c.outcomes||[]).length+')</label>';
-  (c.outcomes||[]).forEach(function(o, oi){
-    html += renderConvOutcomeEditor(i, oi, o, c.type);
-  });
-  html += '<button class="add-btn" style="font-size:11px;margin-top:6px" onclick="addConvOutcome('+i+')">+ Add Outcome</button>';
+  html += '<div id="conv-outcomes-wrap-'+i+'" style="margin-bottom:12px">';
+  html += renderConvOutcomesSection(i, c);
   html += '</div>';
 
   // ── Save Button ──
@@ -15611,6 +15617,11 @@ function renderConvOutcomeEditor(ci, oi, o, convType){
   html += '<div class="form-group"><label>Heading</label><input id="conv-ohead-'+ci+'-'+oi+'" value="'+esc(o.heading||'')+'" /></div>';
   html += '<div class="form-group"><label>Gelt Effect</label><input type="number" id="conv-obudget-'+ci+'-'+oi+'" value="'+(o.budgetEffect||0)+'" /><div class="form-hint">Gelt units gained/lost from this outcome</div></div>';
   html += '</div>';
+  html += '<div class="form-row three" style="margin-bottom:6px">';
+  html += '<div class="form-group"><label>Political Lean</label><input type="number" id="conv-opollean-'+ci+'-'+oi+'" value="'+(o.politicalLean||0)+'" min="-10" max="10" /><div class="form-hint">-10=hard left, +10=hard right, 0=none</div></div>';
+  html += '<div class="form-group"><label>Clout Effect</label><input type="number" id="conv-opolclout-'+ci+'-'+oi+'" value="'+(o.cloutEffect||0)+'" min="-10" max="10" /><div class="form-hint">Political capital gained/lost</div></div>';
+  html += '<div></div>';
+  html += '</div>';
   html += '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="conv-otext-'+ci+'-'+oi+'" rows="2" style="font-size:12px">'+esc(o.text||'')+'</textarea></div>';
   // Stat effects
   html += '<div style="margin-bottom:6px"><label class="section-label">Stat Effects</label>';
@@ -15638,7 +15649,7 @@ function saveConversation(i){
   c.startDisposition = parseInt(document.getElementById('conv-startdisp-'+i).value)||50;
 
   // Applicable orgs
-  var orgs = GD.organizations||[];
+  var orgs = (GD.organizations||[]).concat(GD.nationalOrganizations||[]);
   c.applicableOrgs = orgs.map(function(o){return o.id;}).filter(function(oid){
     var el = document.getElementById('conv-org-'+i+'-'+oid);
     return el && el.checked;
@@ -15704,7 +15715,9 @@ function saveConversation(i){
       heading: document.getElementById('conv-ohead-'+i+'-'+oi).value||'',
       text: document.getElementById('conv-otext-'+i+'-'+oi).value||'',
       effects: effects,
-      budgetEffect: parseInt(document.getElementById('conv-obudget-'+i+'-'+oi).value)||0
+      budgetEffect: parseInt(document.getElementById('conv-obudget-'+i+'-'+oi).value)||0,
+      politicalLean: parseInt(document.getElementById('conv-opollean-'+i+'-'+oi)?.value)||0,
+      cloutEffect: parseInt(document.getElementById('conv-opolclout-'+i+'-'+oi)?.value)||0
     };
     outcomes.push(out);
     oi++;
@@ -15775,6 +15788,19 @@ function addConvResponse(ci, ni){
   setDirty(); populateConversations();
 }
 
+function updateConvChoiceDropdown(ci){
+  var scenarioId = document.getElementById('conv-trigscn-'+ci)?.value||'';
+  var sel = document.getElementById('conv-trigci-'+ci);
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— Any choice —</option>';
+  if(!scenarioId) return;
+  var scenario = (GD.scenarios||[]).find(function(s){return s.id===scenarioId});
+  if(!scenario||!scenario.choices) return;
+  scenario.choices.forEach(function(ch, i){
+    sel.innerHTML += '<option value="'+i+'">'+String.fromCharCode(65+i)+'. '+esc((ch.text||'').substring(0,60))+'</option>';
+  });
+}
+
 function deleteConvResponse(ci, ni, ri){
   var convs = GD.conversations||[];
   var c = convs[ci]; if(!c||!c.nodes) return;
@@ -15784,19 +15810,61 @@ function deleteConvResponse(ci, ni, ri){
   setDirty(); populateConversations();
 }
 
+function renderConvOutcomesSection(ci, c){
+  var html = '';
+  html += '<label style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:8px">Outcomes ('+(c.outcomes||[]).length+')</label>';
+  (c.outcomes||[]).forEach(function(o, oi){
+    html += renderConvOutcomeEditor(ci, oi, o, c.type);
+  });
+  html += '<button class="add-btn" style="font-size:11px;margin-top:6px" onclick="addConvOutcome('+ci+')">+ Add Outcome</button>';
+  return html;
+}
+
+function readConvOutcomesFromDOM(ci){
+  var outcomes = [];
+  var oi = 0;
+  while(document.getElementById('conv-omin-'+ci+'-'+oi)){
+    var effects = {};
+    (GD.stats||[]).forEach(function(s){
+      var v = parseInt(document.getElementById('conv-oefx-'+ci+'-'+oi+'-'+s.id)?.value)||0;
+      if(v) effects[s.id] = v;
+    });
+    outcomes.push({
+      minDisposition: parseInt(document.getElementById('conv-omin-'+ci+'-'+oi).value)||0,
+      heading: document.getElementById('conv-ohead-'+ci+'-'+oi).value||'',
+      text: document.getElementById('conv-otext-'+ci+'-'+oi).value||'',
+      effects: effects,
+      budgetEffect: parseInt(document.getElementById('conv-obudget-'+ci+'-'+oi).value)||0,
+      politicalLean: parseInt(document.getElementById('conv-opollean-'+ci+'-'+oi)?.value)||0,
+      cloutEffect: parseInt(document.getElementById('conv-opolclout-'+ci+'-'+oi)?.value)||0
+    });
+    oi++;
+  }
+  return outcomes;
+}
+
+function refreshConvOutcomes(ci){
+  var c = (GD.conversations||[])[ci]; if(!c) return;
+  var wrap = document.getElementById('conv-outcomes-wrap-'+ci);
+  if(wrap) wrap.innerHTML = renderConvOutcomesSection(ci, c);
+}
+
 function addConvOutcome(ci){
   var convs = GD.conversations||[];
   var c = convs[ci]; if(!c) return;
-  if(!c.outcomes) c.outcomes = [];
-  c.outcomes.push({minDisposition:0,heading:'',text:'',effects:{},budgetEffect:0});
-  setDirty(); populateConversations();
+  // Preserve current edits before re-rendering
+  c.outcomes = readConvOutcomesFromDOM(ci);
+  c.outcomes.push({minDisposition:0,heading:'',text:'',effects:{},budgetEffect:0,politicalLean:0,cloutEffect:0});
+  setDirty(); refreshConvOutcomes(ci);
 }
 
 function deleteConvOutcome(ci, oi){
   var convs = GD.conversations||[];
   var c = convs[ci]; if(!c||!c.outcomes) return;
+  // Preserve current edits before re-rendering
+  c.outcomes = readConvOutcomesFromDOM(ci);
   c.outcomes.splice(oi,1);
-  setDirty(); populateConversations();
+  setDirty(); refreshConvOutcomes(ci);
 }
 
 // ═══ REFRESH DEPENDENT PANELS ═══

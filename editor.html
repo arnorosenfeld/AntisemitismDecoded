@@ -39,10 +39,10 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
 /* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);background:var(--ink);color:var(--white);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;z-index:100}
-.sidebar-logo{padding:1.4rem 1.2rem .9rem;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-logo h2{font-family:'Merriweather',Georgia,serif;font-size:1.4rem;font-weight:900;color:var(--white)}
+.sidebar-logo{padding:1.6rem 1rem 1rem;border-bottom:1px solid rgba(255,255,255,.1);text-align:center}
+.sidebar-logo h2{font-family:'Merriweather',Georgia,serif;font-size:1.65rem;font-weight:900;color:var(--white);line-height:1.1;white-space:nowrap;letter-spacing:-.5px;margin:0}
 .sidebar-logo h2 span{color:var(--gold)}
-.sidebar-logo span{font-family:'Merriweather Sans',sans-serif;font-size:12px;color:#8899bb;font-style:italic;display:block;margin-top:.3rem}
+.sidebar-logo .tagline{font-family:'Merriweather Sans',sans-serif;font-size:10px;color:#8899bb;font-style:italic;display:block;margin-top:.55rem;letter-spacing:.5px}
 .sidebar-nav{flex:1;padding:.8rem 0}
 .nav-section{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:.8rem 1.1rem .4rem}
 .nav-item{display:block;padding:.45rem 1.1rem;font-size:13px;color:#ccc;cursor:pointer;transition:all .13s;border:none;background:none;width:100%;text-align:left;font-family:'Merriweather',Georgia,serif}
@@ -269,8 +269,8 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
     <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <h2><span style="color:var(--white)">Mission</span> <span style="color:var(--gold)">Critical</span></h2>
-        <span>Antisemitism Decoded — Content Editor</span>
+        <h2>Mission <span>Critical</span></h2>
+        <span class="tagline">Antisemitism Decoded — Content Editor</span>
       </div>
       <nav class="sidebar-nav">
         <div class="nav-section">Overview</div>

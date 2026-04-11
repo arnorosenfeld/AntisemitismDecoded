@@ -1852,17 +1852,6 @@ const GAME_DATA = {
         "stepLabel": "Step 5 of 6 — Advisory Team",
         "heading": "Build Your Advisory Team",
         "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
-      },
-      "briefingScreen": {
-        "stepLabel": "",
-        "heading": "",
-        "description": "",
-        "advisorName": "",
-        "advisorRole": "",
-        "openingQuote": "",
-        "closingQuote": "",
-        "helpButtonLabel": "",
-        "items": []
       }
     },
     "coalitionStrikeMax": 3,
@@ -1975,6 +1964,73 @@ const GAME_DATA = {
       "left": 3,
       "center": 50,
       "right": 3
+    },
+    "popupMessages": {
+      "onboarding": [
+        {
+          "mood": "neutral",
+          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act \u2014 and the board is always watching.",
+          "label": "What do I need to know?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don't cost action points.",
+          "label": "Got it. What am I trying to do?"
+        },
+        {
+          "mood": "concerned",
+          "msg": "Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 20 or below, the board calls an emergency meeting and your tenure ends immediately.",
+          "label": "How do I win?"
+        },
+        {
+          "mood": "approving",
+          "msg": "At year's end, the board evaluates your overall performance. Score above <strong>80</strong> and you'll be offered a promotion to a national organization. Stay above <strong>40</strong> and you keep your job. Below that\u2026 well, don't go below that.",
+          "label": "Any other advice?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost action points but they do cost money.",
+          "label": "One more thing?"
+        },
+        {
+          "mood": "concerned",
+          "msg": "One more thing \u2014 every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.",
+          "label": "Let's do this \u2192"
+        }
+      ],
+      "statDangerRed": "\ud83d\udea8 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
+      "statDangerOrange": "Heads up \u2014 your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
+      "investmentSuggestion": "Your <strong>{stat}</strong> is in trouble. Consider using investments to help \u2014 check the investment bar for options that boost {stat}.",
+      "missionStarLow": "Your mission stars are dangerously low. The board expects you to stay true to your stated priorities \u2014 losing all your stars means losing their confidence.",
+      "missionStarMax": "You've earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.",
+      "communityCloutBonus": "\u26a1 +{amount} Clout from your position near the community's political center.",
+      "communityCloutBonusCentrist": "\u26a1 +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
+      "geltCrisis": "Your gelt is critically low. Some choices may be unavailable until finances improve.",
+      "centristClout": "Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly."
+    },
+    "coachingMessages": {
+      "stat_yellow": [
+        "Keep an eye on {stat}. If it drops much further, the board will start asking questions.",
+        "{stat} is slipping. You may want to prioritize it in your next action.",
+        "Your {stat} is getting into uncomfortable territory. The board notices these trends."
+      ],
+      "stat_red": [
+        "\ud83d\udea8 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "\ud83d\udea8 {stat} is in the danger zone. One more bad outcome and you could be out.",
+        "\ud83d\udea8 Crisis warning: {stat} is near the point of no return."
+      ],
+      "final_round_stars": [
+        "You're heading into the final round with no mission stars. The board will see this as a failure of vision \u2014 regardless of your other numbers.",
+        "Zero mission stars going into the last round. Without a clear mission, the board has no reason to renew your contract."
+      ],
+      "final_round_avg": [
+        "Your stats are averaging below 40 heading into the final round. At this rate, the board won't renew your contract.",
+        "The numbers aren't good. You need a strong final round to avoid a bad year-end review."
+      ],
+      "penultimate_warning": [
+        "{stat} is below 35 with two rounds to go. You still have time to turn this around \u2014 but not much.",
+        "Heads up: {stat} is trending low. Consider making it a priority over the next two rounds."
+      ]
     }
   },
   "stats": [
@@ -15799,8 +15855,16 @@ var COACHING_MESSAGES = {
 };
 
 function pickCoachMsg(category) {
-  var msgs = COACHING_MESSAGES[category] || [''];
-  return msgs[Math.floor(Math.random() * msgs.length)];
+  // Read from authored data first (config.coachingMessages.<category>),
+  // fall back to the hardcoded COACHING_MESSAGES pool so the engine keeps
+  // working even if data is missing or malformed.
+  var pool = null;
+  try {
+    var cm = GAME_DATA.config.coachingMessages;
+    if (cm && Array.isArray(cm[category]) && cm[category].length) pool = cm[category];
+  } catch (e) {}
+  if (!pool) pool = COACHING_MESSAGES[category] || [''];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function showCoachingWarning(msg, level) {

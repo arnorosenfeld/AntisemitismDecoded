@@ -18805,6 +18805,9 @@ async function saveToGithub() {
   try { if (document.getElementById('cfg-politicalEnabled')) savePoliticsConfig(); } catch(e) {}
   try { if (document.getElementById('cfg-momentumEnabled')) saveMomentumConfig(); } catch(e) {}
   try { if (document.getElementById('seg-table')) saveSegments(); } catch(e) {}
+  // Tooltips panel was rendered: flush any in-DOM edits to GD so
+  // users don't lose unsaved changes when they click Publish directly.
+  try { var _tl = document.getElementById('tooltips-list'); if (_tl && _tl.innerHTML.trim()) saveTooltips(); } catch(e) {}
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }
@@ -20010,51 +20013,11 @@ function renderLpHeadlinesEditor(items) {
 }
 function addLpHeadline() { _lpHeadlines.push({pub:'New Publication',text:'New Headline'}); renderLpHeadlinesEditor(_lpHeadlines); }
 
-function populateBriefingItems(items) {
-  var el = document.getElementById('briefing-items-editor');
-  if (!el) return;
-  el.innerHTML = items.map(function(item, i) {
-    return '<div class="outcome-card" style="margin-bottom:8px">' +
-      '<div class="outcome-card-header"><span class="outcome-card-title">Item ' + (i+1) + '</span><button class="btn btn-danger btn-sm" onclick="deleteBriefingItem(' + i + ')">×</button></div>' +
-      '<div class="form-row three">' +
-        '<div class="form-group"><label>Icon</label><input id="brf-icon-' + i + '" value="' + esc(item.icon||'') + '" /></div>' +
-        '<div class="form-group"><label>Title</label><input id="brf-title-' + i + '" value="' + esc(item.title||'') + '" /></div>' +
-        '<div class="form-group"><label>Style</label><select id="brf-style-' + i + '"><option value="default"' + (item.style==='default'?' selected':'') + '>Default</option><option value="danger"' + (item.style==='danger'?' selected':'') + '>Danger (red)</option><option value="success"' + (item.style==='success'?' selected':'') + '>Success (green)</option></select></div>' +
-      '</div>' +
-      '<div class="form-group"><label>Text</label><textarea id="brf-text-' + i + '" rows="2">' + esc(item.text||'') + '</textarea></div>' +
-    '</div>';
-  }).join('');
-}
-
-function readBriefingItems() {
-  var items = [];
-  var i = 0;
-  while (document.getElementById('brf-title-' + i)) {
-    items.push({
-      icon: document.getElementById('brf-icon-' + i).value,
-      title: document.getElementById('brf-title-' + i).value,
-      text: document.getElementById('brf-text-' + i).value,
-      style: document.getElementById('brf-style-' + i).value
-    });
-    i++;
-  }
-  return items;
-}
-
-function addBriefingItem() {
-  var pt = GD.config.pageText || {};
-  if (!pt.briefingScreen) pt.briefingScreen = {};
-  if (!pt.briefingScreen.items) pt.briefingScreen.items = [];
-  pt.briefingScreen.items.push({icon:'', title:'New Item', text:'', style:'default'});
-  populateBriefingItems(pt.briefingScreen.items);
-}
-
-function deleteBriefingItem(i) {
-  var pt = GD.config.pageText || {};
-  if (!pt.briefingScreen || !pt.briefingScreen.items) return;
-  pt.briefingScreen.items.splice(i, 1);
-  populateBriefingItems(pt.briefingScreen.items);
-}
+// NOTE: The old briefing-screen item editor (populateBriefingItems,
+// readBriefingItems, addBriefingItem, deleteBriefingItem) was removed
+// when the static briefing screen was replaced by in-game Avi Rosen
+// popups. That content now lives in config.popupMessages.onboarding
+// and is edited through the "Tooltips & Popups" panel.
 
 function saveText() {
   if(!GD.config.pageText) GD.config.pageText={};

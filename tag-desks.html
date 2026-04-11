@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Tagger & Calibrator — Antisemitism Decoded</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f0f12; color: #e8e8ec; margin: 0; }
+  header { background: #07070a; padding: 14px 22px; border-bottom: 1px solid #1f1f24; position: sticky; top: 0; z-index: 10; }
+  header h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; }
+  .stepnav { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .stepnav .step { padding: 5px 11px; border-radius: 3px; background: #1a1a20; font-size: 11px; color: #7f7f88; }
+  .stepnav .step.active { background: #2563eb; color: white; }
+  .stepnav .step.done { background: #14532d; color: #86efac; }
+  main { padding: 22px; max-width: 1500px; margin: 0 auto; }
+  section h2 { font-size: 18px; font-weight: 600; margin: 0 0 10px; }
+  section p { color: #9f9fa9; font-size: 13px; margin: 6px 0 16px; line-height: 1.5; }
+  button { background: #2563eb; color: white; border: 0; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; }
+  button:hover { background: #1d4ed8; }
+  button:disabled { background: #333; cursor: not-allowed; color: #666; }
+  button.secondary { background: #2a2a33; }
+  button.secondary:hover { background: #3a3a43; }
+  button.danger { background: #7f1d1d; }
+  button.danger:hover { background: #991b1b; }
+  input[type=file] { background: #14141a; padding: 14px; border: 1px dashed #333; border-radius: 5px; color: #888; width: 100%; box-sizing: border-box; cursor: pointer; }
+  select, input[type=number], input[type=range] { background: #14141a; color: #e8e8ec; border: 1px solid #2a2a33; padding: 5px 8px; border-radius: 3px; font-size: 12px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+  .card { background: #14141a; border: 1px solid #1f1f26; border-radius: 6px; padding: 10px; }
+  .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 3px; background: #000; }
+  .card .name { font-size: 10px; color: #666; margin: 7px 0 4px; word-break: break-all; line-height: 1.35; }
+  .card .tag-row { display: flex; gap: 4px; margin-top: 5px; }
+  .card select { flex: 1; font-size: 11px; padding: 3px 5px; min-width: 0; }
+
+  .calib-layout { display: grid; grid-template-columns: 280px 1fr; gap: 18px; align-items: flex-start; }
+  .calib-sidebar { background: #14141a; border-radius: 6px; padding: 14px; position: sticky; top: 80px; }
+  .calib-sidebar h3 { margin: 0 0 10px; font-size: 12px; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; }
+  .calib-sidebar .ref-picker { margin-bottom: 14px; }
+  .calib-sidebar .ref-picker label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
+  .calib-sidebar .ref-picker select { width: 100%; }
+  .hs-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .hs-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: #0c0c10; border-radius: 3px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
+  .hs-row:hover { border-color: #2a2a33; }
+  .hs-row.active { border-color: #2563eb; background: #0f1828; }
+  .hs-row .label { font-weight: 600; font-size: 12px; color: #ddd; }
+  .hs-row .status { font-size: 10px; color: #666; }
+  .hs-row.set .status { color: #86efac; }
+  .calib-hint { font-size: 11px; color: #888; line-height: 1.45; padding: 10px; background: #0c0c10; border-radius: 3px; margin-top: 10px; }
+  .calib-hint strong { color: #e8e8ec; }
+  .control-group { margin-top: 14px; padding-top: 14px; border-top: 1px solid #1f1f26; }
+  .control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; margin-top: 8px; }
+  .control-group input[type=range] { width: 100%; }
+  .control-group .rot-display { color: #86efac; font-family: Menlo, monospace; }
+  .nav-buttons { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #1f1f26; }
+  .nav-buttons button { flex: 1; }
+
+  .canvas-wrap { background: #14141a; border-radius: 6px; padding: 14px; overflow: auto; }
+  .canvas-host { position: relative; display: inline-block; user-select: none; touch-action: none; }
+  .canvas-host img { display: block; max-width: 100%; max-height: 78vh; width: auto; height: auto; pointer-events: none; -webkit-user-drag: none; }
+
+  .hs-rect { position: absolute; pointer-events: none; will-change: transform; }
+  .hs-rect .rect-body { position: absolute; inset: 0; border: 2px solid #3b82f6; background: rgba(59,130,246,0.12); pointer-events: auto; cursor: move; box-sizing: border-box; }
+  .hs-rect.inactive .rect-body { border-color: rgba(150,150,165,0.35); background: rgba(150,150,165,0.04); cursor: pointer; }
+  .hs-rect.inactive .handle, .hs-rect.inactive .rot-line { display: none; }
+  .hs-rect .label-tag { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 10px; color: rgba(255,255,255,0.92); text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; pointer-events: none; white-space: nowrap; }
+  .hs-rect .handle { position: absolute; width: 11px; height: 11px; background: white; border: 2px solid #2563eb; border-radius: 50%; transform: translate(-50%,-50%); pointer-events: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+  .hs-rect .handle.nw { top: 0; left: 0; cursor: nwse-resize; }
+  .hs-rect .handle.ne { top: 0; left: 100%; cursor: nesw-resize; }
+  .hs-rect .handle.sw { top: 100%; left: 0; cursor: nesw-resize; }
+  .hs-rect .handle.se { top: 100%; left: 100%; cursor: nwse-resize; }
+  .hs-rect .handle.rot { top: 0; left: 50%; background: #10b981; border-color: #047857; cursor: grab; width: 13px; height: 13px; }
+  .hs-rect .handle.rot { transform: translate(-50%, calc(-100% - 22px)); }
+  .hs-rect .rot-line { position: absolute; left: 50%; top: 0; width: 2px; height: 22px; background: #10b981; transform: translate(-50%, -100%); pointer-events: none; }
+
+  textarea { width: 100%; box-sizing: border-box; min-height: 320px; background: #07070a; color: #e8e8ec; border: 1px solid #1f1f26; border-radius: 4px; padding: 12px; font-family: Menlo, Monaco, monospace; font-size: 11px; line-height: 1.5; }
+
+  .status-msg { margin-top: 10px; font-size: 12px; }
+  .status-msg.ok { color: #86efac; }
+  .status-msg.warn { color: #fca5a5; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Desk Tagger & Calibrator — Antisemitism Decoded</h1>
+  <nav class="stepnav">
+    <div class="step active" data-step="upload">1. Upload</div>
+    <div class="step" data-step="review">2. Review tags</div>
+    <div class="step" data-step="calibrate-basic">3. Calibrate basic</div>
+    <div class="step" data-step="calibrate-fancy">4. Calibrate fancy</div>
+    <div class="step" data-step="output">5. Output</div>
+  </nav>
+</header>
+
+<main>
+  <section id="step-upload">
+    <h2>Step 1. Upload 20 desk PNGs</h2>
+    <p>Select all 20 PNGs from <code>~/Downloads/Antisemitism Decoded Office/</code> at once. Files are read into memory locally — nothing is uploaded anywhere.</p>
+    <input type="file" id="file-input" multiple accept="image/png">
+    <div class="status-msg" id="upload-status"></div>
+  </section>
+
+  <section id="step-review" hidden>
+    <h2>Step 2. Verify auto-inferred tags</h2>
+    <p>I pre-filled <strong>skin / morale state / post-it</strong> for each file from its filename. Scan them and fix any that look wrong, then continue.</p>
+    <div style="margin-bottom: 14px; display:flex; gap:8px;">
+      <button id="review-continue">Continue to basic calibration →</button>
+      <button id="review-back" class="secondary">← Back</button>
+    </div>
+    <div id="review-grid" class="grid"></div>
+  </section>
+
+  <section id="step-calibrate" hidden>
+    <h2 id="calib-title">Calibrate desk hotspots</h2>
+    <p>Click a hotspot in the sidebar, then click-drag on the image to draw its rectangle. Drag inside to move, corner handles to resize, green circle to rotate. All coordinates are stored as percentages so they're resolution-independent.</p>
+    <div class="calib-layout">
+      <aside class="calib-sidebar">
+        <div class="ref-picker">
+          <label>Reference image</label>
+          <select id="ref-select"></select>
+        </div>
+        <h3>Hotspots</h3>
+        <div id="hs-list" class="hs-list"></div>
+        <div class="calib-hint">
+          <strong>Monitor green box</strong> is auto-detected from the bright green rectangle in the art. If it looks wrong, click it in the list and redraw.
+        </div>
+        <div class="control-group" id="rot-controls" hidden>
+          <label>Rotation: <span id="rot-display" class="rot-display">0°</span></label>
+          <input type="range" id="rot-slider" min="-180" max="180" step="1" value="0">
+          <button id="delete-hs" class="danger" style="margin-top:10px; width:100%;">Delete this hotspot</button>
+        </div>
+        <div class="nav-buttons">
+          <button id="calib-back" class="secondary">← Back</button>
+          <button id="calib-next">Next →</button>
+        </div>
+      </aside>
+      <div class="canvas-wrap">
+        <div class="canvas-host" id="canvas-host">
+          <img id="calib-img" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="step-output" hidden>
+    <h2>Step 5. Output</h2>
+    <p>Copy the JSON below and paste it in chat. Claude will use the hotspot map to wire up the desk and rename the files from Downloads into <code>art/</code>.</p>
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button id="copy-json">Copy JSON to clipboard</button>
+      <button id="download-json" class="secondary">Download as file</button>
+      <button id="output-back" class="secondary">← Back to fancy calibration</button>
+    </div>
+    <textarea id="output-json" readonly></textarea>
+  </section>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const HOTSPOTS = ['phone', 'monitor', 'monitorScreen', 'postit', 'keys', 'landline'];
+const HOTSPOT_LABELS = {
+  phone: 'Phone',
+  monitor: 'Monitor',
+  monitorScreen: 'Monitor green box',
+  postit: 'Post-it',
+  keys: 'Keys',
+  landline: 'Landline'
+};
+const MORALE_STATES = ['plain', 'coffee', 'food', 'garbage', 'flowers'];
+const MIN_SIZE_PX = 8;
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  files: [],               // [{name, file, url, tag: {skin, moraleState, postit}}]
+  hotspots: { basic: {}, fancy: {} },  // per skin: {phone: {cx,cy,w,h,rot}, ...} in natural pixel coords
+  refDims:  { basic: null, fancy: null }, // {w, h} natural dimensions
+  currentSkin: 'basic',
+  currentHotspot: null
+};
+
+// ============================================================
+// TAG INFERENCE
+// ============================================================
+function inferTag(name) {
+  const n = name.toLowerCase();
+  let skin, moraleState;
+  if (n.includes('basic')) skin = 'basic';
+  else if (n.includes('fancy')) skin = 'fancy';
+  else if (n.includes('coffee')) skin = 'basic';
+  else if (n.includes('latte')) skin = 'fancy';
+  else skin = 'basic';
+
+  if (n.includes('basic') || n.includes('fancy')) moraleState = 'plain';
+  else if (n.includes('garbage')) moraleState = 'garbage';
+  else if (n.includes('apple') || n.includes('takeout')) moraleState = 'food';
+  else if (n.includes('plant') || n.includes('flowers')) moraleState = 'flowers';
+  else moraleState = 'coffee';
+
+  const postit = n.includes('note');
+  return { skin, moraleState, postit };
+}
+
+// ============================================================
+// STEP NAV
+// ============================================================
+function goToStep(stepId) {
+  document.querySelectorAll('main > section').forEach(s => s.hidden = true);
+  const target = (stepId === 'calibrate-basic' || stepId === 'calibrate-fancy')
+    ? 'step-calibrate' : 'step-' + stepId;
+  document.getElementById(target).hidden = false;
+  document.querySelectorAll('.stepnav .step').forEach(el => {
+    el.classList.remove('active');
+    if (el.dataset.step === stepId) el.classList.add('active');
+  });
+}
+function markStepDone(stepId) {
+  const el = document.querySelector(`.stepnav .step[data-step="${stepId}"]`);
+  if (el) el.classList.add('done');
+}
+
+// ============================================================
+// STEP 1: UPLOAD
+// ============================================================
+document.getElementById('file-input').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  const status = document.getElementById('upload-status');
+  if (files.length !== 20) {
+    status.className = 'status-msg warn';
+    status.textContent = `Expected 20 files, got ${files.length}. Please select all 20 PNGs.`;
+    return;
+  }
+  state.files = files.map(f => ({
+    name: f.name,
+    file: f,
+    url: URL.createObjectURL(f),
+    tag: inferTag(f.name)
+  }));
+  state.files.sort((a, b) => a.name.localeCompare(b.name));
+  status.className = 'status-msg ok';
+  status.textContent = `Loaded ${files.length} files.`;
+  renderReview();
+  markStepDone('upload');
+  goToStep('review');
+});
+
+// ============================================================
+// STEP 2: REVIEW
+// ============================================================
+function renderReview() {
+  const grid = document.getElementById('review-grid');
+  grid.innerHTML = '';
+  state.files.forEach((f, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${f.url}" alt="">
+      <div class="name">${escapeHtml(f.name)}</div>
+      <div class="tag-row">
+        <select data-field="skin" data-i="${i}">
+          <option value="basic"${f.tag.skin==='basic'?' selected':''}>basic</option>
+          <option value="fancy"${f.tag.skin==='fancy'?' selected':''}>fancy</option>
+        </select>
+        <select data-field="moraleState" data-i="${i}">
+          ${MORALE_STATES.map(s=>`<option value="${s}"${f.tag.moraleState===s?' selected':''}>${s}</option>`).join('')}
+        </select>
+        <select data-field="postit" data-i="${i}">
+          <option value="false"${!f.tag.postit?' selected':''}>no note</option>
+          <option value="true"${f.tag.postit?' selected':''}>note</option>
+        </select>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('review-grid').addEventListener('change', (e) => {
+  const sel = e.target;
+  if (!sel.dataset || !sel.dataset.field) return;
+  const i = parseInt(sel.dataset.i, 10);
+  const field = sel.dataset.field;
+  if (field === 'postit') state.files[i].tag.postit = sel.value === 'true';
+  else state.files[i].tag[field] = sel.value;
+});
+
+document.getElementById('review-continue').addEventListener('click', () => {
+  markStepDone('review');
+  state.currentHotspot = null;
+  enterCalibration('basic');
+});
+document.getElementById('review-back').addEventListener('click', () => goToStep('upload'));
+
+// ============================================================
+// STEP 3 / 4: CALIBRATION
+// ============================================================
+function enterCalibration(skin) {
+  state.currentSkin = skin;
+  state.currentHotspot = null;
+  goToStep('calibrate-' + skin);
+  document.getElementById('calib-title').textContent =
+    `Step ${skin === 'basic' ? '3' : '4'}. Calibrate ${skin} desk hotspots`;
+  const refSelect = document.getElementById('ref-select');
+  refSelect.innerHTML = '';
+  const candidates = state.files.filter(f => f.tag.skin === skin && f.tag.postit);
+  if (candidates.length === 0) {
+    alert(`No ${skin}-skin post-it reference found. Check your tags in Step 2.`);
+    return;
+  }
+  candidates.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.name;
+    opt.textContent = f.name;
+    refSelect.appendChild(opt);
+  });
+  refSelect.value = candidates[0].name;
+  loadCalibrationImage(candidates[0]);
+  renderHotspotList();
+  updateRotControls();
+}
+
+document.getElementById('ref-select').addEventListener('change', (e) => {
+  const f = state.files.find(ff => ff.name === e.target.value);
+  if (f) loadCalibrationImage(f);
+});
+
+function loadCalibrationImage(fileEntry) {
+  const img = document.getElementById('calib-img');
+  img.onload = () => {
+    state.refDims[state.currentSkin] = { w: img.naturalWidth, h: img.naturalHeight };
+    renderRects();
+    if (!state.hotspots[state.currentSkin].monitorScreen) {
+      autoDetectGreen(img);
+    }
+  };
+  img.src = fileEntry.url;
+}
+
+function renderHotspotList() {
+  const list = document.getElementById('hs-list');
+  list.innerHTML = '';
+  const skinHotspots = state.hotspots[state.currentSkin];
+  HOTSPOTS.forEach(hs => {
+    const row = document.createElement('div');
+    row.className = 'hs-row' + (skinHotspots[hs] ? ' set' : '') + (state.currentHotspot === hs ? ' active' : '');
+    row.innerHTML = `
+      <span class="label">${HOTSPOT_LABELS[hs]}</span>
+      <span class="status">${skinHotspots[hs] ? '✓ set' : 'not set'}</span>
+    `;
+    row.addEventListener('click', () => {
+      state.currentHotspot = hs;
+      renderHotspotList();
+      renderRects();
+      updateRotControls();
+    });
+    list.appendChild(row);
+  });
+}
+
+function updateRotControls() {
+  const panel = document.getElementById('rot-controls');
+  const slider = document.getElementById('rot-slider');
+  const display = document.getElementById('rot-display');
+  const active = state.currentHotspot && state.hotspots[state.currentSkin][state.currentHotspot];
+  if (active) {
+    panel.hidden = false;
+    const rot = active.rot || 0;
+    slider.value = rot;
+    display.textContent = rot.toFixed(0) + '°';
+  } else {
+    panel.hidden = true;
+  }
+}
+
+document.getElementById('rot-slider').addEventListener('input', (e) => {
+  if (!state.currentHotspot) return;
+  const h = state.hotspots[state.currentSkin][state.currentHotspot];
+  if (!h) return;
+  h.rot = parseFloat(e.target.value);
+  document.getElementById('rot-display').textContent = h.rot.toFixed(0) + '°';
+  renderRects();
+});
+
+document.getElementById('delete-hs').addEventListener('click', () => {
+  if (!state.currentHotspot) return;
+  delete state.hotspots[state.currentSkin][state.currentHotspot];
+  renderRects();
+  renderHotspotList();
+  updateRotControls();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('step-calibrate').hidden) return;
+  if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'TEXTAREA')) return;
+  if ((e.key === 'Delete' || e.key === 'Backspace') && state.currentHotspot) {
+    delete state.hotspots[state.currentSkin][state.currentHotspot];
+    renderRects();
+    renderHotspotList();
+    updateRotControls();
+    e.preventDefault();
+  }
+});
+
+// ---- Render rects ----
+function renderRects() {
+  const host = document.getElementById('canvas-host');
+  Array.from(host.querySelectorAll('.hs-rect')).forEach(el => el.remove());
+  const img = document.getElementById('calib-img');
+  if (!img.complete || !img.naturalWidth) return;
+  const natW = img.naturalWidth, natH = img.naturalHeight;
+  const skinHotspots = state.hotspots[state.currentSkin];
+  HOTSPOTS.forEach(hs => {
+    const rect = skinHotspots[hs];
+    if (!rect) return;
+    const el = document.createElement('div');
+    el.className = 'hs-rect' + (state.currentHotspot === hs ? '' : ' inactive');
+    el.dataset.hs = hs;
+    el.style.left = (rect.cx / natW * 100) + '%';
+    el.style.top = (rect.cy / natH * 100) + '%';
+    el.style.width = (rect.w / natW * 100) + '%';
+    el.style.height = (rect.h / natH * 100) + '%';
+    el.style.transform = `translate(-50%,-50%) rotate(${rect.rot || 0}deg)`;
+    el.innerHTML = `
+      <div class="rect-body"></div>
+      <div class="label-tag">${HOTSPOT_LABELS[hs]}</div>
+      <div class="rot-line"></div>
+      <div class="handle nw" data-handle="nw"></div>
+      <div class="handle ne" data-handle="ne"></div>
+      <div class="handle sw" data-handle="sw"></div>
+      <div class="handle se" data-handle="se"></div>
+      <div class="handle rot" data-handle="rot"></div>
+    `;
+    host.appendChild(el);
+  });
+}
+
+// ---- Coord conversion: viewport -> image natural pixels ----
+function mouseToNatural(ev) {
+  const img = document.getElementById('calib-img');
+  const rect = img.getBoundingClientRect();
+  const dispX = ev.clientX - rect.left;
+  const dispY = ev.clientY - rect.top;
+  return {
+    x: dispX * img.naturalWidth / rect.width,
+    y: dispY * img.naturalHeight / rect.height
+  };
+}
+
+// ---- Interaction ----
+let drag = null;
+
+document.getElementById('canvas-host').addEventListener('pointerdown', (ev) => {
+  const img = document.getElementById('calib-img');
+  if (!img.complete || !img.naturalWidth) return;
+
+  const handleEl = ev.target.closest('.handle');
+  const rectBodyEl = ev.target.closest('.rect-body');
+  const rectEl = ev.target.closest('.hs-rect');
+  const rectHs = rectEl && rectEl.dataset.hs;
+  const skin = state.currentSkin;
+
+  // Click on a non-active hotspot's rect body -> select that hotspot
+  if (rectEl && rectHs !== state.currentHotspot && rectEl.classList.contains('inactive')) {
+    state.currentHotspot = rectHs;
+    renderHotspotList();
+    renderRects();
+    updateRotControls();
+    ev.preventDefault();
+    return;
+  }
+
+  if (!state.currentHotspot) return;
+  const existing = state.hotspots[skin][state.currentHotspot];
+
+  if (handleEl && rectHs === state.currentHotspot && existing) {
+    const handle = handleEl.dataset.handle;
+    const pos = mouseToNatural(ev);
+    drag = {
+      mode: handle === 'rot' ? 'rotate' : 'resize',
+      handle: handle,
+      start: pos,
+      initial: { ...existing }
+    };
+    ev.target.setPointerCapture && ev.target.setPointerCapture(ev.pointerId);
+    ev.preventDefault();
+    return;
+  }
+
+  if (rectBodyEl && rectHs === state.currentHotspot && existing) {
+    const pos = mouseToNatural(ev);
+    drag = { mode: 'move', start: pos, initial: { ...existing } };
+    ev.preventDefault();
+    return;
+  }
+
+  // Otherwise: start drawing a new rect (replaces any existing for active hotspot)
+  const pos = mouseToNatural(ev);
+  drag = { mode: 'draw', start: pos };
+  ev.preventDefault();
+});
+
+document.addEventListener('pointermove', (ev) => {
+  if (!drag) return;
+  const pos = mouseToNatural(ev);
+  const skin = state.currentSkin;
+  const hs = state.currentHotspot;
+  if (!hs && drag.mode !== 'draw') return;
+
+  if (drag.mode === 'draw') {
+    const cx = (drag.start.x + pos.x) / 2;
+    const cy = (drag.start.y + pos.y) / 2;
+    const w = Math.max(Math.abs(pos.x - drag.start.x), MIN_SIZE_PX);
+    const h = Math.max(Math.abs(pos.y - drag.start.y), MIN_SIZE_PX);
+    state.hotspots[skin][hs] = { cx, cy, w, h, rot: 0 };
+    renderRects();
+  } else if (drag.mode === 'move') {
+    const dx = pos.x - drag.start.x;
+    const dy = pos.y - drag.start.y;
+    state.hotspots[skin][hs] = {
+      ...drag.initial,
+      cx: drag.initial.cx + dx,
+      cy: drag.initial.cy + dy
+    };
+    renderRects();
+  } else if (drag.mode === 'rotate') {
+    const dx = pos.x - drag.initial.cx;
+    const dy = pos.y - drag.initial.cy;
+    // 0° points up (negative y). atan2(dx, -dy) gives angle from "up" clockwise.
+    const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
+    state.hotspots[skin][hs] = { ...drag.initial, rot: angle };
+    renderRects();
+    updateRotControls();
+  } else if (drag.mode === 'resize') {
+    const rot = drag.initial.rot || 0;
+    const rad = rot * Math.PI / 180;
+    const cos = Math.cos(rad), sin = Math.sin(rad);
+    const sx = (drag.handle === 'ne' || drag.handle === 'se') ? 1 : -1;
+    const sy = (drag.handle === 'sw' || drag.handle === 'se') ? 1 : -1;
+    const hw0 = drag.initial.w / 2, hh0 = drag.initial.h / 2;
+    // Opposite corner local: (-sx*hw0, -sy*hh0); world:
+    const oppLX = -sx * hw0, oppLY = -sy * hh0;
+    const oppWX = drag.initial.cx + oppLX * cos - oppLY * sin;
+    const oppWY = drag.initial.cy + oppLX * sin + oppLY * cos;
+    // Vector opposite -> mouse in world, then inverse-rotate to local
+    const vx = pos.x - oppWX, vy = pos.y - oppWY;
+    const vxl = vx * cos + vy * sin;
+    const vyl = -vx * sin + vy * cos;
+    const newW = Math.max(Math.abs(vxl), MIN_SIZE_PX);
+    const newH = Math.max(Math.abs(vyl), MIN_SIZE_PX);
+    const newCx = (oppWX + pos.x) / 2;
+    const newCy = (oppWY + pos.y) / 2;
+    state.hotspots[skin][hs] = { cx: newCx, cy: newCy, w: newW, h: newH, rot: rot };
+    renderRects();
+  }
+});
+
+document.addEventListener('pointerup', () => {
+  if (drag) {
+    drag = null;
+    renderHotspotList();
+    updateRotControls();
+  }
+});
+
+// ---- Auto-detect bright green box ----
+function autoDetectGreen(img) {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let minX = canvas.width, minY = canvas.height, maxX = 0, maxY = 0, count = 0;
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        const i = (y * canvas.width + x) * 4;
+        const r = data[i], g = data[i+1], b = data[i+2];
+        if (g > 170 && r < 140 && b < 140 && g > r * 1.4 && g > b * 1.4) {
+          if (x < minX) minX = x;
+          if (y < minY) minY = y;
+          if (x > maxX) maxX = x;
+          if (y > maxY) maxY = y;
+          count++;
+        }
+      }
+    }
+    if (count > 200 && (maxX - minX) > 20 && (maxY - minY) > 20) {
+      state.hotspots[state.currentSkin].monitorScreen = {
+        cx: (minX + maxX) / 2,
+        cy: (minY + maxY) / 2,
+        w: maxX - minX,
+        h: maxY - minY,
+        rot: 0
+      };
+      renderRects();
+      renderHotspotList();
+    }
+  } catch (e) {
+    console.warn('Green auto-detect failed:', e);
+  }
+}
+
+// ---- Calib nav buttons ----
+document.getElementById('calib-back').addEventListener('click', () => {
+  if (state.currentSkin === 'basic') goToStep('review');
+  else enterCalibration('basic');
+});
+document.getElementById('calib-next').addEventListener('click', () => {
+  const skin = state.currentSkin;
+  const missing = HOTSPOTS.filter(hs => !state.hotspots[skin][hs]);
+  if (missing.length > 0) {
+    if (!confirm(`Missing hotspots: ${missing.map(h=>HOTSPOT_LABELS[h]).join(', ')}.\nContinue anyway?`)) return;
+  }
+  markStepDone('calibrate-' + skin);
+  if (skin === 'basic') enterCalibration('fancy');
+  else showOutput();
+});
+
+// ============================================================
+// STEP 5: OUTPUT
+// ============================================================
+function showOutput() {
+  goToStep('output');
+  const output = {
+    hotspots: { basic: {}, fancy: {} },
+    fileMapping: {},
+    sourceDir: '/Users/arnorosenfeld/Downloads/Antisemitism Decoded Office'
+  };
+  ['basic','fancy'].forEach(skin => {
+    const dims = state.refDims[skin];
+    if (!dims) return;
+    HOTSPOTS.forEach(hs => {
+      const r = state.hotspots[skin][hs];
+      if (!r) return;
+      output.hotspots[skin][hs] = {
+        cx: +(r.cx / dims.w * 100).toFixed(2),
+        cy: +(r.cy / dims.h * 100).toFixed(2),
+        w:  +(r.w  / dims.w * 100).toFixed(2),
+        h:  +(r.h  / dims.h * 100).toFixed(2),
+        rot: +((r.rot || 0)).toFixed(1)
+      };
+    });
+  });
+  state.files.forEach(f => {
+    const suffix = f.tag.postit ? '-postit' : '';
+    output.fileMapping[f.name] = `desk-${f.tag.skin}-${f.tag.moraleState}${suffix}.png`;
+  });
+  document.getElementById('output-json').value = JSON.stringify(output, null, 2);
+}
+
+document.getElementById('copy-json').addEventListener('click', () => {
+  const ta = document.getElementById('output-json');
+  ta.select();
+  try { navigator.clipboard.writeText(ta.value); } catch(e) { document.execCommand('copy'); }
+});
+document.getElementById('download-json').addEventListener('click', () => {
+  const ta = document.getElementById('output-json');
+  const blob = new Blob([ta.value], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'desk-hotspots.json';
+  a.click();
+});
+document.getElementById('output-back').addEventListener('click', () => enterCalibration('fancy'));
+
+// ============================================================
+// UTILS
+// ============================================================
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+})();
+</script>
+</body>
+</html>

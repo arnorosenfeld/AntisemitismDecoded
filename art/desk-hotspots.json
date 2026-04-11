@@ -1,0 +1,115 @@
+{
+  "hotspots": {
+    "basic": {
+      "phone": {
+        "cx": 33.49,
+        "cy": 45.17,
+        "w": 2.38,
+        "h": 7.1,
+        "rot": -46.8
+      },
+      "monitor": {
+        "cx": 46.83,
+        "cy": 21.81,
+        "w": 12.1,
+        "h": 19.68,
+        "rot": 0
+      },
+      "monitorScreen": {
+        "cx": 46.78,
+        "cy": 21.65,
+        "w": 12.05,
+        "h": 19.31,
+        "rot": 0
+      },
+      "postit": {
+        "cx": 42.46,
+        "cy": 35.57,
+        "w": 2.42,
+        "h": 5.65,
+        "rot": 0
+      },
+      "keys": {
+        "cx": 37.76,
+        "cy": 43.76,
+        "w": 1.97,
+        "h": 7.78,
+        "rot": -37.7
+      },
+      "landline": {
+        "cx": 63.66,
+        "cy": 42.31,
+        "w": 6.07,
+        "h": 10.39,
+        "rot": 30.9
+      }
+    },
+    "fancy": {
+      "phone": {
+        "cx": 35.28,
+        "cy": 40.94,
+        "w": 2.26,
+        "h": 9.84,
+        "rot": -52.7
+      },
+      "monitor": {
+        "cx": 47.26,
+        "cy": 16.89,
+        "w": 15.93,
+        "h": 21.5,
+        "rot": 0
+      },
+      "monitorScreen": {
+        "cx": 47.18,
+        "cy": 16.67,
+        "w": 15.77,
+        "h": 21.17,
+        "rot": 0
+      },
+      "postit": {
+        "cx": 41.8,
+        "cy": 31.47,
+        "w": 2.5,
+        "h": 5.47,
+        "rot": 0
+      },
+      "keys": {
+        "cx": 38.52,
+        "cy": 37.85,
+        "w": 2.65,
+        "h": 4.74,
+        "rot": 0
+      },
+      "landline": {
+        "cx": 62.1,
+        "cy": 37.94,
+        "w": 6.09,
+        "h": 10.02,
+        "rot": 20.2
+      }
+    }
+  },
+  "fileMapping": {
+    "Basic desk w_note.png": "desk-basic-plain-postit.png",
+    "Basic desk.png": "desk-basic-plain.png",
+    "Coffee desk w_apple + note.png": "desk-basic-food-postit.png",
+    "Coffee desk w_apple.png": "desk-basic-food.png",
+    "Coffee desk w_garbage + note.png": "desk-basic-garbage-postit.png",
+    "Coffee desk w_garbage.png": "desk-basic-garbage.png",
+    "Coffee desk w_note.png": "desk-basic-coffee-postit.png",
+    "Coffee desk w_plant + note.png": "desk-basic-flowers-postit.png",
+    "Coffee desk w_plant.png": "desk-basic-flowers.png",
+    "Coffee desk.png": "desk-basic-coffee.png",
+    "Fancy desk w_note.png": "desk-fancy-plain-postit.png",
+    "Fancy desk.png": "desk-fancy-plain.png",
+    "Latte desk w_flowers + note.png": "desk-fancy-flowers-postit.png",
+    "Latte desk w_flowers.png": "desk-fancy-flowers.png",
+    "Latte desk w_garbage + note.png": "desk-fancy-garbage-postit.png",
+    "Latte desk w_garbage.png": "desk-fancy-garbage.png",
+    "Latte desk w_note.png": "desk-fancy-coffee-postit.png",
+    "Latte desk w_takeout + note.png": "desk-fancy-food-postit.png",
+    "Latte desk w_takeout.png": "desk-fancy-food.png",
+    "Latte desk.png": "desk-fancy-coffee.png"
+  },
+  "sourceDir": "/Users/arnorosenfeld/Downloads/Antisemitism Decoded Office"
+}

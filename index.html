@@ -369,40 +369,23 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .act-cost { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-top: 7px; }
 .act-effects { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
-/* ── DESK OBJECTS ── */
-.desk-objects { display: flex; gap: 36px; align-items: center; justify-content: center; }
-.desk-obj { cursor: pointer; transition: all 0.2s ease; position: relative; text-align: center; }
-.desk-obj:hover { transform: translateY(-4px); }
-.desk-obj.disabled { opacity: 0.35; pointer-events: none; cursor: not-allowed; }
-.desk-obj-phone { width: 120px; flex-shrink: 0; }
-.desk-obj-monitor { width: 220px; flex-shrink: 0; }
-.desk-obj-folder { width: 150px; flex-shrink: 0; }
-.desk-obj-keys { width: 140px; flex-shrink: 0; }
-.desk-obj-badge { position: absolute; top: -8px; right: -8px; background: var(--gold); color: white; font-size: 11px; font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(184,134,11,0.4); z-index: 10; }
-.desk-obj-badge-red { background: #ef4444; box-shadow: 0 2px 6px rgba(239,68,68,0.4); }
-.desk-obj-sub { margin-top: 6px; font-size: 11px; color: var(--muted); opacity: 0.7; }
-.desk-obj-label { margin-top: 8px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+/* ── DESK SCENE (unified background with hotspots) ── */
+.desk-scene { position: relative; width: 100%; max-width: 820px; margin: 0 auto; aspect-ratio: 4375 / 1875; user-select: none; }
+.desk-scene .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 
-/* Phone */
-.desk-phone-wrap { position: relative; }
-.desk-phone-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.15)); }
-.desk-phone-screen { position: absolute; top: 6.1%; left: 7.3%; right: 6.7%; bottom: 13.1%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
-.desk-phone-status { display: flex; justify-content: space-between; padding: 2px 4px; font-size: 6px; font-weight: 600; color: #666; }
-.desk-phone-messages { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; -ms-overflow-style: none; }
-.desk-phone-messages::-webkit-scrollbar { display: none; }
-.desk-phone-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 25%; background: linear-gradient(to bottom, transparent, #dce8f0); pointer-events: none; }
-.desk-phone-msg { padding: 5px 8px 5px 6px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
-.desk-phone-msg:hover { background: rgba(0,0,0,0.04); }
-.desk-phone-from { font-size: 8px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; overflow: hidden; }
-.desk-phone-time { font-weight: 400; color: #999; margin-left: auto; text-align: right; }
-.desk-phone-subj { font-size: 8px; color: #888; margin-top: 1px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.desk-phone-alert { color: #ef4444; margin-right: 2px; }
-.desk-phone-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 8px; color: #999; }
+/* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
+.desk-hs { position: absolute; box-sizing: border-box; pointer-events: none; z-index: 5; }
+.desk-hs-body { position: absolute; inset: 0; pointer-events: auto; cursor: pointer; background: rgba(255,255,255,0.001); transition: background 0.15s, box-shadow 0.15s; border-radius: 3px; }
+.desk-hs:not(.empty) .desk-hs-body:hover { background: rgba(255,220,130,0.14); box-shadow: 0 0 0 2px rgba(184,134,11,0.55), 0 0 14px rgba(184,134,11,0.4); }
+.desk-hs.empty { pointer-events: none; }
+.desk-hs.empty .desk-hs-body { pointer-events: none; cursor: default; display: none; }
+.desk-hs-badge { position: absolute; top: -11px; right: -11px; background: var(--gold); color: white; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.45); z-index: 10; pointer-events: none; }
+.desk-hs-badge.red { background: #ef4444; box-shadow: 0 2px 8px rgba(239,68,68,0.55); }
+.desk-hs-phone.has-unread .desk-hs-body { animation: deskPhonePulse 2.2s ease-in-out infinite; }
+@keyframes deskPhonePulse { 0%,100% { box-shadow: 0 0 0 transparent; } 50% { box-shadow: 0 0 0 2px rgba(239,68,68,0.65), 0 0 18px rgba(239,68,68,0.55); } }
 
-/* Monitor */
-.desk-monitor-wrap { position: relative; }
-.desk-monitor-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.12)); }
-.desk-monitor-screen { position: absolute; top: 8.3%; left: 7.1%; right: 5.9%; bottom: 26.5%; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; border-radius: 0; }
+/* Monitor CSS animation overlay (positioned at monitorScreen coords) */
+.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; pointer-events: none; z-index: 4; }
 .desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
 .desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
 .desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
@@ -422,15 +405,27 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-mon-taskbar-item { height: 60%; padding: 0 4px; border-radius: 1px; font-size: 4px; font-weight: 600; color: #aab; display: flex; align-items: center; }
 .desk-mon-taskbar-item.active { background: rgba(255,255,255,0.12); }
 
-/* Folder */
-.desk-folder-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.12)); }
+/* Inbox pop-up — reuses the straight-on phone image as a frame, shown on hover */
+.desk-inbox-popup { position: absolute; width: 220px; pointer-events: none; opacity: 0; transform: translate(-50%, calc(-100% - 22px)) scale(0.82); transform-origin: bottom center; transition: opacity 0.18s ease, transform 0.22s cubic-bezier(.2,.9,.3,1.2); z-index: 50; filter: drop-shadow(0 14px 32px rgba(0,0,0,0.5)); }
+.desk-inbox-popup.visible { opacity: 1; transform: translate(-50%, calc(-100% - 22px)) scale(1); pointer-events: auto; }
+.desk-inbox-popup.has-unread .desk-phone-wrap { animation: deskRingOnce 1.2s ease-in-out; }
+.desk-phone-wrap { position: relative; }
+.desk-phone-img { width: 100%; height: auto; display: block; pointer-events: none; -webkit-user-drag: none; }
+.desk-phone-screen { position: absolute; top: 6.1%; left: 7.3%; right: 6.7%; bottom: 13.1%; overflow: hidden; display: flex; flex-direction: column; background: #dce8f0; border-radius: 0; text-align: left; }
+.desk-phone-status { display: flex; justify-content: space-between; padding: 4px 6px; font-size: 9px; font-weight: 600; color: #666; }
+.desk-phone-messages { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+.desk-phone-messages::-webkit-scrollbar { display: none; }
+.desk-phone-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 22%; background: linear-gradient(to bottom, transparent, #dce8f0); pointer-events: none; }
+.desk-phone-msg { padding: 6px 9px 6px 7px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.15s; }
+.desk-phone-msg:hover { background: rgba(0,0,0,0.05); }
+.desk-phone-from { font-size: 10px; font-weight: 700; color: var(--ink); display: flex; justify-content: space-between; align-items: center; overflow: hidden; }
+.desk-phone-time { font-weight: 400; color: #999; margin-left: auto; text-align: right; font-size: 9px; }
+.desk-phone-subj { font-size: 9px; color: #888; margin-top: 2px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.desk-phone-alert { color: #ef4444; margin-right: 2px; }
+.desk-phone-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999; }
 
-/* Keys */
-.desk-keys-img { width: 100%; height: auto; display: block; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15)); }
-
-/* Ring once animation */
+/* Ring animation — used by inbox popup on new messages */
 @keyframes deskRingOnce { 0%{transform:rotate(0)} 5%{transform:rotate(-5deg)} 10%{transform:rotate(5deg)} 15%{transform:rotate(-3deg)} 20%{transform:rotate(3deg)} 25%,100%{transform:rotate(0)} }
-.desk-ring-once .desk-phone-wrap { animation: deskRingOnce 1.2s ease-in-out 1; }
 
 /* ACTION RESULT */
 .act-result { border-left: 3px solid var(--gold); padding: 11px 15px; background: var(--white); margin-bottom: 9px; animation: slideIn 0.2s ease; }
@@ -14912,6 +14907,8 @@ let G = {
   actionsThisRound:0, inboxDelivered:0,
   roundInboxQueue:[], pendingInbox:[],
   channelQueues: null, phoneMessages: [],
+  // Desk scene state (skin based on donors w/ hysteresis, morale state updates at round boundaries)
+  deskSkin: 'basic', deskMoraleState: 'plain',
   // Persistent inbox
   inboxMessages:[], // {id, scenario, unread, expired, timerRemaining}
   // Coalition strikes
@@ -16157,6 +16154,10 @@ function startGame(){
     });
   }
 
+  // Pick initial desk skin from starting donors (round 1 is always 'plain' morale state).
+  initDeskSkin();
+  preloadDeskImages();
+
   showScreen('game-screen');
   initTicker();
   beginRound();
@@ -16228,6 +16229,10 @@ function startPromoGame(){
   G._startingPoliticalPosition = G.politicalPosition;
   G._startingPoliticalClout = G.politicalClout;
 
+  // Pick initial desk skin from starting donors (promo game — likely fancy but uses same rule).
+  initDeskSkin();
+  preloadDeskImages();
+
   showScreen('game-screen');
   initTicker();
   beginRound();
@@ -16252,6 +16257,10 @@ function beginRound(){
 
   // Record stat snapshot
   recordStatSnapshot();
+
+  // Update desk skin (donor hysteresis) and morale state (silent — no toast/animation).
+  // Round 1 stays 'plain'; round 2+ reads current morale band.
+  updateDeskSkinAndMorale();
 
   // Check coaching warnings (Year 1 only)
   if(G.round > 1) checkCoachingWarnings();
@@ -16542,11 +16551,208 @@ function updateHUD(){
   updateStatDanger();
 }
 
+// ═══════════════ DESK SCENE (unified background + hotspots) ═══════════════
+// Percentages captured via tag-desks.html; edit art/desk-hotspots.json and keep this in sync.
+var DESK_HOTSPOTS = {
+  "basic": {
+    "phone":         { "cx": 33.49, "cy": 45.17, "w":  2.38, "h":  7.10, "rot": -46.8 },
+    "monitor":       { "cx": 46.83, "cy": 21.81, "w": 12.10, "h": 19.68, "rot":   0.0 },
+    "monitorScreen": { "cx": 46.78, "cy": 21.65, "w": 12.05, "h": 19.31, "rot":   0.0 },
+    "postit":        { "cx": 42.46, "cy": 35.57, "w":  2.42, "h":  5.65, "rot":   0.0 },
+    "keys":          { "cx": 37.76, "cy": 43.76, "w":  1.97, "h":  7.78, "rot": -37.7 },
+    "landline":      { "cx": 63.66, "cy": 42.31, "w":  6.07, "h": 10.39, "rot":  30.9 }
+  },
+  "fancy": {
+    "phone":         { "cx": 35.28, "cy": 40.94, "w":  2.26, "h":  9.84, "rot": -52.7 },
+    "monitor":       { "cx": 47.26, "cy": 16.89, "w": 15.93, "h": 21.50, "rot":   0.0 },
+    "monitorScreen": { "cx": 47.18, "cy": 16.67, "w": 15.77, "h": 21.17, "rot":   0.0 },
+    "postit":        { "cx": 41.80, "cy": 31.47, "w":  2.50, "h":  5.47, "rot":   0.0 },
+    "keys":          { "cx": 38.52, "cy": 37.85, "w":  2.65, "h":  4.74, "rot":   0.0 },
+    "landline":      { "cx": 62.10, "cy": 37.94, "w":  6.09, "h": 10.02, "rot":  20.2 }
+  }
+};
+
+function getDeskMoraleKey(morale) {
+  if (morale >= 75) return 'flowers';
+  if (morale >= 40) return 'coffee';
+  if (morale >= 25) return 'food';
+  return 'garbage';
+}
+
+// Called at game start + every round boundary. Applies donor hysteresis and morale-band lookup.
+// Round 1 stays 'plain' regardless of morale per design spec.
+function updateDeskSkinAndMorale() {
+  var donors = (G.stats && typeof G.stats.donors === 'number') ? G.stats.donors : 0;
+  var currentSkin = G.deskSkin || 'basic';
+  // Donor hysteresis: basic -> fancy at >=75, fancy -> basic at <35
+  if (currentSkin === 'basic' && donors >= 75) G.deskSkin = 'fancy';
+  else if (currentSkin === 'fancy' && donors < 35) G.deskSkin = 'basic';
+  else G.deskSkin = currentSkin;
+  // Morale: plain only in round 1, morale-driven from round 2+
+  if ((G.round || 0) >= 2) {
+    var morale = (G.stats && typeof G.stats.morale === 'number') ? G.stats.morale : 50;
+    G.deskMoraleState = getDeskMoraleKey(morale);
+  } else {
+    G.deskMoraleState = 'plain';
+  }
+}
+
+// Called once at game start to pick the initial skin from starting donors.
+function initDeskSkin() {
+  var donors = (G.stats && typeof G.stats.donors === 'number') ? G.stats.donors : 0;
+  G.deskSkin = donors >= 75 ? 'fancy' : 'basic';
+  G.deskMoraleState = 'plain';
+}
+
+function getDeskBgPath() {
+  var skin = G.deskSkin || 'basic';
+  var morale = G.deskMoraleState || 'plain';
+  var folderQ = (G.channelQueues && G.channelQueues.folder) || [];
+  var postit = folderQ.length > 0 ? '-postit' : '';
+  return 'art/desk-' + skin + '-' + morale + postit + '.png';
+}
+
+var _deskPreloadStarted = false;
+function preloadDeskImages() {
+  if (_deskPreloadStarted) return;
+  _deskPreloadStarted = true;
+  var skins = ['basic', 'fancy'];
+  var morales = ['plain', 'coffee', 'food', 'garbage', 'flowers'];
+  var suffixes = ['', '-postit'];
+  skins.forEach(function(s){ morales.forEach(function(m){ suffixes.forEach(function(sf){
+    var img = new Image();
+    img.src = 'art/desk-' + s + '-' + m + sf + '.png';
+  }); }); });
+}
+
+// Build one hotspot div with badge, body, click handler.
+function _deskHotspotDiv(id, hs, opts) {
+  if (!hs) return '';
+  opts = opts || {};
+  var cls = 'desk-hs desk-hs-' + id;
+  if (opts.empty) cls += ' empty';
+  if (opts.hasUnread) cls += ' has-unread';
+  var style = 'left:' + hs.cx + '%;top:' + hs.cy + '%;width:' + hs.w + '%;height:' + hs.h + '%;transform:translate(-50%,-50%) rotate(' + (hs.rot || 0) + 'deg);';
+  var badge = '';
+  if (typeof opts.count === 'number' && opts.count > 0) {
+    badge = '<div class="desk-hs-badge' + (opts.badgeRed ? ' red' : '') + '">' + opts.count + '</div>';
+  }
+  var handlers = '';
+  if (opts.onclick) handlers += ' onclick="' + opts.onclick + '"';
+  if (opts.onmouseenter) handlers += ' onmouseenter="' + opts.onmouseenter + '"';
+  if (opts.onmouseleave) handlers += ' onmouseleave="' + opts.onmouseleave + '"';
+  var idAttr = opts.elementId ? ' id="' + opts.elementId + '"' : '';
+  return '<div class="' + cls + '"' + idAttr + ' style="' + style + '">' + badge + '<div class="desk-hs-body"' + handlers + '></div></div>';
+}
+
+function renderDeskScene(opts) {
+  var skin = G.deskSkin || 'basic';
+  var hs = DESK_HOTSPOTS[skin] || DESK_HOTSPOTS.basic;
+  var bgPath = getDeskBgPath();
+  var hasUnread = (opts.activeInbox || []).some(function(m){ return m.unread; });
+  var html = '';
+  html += '<div class="desk-scene" id="desk-scene">';
+  html += '<img class="desk-bg" src="' + bgPath + '" alt="">';
+
+  // Monitor CSS screen overlay, positioned at monitorScreen coordinates (under the hotspot body)
+  if (hs.monitorScreen) {
+    var ms = hs.monitorScreen;
+    html += '<div class="desk-monitor-animation" style="left:' + ms.cx + '%;top:' + ms.cy + '%;width:' + ms.w + '%;height:' + ms.h + '%;transform:translate(-50%,-50%) rotate(' + (ms.rot || 0) + 'deg);">' + (opts.monitorScreenHtml || '') + '</div>';
+  }
+
+  // Phone hotspot — opens inbox popup on hover/click
+  html += _deskHotspotDiv('phone', hs.phone, {
+    elementId: 'desk-hs-phone',
+    count: (opts.activeInbox || []).length,
+    badgeRed: true,
+    hasUnread: hasUnread,
+    onclick: 'toggleInboxPopup(event)',
+    onmouseenter: 'showInboxPopup()',
+    onmouseleave: 'scheduleHideInboxPopup()'
+  });
+
+  // Monitor hotspot
+  html += _deskHotspotDiv('monitor', hs.monitor, {
+    count: (opts.monQ || []).length,
+    empty: opts.disabled || (opts.monQ || []).length === 0,
+    onclick: "deskAction('monitor')"
+  });
+
+  // Post-it hotspot (only rendered when folder channel is non-empty — matches bg image state)
+  if ((opts.folQ || []).length > 0) {
+    html += _deskHotspotDiv('postit', hs.postit, {
+      count: opts.folQ.length,
+      empty: opts.disabled,
+      onclick: "deskAction('folder')"
+    });
+  }
+
+  // Keys hotspot
+  html += _deskHotspotDiv('keys', hs.keys, {
+    count: (opts.keyQ || []).length,
+    empty: opts.disabled || (opts.keyQ || []).length === 0,
+    onclick: "deskAction('keys')"
+  });
+
+  // Landline hotspot — dormant stub, visible in DOM but not interactive until events are authored
+  html += _deskHotspotDiv('landline', hs.landline, { empty: true });
+
+  // Inbox pop-up — reuses old phone.png as a frame, positioned above the phone hotspot
+  if (hs.phone) {
+    var popupClass = 'desk-inbox-popup' + (hasUnread ? ' has-unread' : '');
+    html += '<div class="' + popupClass + '" id="desk-inbox-popup" style="left:' + hs.phone.cx + '%;top:' + hs.phone.cy + '%;" onmouseenter="cancelHideInboxPopup()" onmouseleave="scheduleHideInboxPopup()">';
+    html += '<div class="desk-phone-wrap">';
+    html += '<img class="desk-phone-img" src="art/phone.png" alt="">';
+    html += '<div class="desk-phone-screen">' + (opts.inboxScreenHtml || '') + '</div>';
+    html += '</div>';
+    html += '</div>';
+  }
+
+  html += '</div>'; // .desk-scene
+  return html;
+}
+
+// Inbox popup show/hide — used by phone hotspot hover + click
+var _inboxHideTimer = null;
+function showInboxPopup() {
+  cancelHideInboxPopup();
+  var el = document.getElementById('desk-inbox-popup');
+  if (el) el.classList.add('visible');
+}
+function hideInboxPopup() {
+  var el = document.getElementById('desk-inbox-popup');
+  if (el) el.classList.remove('visible');
+}
+function scheduleHideInboxPopup() {
+  cancelHideInboxPopup();
+  _inboxHideTimer = setTimeout(hideInboxPopup, 220);
+}
+function cancelHideInboxPopup() {
+  if (_inboxHideTimer) { clearTimeout(_inboxHideTimer); _inboxHideTimer = null; }
+}
+function toggleInboxPopup(ev) {
+  if (ev) ev.stopPropagation();
+  var el = document.getElementById('desk-inbox-popup');
+  if (!el) return;
+  if (el.classList.contains('visible')) hideInboxPopup();
+  else showInboxPopup();
+}
+// Click-outside dismisses the popup (handles touch/tap-outside).
+document.addEventListener('click', function(ev) {
+  var popup = document.getElementById('desk-inbox-popup');
+  if (!popup || !popup.classList.contains('visible')) return;
+  if (popup.contains(ev.target)) return;
+  var phone = document.getElementById('desk-hs-phone');
+  if (phone && phone.contains(ev.target)) return;
+  hideInboxPopup();
+});
+
 // ═══════════════ DESK / CHANNEL DISTRIBUTION ═══════════════
 function distributeScenarios() {
-  // Pre-pick scenarios for this round and split across desk objects
+  // Pre-pick scenarios for this round and split across desk objects.
+  // 'landline' is a reserved stub channel — always present but unused until events are authored.
   var channels = ['monitor', 'folder', 'keys'];
-  G.channelQueues = { monitor: [], folder: [], keys: [] };
+  G.channelQueues = { monitor: [], folder: [], keys: [], landline: [] };
 
   // How many scenarios to pre-pick (one per AP remaining + a couple extra)
   var needed = (G.apRemaining || 0) + 2;
@@ -16597,44 +16803,33 @@ function renderMain(){
   // End round button (only when AP = 0)
   var endRoundHtml = disabled ? '<button class="btn btn-sm btn-primary ap-end" onclick="endRound()" style="margin-top:12px">End Round \u2192</button>' : '';
 
-  // --- Phone (inbox) ---
+  // --- Channel data for desk scene ---
   var activeInbox = (G.inboxMessages||[]).filter(function(m){ return !m.expired; });
-  var phoneBadge = activeInbox.length > 0 ? '<div class="desk-obj-badge desk-obj-badge-red">' + activeInbox.length + '</div>' : '';
-  var phoneRingClass = activeInbox.some(function(m){ return m.unread; }) ? ' desk-ring-once' : '';
-
-  var phoneScreenHtml = '';
-  if (activeInbox.length > 0) {
-    phoneScreenHtml = '<div class="desk-phone-status"><span>Inbox</span><span>' + activeInbox.length + ' msg</span></div>';
-    phoneScreenHtml += '<div class="desk-phone-messages">';
-    activeInbox.forEach(function(m) {
-      var sc = m.scenario || {};
-      var urgent = m.timerRemaining ? '<span class="desk-phone-alert">\u2757</span>' : '';
-      phoneScreenHtml += '<div class="desk-phone-msg" onclick="event.stopPropagation();openInboxMessage(\'' + m.id + '\')">';
-      phoneScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? m.timerRemaining + ' rd' : '') + '</span></div>';
-      phoneScreenHtml += '<div class="desk-phone-subj">' + esc(sc.subject || sc.title || '') + '</div>';
-      phoneScreenHtml += '</div>';
-    });
-    phoneScreenHtml += '</div>';
-    phoneScreenHtml += '<div class="desk-phone-fade"></div>';
-  } else {
-    phoneScreenHtml = '<div class="desk-phone-empty">No messages</div>';
-  }
-
-  // --- Monitor / Folder / Keys badges & disabled state ---
   var monQ = G.channelQueues.monitor || [];
   var folQ = G.channelQueues.folder || [];
   var keyQ = G.channelQueues.keys || [];
 
-  function deskBadge(count) {
-    return count > 0 ? '<div class="desk-obj-badge">' + count + '</div>' : '';
+  // Build inbox popup HTML (same structure as old on-phone overlay, now in the floating popup)
+  var inboxScreenHtml = '';
+  if (activeInbox.length > 0) {
+    inboxScreenHtml = '<div class="desk-phone-status"><span>Inbox</span><span>' + activeInbox.length + ' msg</span></div>';
+    inboxScreenHtml += '<div class="desk-phone-messages">';
+    activeInbox.forEach(function(m) {
+      var sc = m.scenario || {};
+      var urgent = m.timerRemaining ? '<span class="desk-phone-alert">\u2757</span>' : '';
+      inboxScreenHtml += '<div class="desk-phone-msg" onclick="event.stopPropagation();openInboxMessage(\'' + m.id + '\')">';
+      inboxScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? m.timerRemaining + ' rd' : '') + '</span></div>';
+      inboxScreenHtml += '<div class="desk-phone-subj">' + esc(sc.subject || sc.title || '') + '</div>';
+      inboxScreenHtml += '</div>';
+    });
+    inboxScreenHtml += '</div>';
+    inboxScreenHtml += '<div class="desk-phone-fade"></div>';
+  } else {
+    inboxScreenHtml = '<div class="desk-phone-empty">No messages</div>';
   }
 
-  var monDisabled = (disabled || monQ.length === 0) ? ' disabled' : '';
-  var folDisabled = (disabled || folQ.length === 0) ? ' disabled' : '';
-  var keyDisabled = (disabled || keyQ.length === 0) ? ' disabled' : '';
-
-  // --- Monitor screen (static desktop atmosphere) ---
-  var monScreen = '<div class="desk-mon-desktop">'
+  // Build monitor-screen animation HTML (same content, now rendered inside the green-box overlay)
+  var monScreenHtml = '<div class="desk-mon-desktop">'
     + '<div class="desk-mon-win" style="top:8%;left:5%;width:55%;height:50%">'
     + '<div class="desk-mon-win-bar desk-mon-win-bar-green"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Gelt — Q' + G.round + '</span></div>'
     + '<div class="desk-mon-win-body"><div class="desk-mon-chart">'
@@ -16653,6 +16848,16 @@ function renderMain(){
     + '</div>'
     + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Gelt</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
 
+  var deskSceneHtml = renderDeskScene({
+    disabled: disabled,
+    monQ: monQ,
+    folQ: folQ,
+    keyQ: keyQ,
+    activeInbox: activeInbox,
+    inboxScreenHtml: inboxScreenHtml,
+    monitorScreenHtml: monScreenHtml
+  });
+
   el.innerHTML = ''
     + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue.</div>' : '')
     + '<div style="margin-bottom:28px">'
@@ -16662,47 +16867,8 @@ function renderMain(){
     + '<p>You have <strong>' + G.apRemaining + '</strong> action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining.</p>'
     + endRoundHtml
     + '</div>'
-    + '<div class="desk-objects">'
-
-    // Phone
-    + '<div class="desk-obj desk-obj-phone' + phoneRingClass + '" id="desk-phone" onclick="toggleInbox()">'
-    + phoneBadge
-    + '<div class="desk-phone-wrap">'
-    + '<img class="desk-phone-img" src="art/phone.png" />'
-    + '<div class="desk-phone-screen">' + phoneScreenHtml + '</div>'
-    + '</div>'
-    + '<div class="desk-obj-sub">Free to answer</div>'
-    + '</div>'
-
-    // Monitor
-    + '<div class="desk-obj desk-obj-monitor' + monDisabled + '" onclick="deskAction(\'monitor\')">'
-    + deskBadge(monQ.length)
-    + '<div class="desk-monitor-wrap">'
-    + '<img class="desk-monitor-img" src="art/monitor.png" />'
-    + '<div class="desk-monitor-screen">' + monScreen + '</div>'
-    + '</div>'
-    + '<div class="desk-obj-sub">1 action each</div>'
-    + '</div>'
-
-    // Folder
-    + '<div class="desk-obj desk-obj-folder' + folDisabled + '" onclick="deskAction(\'folder\')">'
-    + deskBadge(folQ.length)
-    + '<img class="desk-folder-img" src="art/folder.png" />'
-    + '<div class="desk-obj-sub">1 action each</div>'
-    + '</div>'
-
-    // Keys
-    + '<div class="desk-obj desk-obj-keys' + keyDisabled + '" onclick="deskAction(\'keys\')">'
-    + deskBadge(keyQ.length)
-    + '<img class="desk-keys-img" src="art/keys.png" />'
-    + '<div class="desk-obj-label">Out &amp; About</div>'
-    + '<div class="desk-obj-sub">1 action each</div>'
-    + '</div>'
-
-    + '</div>'
-    + '</div>'
-
-    + '';
+    + deskSceneHtml
+    + '</div>';
 }
 
 // ═══════════════ DESK ACTION ═══════════════

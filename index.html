@@ -15873,8 +15873,10 @@ function pickCoachMsg(category) {
 }
 
 function showCoachingWarning(msg, level) {
-  // Don't show coaching warnings while tutorial is active
-  if (!localStorage.getItem('ad_onboarded') && document.querySelector('.onboarding-notif')) return;
+  // Suppress coaching warnings for the entire first play, not only while a
+  // specific onboarding notif div happens to be in the DOM — otherwise a
+  // warning can slip through the brief gap between tutorial steps.
+  if (isFirstPlay()) return;
   var bgColor = level === 'red' ? '#fdf2f2' : level === 'yellow' ? '#fefce8' : level === 'green' ? '#f0fdf4' : '#f0f4ff';
   var borderColor = level === 'red' ? '#e8a0a0' : level === 'yellow' ? '#e8d44d' : level === 'green' ? '#6ee7b7' : '#a0b4e8';
   var textColor = level === 'red' ? '#8b1a1a' : level === 'yellow' ? '#7a6b1a' : level === 'green' ? '#166534' : '#1a3a6b';
@@ -16841,6 +16843,8 @@ function devQuickStart() {
   if (!orgs.length || !missions.length) { alert('No orgs/missions in GAME_DATA'); return; }
   var pick = function(arr) { return arr[Math.floor(Math.random()*arr.length)]; };
   var shuffle = function(arr) { return arr.slice().sort(function(){return Math.random()-0.5;}); };
+  // Dev quick-starts always replay the tutorial — clear the sticky onboarded flag.
+  try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
   G.charName = 'Dev Tester';
   G.charEmoji = pick(['🧪','🤖','🧠','🦊','🐙','🦄','🐉']);
   G.charTraits = traits.length ? [pick(traits).id] : [];
@@ -16852,6 +16856,10 @@ function devQuickStart() {
   if (typeof autoAllocateStats === 'function') autoAllocateStats();
   // Jump straight to the game
   startGame();
+}
+function devResetTutorial() {
+  try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
+  alert('Tutorial reset — start a new game to see Avi\u2019s onboarding.');
 }
 function updateDeskDevPanel() {
   var p = document.getElementById('desk-dev-panel');
@@ -16868,14 +16876,20 @@ function updateDeskDevPanel() {
 }
 function initDeskDevPanel() {
   if (!/[?&]devdesk/.test(location.search)) return;
+  // Every ?devdesk page load wipes the onboarded flag so Avi's tutorial
+  // replays when you start a new game — dev sessions should see the full
+  // first-play experience without manually clearing localStorage.
+  try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
   var p = document.createElement('div');
   p.id = 'desk-dev-panel';
   p.style.cssText = 'position:fixed;bottom:12px;right:12px;background:rgba(15,15,18,0.95);color:#e8e8ec;padding:10px 12px;border-radius:6px;font:11px -apple-system,sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.5);border:1px solid #333;user-select:none;';
   var btnStyle = 'margin-right:3px;padding:3px 8px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#2a2a33;color:#e8e8ec;font-family:inherit;';
   var quickStartBtnStyle = 'width:100%;padding:6px 10px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#14532d;color:#86efac;font-family:inherit;font-weight:700;letter-spacing:0.3px;';
+  var resetBtnStyle = 'width:100%;padding:5px 10px;margin-top:5px;border:0;border-radius:3px;cursor:pointer;font-size:10px;background:#2a2a33;color:#cbd5e1;font-family:inherit;';
   p.innerHTML =
     '<div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #333;">' +
       '<button onclick="devQuickStart()" style="' + quickStartBtnStyle + '">⚡ Quick start game (random setup)</button>' +
+      '<button onclick="devResetTutorial()" style="' + resetBtnStyle + '">↻ Reset Avi tutorial flag</button>' +
     '</div>' +
     '<div style="font-weight:700;margin-bottom:7px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Desk Dev</div>' +
     '<div style="margin-bottom:5px;"><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">skin</span>' +

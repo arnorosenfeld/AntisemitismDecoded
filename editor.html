@@ -835,7 +835,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <div id="panel-tooltips" class="panel">
           <div class="form-section">
             <h3>Tooltips & Popup Messages</h3>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Edit all in-game popup messages — onboarding tutorial, stat danger warnings, mission star alerts, gelt crisis, clout messages, and randomly-picked coaching messages. These are pulled directly from <code>config.popupMessages</code> and <code>config.coachingMessages</code> in data.json. Use placeholders like <code>{stat}</code>, <code>{value}</code>, <code>{amount}</code>, <code>{full}</code>, and <code>{threshold}</code> where supported.</p>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Edit all in-game popup messages — onboarding tutorial, stat danger warnings, mission star alerts, gelt crisis, clout messages, and randomly-picked coaching messages. These are pulled directly from <code>config.popupMessages</code> and <code>config.coachingMessages</code> in the game data. Use placeholders like <code>{stat}</code>, <code>{value}</code>, <code>{amount}</code>, <code>{full}</code>, and <code>{threshold}</code> where supported.</p>
             <div id="tooltips-list"></div>
             <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
               <button class="btn btn-primary" onclick="saveTooltips()">Save All Messages</button>
@@ -21793,7 +21793,7 @@ function readSegOverrides(prefix, si, ci) {
 
 // ═══ TOOLTIPS & POPUPS ═══
 // ═══ TOOLTIPS / POPUP MESSAGES PANEL ═══
-// Edits the popupMessages and coachingMessages blocks in data.json config.
+// Edits the popupMessages and coachingMessages blocks in the game config.
 // Organized into sections: Onboarding, Stat Warnings, Mission Stars, Other,
 // and Coaching Messages (random pools).
 

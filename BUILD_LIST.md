@@ -139,7 +139,7 @@ Today the Jewish Gazette is authored in a separate panel with convoluted trigger
 
 ---
 
-## 8. [ ] data.json ↔ index.html drift — pick one canonical file
+## 8. [x] data.json ↔ index.html drift — index.html is canonical (option b)
 
 **Risk:** Architectural — affects build process and source of truth.
 

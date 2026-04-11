@@ -1051,7 +1051,7 @@ var COACHING_MESSAGES = {
 };
 
 function pickCoachMsg(category) {
-  // Prefer editable messages from data.json; fall back to hardcoded defaults
+  // Prefer editable messages from GAME_DATA.config; fall back to hardcoded defaults
   var fromData = (GAME_DATA.config && GAME_DATA.config.coachingMessages) ? GAME_DATA.config.coachingMessages[category] : null;
   var msgs = (fromData && fromData.length) ? fromData : (COACHING_MESSAGES[category] || ['']);
   return msgs[Math.floor(Math.random() * msgs.length)];

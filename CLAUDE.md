@@ -10,26 +10,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **zero-dependency, single-file HTML game** with no build toolchain (no npm, no bundler).
 
-### Source Files (root)
-- **`data.json`** — All game content: scenarios, organizations, traits, advisors, missions, conversations, configuration, landing page text. This is the single source of truth for game content.
-- **`engine.js`** — Game logic: state management (`G` object), screen transitions, HUD rendering, scenario/choice resolution, segment approval calculations, political system, budget/investment system, inbox, coalitions, conversations, and end-game scoring.
-- **`template.html`** — HTML structure for all game screens (password gate, intro/landing, character creation, org selection, mission, advisors, budget allocation, briefing, game play, end screen, promotion).
-- **`style.css`** — All game styling. Newspaper/broadsheet aesthetic with Merriweather serif + Merriweather Sans.
-- **`editor.html`** — Self-contained game content editor (separate app). Password-protected admin tool for editing `data.json` content via a GUI with sidebar navigation.
-- **`index.html`** — The pre-built, assembled single-file game (style + template + data + engine concatenated). This is what players load directly.
+### Canonical file
 
-### Build
+- **`index.html`** — The **canonical, single source of truth**. One self-contained file holding style, template, `GAME_DATA`, and engine code. This is what players load directly, and it is also what the editor reads and writes. Any change to game content, logic, styling, or markup must be made to `index.html`.
 
-```bash
-bash build.sh
-```
+### Authoring: the editor is the primary tool
 
-Assembles `game/template.html`, `game/data.json`, `game/engine.js`, and `game/style.css` into `dist/game.html`. Note: the build script reads from a `game/` subdirectory, but the source files currently live at the repo root. The pre-built `index.html` at root is the playable version.
+- **`editor.html`** — Self-contained, password-protected content editor. Pulls `GAME_DATA` from `index.html` on GitHub via `extractGameData`, lets authors edit scenarios, organizations, traits, advisors, missions, conversations, coalitions, and configuration through a GUI, then pushes the modified `index.html` back to GitHub. This is the **primary authoring path** for content changes — editing `index.html` by hand is only necessary for engine logic, markup, or style changes that the editor UI doesn't expose.
+
+### Historical source files (not runtime)
+
+- **`engine.js`**, **`template.html`**, **`style.css`** — Pre-assembly source files kept in the repo as a readable reference for the engine logic, HTML structure, and styling that live inlined in `index.html`. **They are not built into `index.html` automatically** — `index.html` is edited directly. If you change one of these files, you must apply the same change to `index.html` or the change will not reach the game. In practice, prefer editing `index.html` directly; the source files may lag the canonical version.
 
 ### Key Engine Concepts
 
 - **State object `G`** — Single mutable object holding all game state (character, org, stats, round, political position, budget, segment approvals, inbox, etc.)
-- **`GAME_DATA`** — Parsed from `data.json`, injected as a global variable. Contains all content and configuration.
+- **`GAME_DATA`** — A global variable declared inside `index.html`. Contains all content and configuration. The editor locates it via a `/* GAME_DATA_START */` ... `/* GAME_DATA_END */` marker pair (with a legacy `var GAME_DATA = { ... }` fallback).
 - **Screen system** — `showScreen(id)` toggles `.screen.active` class; screens are `password-screen`, `intro-screen`, `char-screen`, `org-screen`, `mission-screen`, `advisor-screen`, `budget-screen`, `briefing-screen`, `game-screen`, `end-screen`, `promo-screen`, `promo-budget-screen`.
 - **Segment system** — Community trust is a weighted composite of approval ratings across demographic segments (Orthodox, Reform, Conservative, unaffiliated, young adults, older adults), each with political centers and comfort ranges.
 - **Political system** — Position (0=far-left to 100=far-right) and clout (accumulated political capital). Choices have `politicalLean` that shifts position.

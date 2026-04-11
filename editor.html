@@ -411,13 +411,14 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
           <div class="form-section">
             <h3>Budget System (Abstract Units)</h3>
-            <p class="section-note">The budget system uses abstract units (not dollars). Income each round = base income + (fundraising stat × multiplier). Operating costs are deducted automatically.</p>
+            <p class="section-note">The budget system uses abstract units ("gelt"), not dollars. Each round the org's net gelt change is: <code>round(baseIncome + donors × fundraisingMultiplier) + endowment − operatingCost</code>. Operating cost is deducted automatically.</p>
             <div class="form-row four">
               <div class="form-group"><label>Starting Budget</label><input type="number" id="cfg-bc-startingBudget" min="0" /><div class="form-hint">Abstract budget units the org starts with</div></div>
-              <div class="form-group"><label>Op Cost / Round</label><input type="number" id="cfg-bc-operatingCostPerRound" min="0" /><div class="form-hint">Budget units deducted automatically each round</div></div>
-              <div class="form-group"><label>Base Income / Round</label><input type="number" id="cfg-bc-baseIncomePerRound" min="0" /><div class="form-hint">Guaranteed budget income each round before fundraising bonus</div></div>
-              <div class="form-group"><label>Fundraising Multiplier</label><input type="number" id="cfg-bc-fundraisingIncomeMultiplier" min="0" step="0.01" /><div class="form-hint">Formula: round income = base income + (donor stat x this multiplier)</div></div>
+              <div class="form-group"><label>Op Cost / Round</label><input type="number" id="cfg-bc-operatingCostPerRound" min="0" oninput="updateGlobalBreakeven()" /><div class="form-hint">Budget units deducted automatically each round</div></div>
+              <div class="form-group"><label>Base Income / Round</label><input type="number" id="cfg-bc-baseIncomePerRound" min="0" oninput="updateGlobalBreakeven()" /><div class="form-hint">Guaranteed budget income each round before fundraising bonus</div></div>
+              <div class="form-group"><label>Fundraising Multiplier</label><input type="number" id="cfg-bc-fundraisingIncomeMultiplier" min="0" step="0.01" oninput="updateGlobalBreakeven()" /><div class="form-hint">Formula: round income = base income + (donor stat x this multiplier)</div></div>
             </div>
+            <div id="cfg-breakeven-box" style="margin-top:10px;padding:10px 14px;background:#fff8e1;border:1px solid #e5c97b;border-radius:6px;font-size:12px;line-height:1.55"></div>
             <div class="form-row three" style="margin-top:8px">
               <div class="form-group"><label>Investments Per Year (local)</label><input type="number" id="cfg-investmentsPerYear" min="0" /><div class="form-hint">How many investments local orgs can make per round</div></div>
               <div class="form-group"><label>Investments Per Year (national)</label><input type="number" id="cfg-nationalInvestmentsPerYear" min="0" /><div class="form-hint">How many investments national orgs can make per round</div></div>
@@ -18966,6 +18967,62 @@ function populateAllPanels() {
 }
 
 // ═══ CONFIG ═══
+// Shared budget/breakeven helpers used by the Global Config panel and
+// per-org budget-override editors.
+function computeBudgetBreakeven(op, base, mult){
+  // net_per_round = round(base + donors * mult) + endowment - op
+  // Solve for donors at endowment=0: donors = (op - base) / mult
+  if(base >= op) return {type:'profitable'};
+  if(!mult || mult <= 0) return {type:'noFundraising', net: base - op};
+  var donors = Math.ceil((op - base) / mult);
+  return {type:'donors', donors: Math.max(0, Math.min(100, donors)), unclamped: donors};
+}
+function formatBreakevenBlock(op, base, mult, prefix){
+  prefix = prefix || '';
+  var parts = [];
+  parts.push('<div><strong>'+prefix+'Fiscal formula:</strong> <code>round(baseIncome + donors × fundraisingMultiplier) + endowment − operatingCost</code></div>');
+  var be = computeBudgetBreakeven(op, base, mult);
+  if(be.type === 'profitable'){
+    parts.push('<div style="margin-top:4px"><strong>Breakeven donors:</strong> Always profitable — base income ('+base+') already ≥ operating cost ('+op+').</div>');
+  } else if(be.type === 'noFundraising'){
+    parts.push('<div style="margin-top:4px"><strong>Breakeven donors:</strong> No fundraising bonus — fixed net of '+be.net+'/round.</div>');
+  } else {
+    var label = be.donors;
+    if(be.unclamped > 100) label = '> 100 (unreachable with current donor cap)';
+    parts.push('<div style="margin-top:4px"><strong>Breakeven donors:</strong> '+label+' &nbsp;<span style="color:var(--muted)">= ceil(('+op+' − '+base+') / '+mult+')</span></div>');
+  }
+  function worked(d){
+    var income = Math.round(base + d * mult);
+    var net = income - op;
+    return 'donors '+d+' → income '+income+', net '+(net>=0?'+':'')+net;
+  }
+  if(op >= 0 && base >= 0 && mult >= 0){
+    parts.push('<div style="margin-top:4px;color:var(--muted)">Examples: '+worked(0)+' · '+worked(50)+' · '+worked(100)+'</div>');
+  }
+  return parts.join('');
+}
+function updateGlobalBreakeven(){
+  var op = parseFloat(document.getElementById('cfg-bc-operatingCostPerRound')?.value)||0;
+  var base = parseFloat(document.getElementById('cfg-bc-baseIncomePerRound')?.value)||0;
+  var mult = parseFloat(document.getElementById('cfg-bc-fundraisingIncomeMultiplier')?.value)||0;
+  var box = document.getElementById('cfg-breakeven-box');
+  if(box) box.innerHTML = formatBreakevenBlock(op, base, mult);
+}
+function updateOrgBreakeven(prefix, i){
+  var bc = (GD.config||{}).budgetConfig||{};
+  var opOverride = document.getElementById(prefix+'-bo-opcost-'+i)?.value;
+  var baseOverride = document.getElementById(prefix+'-bo-income-'+i)?.value;
+  var op = (opOverride!=='' && opOverride!=null) ? parseFloat(opOverride) : (bc.operatingCostPerRound||8);
+  var base = (baseOverride!=='' && baseOverride!=null) ? parseFloat(baseOverride) : (bc.baseIncomePerRound||5);
+  var mult = bc.fundraisingIncomeMultiplier||0.12;
+  var prefixLabel = (opOverride || baseOverride) ? 'Effective ' : 'Using global defaults — ';
+  var box = document.getElementById(prefix+'-breakeven-box-'+i);
+  if(box) box.innerHTML = formatBreakevenBlock(op, base, mult, prefixLabel);
+}
+function refreshAllOrgBreakevens(prefix, orgs){
+  (orgs||[]).forEach(function(o,i){ updateOrgBreakeven(prefix, i); });
+}
+
 function populateConfig() {
   const c = GD.config;
   document.getElementById('cfg-totalRounds').value = c.totalRounds || 6;
@@ -18986,6 +19043,7 @@ function populateConfig() {
   document.getElementById('cfg-bc-operatingCostPerRound').value = bc.operatingCostPerRound || 8;
   document.getElementById('cfg-bc-baseIncomePerRound').value = bc.baseIncomePerRound || 5;
   document.getElementById('cfg-bc-fundraisingIncomeMultiplier').value = bc.fundraisingIncomeMultiplier || 0.12;
+  updateGlobalBreakeven();
   var invPYEl = document.getElementById('cfg-investmentsPerYear');
   if(invPYEl) invPYEl.value = c.investmentsPerYear || 1;
   var natInvPYEl = document.getElementById('cfg-nationalInvestmentsPerYear');
@@ -19119,6 +19177,7 @@ function saveAvatars() {
 // ═══ ORGS ═══
 function populateOrgs() {
   document.getElementById('orgs-list').innerHTML = GD.organizations.map((o,i) => renderOrgCard(o,i,'org') + renderOrgForm(o,i,'org')).join('');
+  refreshAllOrgBreakevens('org', GD.organizations);
 }
 function renderOrgCard(o, i, prefix) {
   const raw = o.scenarioCategories||o.politicalTilt||[];
@@ -19161,9 +19220,10 @@ function renderOrgForm(o, i, prefix) {
     </div>
     <div class="form-row three" style="margin-bottom:11px">
       <div class="form-group"><label>Starting Budget</label><input type="number" id="${prefix}-budget-${i}" value="${o.startingBudget||100}" /><div class="form-hint">Gelt units this org starts with (shown on org selection screen)</div></div>
-      <div class="form-group"><label>Op Cost / Round</label><input type="number" id="${prefix}-bo-opcost-${i}" value="${(o.budgetOverrides||{}).operatingCost||''}" placeholder="Default: ${(GD.config.budgetConfig||{}).operatingCostPerRound||8}" /><div class="form-hint">Override operating cost per round (blank = global default)</div></div>
-      <div class="form-group"><label>Base Income / Round</label><input type="number" id="${prefix}-bo-income-${i}" value="${(o.budgetOverrides||{}).baseIncome||''}" placeholder="Default: ${(GD.config.budgetConfig||{}).baseIncomePerRound||5}" /><div class="form-hint">Override base income per round (blank = global default)</div></div>
+      <div class="form-group"><label>Op Cost / Round</label><input type="number" id="${prefix}-bo-opcost-${i}" value="${(o.budgetOverrides||{}).operatingCost||''}" placeholder="Default: ${(GD.config.budgetConfig||{}).operatingCostPerRound||8}" oninput="updateOrgBreakeven('${prefix}',${i})" /><div class="form-hint">Override operating cost per round (blank = global default)</div></div>
+      <div class="form-group"><label>Base Income / Round</label><input type="number" id="${prefix}-bo-income-${i}" value="${(o.budgetOverrides||{}).baseIncome||''}" placeholder="Default: ${(GD.config.budgetConfig||{}).baseIncomePerRound||5}" oninput="updateOrgBreakeven('${prefix}',${i})" /><div class="form-hint">Override base income per round (blank = global default)</div></div>
     </div>
+    <div id="${prefix}-breakeven-box-${i}" style="margin:-4px 0 11px;padding:8px 12px;background:#fff8e1;border:1px solid #e5c97b;border-radius:6px;font-size:11px;line-height:1.5"></div>
     <div class="form-row"><div class="form-group"><label>Promo Eligible (comma-sep)</label><input id="${prefix}-promo-${i}" value="${(o.promotionEligible||[]).join(',')}" /><div class="form-hint">IDs of national orgs this org can be promoted to (e.g., nat_aipac,nat_adl)</div></div></div>
     <label class="section-label">Stat Modifiers</label><div class="form-hint" style="margin-bottom:6px">Starting stat bonuses/penalties when player picks this org</div>
     <div class="stat-inputs cols-4" style="margin-bottom:11px">
@@ -19219,6 +19279,7 @@ function saveOrg(i, prefix) {
 // ═══ NAT ORGS ═══
 function populateNatOrgs() {
   document.getElementById('nat-orgs-list').innerHTML = GD.nationalOrganizations.map((o,i) => renderOrgCard(o,i,'norg') + renderOrgForm(o,i,'norg')).join('');
+  refreshAllOrgBreakevens('norg', GD.nationalOrganizations);
 }
 function deleteOrg(i, prefix) {
   if(!confirm('Delete this organization?')) return;

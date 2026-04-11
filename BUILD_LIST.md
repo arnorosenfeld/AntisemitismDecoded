@@ -72,7 +72,7 @@ The coalition edit form uses a raw-JSON textarea for constraints (editor.html:20
 
 ---
 
-## 5. [ ] Budget config fix + editor helpers
+## 5. [x] Budget config fix + editor helpers
 
 **Risk:** Medium — touches data values + adds editor display logic.
 

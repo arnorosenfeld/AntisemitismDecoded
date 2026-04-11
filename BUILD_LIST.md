@@ -22,7 +22,7 @@ Coalition, Breaking News, Investments, and Gazette renderers all use an **undefi
 
 ---
 
-## 2. [ ] Editor panels expand downward from the header
+## 2. [x] Editor panels expand downward from the header
 
 **Risk:** Low — scroll/CSS behavior fix in the editor only.
 

@@ -20119,6 +20119,14 @@ function toggleEdit(prefix, i) {
   card.classList.toggle('open', !isOpen);
   form.style.display = isOpen ? 'none' : 'block';
   if(exp) exp.textContent = isOpen ? '▸' : '▾';
+  // When opening, scroll the card header to the top of the viewport so the
+  // edit form below is fully visible (prevents the form feeling like it
+  // "opens upward" when the card was near the bottom of the viewport).
+  if(!isOpen) {
+    requestAnimationFrame(function(){
+      try { card.scrollIntoView({block:'start', behavior:'smooth'}); } catch(e) { card.scrollIntoView(true); }
+    });
+  }
 }
 function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 

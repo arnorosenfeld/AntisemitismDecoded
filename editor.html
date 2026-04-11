@@ -784,9 +784,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- GAZETTE PANEL -->
         <div id="panel-gazette" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Headline templates for the Jewish Gazette newspaper shown between rounds. Headlines trigger based on player choices, stat thresholds, or randomly.</p>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px"><strong>Generic fallback headlines</strong> for the Jewish Gazette newspaper shown between rounds. These fire when fewer than 3 outcome-specific headlines are generated in a round. To author scenario-specific headlines, edit an outcome inside a scenario — set the <em>Gazette Headline</em> and <em>Gazette Subline</em> fields there. Use <code>[org]</code> in any headline or subline to insert the player's organization name.</p>
           <div class="item-list" id="gazette-list"></div>
-          <button class="add-btn" onclick="addGazetteTemplate()">+ Add Headline Template</button>
+          <button class="add-btn" onclick="addGazetteTemplate()">+ Add Generic Headline</button>
         </div>
 
         <!-- BREAKING NEWS PANEL -->
@@ -19533,6 +19533,7 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
     <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /><div class="form-hint">Probability weight — higher weight = more likely when multiple outcomes exist</div></div><div class="form-group"><label>Context Note</label><input id="${prefix}-onote-${si}-${ci}-${oi}" value="${esc(o.contextNote||'')}" placeholder="optional info box" /><div class="form-hint">Optional info box shown to the player explaining deeper implications</div></div></div>
     <div class="stat-inputs cols-4" style="margin-bottom:5px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-ofx-${si}-${ci}-${oi}-${s.id}" value="${(o.effects||{})[s.id]||0}" /></div>`).join('')}<div class="stat-input-group"><label>Clout</label><input type="number" id="${prefix}-oclout-${si}-${ci}-${oi}" value="${o.cloutEffect||0}" min="-10" max="10" /></div><div class="stat-input-group"><label>Gelt</label><input type="number" id="${prefix}-ogelt-${si}-${ci}-${oi}" value="${o.budgetEffect||0}" /></div></div>
+    <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Gazette Headline</label><input id="${prefix}-ohead-${si}-${ci}-${oi}" value="${esc(o.headline||'')}" placeholder="optional — appears in Jewish Gazette" /><div class="form-hint">Optional. Use <code>[org]</code> to insert the player's org name.</div></div><div class="form-group"><label>Gazette Subline</label><input id="${prefix}-osub-${si}-${ci}-${oi}" value="${esc(o.subline||'')}" placeholder="optional subhead" /><div class="form-hint">Optional smaller text under the headline. Supports <code>[org]</code>.</div></div></div>
     <div style="font-size:10px;color:var(--muted);margin-top:8px">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
   </div>`;
 }
@@ -19630,6 +19631,10 @@ function saveScenario(i, prefix) {
       var outcomeObj = {text:document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById(prefix+'-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById(prefix+'-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
       if(oClout) outcomeObj.cloutEffect = oClout;
       if(oGelt) outcomeObj.budgetEffect = oGelt;
+      var oHead = document.getElementById(prefix+'-ohead-'+i+'-'+ci+'-'+oi)?.value || '';
+      var oSub = document.getElementById(prefix+'-osub-'+i+'-'+ci+'-'+oi)?.value || '';
+      if(oHead) outcomeObj.headline = oHead;
+      if(oSub) outcomeObj.subline = oSub;
       outcomes.push(outcomeObj);
       oi++;
     }
@@ -20555,23 +20560,25 @@ function deleteAdvisor(i){
 }
 
 // ═══ GAZETTE PANEL ═══
+// Only `generic` templates are surfaced in the editor. Non-generic legacy templates
+// (choiceMade/statAbove/etc.) are preserved in data but hidden — scenario outcomes
+// now carry their own headline/subline fields, which is the preferred authoring path.
 function populateGazette(){
   var list = document.getElementById('gazette-list');
   if(!list) return;
   var templates = GD.gazetteTemplates || [];
-  list.innerHTML = templates.map(function(t,i){
-    var trigDesc = t.trigger.type;
-    if(t.trigger.scenarioId) trigDesc += ':' + t.trigger.scenarioId;
-    if(t.trigger.stat) trigDesc += ':' + t.trigger.stat;
-    return '<div class="item-card"><div class="item-header"><span style="font-size:12px;color:var(--muted)">'+esc(trigDesc)+'</span><div class="item-card-actions"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editGazette('+i+')">Edit</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteGazette('+i+')">Delete</button></div></div><div class="item-detail"><strong>'+esc(t.headline)+'</strong><br><em>'+esc(t.subline||'')+'</em></div></div>';
-  }).join('');
+  var html = '';
+  templates.forEach(function(t, i){
+    if(!t.trigger || t.trigger.type !== 'generic') return;
+    html += '<div class="item-card"><div class="item-header"><span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Generic Fallback</span><div class="item-card-actions"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editGazette('+i+')">Edit</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteGazette('+i+')">Delete</button></div></div><div class="item-detail"><strong>'+esc(t.headline)+'</strong><br><em>'+esc(t.subline||'')+'</em></div></div>';
+  });
+  list.innerHTML = html;
 }
 function editGazette(i){
   var t = (GD.gazetteTemplates||[])[i]; if(!t) return;
-  var h = prompt('Headline:', t.headline); if(h===null) return; t.headline = h;
-  var s = prompt('Subline:', t.subline||''); if(s!==null) t.subline = s;
-  var tt = prompt('Trigger type (generic/choiceMade/statAbove/statBelow/momentumUp/momentumDown/coalitionFormed/coalitionBroken/inboxExpired/missionStarsHigh/missionStarsLow):', t.trigger.type);
-  if(tt!==null) t.trigger.type = tt;
+  var h = prompt('Headline (use [org] to insert org name):', t.headline); if(h===null) return; t.headline = h;
+  var s = prompt('Subline (optional):', t.subline||''); if(s!==null) t.subline = s;
+  t.trigger = {type:'generic'};
   populateGazette(); setDirty();
 }
 function addGazetteTemplate(){
@@ -20580,7 +20587,7 @@ function addGazetteTemplate(){
   populateGazette(); setDirty();
 }
 function deleteGazette(i){
-  if(!confirm('Delete this headline template?')) return;
+  if(!confirm('Delete this generic fallback headline?')) return;
   GD.gazetteTemplates.splice(i,1); populateGazette(); setDirty();
 }
 

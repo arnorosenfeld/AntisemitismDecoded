@@ -122,7 +122,7 @@ For every hardcoded user-facing string in index.html / engine.js that should be 
 
 ---
 
-## 7. [ ] Headline refactor
+## 7. [x] Headline refactor (migration of legacy non-generic templates deferred — hidden from editor UI but preserved in data)
 
 **Risk:** Medium-high — engine + editor + data migration.
 

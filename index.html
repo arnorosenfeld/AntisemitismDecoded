@@ -16148,6 +16148,7 @@ function recordNotableMoment(scenario, choice, outcome, isBreaking) {
     choiceText: choice.text || '',
     outcomeText: outcome.text || '',
     headline: outcome.headline || null,
+    subline: outcome.subline || null,
     round: G.round,
     complexity: scenario.complexity || 3,
     isBreaking: !!isBreaking,
@@ -18391,7 +18392,7 @@ function showGazette() {
   var rn = GAME_DATA.config.roundNames && GAME_DATA.config.roundNames[G.round-1];
   var dateStr = rn ? rn.english + ' \u2014 ' + rn.year : 'Round ' + G.round;
   var storiesHtml = headlines.map(function(h){
-    return '<div class="gazette-story"><div class="gazette-headline">' + esc(h.headline) + '</div><div class="gazette-subline">' + esc(h.subline) + '</div></div>';
+    return '<div class="gazette-story"><div class="gazette-headline">' + esc(substituteOrgTokens(h.headline)) + '</div><div class="gazette-subline">' + esc(substituteOrgTokens(h.subline || '')) + '</div></div>';
   }).join('');
   var overlay = document.createElement('div');
   overlay.className = 'gazette-overlay';
@@ -18403,13 +18404,20 @@ function getOrgName() {
   var org = allOrgs.find(function(o) { return o.id === G.orgId; });
   return org ? org.name : 'your organization';
 }
+function substituteOrgTokens(s) {
+  if (!s) return '';
+  var name = getOrgName();
+  return String(s).replace(/\{orgName\}/g, name).replace(/\[org\]/g, name);
+}
 function pickGazetteHeadlines() {
   // Check outcome-level headlines from this round's notable moments
   var outcomeHeadlines = [];
   (G.notableMoments || []).forEach(function(m) {
     if (m.round === G.round && m.headline) {
-      var text = m.headline.replace(/\{orgName\}/g, getOrgName());
-      outcomeHeadlines.push({ headline: text });
+      outcomeHeadlines.push({
+        headline: substituteOrgTokens(m.headline),
+        subline: substituteOrgTokens(m.subline || '')
+      });
     }
   });
 

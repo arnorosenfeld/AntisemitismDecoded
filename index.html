@@ -348,11 +348,15 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .ap-pip.empty { background: transparent; }
 .ap-end { margin-left: 8px; }
 
-/* Stat danger backgrounds */
-.desk-warning { background: rgba(234, 179, 8, 0.06); animation: deskWarningPulse 3s ease-in-out infinite; }
-.desk-danger { background: rgba(220, 38, 38, 0.06); animation: deskDangerPulse 2s ease-in-out infinite; }
-@keyframes deskWarningPulse { 0%,100% { background-color: rgba(234,179,8,0.04); } 50% { background-color: rgba(234,179,8,0.1); } }
-@keyframes deskDangerPulse { 0%,100% { background-color: rgba(220,38,38,0.04); } 50% { background-color: rgba(220,38,38,0.1); } }
+/* Stat danger backgrounds — full-viewport wash overlay that tints the whole
+   game screen when a core stat drops into warning (≤25) or danger (≤20) range.
+   pointer-events:none so it never blocks clicks. z-index:1 keeps it above the
+   body cream but below all interactive game UI. */
+.stat-danger-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 1; background: transparent; transition: background-color 0.4s; }
+.stat-danger-overlay.warn { animation: deskWarningPulse 3s ease-in-out infinite; }
+.stat-danger-overlay.danger { animation: deskDangerPulse 2s ease-in-out infinite; }
+@keyframes deskWarningPulse { 0%,100% { background-color: rgba(234,179,8,0.045); } 50% { background-color: rgba(234,179,8,0.11); } }
+@keyframes deskDangerPulse { 0%,100% { background-color: rgba(220,38,38,0.05); } 50% { background-color: rgba(220,38,38,0.13); } }
 
 /* GAME MAIN */
 .game-main { padding: 26px 20px 80px; }
@@ -386,9 +390,13 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    top-right corner of an imprecise rectangle. */
 .desk-badge { position: absolute; transform: translate(-50%, -50%); box-sizing: border-box; background: var(--gold); color: white; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.45); z-index: 10; pointer-events: none; }
 .desk-badge.red { background: #ef4444; box-shadow: 0 2px 8px rgba(239,68,68,0.55); }
-/* Phone pulse animation intentionally omitted — the rectangular hotspot is an
-   imprecise click target. A quad-based highlight on the actual phone screen
-   (DESK_QUADS.*.phoneScreen) is the future route for a visible unread indicator. */
+
+/* Phone-screen pulse — clip-path polygon tied to DESK_QUADS[skin].phoneScreen.
+   Renders a warm glow inside the precise (angled) phone screen area only when
+   the inbox has unread messages, so the highlight tracks the visible screen
+   shape without revealing the imprecise rotated click-target rectangle. */
+.desk-phone-pulse { position: absolute; inset: 0; pointer-events: none; background: #fef3c7; z-index: 4; opacity: 0; animation: deskPhonePulse 2.0s ease-in-out infinite; }
+@keyframes deskPhonePulse { 0%,100% { opacity: 0.12; } 50% { opacity: 0.55; } }
 
 /* Monitor CSS animation overlay (positioned at monitorScreen coords).
    box-shadow extends the dark background 3px outward on all sides to cover
@@ -1381,6 +1389,10 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <!-- GAME -->
 
 <div id="game-screen" class="screen">
+  <!-- Full-viewport stat-danger wash. Applied when any core stat is in warning
+       (≤25) or danger (≤20) range. Sits behind interactive UI but over body bg
+       so the pulse covers the whole game screen uniformly. -->
+  <div class="stat-danger-overlay" id="stat-danger-overlay"></div>
   <div class="hud-banner" id="hud-banner-el" style="display:none">
     <div class="hud-banner-inner">
       <span class="hud-char-emoji" id="hud-char-emoji"></span>
@@ -15899,17 +15911,16 @@ function getDangerOrange() { return (GAME_DATA.config.dangerOrangeThreshold || 2
 function getDangerRed() { return (GAME_DATA.config.dangerRedThreshold || 20); }
 
 function updateStatDanger() {
-  var gameMain = document.querySelector('.game-main');
-  if (!gameMain) return;
+  var overlay = document.getElementById('stat-danger-overlay');
+  if (!overlay) return;
   if (!G._dangerWarningsShown) G._dangerWarningsShown = {};
 
   var worstLevel = 'none'; // none, orange, red
   var dangerStats = [];
 
   (GAME_DATA.stats || []).forEach(function(s) {
-    var v = G.stats[s.id] || 50;
-    var meterId = 'hud-meter-' + s.id;
-
+    var v = G.stats[s.id];
+    if (typeof v !== 'number') return; // skip stats not yet initialised
     if (v <= getDangerRed()) {
       worstLevel = 'red';
       dangerStats.push({ stat: s, level: 'red', value: v });
@@ -15919,10 +15930,16 @@ function updateStatDanger() {
     }
   });
 
-  // Update desk background
-  gameMain.classList.remove('desk-warning', 'desk-danger');
-  if (worstLevel === 'red') gameMain.classList.add('desk-danger');
-  else if (worstLevel === 'orange') gameMain.classList.add('desk-warning');
+  // Apply full-viewport wash. data-worst-stat is diagnostic so if the pulse
+  // fires unexpectedly we can inspect the DOM and see which stat triggered.
+  overlay.classList.remove('warn', 'danger');
+  if (worstLevel === 'red') overlay.classList.add('danger');
+  else if (worstLevel === 'orange') overlay.classList.add('warn');
+  if (dangerStats.length > 0) {
+    overlay.setAttribute('data-worst-stat', dangerStats[0].stat.id + ':' + dangerStats[0].value + '(' + dangerStats[0].level + ')');
+  } else {
+    overlay.removeAttribute('data-worst-stat');
+  }
 
   // Show one-time popups
   dangerStats.forEach(function(d) {
@@ -16727,6 +16744,20 @@ function renderDeskScene(opts) {
   if (hs.monitorScreen) {
     var ms = hs.monitorScreen;
     html += '<div class="desk-monitor-animation" style="left:' + ms.cx + '%;top:' + ms.cy + '%;width:' + ms.w + '%;height:' + ms.h + '%;transform:translate(-50%,-50%) rotate(' + (ms.rot || 0) + 'deg);">' + (opts.monitorScreenHtml || '') + '</div>';
+  }
+
+  // Phone-screen pulse — rendered only when there are unread inbox messages.
+  // Uses the tagged DESK_QUADS polygon to clip a warm overlay exactly to the
+  // angled phone screen shape, without revealing the rectangular hotspot.
+  var phoneQuad = DESK_QUADS[skin] && DESK_QUADS[skin].phoneScreen;
+  if (hasUnread && phoneQuad) {
+    var q = phoneQuad;
+    var clip = 'polygon(' +
+      q.tl.x + '% ' + q.tl.y + '%,' +
+      q.tr.x + '% ' + q.tr.y + '%,' +
+      q.br.x + '% ' + q.br.y + '%,' +
+      q.bl.x + '% ' + q.bl.y + '%)';
+    html += '<div class="desk-phone-pulse" style="clip-path:' + clip + ';-webkit-clip-path:' + clip + ';"></div>';
   }
 
   // Phone hotspot — opens inbox popup on hover/click

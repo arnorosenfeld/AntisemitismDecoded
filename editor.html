@@ -20472,7 +20472,7 @@ function populateGazette(){
     var trigDesc = t.trigger.type;
     if(t.trigger.scenarioId) trigDesc += ':' + t.trigger.scenarioId;
     if(t.trigger.stat) trigDesc += ':' + t.trigger.stat;
-    return '<div class="item-card"><div class="item-header"><span style="font-size:12px;color:var(--muted)">'+esc(trigDesc)+'</span><div><button class="edit-btn" onclick="editGazette('+i+')">Edit</button><button class="del-btn" onclick="deleteGazette('+i+')">×</button></div></div><div class="item-detail"><strong>'+esc(t.headline)+'</strong><br><em>'+esc(t.subline||'')+'</em></div></div>';
+    return '<div class="item-card"><div class="item-header"><span style="font-size:12px;color:var(--muted)">'+esc(trigDesc)+'</span><div class="item-card-actions"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editGazette('+i+')">Edit</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteGazette('+i+')">Delete</button></div></div><div class="item-detail"><strong>'+esc(t.headline)+'</strong><br><em>'+esc(t.subline||'')+'</em></div></div>';
   }).join('');
 }
 function editGazette(i){
@@ -20503,7 +20503,7 @@ function populateBreaking(){
   }).join('');
 }
 function renderBreakingCard(bn,i){
-  return '<div class="item-card" id="bn-card-'+i+'" onclick="toggleEdit(\'bn\','+i+')"><div class="item-header"><span class="expand-icon" id="bn-exp-'+i+'">▸</span><span>🚨 <strong>'+esc(bn.title)+'</strong></span><div><button class="del-btn" onclick="event.stopPropagation();deleteBreaking('+i+')">×</button></div></div><div class="item-detail">Prob: '+bn.probability+'% · Rounds '+bn.minRound+'-'+bn.maxRound+' · '+(bn.once?'Once':'Repeatable')+' · '+(bn.choices||[]).length+' choices</div></div>';
+  return '<div class="item-card" id="bn-card-'+i+'" onclick="toggleEdit(\'bn\','+i+')"><div class="item-header"><span class="expand-icon" id="bn-exp-'+i+'">▸</span><span>🚨 <strong>'+esc(bn.title)+'</strong></span><div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteBreaking('+i+')">Delete</button></div></div><div class="item-detail">Prob: '+bn.probability+'% · Rounds '+bn.minRound+'-'+bn.maxRound+' · '+(bn.once?'Once':'Repeatable')+' · '+(bn.choices||[]).length+' choices</div></div>';
 }
 function renderBreakingForm(bn,i){
   var allCats=['all','progressive','centrist','conservative','apolitical'];
@@ -20615,7 +20615,7 @@ function populateCoalitions(){
 function renderCoalitionCard(co,i){
   var benefitStr = Object.entries((co.benefits||{}).perRound||{}).map(function(e){return '+'+e[1]+' '+e[0]}).join(', ');
   var constraintStr = (co.constraints||[]).map(function(c){return c.description}).join('; ');
-  return '<div class="item-card" id="coal-card-'+i+'" onclick="toggleEdit(\'coal\','+i+')"><div class="item-header"><span class="expand-icon" id="coal-exp-'+i+'">▸</span><span>🤝 <strong>'+esc(co.name)+'</strong></span><div><button class="del-btn" onclick="event.stopPropagation();deleteCoalition('+i+')">×</button></div></div><div class="item-detail">Benefits: '+esc(benefitStr)+' · Constraint: '+esc(constraintStr).substring(0,80)+'<br>Offered by round '+co.offeredByRound+' · Duration: '+(co.duration?co.duration+' rounds':'permanent')+'</div></div>';
+  return '<div class="item-card" id="coal-card-'+i+'" onclick="toggleEdit(\'coal\','+i+')"><div class="item-header"><span class="expand-icon" id="coal-exp-'+i+'">▸</span><span>🤝 <strong>'+esc(co.name)+'</strong></span><div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteCoalition('+i+')">Delete</button></div></div><div class="item-detail">Benefits: '+esc(benefitStr)+' · Constraint: '+esc(constraintStr).substring(0,80)+'<br>Offered by round '+co.offeredByRound+' · Duration: '+(co.duration?co.duration+' rounds':'permanent')+'</div></div>';
 }
 function renderCoalitionForm(co,i){
   var stats = GD.stats||[];
@@ -20739,7 +20739,7 @@ function populateInvestments(){
 }
 function renderInvestmentCard(inv,i){
   var effs = Object.entries(inv.effects||{}).map(function(e){return (e[1]>0?'+':'')+e[1]+' '+e[0]}).join(', ');
-  return '<div class="item-card" id="inv-card-'+i+'" onclick="toggleEdit(\'inv\','+i+')"><div class="item-header"><span class="expand-icon" id="inv-exp-'+i+'">▸</span><span>'+esc(inv.icon||'')+' <strong>'+esc(inv.name)+'</strong> — Cost: '+inv.budgetCost+'</span><div><button class="del-btn" onclick="event.stopPropagation();deleteInvestment('+i+')">×</button></div></div><div class="item-detail">'+esc(inv.description||'')+'<br>Effects: '+(effs||'none')+' · Max uses: '+(inv.maxUses===-1?'unlimited':inv.maxUses)+'</div></div>';
+  return '<div class="item-card" id="inv-card-'+i+'" onclick="toggleEdit(\'inv\','+i+')"><div class="item-header"><span class="expand-icon" id="inv-exp-'+i+'">▸</span><span>'+esc(inv.icon||'')+' <strong>'+esc(inv.name)+'</strong> — Cost: '+inv.budgetCost+'</span><div class="item-card-actions"><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteInvestment('+i+')">Delete</button></div></div><div class="item-detail">'+esc(inv.description||'')+'<br>Effects: '+(effs||'none')+' · Max uses: '+(inv.maxUses===-1?'unlimited':inv.maxUses)+'</div></div>';
 }
 function renderInvestmentForm(inv,i){
   var stats = GD.stats||[];

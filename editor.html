@@ -20223,10 +20223,13 @@ function populateAdvisors(){
   populateOtherCharacters();
 }
 
-var PORTRAIT_CHARS = [];
-for(var _ci=1;_ci<=17;_ci++) PORTRAIT_CHARS.push('char'+(_ci<10?'0':'')+_ci);
+// Named folders (9) are the advisors actually referenced throughout the game.
+// Remaining char## folders (8) are unique unused faces kept as additional
+// options for authors. The other 9 char## folders were crop/resize twins of
+// the named folders and were removed — listing them here caused every
+// assigned portrait to appear twice in the picker (once live, once greyed).
 var PORTRAIT_NAMED = ['rachel_steinberg','avi_kessler','miriam_gold','rabbi_friedman','sarah_feld','tali_navarro','leonard_katz','noa_berman','avi_rosen'];
-// Combined list for picker — named folders first (what advisors actually use), then charXX
+var PORTRAIT_CHARS = ['char01','char02','char03','char07','char08','char11','char12','char15'];
 var ALL_PORTRAITS = PORTRAIT_NAMED.concat(PORTRAIT_CHARS);
 
 function renderPortraitPicker(a, i){

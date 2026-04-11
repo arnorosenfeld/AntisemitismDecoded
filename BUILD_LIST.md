@@ -34,7 +34,7 @@ Scenarios, inbox items, conversations, etc. sometimes open upward from their hea
 
 ---
 
-## 3. [ ] Fix portrait picker duplicates
+## 3. [x] Fix portrait picker duplicates
 
 **Risk:** Low — reversible via git (file deletions + code edits).
 

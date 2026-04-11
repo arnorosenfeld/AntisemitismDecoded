@@ -20638,7 +20638,6 @@ function renderCoalitionForm(co,i){
   var budgetPR = (co.benefits||{}).budgetPerRound||0;
   var vp = co.violationPenalty||{effects:{},text:''};
   var dp = co.declinePenalty||{effects:{},text:''};
-  var constraintsJSON = JSON.stringify(co.constraints||[], null, 2);
   return '<div class="item-edit-form" id="coal-form-'+i+'" style="display:none">'+
     '<div class="form-row three">'+
       '<div class="form-group"><label>ID</label><input id="coal-id-'+i+'" value="'+esc(co.id)+'" /></div>'+
@@ -20662,9 +20661,10 @@ function renderCoalitionForm(co,i){
     '<label class="section-label">Benefits per Round</label><div class="form-hint" style="margin-bottom:6px">Stat bonuses applied automatically each round while active</div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:8px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-ben-'+i+'-'+s.id+'" value="'+(benefits[s.id]||0)+'" /></div>'}).join('')+
     '<div class="stat-input-group"><label>Gelt/round</label><input type="number" id="coal-benbudget-'+i+'" value="'+budgetPR+'" /><div class="form-hint">Gelt units gained each round while active</div></div></div>'+
-    '<label class="section-label">Constraints (JSON)</label>'+
-    '<textarea id="coal-constraints-'+i+'" rows="4" style="font-family:monospace;font-size:11px">'+esc(constraintsJSON)+'</textarea>'+
-    '<div class="form-hint" style="margin-bottom:10px">Types: "avoidMission" (with missionIds array), "maintainStat" (with stat, above). Each needs a "description".</div>'+
+    '<label class="section-label">Constraints</label>'+
+    '<div class="form-hint" style="margin-bottom:6px">Conditions the player must honor while this coalition is active. Each violation adds a strike; enough strikes break the coalition.</div>'+
+    '<div id="coal-constraints-'+i+'-list" class="coal-constraints-list">'+renderCoalitionConstraintsList(i, co.constraints||[])+'</div>'+
+    '<div style="margin-bottom:10px"><button class="btn btn-ghost btn-sm" onclick="addCoalitionConstraint('+i+')">+ Add Constraint</button></div>'+
     '<div class="coal-section"><div class="coal-section-title">Violation Penalty</div><div class="form-hint" style="margin-bottom:6px">Applied when the player violates a constraint</div>'+
     '<div class="form-group" style="margin-bottom:6px"><label>Text</label><textarea id="coal-vptext-'+i+'" rows="2">'+esc(vp.text||'')+'</textarea></div>'+
     '<div class="stat-inputs cols-4" style="margin-bottom:6px">'+stats.map(function(s){return '<div class="stat-input-group"><label>'+s.label+'</label><input type="number" id="coal-vpfx-'+i+'-'+s.id+'" value="'+((vp.effects||{})[s.id]||0)+'" /></div>'}).join('')+
@@ -20676,6 +20676,91 @@ function renderCoalitionForm(co,i){
     '<div class="stat-input-group"><label>Gelt</label><input type="number" id="coal-dpbudget-'+i+'" value="'+(dp.budgetEffect||0)+'" /></div></div></div>'+
     '<div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveCoalition('+i+')">Save</button></div>'+
   '</div>';
+}
+function renderCoalitionConstraintsList(i, constraints){
+  if(!constraints||!constraints.length) return '<div class="form-hint" style="font-style:italic;padding:6px 0" id="coal-con-empty-'+i+'">No constraints — coalition is unconditional.</div>';
+  return constraints.map(function(con,j){return renderCoalitionConstraintRow(i,j,con)}).join('');
+}
+function renderCoalitionConstraintRow(i,j,con){
+  con = con||{};
+  var type = con.type||'maintainStat';
+  var stats = GD.stats||[];
+  var missions = GD.missions||[];
+  var missionIds = con.missionIds||[];
+  var showMaintain = (type==='maintainStat');
+  var showAvoid = (type==='avoidMission');
+  return '<div class="coal-constraint-row" id="coal-con-'+i+'-'+j+'-row" style="border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;background:var(--panel-bg,#fafafa)">'+
+    '<div class="form-row" style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">'+
+      '<div class="form-group" style="flex:0 0 180px"><label>Type</label>'+
+        '<select id="coal-con-'+i+'-'+j+'-type" onchange="toggleCoalitionConstraintType('+i+','+j+')">'+
+          '<option value="maintainStat"'+(type==='maintainStat'?' selected':'')+'>Maintain Stat</option>'+
+          '<option value="avoidMission"'+(type==='avoidMission'?' selected':'')+'>Avoid Mission</option>'+
+        '</select>'+
+      '</div>'+
+      '<div class="form-group coal-con-maintain" id="coal-con-'+i+'-'+j+'-maintain" style="flex:0 0 150px;display:'+(showMaintain?'block':'none')+'"><label>Stat</label>'+
+        '<select id="coal-con-'+i+'-'+j+'-stat">'+
+          stats.map(function(s){return '<option value="'+s.id+'"'+(con.stat===s.id?' selected':'')+'>'+esc(s.label)+'</option>'}).join('')+
+        '</select>'+
+      '</div>'+
+      '<div class="form-group coal-con-maintain" id="coal-con-'+i+'-'+j+'-above-group" style="flex:0 0 110px;display:'+(showMaintain?'block':'none')+'"><label>Must stay above</label>'+
+        '<input type="number" id="coal-con-'+i+'-'+j+'-above" value="'+(con.above!=null?con.above:40)+'" min="0" max="100" />'+
+      '</div>'+
+      '<div style="flex:1 1 200px;display:flex;justify-content:flex-end;align-items:flex-start"><button class="btn btn-danger btn-sm" onclick="deleteCoalitionConstraint('+i+','+j+')">Remove</button></div>'+
+    '</div>'+
+    '<div class="coal-con-avoid" id="coal-con-'+i+'-'+j+'-avoid" style="display:'+(showAvoid?'block':'none')+';margin-top:8px">'+
+      '<label class="section-label" style="margin-top:6px">Missions to avoid</label>'+
+      '<div class="form-hint" style="margin-bottom:6px">Coalition breaks if the player picks a choice aligned with any checked mission.</div>'+
+      '<div class="checkbox-grid">'+
+        (missions.length ? missions.map(function(m){
+          return '<label class="checkbox-item"><input type="checkbox" id="coal-con-'+i+'-'+j+'-mis-'+m.id+'" '+(missionIds.includes(m.id)?'checked':'')+' /> '+esc(m.name||m.id)+'</label>';
+        }).join('') : '<em class="form-hint">No missions defined yet.</em>')+
+      '</div>'+
+    '</div>'+
+    '<div class="form-group" style="margin-top:8px"><label>Description (shown to player)</label>'+
+      '<input type="text" id="coal-con-'+i+'-'+j+'-desc" value="'+esc(con.description||'')+'" />'+
+    '</div>'+
+  '</div>';
+}
+function toggleCoalitionConstraintType(i,j){
+  var type = document.getElementById('coal-con-'+i+'-'+j+'-type')?.value;
+  var maintainEls = [document.getElementById('coal-con-'+i+'-'+j+'-maintain'), document.getElementById('coal-con-'+i+'-'+j+'-above-group')];
+  var avoidEl = document.getElementById('coal-con-'+i+'-'+j+'-avoid');
+  maintainEls.forEach(function(el){if(el) el.style.display = (type==='maintainStat') ? 'block' : 'none';});
+  if(avoidEl) avoidEl.style.display = (type==='avoidMission') ? 'block' : 'none';
+}
+function readCoalitionConstraintsFromDOM(i){
+  var out = [];
+  var missions = GD.missions||[];
+  var j = 0;
+  while(true){
+    var typeEl = document.getElementById('coal-con-'+i+'-'+j+'-type');
+    if(!typeEl) break;
+    var row = {type: typeEl.value, description: document.getElementById('coal-con-'+i+'-'+j+'-desc')?.value||''};
+    if(row.type==='maintainStat'){
+      row.stat = document.getElementById('coal-con-'+i+'-'+j+'-stat')?.value||'trust';
+      row.above = parseInt(document.getElementById('coal-con-'+i+'-'+j+'-above')?.value)||0;
+    } else if(row.type==='avoidMission'){
+      row.missionIds = missions.filter(function(m){return document.getElementById('coal-con-'+i+'-'+j+'-mis-'+m.id)?.checked}).map(function(m){return m.id});
+    }
+    out.push(row);
+    j++;
+  }
+  return out;
+}
+function redrawCoalitionConstraints(i, constraints){
+  var list = document.getElementById('coal-constraints-'+i+'-list');
+  if(!list) return;
+  list.innerHTML = renderCoalitionConstraintsList(i, constraints);
+}
+function addCoalitionConstraint(i){
+  var current = readCoalitionConstraintsFromDOM(i);
+  current.push({type:'maintainStat', stat:(GD.stats&&GD.stats[0]&&GD.stats[0].id)||'trust', above:40, description:''});
+  redrawCoalitionConstraints(i, current);
+}
+function deleteCoalitionConstraint(i,j){
+  var current = readCoalitionConstraintsFromDOM(i);
+  current.splice(j,1);
+  redrawCoalitionConstraints(i, current);
 }
 function saveCoalition(i){
   var co = GD.coalitionOffers[i];
@@ -20704,9 +20789,8 @@ function saveCoalition(i){
   var budgetPR = parseInt(document.getElementById('coal-benbudget-'+i)?.value)||0;
   co.benefits = {perRound: perRound};
   if(budgetPR) co.benefits.budgetPerRound = budgetPR;
-  // Constraints
-  try { co.constraints = JSON.parse(document.getElementById('coal-constraints-'+i)?.value||'[]'); }
-  catch(e) { alert('Invalid constraints JSON'); return; }
+  // Constraints (structured rows)
+  co.constraints = readCoalitionConstraintsFromDOM(i);
   // Violation penalty
   var vpEffects = {};
   (GD.stats||[]).forEach(function(s){var v=parseInt(document.getElementById('coal-vpfx-'+i+'-'+s.id)?.value)||0;if(v)vpEffects[s.id]=v;});

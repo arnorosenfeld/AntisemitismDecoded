@@ -52,7 +52,7 @@ The portrait picker concatenates the 9 named advisor folders and all 17 `char##`
 
 ---
 
-## 4. [ ] Coalition constraints structured editor
+## 4. [x] Coalition constraints structured editor
 
 **Risk:** Low-medium — editor-only; stored data shape unchanged.
 

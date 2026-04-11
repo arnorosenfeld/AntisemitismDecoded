@@ -380,11 +380,15 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-hs-body { position: absolute; inset: 0; pointer-events: auto; cursor: pointer; background: rgba(255,255,255,0.001); }
 .desk-hs.empty { pointer-events: none; }
 .desk-hs.empty .desk-hs-body { pointer-events: none; cursor: default; display: none; }
-.desk-hs-badge { position: absolute; top: -11px; right: -11px; background: var(--gold); color: white; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.45); z-index: 10; pointer-events: none; }
-.desk-hs-badge.red { background: #ef4444; box-shadow: 0 2px 8px rgba(239,68,68,0.55); }
-/* Phone pulse animation intentionally omitted — animating the rotated hotspot rectangle
-   reveals the crude bounding box. When we want a visible unread indicator, we'll add a
-   quad-shaped highlight tied to the phone screen itself. */
+/* Standalone count badges — positioned at tagged anchor points from DESK_BADGES
+   independently of the rotated click-target rectangles, so they always read
+   upright and land exactly where we tagged them instead of at the rotated
+   top-right corner of an imprecise rectangle. */
+.desk-badge { position: absolute; transform: translate(-50%, -50%); box-sizing: border-box; background: var(--gold); color: white; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.45); z-index: 10; pointer-events: none; }
+.desk-badge.red { background: #ef4444; box-shadow: 0 2px 8px rgba(239,68,68,0.55); }
+/* Phone pulse animation intentionally omitted — the rectangular hotspot is an
+   imprecise click target. A quad-based highlight on the actual phone screen
+   (DESK_QUADS.*.phoneScreen) is the future route for a visible unread indicator. */
 
 /* Monitor CSS animation overlay (positioned at monitorScreen coords).
    box-shadow extends the dark background 3px outward on all sides to cover
@@ -16563,7 +16567,7 @@ function updateHUD(){
 // with no runtime CSS transforms. See art/desk-hotspots.json.
 var DESK_HOTSPOTS = {
   "basic": {
-    "phone":         { "cx": 12.37, "cy": 44.35, "w":  5.43, "h":  8.30, "rot": -46.8 },
+    "phone":         { "cx": 12.26, "cy": 44.23, "w":  4.49, "h":  7.78, "rot": -46.8 },
     "monitor":       { "cx": 42.80, "cy": 17.03, "w": 27.60, "h": 23.02, "rot":   0.0 },
     "monitorScreen": { "cx": 42.68, "cy": 16.84, "w": 27.49, "h": 22.58, "rot":   0.0 },
     "postit":        { "cx": 32.83, "cy": 33.12, "w":  5.52, "h":  6.61, "rot":   0.0 },
@@ -16577,6 +16581,47 @@ var DESK_HOTSPOTS = {
     "postit":        { "cx": 32.16, "cy": 32.43, "w":  5.42, "h":  6.08, "rot":   0.0 },
     "keys":          { "cx": 25.06, "cy": 39.52, "w":  5.74, "h":  5.26, "rot":   0.0 },
     "landline":      { "cx": 76.15, "cy": 39.62, "w": 13.20, "h": 11.13, "rot":  20.2 }
+  }
+};
+
+// Badge anchor points — single (x,y) percentages where count circles sit.
+// Positioned absolutely on the desk scene, independent of the rotated click
+// target rectangles, so they always read upright and land where they should.
+var DESK_BADGES = {
+  "basic": {
+    "phone":    { "x":  5.86, "y": 41.91 },
+    "monitor":  { "x": 57.81, "y":  3.74 },
+    "postit":   { "x": 35.74, "y": 29.46 },
+    "keys":     { "x": 21.86, "y": 37.30 },
+    "landline": { "x": 81.62, "y": 32.34 }
+  },
+  "fancy": {
+    "phone":    { "x": 11.36, "y": 40.30 },
+    "monitor":  { "x": 62.15, "y":  2.70 },
+    "postit":   { "x": 34.78, "y": 29.23 },
+    "keys":     { "x": 22.54, "y": 37.19 },
+    "landline": { "x": 75.55, "y": 32.34 }
+  }
+};
+
+// Quadrilaterals — 4-corner shapes for precise non-rectangular regions.
+// Stored but not yet rendered; reserved for the future phone-screen animation.
+var DESK_QUADS = {
+  "basic": {
+    "phoneScreen": {
+      "tl": { "x":  8.37, "y": 43.53 },
+      "tr": { "x": 12.32, "y": 41.11 },
+      "br": { "x": 16.66, "y": 44.68 },
+      "bl": { "x": 12.70, "y": 47.10 }
+    }
+  },
+  "fancy": {
+    "phoneScreen": {
+      "tl": { "x": 12.03, "y": 41.34 },
+      "tr": { "x": 16.17, "y": 38.34 },
+      "br": { "x": 23.69, "y": 43.99 },
+      "bl": { "x": 19.74, "y": 46.99 }
+    }
   }
 };
 
@@ -16639,29 +16684,32 @@ function preloadDeskImages() {
   }); }); });
 }
 
-// Build one hotspot div with badge, body, click handler.
-// The hotspot is rotated via CSS transform; the badge lives inside and gets a
-// counter-rotation so its number always reads upright regardless of how
-// angled the clickable area is.
+// Build the rotated click-target rectangle. No badge — badges are rendered
+// separately at their own tagged anchor points by _deskBadgeDiv.
 function _deskHotspotDiv(id, hs, opts) {
   if (!hs) return '';
   opts = opts || {};
   var rot = hs.rot || 0;
   var cls = 'desk-hs desk-hs-' + id;
   if (opts.empty) cls += ' empty';
-  if (opts.hasUnread) cls += ' has-unread';
   var style = 'left:' + hs.cx + '%;top:' + hs.cy + '%;width:' + hs.w + '%;height:' + hs.h + '%;transform:translate(-50%,-50%) rotate(' + rot + 'deg);';
-  var badge = '';
-  if (typeof opts.count === 'number' && opts.count > 0) {
-    var badgeStyle = rot ? ' style="transform:rotate(' + (-rot) + 'deg);"' : '';
-    badge = '<div class="desk-hs-badge' + (opts.badgeRed ? ' red' : '') + '"' + badgeStyle + '>' + opts.count + '</div>';
-  }
   var handlers = '';
   if (opts.onclick) handlers += ' onclick="' + opts.onclick + '"';
   if (opts.onmouseenter) handlers += ' onmouseenter="' + opts.onmouseenter + '"';
   if (opts.onmouseleave) handlers += ' onmouseleave="' + opts.onmouseleave + '"';
   var idAttr = opts.elementId ? ' id="' + opts.elementId + '"' : '';
-  return '<div class="' + cls + '"' + idAttr + ' style="' + style + '">' + badge + '<div class="desk-hs-body"' + handlers + '></div></div>';
+  return '<div class="' + cls + '"' + idAttr + ' style="' + style + '"><div class="desk-hs-body"' + handlers + '></div></div>';
+}
+
+// Standalone count badge, positioned at its tagged anchor point (DESK_BADGES).
+// Independent of the rotated click-target rectangle. Rendered upright.
+function _deskBadgeDiv(id, skin, count, isRed) {
+  if (!count || count <= 0) return '';
+  var anchor = DESK_BADGES[skin] && DESK_BADGES[skin][id];
+  if (!anchor) return '';
+  var cls = 'desk-badge' + (isRed ? ' red' : '');
+  var style = 'left:' + anchor.x + '%;top:' + anchor.y + '%;';
+  return '<div class="' + cls + '" style="' + style + '">' + count + '</div>';
 }
 
 function renderDeskScene(opts) {
@@ -16682,9 +16730,6 @@ function renderDeskScene(opts) {
   // Phone hotspot — opens inbox popup on hover/click
   html += _deskHotspotDiv('phone', hs.phone, {
     elementId: 'desk-hs-phone',
-    count: (opts.activeInbox || []).length,
-    badgeRed: true,
-    hasUnread: hasUnread,
     onclick: 'toggleInboxPopup(event)',
     onmouseenter: 'showInboxPopup()',
     onmouseleave: 'scheduleHideInboxPopup()'
@@ -16692,7 +16737,6 @@ function renderDeskScene(opts) {
 
   // Monitor hotspot
   html += _deskHotspotDiv('monitor', hs.monitor, {
-    count: (opts.monQ || []).length,
     empty: opts.disabled || (opts.monQ || []).length === 0,
     onclick: "deskAction('monitor')"
   });
@@ -16700,21 +16744,31 @@ function renderDeskScene(opts) {
   // Post-it hotspot (only rendered when folder channel is non-empty — matches bg image state)
   if (deskHasPostit()) {
     html += _deskHotspotDiv('postit', hs.postit, {
-      count: (opts.folQ || []).length,
-      empty: opts.disabled || (opts.folQ || []).length === 0,
+      empty: opts.disabled,
       onclick: "deskAction('folder')"
     });
   }
 
   // Keys hotspot
   html += _deskHotspotDiv('keys', hs.keys, {
-    count: (opts.keyQ || []).length,
     empty: opts.disabled || (opts.keyQ || []).length === 0,
     onclick: "deskAction('keys')"
   });
 
   // Landline hotspot — dormant stub, visible in DOM but not interactive until events are authored
   html += _deskHotspotDiv('landline', hs.landline, { empty: true });
+
+  // Standalone count badges at their tagged anchor points (replaces old
+  // top-right-of-rotated-rect positioning). Only rendered when the channel
+  // has a count; landline has no badge until events exist.
+  var inboxCount = (opts.activeInbox || []).length;
+  html += _deskBadgeDiv('phone',   skin, inboxCount,           true);
+  html += _deskBadgeDiv('monitor', skin, (opts.monQ || []).length, false);
+  if (deskHasPostit()) {
+    html += _deskBadgeDiv('postit', skin, (opts.folQ || []).length, false);
+  }
+  html += _deskBadgeDiv('keys',    skin, (opts.keyQ || []).length, false);
+  // Landline badge intentionally omitted — channel is dormant.
 
   // Inbox pop-up — reuses old phone.png as a frame, positioned above the phone hotspot
   if (hs.phone) {

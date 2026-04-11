@@ -1,116 +1,55 @@
 {
   "hotspots": {
     "basic": {
-      "phone": {
-        "cx": 12.37,
-        "cy": 44.35,
-        "w": 5.43,
-        "h": 8.3,
-        "rot": -46.8
-      },
-      "monitor": {
-        "cx": 42.8,
-        "cy": 17.03,
-        "w": 27.6,
-        "h": 23.02,
-        "rot": 0
-      },
-      "monitorScreen": {
-        "cx": 42.68,
-        "cy": 16.84,
-        "w": 27.49,
-        "h": 22.58,
-        "rot": 0
-      },
-      "postit": {
-        "cx": 32.83,
-        "cy": 33.12,
-        "w": 5.52,
-        "h": 6.61,
-        "rot": 0
-      },
-      "keys": {
-        "cx": 22.11,
-        "cy": 42.7,
-        "w": 4.49,
-        "h": 9.1,
-        "rot": -37.7
-      },
-      "landline": {
-        "cx": 81.18,
-        "cy": 41.0,
-        "w": 13.85,
-        "h": 12.16,
-        "rot": 30.9
+      "phone":         { "cx": 12.26, "cy": 44.23, "w":  4.49, "h":  7.78, "rot": -46.8 },
+      "monitor":       { "cx": 42.80, "cy": 17.03, "w": 27.60, "h": 23.02, "rot":   0.0 },
+      "monitorScreen": { "cx": 42.68, "cy": 16.84, "w": 27.49, "h": 22.58, "rot":   0.0 },
+      "postit":        { "cx": 32.83, "cy": 33.12, "w":  5.52, "h":  6.61, "rot":   0.0 },
+      "keys":          { "cx": 22.11, "cy": 42.70, "w":  4.49, "h":  9.10, "rot": -37.7 },
+      "landline":      { "cx": 81.18, "cy": 41.00, "w": 13.85, "h": 12.16, "rot":  30.9 }
+    },
+    "fancy": {
+      "phone":         { "cx": 18.03, "cy": 42.95, "w":  4.89, "h": 10.93, "rot": -52.7 },
+      "monitor":       { "cx": 43.99, "cy": 16.22, "w": 34.51, "h": 23.89, "rot":   0.0 },
+      "monitorScreen": { "cx": 43.82, "cy": 15.99, "w": 34.17, "h": 23.52, "rot":   0.0 },
+      "postit":        { "cx": 32.16, "cy": 32.43, "w":  5.42, "h":  6.08, "rot":   0.0 },
+      "keys":          { "cx": 25.06, "cy": 39.52, "w":  5.74, "h":  5.26, "rot":   0.0 },
+      "landline":      { "cx": 76.15, "cy": 39.62, "w": 13.20, "h": 11.13, "rot":  20.2 }
+    }
+  },
+  "badges": {
+    "basic": {
+      "phone":    { "x":  5.86, "y": 41.91 },
+      "monitor":  { "x": 57.81, "y":  3.74 },
+      "postit":   { "x": 35.74, "y": 29.46 },
+      "keys":     { "x": 21.86, "y": 37.30 },
+      "landline": { "x": 81.62, "y": 32.34 }
+    },
+    "fancy": {
+      "phone":    { "x": 11.36, "y": 40.30 },
+      "monitor":  { "x": 62.15, "y":  2.70 },
+      "postit":   { "x": 34.78, "y": 29.23 },
+      "keys":     { "x": 22.54, "y": 37.19 },
+      "landline": { "x": 75.55, "y": 32.34 }
+    }
+  },
+  "quads": {
+    "basic": {
+      "phoneScreen": {
+        "tl": { "x":  8.37, "y": 43.53 },
+        "tr": { "x": 12.32, "y": 41.11 },
+        "br": { "x": 16.66, "y": 44.68 },
+        "bl": { "x": 12.70, "y": 47.10 }
       }
     },
     "fancy": {
-      "phone": {
-        "cx": 18.03,
-        "cy": 42.95,
-        "w": 4.89,
-        "h": 10.93,
-        "rot": -52.7
-      },
-      "monitor": {
-        "cx": 43.99,
-        "cy": 16.22,
-        "w": 34.51,
-        "h": 23.89,
-        "rot": 0
-      },
-      "monitorScreen": {
-        "cx": 43.82,
-        "cy": 15.99,
-        "w": 34.17,
-        "h": 23.52,
-        "rot": 0
-      },
-      "postit": {
-        "cx": 32.16,
-        "cy": 32.43,
-        "w": 5.42,
-        "h": 6.08,
-        "rot": 0
-      },
-      "keys": {
-        "cx": 25.06,
-        "cy": 39.52,
-        "w": 5.74,
-        "h": 5.26,
-        "rot": 0
-      },
-      "landline": {
-        "cx": 76.15,
-        "cy": 39.62,
-        "w": 13.2,
-        "h": 11.13,
-        "rot": 20.2
+      "phoneScreen": {
+        "tl": { "x": 12.03, "y": 41.34 },
+        "tr": { "x": 16.17, "y": 38.34 },
+        "br": { "x": 23.69, "y": 43.99 },
+        "bl": { "x": 19.74, "y": 46.99 }
       }
     }
   },
-  "fileMapping": {
-    "Basic desk w_note.png": "desk-basic-plain-postit.png",
-    "Basic desk.png": "desk-basic-plain.png",
-    "Coffee desk w_apple + note.png": "desk-basic-food-postit.png",
-    "Coffee desk w_apple.png": "desk-basic-food.png",
-    "Coffee desk w_garbage + note.png": "desk-basic-garbage-postit.png",
-    "Coffee desk w_garbage.png": "desk-basic-garbage.png",
-    "Coffee desk w_note.png": "desk-basic-coffee-postit.png",
-    "Coffee desk w_plant + note.png": "desk-basic-flowers-postit.png",
-    "Coffee desk w_plant.png": "desk-basic-flowers.png",
-    "Coffee desk.png": "desk-basic-coffee.png",
-    "Fancy desk w_note.png": "desk-fancy-plain-postit.png",
-    "Fancy desk.png": "desk-fancy-plain.png",
-    "Latte desk w_flowers + note.png": "desk-fancy-flowers-postit.png",
-    "Latte desk w_flowers.png": "desk-fancy-flowers.png",
-    "Latte desk w_garbage + note.png": "desk-fancy-garbage-postit.png",
-    "Latte desk w_garbage.png": "desk-fancy-garbage.png",
-    "Latte desk w_note.png": "desk-fancy-coffee-postit.png",
-    "Latte desk w_takeout + note.png": "desk-fancy-food-postit.png",
-    "Latte desk w_takeout.png": "desk-fancy-food.png",
-    "Latte desk.png": "desk-fancy-coffee.png"
-  },
-  "sourceDir": "/Users/arnorosenfeld/Downloads/Antisemitism Decoded Office",
-  "_note": "Coordinates are percentages of the unified 1918x1603 canvas. Both skins have identical canvas dimensions. Fancy art is pre-scaled by 0.95x and re-centered within the canvas so both desks render at matching visual scale without runtime CSS transforms. See git log for the Python scripts used to process the art."
+  "_note": "Hotspots are rotatable click-target rectangles (cx,cy,w,h,rot as % of canvas). Badges are single (x,y) anchor points for count circles. Quads are 4-corner shapes (tl/tr/br/bl as {x,y} %). Coordinates are percentages of the unified 1918×1603 canvas in art/desk-*.png."
 }

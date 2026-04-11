@@ -32,20 +32,20 @@
   .card .tag-row { display: flex; gap: 4px; margin-top: 5px; }
   .card select { flex: 1; font-size: 11px; padding: 3px 5px; min-width: 0; }
 
-  .calib-layout { display: grid; grid-template-columns: 280px 1fr; gap: 18px; align-items: flex-start; }
-  .calib-sidebar { background: #14141a; border-radius: 6px; padding: 14px; position: sticky; top: 80px; }
+  .calib-layout { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: flex-start; }
+  .calib-sidebar { background: #14141a; border-radius: 6px; padding: 14px; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; }
   .calib-sidebar h3 { margin: 0 0 10px; font-size: 12px; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; }
   .calib-sidebar .ref-picker { margin-bottom: 14px; }
   .calib-sidebar .ref-picker label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; }
   .calib-sidebar .ref-picker select { width: 100%; }
   .hs-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
-  .hs-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: #0c0c10; border-radius: 3px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
+  .hs-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: #0c0c10; border-radius: 3px; cursor: pointer; border: 1px solid transparent; transition: all 0.1s; }
   .hs-row:hover { border-color: #2a2a33; }
   .hs-row.active { border-color: #2563eb; background: #0f1828; }
   .hs-row .label { font-weight: 600; font-size: 12px; color: #ddd; }
   .hs-row .status { font-size: 10px; color: #666; }
   .hs-row.set .status { color: #86efac; }
-  .calib-hint { font-size: 11px; color: #888; line-height: 1.45; padding: 10px; background: #0c0c10; border-radius: 3px; margin-top: 10px; }
+  .calib-hint { font-size: 11px; color: #888; line-height: 1.5; padding: 10px; background: #0c0c10; border-radius: 3px; margin-top: 10px; }
   .calib-hint strong { color: #e8e8ec; }
   .control-group { margin-top: 14px; padding-top: 14px; border-top: 1px solid #1f1f26; }
   .control-group label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; margin-top: 8px; }
@@ -72,6 +72,25 @@
   .hs-rect .handle.rot { transform: translate(-50%, calc(-100% - 22px)); }
   .hs-rect .rot-line { position: absolute; left: 50%; top: 0; width: 2px; height: 22px; background: #10b981; transform: translate(-50%, -100%); pointer-events: none; }
 
+  /* Sidebar section headers grouping rects / badges / quads */
+  .hs-section-header { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: #86efac; margin: 14px 0 6px; padding-top: 10px; border-top: 1px solid #2a2a33; }
+  .hs-section-header:first-child { border-top: 0; padding-top: 0; margin-top: 2px; }
+
+  /* Badge anchor point marker (placed where the count circle should sit) */
+  .hs-badge-point { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; z-index: 6; cursor: move; }
+  .hs-badge-point .badge-marker { width: 16px; height: 16px; background: #fbbf24; border: 2px solid #78350f; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.65); box-sizing: border-box; }
+  .hs-badge-point .badge-label { position: absolute; left: 100%; top: 50%; transform: translate(8px, -50%); font: 700 10px/1 -apple-system, sans-serif; color: #fbbf24; text-shadow: 0 1px 2px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.7); white-space: nowrap; pointer-events: none; }
+  .hs-badge-point.inactive { opacity: 0.55; cursor: pointer; }
+  .hs-badge-point.inactive .badge-marker { background: rgba(200,200,200,0.55); border-color: rgba(120,120,120,0.8); }
+  .hs-badge-point.inactive .badge-label { color: rgba(220,220,220,0.7); }
+
+  /* Quad (4-corner shape) rendering */
+  .hs-quad-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  .hs-quad-layer svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .hs-quad-handle { position: absolute; width: 14px; height: 14px; background: white; border: 2px solid #10b981; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 1px 4px rgba(0,0,0,0.75); box-sizing: border-box; cursor: grab; pointer-events: auto; z-index: 7; }
+  .hs-quad-handle:hover { background: #ecfdf5; }
+  .hs-quad-layer.inactive .hs-quad-handle { pointer-events: none; opacity: 0.5; }
+
   textarea { width: 100%; box-sizing: border-box; min-height: 320px; background: #07070a; color: #e8e8ec; border: 1px solid #1f1f26; border-radius: 4px; padding: 12px; font-family: Menlo, Monaco, monospace; font-size: 11px; line-height: 1.5; }
 
   .status-msg { margin-top: 10px; font-size: 12px; }
@@ -96,7 +115,7 @@
 <main>
   <section id="step-upload">
     <h2>Step 1. Upload 20 desk PNGs</h2>
-    <p>Select all 20 PNGs from <code>~/Downloads/Antisemitism Decoded Office/</code> at once. Files are read into memory locally — nothing is uploaded anywhere.</p>
+    <p>Select all 20 PNGs from <code>art/desk-*.png</code> (the currently-baked images in the repo) at once. Files are read into memory locally — nothing is uploaded anywhere.</p>
     <input type="file" id="file-input" multiple accept="image/png">
     <div class="status-msg" id="upload-status"></div>
   </section>
@@ -113,22 +132,26 @@
 
   <section id="step-calibrate" hidden>
     <h2 id="calib-title">Calibrate desk hotspots</h2>
-    <p>Click a hotspot in the sidebar, then click-drag on the image to draw its rectangle. Drag inside to move, corner handles to resize, green circle to rotate. All coordinates are stored as percentages so they're resolution-independent.</p>
+    <p>Three entry kinds: <strong>hotspots</strong> are rotatable click-target rectangles (pre-filled from the current game state — edit only if you want to refine them), <strong>badge anchors</strong> are single points where the count circles should sit (click to place), and <strong>quads</strong> are 4-corner shapes whose corners drag independently (used for precise regions like the angled phone screen).</p>
     <div class="calib-layout">
       <aside class="calib-sidebar">
         <div class="ref-picker">
           <label>Reference image</label>
           <select id="ref-select"></select>
         </div>
-        <h3>Hotspots</h3>
         <div id="hs-list" class="hs-list"></div>
         <div class="calib-hint">
-          <strong>Monitor green box</strong> is auto-detected from the bright green rectangle in the art. If it looks wrong, click it in the list and redraw.
+          <strong>Hotspots</strong> — click-drag to draw, drag inside to move, corner handles to resize, green handle to rotate.<br>
+          <strong>Badges</strong> — click on the image to place the point; click or drag to move.<br>
+          <strong>Quads</strong> — click-drag to create an initial rect, then drag each corner independently. Delete key to reset.
         </div>
         <div class="control-group" id="rot-controls" hidden>
           <label>Rotation: <span id="rot-display" class="rot-display">0°</span></label>
           <input type="range" id="rot-slider" min="-180" max="180" step="1" value="0">
-          <button id="delete-hs" class="danger" style="margin-top:10px; width:100%;">Delete this hotspot</button>
+          <button id="delete-entry" class="danger" style="margin-top:10px; width:100%;">Delete this entry</button>
+        </div>
+        <div class="control-group" id="delete-only-controls" hidden>
+          <button id="delete-entry-2" class="danger" style="width:100%;">Delete this entry</button>
         </div>
         <div class="nav-buttons">
           <button id="calib-back" class="secondary">← Back</button>
@@ -171,19 +194,62 @@ const HOTSPOT_LABELS = {
   keys: 'Keys',
   landline: 'Landline'
 };
+const BADGES = ['phone', 'monitor', 'postit', 'keys', 'landline'];
+const BADGE_LABELS = {
+  phone: 'Phone badge',
+  monitor: 'Monitor badge',
+  postit: 'Post-it badge',
+  keys: 'Keys badge',
+  landline: 'Landline badge'
+};
+const BADGE_SHORT = { phone: 'P', monitor: 'M', postit: 'N', keys: 'K', landline: 'L' };
+const QUADS = ['phoneScreen'];
+const QUAD_LABELS = { phoneScreen: 'Phone screen (quad)' };
 const MORALE_STATES = ['plain', 'coffee', 'food', 'garbage', 'flowers'];
 const MIN_SIZE_PX = 8;
+
+// Pre-populate rect hotspots from the current baked game state so calibration
+// only needs to add new badges and quads on top, not re-tag click targets from
+// scratch. Values are percentages of the 1918×1603 unified canvas.
+const BOOTSTRAP_HOTSPOTS = {
+  basic: {
+    phone:         { cx: 12.37, cy: 44.35, w:  5.43, h:  8.30, rot: -46.8 },
+    monitor:       { cx: 42.80, cy: 17.03, w: 27.60, h: 23.02, rot:   0.0 },
+    monitorScreen: { cx: 42.68, cy: 16.84, w: 27.49, h: 22.58, rot:   0.0 },
+    postit:        { cx: 32.83, cy: 33.12, w:  5.52, h:  6.61, rot:   0.0 },
+    keys:          { cx: 22.11, cy: 42.70, w:  4.49, h:  9.10, rot: -37.7 },
+    landline:      { cx: 81.18, cy: 41.00, w: 13.85, h: 12.16, rot:  30.9 }
+  },
+  fancy: {
+    phone:         { cx: 18.03, cy: 42.95, w:  4.89, h: 10.93, rot: -52.7 },
+    monitor:       { cx: 43.99, cy: 16.22, w: 34.51, h: 23.89, rot:   0.0 },
+    monitorScreen: { cx: 43.82, cy: 15.99, w: 34.17, h: 23.52, rot:   0.0 },
+    postit:        { cx: 32.16, cy: 32.43, w:  5.42, h:  6.08, rot:   0.0 },
+    keys:          { cx: 25.06, cy: 39.52, w:  5.74, h:  5.26, rot:   0.0 },
+    landline:      { cx: 76.15, cy: 39.62, w: 13.20, h: 11.13, rot:  20.2 }
+  }
+};
 
 // ============================================================
 // STATE
 // ============================================================
 const state = {
-  files: [],               // [{name, file, url, tag: {skin, moraleState, postit}}]
-  hotspots: { basic: {}, fancy: {} },  // per skin: {phone: {cx,cy,w,h,rot}, ...} in natural pixel coords
-  refDims:  { basic: null, fancy: null }, // {w, h} natural dimensions
+  files: [],
+  // All coordinate data is kept in NATURAL pixel coords of the reference image.
+  hotspots: { basic: {}, fancy: {} },  // rects: {phone: {cx,cy,w,h,rot}, ...}
+  badges:   { basic: {}, fancy: {} },  // points: {phone: {x, y}, ...}
+  quads:    { basic: {}, fancy: {} },  // quads: {phoneScreen: {tl:{x,y}, tr, br, bl}}
+  refDims:  { basic: null, fancy: null },
+  _bootstrapDone: { basic: false, fancy: false },
   currentSkin: 'basic',
-  currentHotspot: null
+  currentEntry: null  // { kind: 'rect'|'badge'|'quad', id: string } or null
 };
+
+function currentKind() { return state.currentEntry && state.currentEntry.kind; }
+function currentId()   { return state.currentEntry && state.currentEntry.id; }
+function selectedRectId()  { return currentKind() === 'rect'  ? currentId() : null; }
+function selectedBadgeId() { return currentKind() === 'badge' ? currentId() : null; }
+function selectedQuadId()  { return currentKind() === 'quad'  ? currentId() : null; }
 
 // ============================================================
 // TAG INFERENCE
@@ -197,13 +263,15 @@ function inferTag(name) {
   else if (n.includes('latte')) skin = 'fancy';
   else skin = 'basic';
 
-  if (n.includes('basic') || n.includes('fancy')) moraleState = 'plain';
+  if (n.includes('plain')) moraleState = 'plain';
   else if (n.includes('garbage')) moraleState = 'garbage';
-  else if (n.includes('apple') || n.includes('takeout')) moraleState = 'food';
-  else if (n.includes('plant') || n.includes('flowers')) moraleState = 'flowers';
+  else if (n.includes('food') || n.includes('apple') || n.includes('takeout')) moraleState = 'food';
+  else if (n.includes('flower') || n.includes('plant')) moraleState = 'flowers';
+  else if (n.includes('coffee') || n.includes('latte')) moraleState = 'coffee';
+  else if (n.includes('basic') || n.includes('fancy')) moraleState = 'plain';
   else moraleState = 'coffee';
 
-  const postit = n.includes('note');
+  const postit = n.includes('postit') || n.includes('note');
   return { skin, moraleState, postit };
 }
 
@@ -291,7 +359,7 @@ document.getElementById('review-grid').addEventListener('change', (e) => {
 
 document.getElementById('review-continue').addEventListener('click', () => {
   markStepDone('review');
-  state.currentHotspot = null;
+  state.currentEntry = null;
   enterCalibration('basic');
 });
 document.getElementById('review-back').addEventListener('click', () => goToStep('upload'));
@@ -301,7 +369,7 @@ document.getElementById('review-back').addEventListener('click', () => goToStep(
 // ============================================================
 function enterCalibration(skin) {
   state.currentSkin = skin;
-  state.currentHotspot = null;
+  state.currentEntry = null;
   goToStep('calibrate-' + skin);
   document.getElementById('calib-title').textContent =
     `Step ${skin === 'basic' ? '3' : '4'}. Calibrate ${skin} desk hotspots`;
@@ -320,8 +388,8 @@ function enterCalibration(skin) {
   });
   refSelect.value = candidates[0].name;
   loadCalibrationImage(candidates[0]);
-  renderHotspotList();
-  updateRotControls();
+  renderSidebar();
+  updateEditControls();
 }
 
 document.getElementById('ref-select').addEventListener('change', (e) => {
@@ -332,76 +400,148 @@ document.getElementById('ref-select').addEventListener('change', (e) => {
 function loadCalibrationImage(fileEntry) {
   const img = document.getElementById('calib-img');
   img.onload = () => {
-    state.refDims[state.currentSkin] = { w: img.naturalWidth, h: img.naturalHeight };
-    renderRects();
-    if (!state.hotspots[state.currentSkin].monitorScreen) {
+    const skin = state.currentSkin;
+    state.refDims[skin] = { w: img.naturalWidth, h: img.naturalHeight };
+    bootstrapHotspotsIfNeeded(skin);
+    renderEverything();
+    if (!state.hotspots[skin].monitorScreen) {
       autoDetectGreen(img);
     }
   };
   img.src = fileEntry.url;
 }
 
-function renderHotspotList() {
-  const list = document.getElementById('hs-list');
-  list.innerHTML = '';
-  const skinHotspots = state.hotspots[state.currentSkin];
-  HOTSPOTS.forEach(hs => {
-    const row = document.createElement('div');
-    row.className = 'hs-row' + (skinHotspots[hs] ? ' set' : '') + (state.currentHotspot === hs ? ' active' : '');
-    row.innerHTML = `
-      <span class="label">${HOTSPOT_LABELS[hs]}</span>
-      <span class="status">${skinHotspots[hs] ? '✓ set' : 'not set'}</span>
-    `;
-    row.addEventListener('click', () => {
-      state.currentHotspot = hs;
-      renderHotspotList();
-      renderRects();
-      updateRotControls();
-    });
-    list.appendChild(row);
+// Pre-load rect hotspots from BOOTSTRAP_HOTSPOTS on first calibration of a skin,
+// converting from percentages to natural pixel coordinates.
+function bootstrapHotspotsIfNeeded(skin) {
+  if (state._bootstrapDone[skin]) return;
+  const dims = state.refDims[skin];
+  if (!dims) return;
+  const boot = BOOTSTRAP_HOTSPOTS[skin];
+  if (!boot) return;
+  const dst = state.hotspots[skin];
+  Object.keys(boot).forEach(key => {
+    if (dst[key]) return; // don't overwrite user-modified values
+    const p = boot[key];
+    dst[key] = {
+      cx: p.cx / 100 * dims.w,
+      cy: p.cy / 100 * dims.h,
+      w:  p.w  / 100 * dims.w,
+      h:  p.h  / 100 * dims.h,
+      rot: p.rot
+    };
   });
+  state._bootstrapDone[skin] = true;
 }
 
-function updateRotControls() {
-  const panel = document.getElementById('rot-controls');
+function renderEverything() {
+  renderSidebar();
+  renderRects();
+  renderBadges();
+  renderQuads();
+  updateEditControls();
+}
+
+// ---- Sidebar ----
+function renderSidebar() {
+  const list = document.getElementById('hs-list');
+  list.innerHTML = '';
+  const skin = state.currentSkin;
+
+  const header = (label) => {
+    const h = document.createElement('div');
+    h.className = 'hs-section-header';
+    h.textContent = label;
+    list.appendChild(h);
+  };
+
+  const row = (kind, id, label, isSet) => {
+    const r = document.createElement('div');
+    const active = currentKind() === kind && currentId() === id;
+    r.className = 'hs-row' + (isSet ? ' set' : '') + (active ? ' active' : '');
+    r.innerHTML = `
+      <span class="label">${label}</span>
+      <span class="status">${isSet ? '✓ set' : 'not set'}</span>
+    `;
+    r.addEventListener('click', () => {
+      state.currentEntry = { kind, id };
+      renderEverything();
+    });
+    list.appendChild(r);
+  };
+
+  header('Hotspots (click targets)');
+  HOTSPOTS.forEach(id => row('rect', id, HOTSPOT_LABELS[id], !!state.hotspots[skin][id]));
+
+  header('Badge anchors');
+  BADGES.forEach(id => row('badge', id, BADGE_LABELS[id], !!state.badges[skin][id]));
+
+  header('Quads');
+  QUADS.forEach(id => row('quad', id, QUAD_LABELS[id], !!state.quads[skin][id]));
+}
+
+function updateEditControls() {
+  const rotPanel = document.getElementById('rot-controls');
+  const delPanel = document.getElementById('delete-only-controls');
   const slider = document.getElementById('rot-slider');
   const display = document.getElementById('rot-display');
-  const active = state.currentHotspot && state.hotspots[state.currentSkin][state.currentHotspot];
-  if (active) {
-    panel.hidden = false;
-    const rot = active.rot || 0;
-    slider.value = rot;
-    display.textContent = rot.toFixed(0) + '°';
+
+  const kind = currentKind();
+  const id = currentId();
+  if (!kind || !id) {
+    rotPanel.hidden = true;
+    delPanel.hidden = true;
+    return;
+  }
+
+  if (kind === 'rect') {
+    const r = state.hotspots[state.currentSkin][id];
+    if (r) {
+      rotPanel.hidden = false;
+      delPanel.hidden = true;
+      const rot = r.rot || 0;
+      slider.value = rot;
+      display.textContent = rot.toFixed(0) + '°';
+    } else {
+      rotPanel.hidden = true;
+      delPanel.hidden = false;
+    }
   } else {
-    panel.hidden = true;
+    // badge or quad — rotation doesn't apply, only delete
+    rotPanel.hidden = true;
+    const set = (kind === 'badge' ? state.badges : state.quads)[state.currentSkin][id];
+    delPanel.hidden = !set;
   }
 }
 
 document.getElementById('rot-slider').addEventListener('input', (e) => {
-  if (!state.currentHotspot) return;
-  const h = state.hotspots[state.currentSkin][state.currentHotspot];
-  if (!h) return;
-  h.rot = parseFloat(e.target.value);
-  document.getElementById('rot-display').textContent = h.rot.toFixed(0) + '°';
+  const id = selectedRectId();
+  if (!id) return;
+  const r = state.hotspots[state.currentSkin][id];
+  if (!r) return;
+  r.rot = parseFloat(e.target.value);
+  document.getElementById('rot-display').textContent = r.rot.toFixed(0) + '°';
   renderRects();
 });
 
-document.getElementById('delete-hs').addEventListener('click', () => {
-  if (!state.currentHotspot) return;
-  delete state.hotspots[state.currentSkin][state.currentHotspot];
-  renderRects();
-  renderHotspotList();
-  updateRotControls();
-});
+function deleteCurrentEntry() {
+  const kind = currentKind();
+  const id = currentId();
+  if (!kind || !id) return;
+  const skin = state.currentSkin;
+  if (kind === 'rect')  delete state.hotspots[skin][id];
+  if (kind === 'badge') delete state.badges[skin][id];
+  if (kind === 'quad')  delete state.quads[skin][id];
+  renderEverything();
+}
+document.getElementById('delete-entry').addEventListener('click', deleteCurrentEntry);
+document.getElementById('delete-entry-2').addEventListener('click', deleteCurrentEntry);
 
 document.addEventListener('keydown', (e) => {
   if (document.getElementById('step-calibrate').hidden) return;
   if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'TEXTAREA')) return;
-  if ((e.key === 'Delete' || e.key === 'Backspace') && state.currentHotspot) {
-    delete state.hotspots[state.currentSkin][state.currentHotspot];
-    renderRects();
-    renderHotspotList();
-    updateRotControls();
+  if ((e.key === 'Delete' || e.key === 'Backspace') && state.currentEntry) {
+    deleteCurrentEntry();
     e.preventDefault();
   }
 });
@@ -414,11 +554,12 @@ function renderRects() {
   if (!img.complete || !img.naturalWidth) return;
   const natW = img.naturalWidth, natH = img.naturalHeight;
   const skinHotspots = state.hotspots[state.currentSkin];
+  const activeId = selectedRectId();
   HOTSPOTS.forEach(hs => {
     const rect = skinHotspots[hs];
     if (!rect) return;
     const el = document.createElement('div');
-    el.className = 'hs-rect' + (state.currentHotspot === hs ? '' : ' inactive');
+    el.className = 'hs-rect' + (activeId === hs ? '' : ' inactive');
     el.dataset.hs = hs;
     el.style.left = (rect.cx / natW * 100) + '%';
     el.style.top = (rect.cy / natH * 100) + '%';
@@ -436,6 +577,76 @@ function renderRects() {
       <div class="handle rot" data-handle="rot"></div>
     `;
     host.appendChild(el);
+  });
+}
+
+// ---- Render badges (points) ----
+function renderBadges() {
+  const host = document.getElementById('canvas-host');
+  Array.from(host.querySelectorAll('.hs-badge-point')).forEach(el => el.remove());
+  const img = document.getElementById('calib-img');
+  if (!img.complete || !img.naturalWidth) return;
+  const natW = img.naturalWidth, natH = img.naturalHeight;
+  const skinBadges = state.badges[state.currentSkin];
+  const activeId = selectedBadgeId();
+  BADGES.forEach(id => {
+    const pt = skinBadges[id];
+    if (!pt) return;
+    const el = document.createElement('div');
+    const isActive = activeId === id;
+    el.className = 'hs-badge-point' + (isActive ? '' : ' inactive');
+    el.dataset.badgeId = id;
+    el.style.left = (pt.x / natW * 100) + '%';
+    el.style.top  = (pt.y / natH * 100) + '%';
+    el.innerHTML = '<div class="badge-marker"></div><div class="badge-label">' + escapeHtml(BADGE_SHORT[id] || id[0].toUpperCase()) + '</div>';
+    host.appendChild(el);
+  });
+}
+
+// ---- Render quads (4-corner shapes) ----
+function renderQuads() {
+  const host = document.getElementById('canvas-host');
+  Array.from(host.querySelectorAll('.hs-quad-layer')).forEach(el => el.remove());
+  const img = document.getElementById('calib-img');
+  if (!img.complete || !img.naturalWidth) return;
+  const natW = img.naturalWidth, natH = img.naturalHeight;
+  const skinQuads = state.quads[state.currentSkin];
+  const activeId = selectedQuadId();
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  QUADS.forEach(id => {
+    const q = skinQuads[id];
+    if (!q) return;
+    const isActive = activeId === id;
+
+    const layer = document.createElement('div');
+    layer.className = 'hs-quad-layer' + (isActive ? '' : ' inactive');
+    layer.dataset.quadId = id;
+
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${natW} ${natH}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    const polygon = document.createElementNS(SVG_NS, 'polygon');
+    polygon.setAttribute('points',
+      `${q.tl.x},${q.tl.y} ${q.tr.x},${q.tr.y} ${q.br.x},${q.br.y} ${q.bl.x},${q.bl.y}`);
+    polygon.setAttribute('fill', isActive ? 'rgba(16,185,129,0.18)' : 'rgba(150,150,150,0.06)');
+    polygon.setAttribute('stroke', isActive ? '#10b981' : 'rgba(160,160,170,0.5)');
+    polygon.setAttribute('stroke-width', isActive ? '6' : '4');
+    polygon.setAttribute('vector-effect', 'non-scaling-stroke');
+    svg.appendChild(polygon);
+    layer.appendChild(svg);
+
+    ['tl','tr','br','bl'].forEach(corner => {
+      const p = q[corner];
+      const handle = document.createElement('div');
+      handle.className = 'hs-quad-handle';
+      handle.dataset.quadId = id;
+      handle.dataset.corner = corner;
+      handle.style.left = (p.x / natW * 100) + '%';
+      handle.style.top  = (p.y / natH * 100) + '%';
+      layer.appendChild(handle);
+    });
+
+    host.appendChild(layer);
   });
 }
 
@@ -458,26 +669,40 @@ document.getElementById('canvas-host').addEventListener('pointerdown', (ev) => {
   const img = document.getElementById('calib-img');
   if (!img.complete || !img.naturalWidth) return;
 
-  const handleEl = ev.target.closest('.handle');
-  const rectBodyEl = ev.target.closest('.rect-body');
+  // Clicking on an inactive rect selects it (works even if no current entry).
   const rectEl = ev.target.closest('.hs-rect');
-  const rectHs = rectEl && rectEl.dataset.hs;
-  const skin = state.currentSkin;
-
-  // Click on a non-active hotspot's rect body -> select that hotspot
-  if (rectEl && rectHs !== state.currentHotspot && rectEl.classList.contains('inactive')) {
-    state.currentHotspot = rectHs;
-    renderHotspotList();
-    renderRects();
-    updateRotControls();
+  if (rectEl && rectEl.classList.contains('inactive')) {
+    state.currentEntry = { kind: 'rect', id: rectEl.dataset.hs };
+    renderEverything();
     ev.preventDefault();
     return;
   }
+  // Clicking an inactive badge selects it.
+  const badgeEl = ev.target.closest('.hs-badge-point');
+  if (badgeEl && badgeEl.classList.contains('inactive')) {
+    state.currentEntry = { kind: 'badge', id: badgeEl.dataset.badgeId };
+    renderEverything();
+    ev.preventDefault();
+    return;
+  }
+  // Clicking an inactive quad handle would have pointer-events:none, so ignore.
 
-  if (!state.currentHotspot) return;
-  const existing = state.hotspots[skin][state.currentHotspot];
+  if (!state.currentEntry) return;
+  const kind = currentKind();
 
-  if (handleEl && rectHs === state.currentHotspot && existing) {
+  if (kind === 'rect')  { handleRectPointerDown(ev); return; }
+  if (kind === 'badge') { handleBadgePointerDown(ev); return; }
+  if (kind === 'quad')  { handleQuadPointerDown(ev); return; }
+});
+
+function handleRectPointerDown(ev) {
+  const skin = state.currentSkin;
+  const id = currentId();
+  const existing = state.hotspots[skin][id];
+  const handleEl = ev.target.closest('.handle');
+  const rectBodyEl = ev.target.closest('.rect-body');
+
+  if (handleEl && existing) {
     const handle = handleEl.dataset.handle;
     const pos = mouseToNatural(ev);
     drag = {
@@ -490,63 +715,91 @@ document.getElementById('canvas-host').addEventListener('pointerdown', (ev) => {
     ev.preventDefault();
     return;
   }
-
-  if (rectBodyEl && rectHs === state.currentHotspot && existing) {
+  if (rectBodyEl && existing) {
     const pos = mouseToNatural(ev);
     drag = { mode: 'move', start: pos, initial: { ...existing } };
     ev.preventDefault();
     return;
   }
-
-  // Otherwise: start drawing a new rect (replaces any existing for active hotspot)
+  // Otherwise: draw a new rect (replaces any existing for this id)
   const pos = mouseToNatural(ev);
   drag = { mode: 'draw', start: pos };
   ev.preventDefault();
-});
+}
+
+function handleBadgePointerDown(ev) {
+  const pos = mouseToNatural(ev);
+  state.badges[state.currentSkin][currentId()] = { x: pos.x, y: pos.y };
+  drag = { mode: 'movePoint' };
+  renderBadges();
+  renderSidebar();
+  updateEditControls();
+  ev.preventDefault();
+}
+
+function handleQuadPointerDown(ev) {
+  const skin = state.currentSkin;
+  const id = currentId();
+  const existing = state.quads[skin][id];
+  const handleEl = ev.target.closest('.hs-quad-handle');
+
+  if (handleEl && existing && handleEl.dataset.quadId === id) {
+    const corner = handleEl.dataset.corner;
+    drag = { mode: 'moveQuadCorner', corner };
+    ev.preventDefault();
+    return;
+  }
+  if (!existing) {
+    // Start drawing an initial axis-aligned quad
+    const pos = mouseToNatural(ev);
+    drag = { mode: 'drawQuad', start: pos };
+    ev.preventDefault();
+  }
+}
 
 document.addEventListener('pointermove', (ev) => {
   if (!drag) return;
   const pos = mouseToNatural(ev);
   const skin = state.currentSkin;
-  const hs = state.currentHotspot;
-  if (!hs && drag.mode !== 'draw') return;
+  const kind = currentKind();
 
   if (drag.mode === 'draw') {
+    const id = currentId();
     const cx = (drag.start.x + pos.x) / 2;
     const cy = (drag.start.y + pos.y) / 2;
     const w = Math.max(Math.abs(pos.x - drag.start.x), MIN_SIZE_PX);
     const h = Math.max(Math.abs(pos.y - drag.start.y), MIN_SIZE_PX);
-    state.hotspots[skin][hs] = { cx, cy, w, h, rot: 0 };
+    state.hotspots[skin][id] = { cx, cy, w, h, rot: 0 };
     renderRects();
   } else if (drag.mode === 'move') {
+    const id = currentId();
     const dx = pos.x - drag.start.x;
     const dy = pos.y - drag.start.y;
-    state.hotspots[skin][hs] = {
+    state.hotspots[skin][id] = {
       ...drag.initial,
       cx: drag.initial.cx + dx,
       cy: drag.initial.cy + dy
     };
     renderRects();
   } else if (drag.mode === 'rotate') {
+    const id = currentId();
     const dx = pos.x - drag.initial.cx;
     const dy = pos.y - drag.initial.cy;
-    // 0° points up (negative y). atan2(dx, -dy) gives angle from "up" clockwise.
     const angle = Math.atan2(dx, -dy) * 180 / Math.PI;
-    state.hotspots[skin][hs] = { ...drag.initial, rot: angle };
+    state.hotspots[skin][id] = { ...drag.initial, rot: angle };
     renderRects();
-    updateRotControls();
+    updateEditControls();
   } else if (drag.mode === 'resize') {
+    const id = currentId();
     const rot = drag.initial.rot || 0;
     const rad = rot * Math.PI / 180;
     const cos = Math.cos(rad), sin = Math.sin(rad);
     const sx = (drag.handle === 'ne' || drag.handle === 'se') ? 1 : -1;
     const sy = (drag.handle === 'sw' || drag.handle === 'se') ? 1 : -1;
     const hw0 = drag.initial.w / 2, hh0 = drag.initial.h / 2;
-    // Opposite corner local: (-sx*hw0, -sy*hh0); world:
     const oppLX = -sx * hw0, oppLY = -sy * hh0;
     const oppWX = drag.initial.cx + oppLX * cos - oppLY * sin;
     const oppWY = drag.initial.cy + oppLX * sin + oppLY * cos;
-    // Vector opposite -> mouse in world, then inverse-rotate to local
     const vx = pos.x - oppWX, vy = pos.y - oppWY;
     const vxl = vx * cos + vy * sin;
     const vyl = -vx * sin + vy * cos;
@@ -554,16 +807,39 @@ document.addEventListener('pointermove', (ev) => {
     const newH = Math.max(Math.abs(vyl), MIN_SIZE_PX);
     const newCx = (oppWX + pos.x) / 2;
     const newCy = (oppWY + pos.y) / 2;
-    state.hotspots[skin][hs] = { cx: newCx, cy: newCy, w: newW, h: newH, rot: rot };
+    state.hotspots[skin][id] = { cx: newCx, cy: newCy, w: newW, h: newH, rot: rot };
     renderRects();
+  } else if (drag.mode === 'movePoint') {
+    const id = currentId();
+    state.badges[skin][id] = { x: pos.x, y: pos.y };
+    renderBadges();
+  } else if (drag.mode === 'drawQuad') {
+    const id = currentId();
+    const x1 = Math.min(drag.start.x, pos.x);
+    const x2 = Math.max(drag.start.x, pos.x);
+    const y1 = Math.min(drag.start.y, pos.y);
+    const y2 = Math.max(drag.start.y, pos.y);
+    state.quads[skin][id] = {
+      tl: { x: x1, y: y1 },
+      tr: { x: x2, y: y1 },
+      br: { x: x2, y: y2 },
+      bl: { x: x1, y: y2 }
+    };
+    renderQuads();
+  } else if (drag.mode === 'moveQuadCorner') {
+    const id = currentId();
+    const q = state.quads[skin][id];
+    if (!q) return;
+    q[drag.corner] = { x: pos.x, y: pos.y };
+    renderQuads();
   }
 });
 
 document.addEventListener('pointerup', () => {
   if (drag) {
     drag = null;
-    renderHotspotList();
-    updateRotControls();
+    renderSidebar();
+    updateEditControls();
   }
 });
 
@@ -599,7 +875,7 @@ function autoDetectGreen(img) {
         rot: 0
       };
       renderRects();
-      renderHotspotList();
+      renderSidebar();
     }
   } catch (e) {
     console.warn('Green auto-detect failed:', e);
@@ -613,9 +889,14 @@ document.getElementById('calib-back').addEventListener('click', () => {
 });
 document.getElementById('calib-next').addEventListener('click', () => {
   const skin = state.currentSkin;
-  const missing = HOTSPOTS.filter(hs => !state.hotspots[skin][hs]);
+  const missingRects  = HOTSPOTS.filter(id => !state.hotspots[skin][id]);
+  const missingBadges = BADGES.filter(id  => !state.badges[skin][id]);
+  const missing = [
+    ...missingRects.map(id => 'rect:' + HOTSPOT_LABELS[id]),
+    ...missingBadges.map(id => 'badge:' + BADGE_LABELS[id])
+  ];
   if (missing.length > 0) {
-    if (!confirm(`Missing hotspots: ${missing.map(h=>HOTSPOT_LABELS[h]).join(', ')}.\nContinue anyway?`)) return;
+    if (!confirm(`Missing entries:\n${missing.join('\n')}\n\nContinue anyway?`)) return;
   }
   markStepDone('calibrate-' + skin);
   if (skin === 'basic') enterCalibration('fancy');
@@ -629,16 +910,19 @@ function showOutput() {
   goToStep('output');
   const output = {
     hotspots: { basic: {}, fancy: {} },
+    badges:   { basic: {}, fancy: {} },
+    quads:    { basic: {}, fancy: {} },
     fileMapping: {},
-    sourceDir: '/Users/arnorosenfeld/Downloads/Antisemitism Decoded Office'
+    _note: 'Hotspots are rect click targets (cx,cy,w,h,rot). Badges are single (x,y) anchor points for the count circles. Quads are 4-corner shapes (tl/tr/br/bl). All coordinates are percentages of the image dimensions.'
   };
+
   ['basic','fancy'].forEach(skin => {
     const dims = state.refDims[skin];
     if (!dims) return;
-    HOTSPOTS.forEach(hs => {
-      const r = state.hotspots[skin][hs];
+    HOTSPOTS.forEach(id => {
+      const r = state.hotspots[skin][id];
       if (!r) return;
-      output.hotspots[skin][hs] = {
+      output.hotspots[skin][id] = {
         cx: +(r.cx / dims.w * 100).toFixed(2),
         cy: +(r.cy / dims.h * 100).toFixed(2),
         w:  +(r.w  / dims.w * 100).toFixed(2),
@@ -646,11 +930,35 @@ function showOutput() {
         rot: +((r.rot || 0)).toFixed(1)
       };
     });
+    BADGES.forEach(id => {
+      const p = state.badges[skin][id];
+      if (!p) return;
+      output.badges[skin][id] = {
+        x: +(p.x / dims.w * 100).toFixed(2),
+        y: +(p.y / dims.h * 100).toFixed(2)
+      };
+    });
+    QUADS.forEach(id => {
+      const q = state.quads[skin][id];
+      if (!q) return;
+      const toPct = (pt) => ({
+        x: +(pt.x / dims.w * 100).toFixed(2),
+        y: +(pt.y / dims.h * 100).toFixed(2)
+      });
+      output.quads[skin][id] = {
+        tl: toPct(q.tl),
+        tr: toPct(q.tr),
+        br: toPct(q.br),
+        bl: toPct(q.bl)
+      };
+    });
   });
+
   state.files.forEach(f => {
     const suffix = f.tag.postit ? '-postit' : '';
     output.fileMapping[f.name] = `desk-${f.tag.skin}-${f.tag.moraleState}${suffix}.png`;
   });
+
   document.getElementById('output-json').value = JSON.stringify(output, null, 2);
 }
 

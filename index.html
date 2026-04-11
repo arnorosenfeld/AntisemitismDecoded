@@ -370,22 +370,26 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .act-effects { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
 /* ── DESK SCENE (unified background with hotspots) ── */
-.desk-scene { position: relative; width: 100%; max-width: 820px; margin: 0 auto; aspect-ratio: 4375 / 1875; user-select: none; }
-.desk-scene .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
+.desk-scene { display: block; position: relative; width: 100%; max-width: 820px; margin: 0 auto; user-select: none; }
+.desk-scene .desk-bg { display: block; width: 100%; max-width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 
 /* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
 .desk-hs { position: absolute; box-sizing: border-box; pointer-events: none; z-index: 5; }
-.desk-hs-body { position: absolute; inset: 0; pointer-events: auto; cursor: pointer; background: rgba(255,255,255,0.001); transition: background 0.15s, box-shadow 0.15s; border-radius: 3px; }
-.desk-hs:not(.empty) .desk-hs-body:hover { background: rgba(255,220,130,0.14); box-shadow: 0 0 0 2px rgba(184,134,11,0.55), 0 0 14px rgba(184,134,11,0.4); }
+/* Hotspot body is invisible (transparent) and relies on the cursor change for affordance —
+   drawing any border/glow on the rotated rectangle reveals its imprecise shape. */
+.desk-hs-body { position: absolute; inset: 0; pointer-events: auto; cursor: pointer; background: rgba(255,255,255,0.001); }
 .desk-hs.empty { pointer-events: none; }
 .desk-hs.empty .desk-hs-body { pointer-events: none; cursor: default; display: none; }
 .desk-hs-badge { position: absolute; top: -11px; right: -11px; background: var(--gold); color: white; font-size: 11px; font-weight: 700; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.45); z-index: 10; pointer-events: none; }
 .desk-hs-badge.red { background: #ef4444; box-shadow: 0 2px 8px rgba(239,68,68,0.55); }
-.desk-hs-phone.has-unread .desk-hs-body { animation: deskPhonePulse 2.2s ease-in-out infinite; }
-@keyframes deskPhonePulse { 0%,100% { box-shadow: 0 0 0 transparent; } 50% { box-shadow: 0 0 0 2px rgba(239,68,68,0.65), 0 0 18px rgba(239,68,68,0.55); } }
+/* Phone pulse animation intentionally omitted — animating the rotated hotspot rectangle
+   reveals the crude bounding box. When we want a visible unread indicator, we'll add a
+   quad-shaped highlight tied to the phone screen itself. */
 
-/* Monitor CSS animation overlay (positioned at monitorScreen coords) */
-.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; pointer-events: none; z-index: 4; }
+/* Monitor CSS animation overlay (positioned at monitorScreen coords).
+   box-shadow extends the dark background 3px outward on all sides to cover
+   anti-aliased edges of the tagged green box without needing pixel-perfect calibration. */
+.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; pointer-events: none; z-index: 4; box-shadow: 0 0 0 3px #1e2a3a; }
 .desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
 .desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
 .desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
@@ -16553,22 +16557,26 @@ function updateHUD(){
 
 // ═══════════════ DESK SCENE (unified background + hotspots) ═══════════════
 // Percentages captured via tag-desks.html; edit art/desk-hotspots.json and keep this in sync.
+// Coordinates are percentages of the UNIFIED 1918×1603 canvas.
+// Both skins share the same canvas dimensions and the fancy art is pre-scaled
+// (0.95×) and re-centered at bake time, so both render at matching visual scale
+// with no runtime CSS transforms. See art/desk-hotspots.json.
 var DESK_HOTSPOTS = {
   "basic": {
-    "phone":         { "cx": 33.49, "cy": 45.17, "w":  2.38, "h":  7.10, "rot": -46.8 },
-    "monitor":       { "cx": 46.83, "cy": 21.81, "w": 12.10, "h": 19.68, "rot":   0.0 },
-    "monitorScreen": { "cx": 46.78, "cy": 21.65, "w": 12.05, "h": 19.31, "rot":   0.0 },
-    "postit":        { "cx": 42.46, "cy": 35.57, "w":  2.42, "h":  5.65, "rot":   0.0 },
-    "keys":          { "cx": 37.76, "cy": 43.76, "w":  1.97, "h":  7.78, "rot": -37.7 },
-    "landline":      { "cx": 63.66, "cy": 42.31, "w":  6.07, "h": 10.39, "rot":  30.9 }
+    "phone":         { "cx": 12.37, "cy": 44.35, "w":  5.43, "h":  8.30, "rot": -46.8 },
+    "monitor":       { "cx": 42.80, "cy": 17.03, "w": 27.60, "h": 23.02, "rot":   0.0 },
+    "monitorScreen": { "cx": 42.68, "cy": 16.84, "w": 27.49, "h": 22.58, "rot":   0.0 },
+    "postit":        { "cx": 32.83, "cy": 33.12, "w":  5.52, "h":  6.61, "rot":   0.0 },
+    "keys":          { "cx": 22.11, "cy": 42.70, "w":  4.49, "h":  9.10, "rot": -37.7 },
+    "landline":      { "cx": 81.18, "cy": 41.00, "w": 13.85, "h": 12.16, "rot":  30.9 }
   },
   "fancy": {
-    "phone":         { "cx": 35.28, "cy": 40.94, "w":  2.26, "h":  9.84, "rot": -52.7 },
-    "monitor":       { "cx": 47.26, "cy": 16.89, "w": 15.93, "h": 21.50, "rot":   0.0 },
-    "monitorScreen": { "cx": 47.18, "cy": 16.67, "w": 15.77, "h": 21.17, "rot":   0.0 },
-    "postit":        { "cx": 41.80, "cy": 31.47, "w":  2.50, "h":  5.47, "rot":   0.0 },
-    "keys":          { "cx": 38.52, "cy": 37.85, "w":  2.65, "h":  4.74, "rot":   0.0 },
-    "landline":      { "cx": 62.10, "cy": 37.94, "w":  6.09, "h": 10.02, "rot":  20.2 }
+    "phone":         { "cx": 18.03, "cy": 42.95, "w":  4.89, "h": 10.93, "rot": -52.7 },
+    "monitor":       { "cx": 43.99, "cy": 16.22, "w": 34.51, "h": 23.89, "rot":   0.0 },
+    "monitorScreen": { "cx": 43.82, "cy": 15.99, "w": 34.17, "h": 23.52, "rot":   0.0 },
+    "postit":        { "cx": 32.16, "cy": 32.43, "w":  5.42, "h":  6.08, "rot":   0.0 },
+    "keys":          { "cx": 25.06, "cy": 39.52, "w":  5.74, "h":  5.26, "rot":   0.0 },
+    "landline":      { "cx": 76.15, "cy": 39.62, "w": 13.20, "h": 11.13, "rot":  20.2 }
   }
 };
 
@@ -16604,11 +16612,17 @@ function initDeskSkin() {
   G.deskMoraleState = 'plain';
 }
 
+// True if the post-it should be visible on the desk (folder channel has events),
+// unless a dev override is active.
+function deskHasPostit() {
+  if (typeof G._deskDevPostit === 'boolean') return G._deskDevPostit;
+  return ((G.channelQueues && G.channelQueues.folder) || []).length > 0;
+}
+
 function getDeskBgPath() {
   var skin = G.deskSkin || 'basic';
   var morale = G.deskMoraleState || 'plain';
-  var folderQ = (G.channelQueues && G.channelQueues.folder) || [];
-  var postit = folderQ.length > 0 ? '-postit' : '';
+  var postit = deskHasPostit() ? '-postit' : '';
   return 'art/desk-' + skin + '-' + morale + postit + '.png';
 }
 
@@ -16626,16 +16640,21 @@ function preloadDeskImages() {
 }
 
 // Build one hotspot div with badge, body, click handler.
+// The hotspot is rotated via CSS transform; the badge lives inside and gets a
+// counter-rotation so its number always reads upright regardless of how
+// angled the clickable area is.
 function _deskHotspotDiv(id, hs, opts) {
   if (!hs) return '';
   opts = opts || {};
+  var rot = hs.rot || 0;
   var cls = 'desk-hs desk-hs-' + id;
   if (opts.empty) cls += ' empty';
   if (opts.hasUnread) cls += ' has-unread';
-  var style = 'left:' + hs.cx + '%;top:' + hs.cy + '%;width:' + hs.w + '%;height:' + hs.h + '%;transform:translate(-50%,-50%) rotate(' + (hs.rot || 0) + 'deg);';
+  var style = 'left:' + hs.cx + '%;top:' + hs.cy + '%;width:' + hs.w + '%;height:' + hs.h + '%;transform:translate(-50%,-50%) rotate(' + rot + 'deg);';
   var badge = '';
   if (typeof opts.count === 'number' && opts.count > 0) {
-    badge = '<div class="desk-hs-badge' + (opts.badgeRed ? ' red' : '') + '">' + opts.count + '</div>';
+    var badgeStyle = rot ? ' style="transform:rotate(' + (-rot) + 'deg);"' : '';
+    badge = '<div class="desk-hs-badge' + (opts.badgeRed ? ' red' : '') + '"' + badgeStyle + '>' + opts.count + '</div>';
   }
   var handlers = '';
   if (opts.onclick) handlers += ' onclick="' + opts.onclick + '"';
@@ -16679,10 +16698,10 @@ function renderDeskScene(opts) {
   });
 
   // Post-it hotspot (only rendered when folder channel is non-empty — matches bg image state)
-  if ((opts.folQ || []).length > 0) {
+  if (deskHasPostit()) {
     html += _deskHotspotDiv('postit', hs.postit, {
-      count: opts.folQ.length,
-      empty: opts.disabled,
+      count: (opts.folQ || []).length,
+      empty: opts.disabled || (opts.folQ || []).length === 0,
       onclick: "deskAction('folder')"
     });
   }
@@ -16746,6 +16765,84 @@ document.addEventListener('click', function(ev) {
   if (phone && phone.contains(ev.target)) return;
   hideInboxPopup();
 });
+
+// ═══ DESK DEV PANEL — activated via ?devdesk URL parameter ═══
+// Lets you force skin / morale / post-it / per-skin scale without touching
+// stats, so you can verify desk swaps visually without replaying to trigger
+// them naturally, and tune the scale factor that equalises both skins.
+function devSetDesk(skin, morale, forcePostit) {
+  if (skin) G.deskSkin = skin;
+  if (morale) G.deskMoraleState = morale;
+  if (forcePostit === true || forcePostit === false) G._deskDevPostit = forcePostit;
+  renderMain();
+  updateDeskDevPanel();
+}
+// Skip the entire onboarding flow and drop into gameplay with randomized setup.
+function devQuickStart() {
+  if (typeof GAME_DATA === 'undefined' || !GAME_DATA) { alert('GAME_DATA not loaded yet'); return; }
+  var orgs = GAME_DATA.organizations || [];
+  var missions = GAME_DATA.missions || [];
+  var traits = GAME_DATA.characterTraits || [];
+  var pool = GAME_DATA.advisorPool || [];
+  if (!orgs.length || !missions.length) { alert('No orgs/missions in GAME_DATA'); return; }
+  var pick = function(arr) { return arr[Math.floor(Math.random()*arr.length)]; };
+  var shuffle = function(arr) { return arr.slice().sort(function(){return Math.random()-0.5;}); };
+  G.charName = 'Dev Tester';
+  G.charEmoji = pick(['🧪','🤖','🧠','🦊','🐙','🦄','🐉']);
+  G.charTraits = traits.length ? [pick(traits).id] : [];
+  G.orgId = pick(orgs).id;
+  G.missionId = pick(missions).id;
+  var slots = (GAME_DATA.config && GAME_DATA.config.advisorSlots) || 3;
+  G.selectedAdvisors = shuffle(pool).slice(0, Math.min(slots, pool.length)).map(function(a){return a.id;});
+  // autoAllocateStats computes G._baselines and G.priorities which startGame expects
+  if (typeof autoAllocateStats === 'function') autoAllocateStats();
+  // Jump straight to the game
+  startGame();
+}
+function updateDeskDevPanel() {
+  var p = document.getElementById('desk-dev-panel');
+  if (!p) return;
+  var setBg = function(sel, on) { var el = p.querySelector(sel); if (el) el.style.background = on ? '#2563eb' : '#2a2a33'; };
+  setBg('[data-field="skin-basic"]', G.deskSkin === 'basic');
+  setBg('[data-field="skin-fancy"]', G.deskSkin === 'fancy');
+  ['plain','coffee','food','garbage','flowers'].forEach(function(m) {
+    setBg('[data-field="morale-'+m+'"]', G.deskMoraleState === m);
+  });
+  setBg('[data-field="postit-on"]', G._deskDevPostit === true);
+  setBg('[data-field="postit-off"]', G._deskDevPostit === false);
+  setBg('[data-field="postit-natural"]', typeof G._deskDevPostit !== 'boolean');
+}
+function initDeskDevPanel() {
+  if (!/[?&]devdesk/.test(location.search)) return;
+  var p = document.createElement('div');
+  p.id = 'desk-dev-panel';
+  p.style.cssText = 'position:fixed;bottom:12px;right:12px;background:rgba(15,15,18,0.95);color:#e8e8ec;padding:10px 12px;border-radius:6px;font:11px -apple-system,sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.5);border:1px solid #333;user-select:none;';
+  var btnStyle = 'margin-right:3px;padding:3px 8px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#2a2a33;color:#e8e8ec;font-family:inherit;';
+  var quickStartBtnStyle = 'width:100%;padding:6px 10px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#14532d;color:#86efac;font-family:inherit;font-weight:700;letter-spacing:0.3px;';
+  p.innerHTML =
+    '<div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #333;">' +
+      '<button onclick="devQuickStart()" style="' + quickStartBtnStyle + '">⚡ Quick start game (random setup)</button>' +
+    '</div>' +
+    '<div style="font-weight:700;margin-bottom:7px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Desk Dev</div>' +
+    '<div style="margin-bottom:5px;"><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">skin</span>' +
+      '<button data-field="skin-basic" onclick="devSetDesk(\'basic\',null,null)" style="' + btnStyle + '">basic</button>' +
+      '<button data-field="skin-fancy" onclick="devSetDesk(\'fancy\',null,null)" style="' + btnStyle + '">fancy</button>' +
+    '</div>' +
+    '<div style="margin-bottom:5px;"><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">morale</span>' +
+      ['plain','coffee','food','garbage','flowers'].map(function(m){
+        return '<button data-field="morale-'+m+'" onclick="devSetDesk(null,\''+m+'\',null)" style="' + btnStyle + '">'+m+'</button>';
+      }).join('') +
+    '</div>' +
+    '<div><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">postit</span>' +
+      '<button data-field="postit-on" onclick="devSetDesk(null,null,true)" style="' + btnStyle + '">on</button>' +
+      '<button data-field="postit-off" onclick="devSetDesk(null,null,false)" style="' + btnStyle + '">off</button>' +
+      '<button data-field="postit-natural" onclick="G._deskDevPostit=undefined;renderMain();updateDeskDevPanel();" style="' + btnStyle + '">natural</button>' +
+    '</div>';
+  document.body.appendChild(p);
+  updateDeskDevPanel();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDeskDevPanel);
+else initDeskDevPanel();
 
 // ═══════════════ DESK / CHANNEL DISTRIBUTION ═══════════════
 function distributeScenarios() {
@@ -16858,13 +16955,16 @@ function renderMain(){
     monitorScreenHtml: monScreenHtml
   });
 
+  // Proposal B: single-line status (round + AP) with a mid-dot separator;
+  // "Your Desk" h2 removed since the art makes the heading redundant.
+  var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
+  var statusLine = roundHeading + ' · ' + apLabel;
+
   el.innerHTML = ''
     + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue.</div>' : '')
     + '<div style="margin-bottom:28px">'
     + '<div class="section-header">'
-    + '<span class="step-ind">' + roundHeading + '</span>'
-    + '<h2>Your Desk</h2>'
-    + '<p>You have <strong>' + G.apRemaining + '</strong> action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining.</p>'
+    + '<span class="step-ind">' + statusLine + '</span>'
     + endRoundHtml
     + '</div>'
     + deskSceneHtml

@@ -2,89 +2,89 @@
   "hotspots": {
     "basic": {
       "phone": {
-        "cx": 33.49,
-        "cy": 45.17,
-        "w": 2.38,
-        "h": 7.1,
+        "cx": 12.37,
+        "cy": 44.35,
+        "w": 5.43,
+        "h": 8.3,
         "rot": -46.8
       },
       "monitor": {
-        "cx": 46.83,
-        "cy": 21.81,
-        "w": 12.1,
-        "h": 19.68,
+        "cx": 42.8,
+        "cy": 17.03,
+        "w": 27.6,
+        "h": 23.02,
         "rot": 0
       },
       "monitorScreen": {
-        "cx": 46.78,
-        "cy": 21.65,
-        "w": 12.05,
-        "h": 19.31,
+        "cx": 42.68,
+        "cy": 16.84,
+        "w": 27.49,
+        "h": 22.58,
         "rot": 0
       },
       "postit": {
-        "cx": 42.46,
-        "cy": 35.57,
-        "w": 2.42,
-        "h": 5.65,
+        "cx": 32.83,
+        "cy": 33.12,
+        "w": 5.52,
+        "h": 6.61,
         "rot": 0
       },
       "keys": {
-        "cx": 37.76,
-        "cy": 43.76,
-        "w": 1.97,
-        "h": 7.78,
+        "cx": 22.11,
+        "cy": 42.7,
+        "w": 4.49,
+        "h": 9.1,
         "rot": -37.7
       },
       "landline": {
-        "cx": 63.66,
-        "cy": 42.31,
-        "w": 6.07,
-        "h": 10.39,
+        "cx": 81.18,
+        "cy": 41.0,
+        "w": 13.85,
+        "h": 12.16,
         "rot": 30.9
       }
     },
     "fancy": {
       "phone": {
-        "cx": 35.28,
-        "cy": 40.94,
-        "w": 2.26,
-        "h": 9.84,
+        "cx": 18.03,
+        "cy": 42.95,
+        "w": 4.89,
+        "h": 10.93,
         "rot": -52.7
       },
       "monitor": {
-        "cx": 47.26,
-        "cy": 16.89,
-        "w": 15.93,
-        "h": 21.5,
+        "cx": 43.99,
+        "cy": 16.22,
+        "w": 34.51,
+        "h": 23.89,
         "rot": 0
       },
       "monitorScreen": {
-        "cx": 47.18,
-        "cy": 16.67,
-        "w": 15.77,
-        "h": 21.17,
+        "cx": 43.82,
+        "cy": 15.99,
+        "w": 34.17,
+        "h": 23.52,
         "rot": 0
       },
       "postit": {
-        "cx": 41.8,
-        "cy": 31.47,
-        "w": 2.5,
-        "h": 5.47,
+        "cx": 32.16,
+        "cy": 32.43,
+        "w": 5.42,
+        "h": 6.08,
         "rot": 0
       },
       "keys": {
-        "cx": 38.52,
-        "cy": 37.85,
-        "w": 2.65,
-        "h": 4.74,
+        "cx": 25.06,
+        "cy": 39.52,
+        "w": 5.74,
+        "h": 5.26,
         "rot": 0
       },
       "landline": {
-        "cx": 62.1,
-        "cy": 37.94,
-        "w": 6.09,
-        "h": 10.02,
+        "cx": 76.15,
+        "cy": 39.62,
+        "w": 13.2,
+        "h": 11.13,
         "rot": 20.2
       }
     }
@@ -111,5 +111,6 @@
     "Latte desk w_takeout.png": "desk-fancy-food.png",
     "Latte desk.png": "desk-fancy-coffee.png"
   },
-  "sourceDir": "/Users/arnorosenfeld/Downloads/Antisemitism Decoded Office"
+  "sourceDir": "/Users/arnorosenfeld/Downloads/Antisemitism Decoded Office",
+  "_note": "Coordinates are percentages of the unified 1918x1603 canvas. Both skins have identical canvas dimensions. Fancy art is pre-scaled by 0.95x and re-centered within the canvas so both desks render at matching visual scale without runtime CSS transforms. See git log for the Python scripts used to process the art."
 }

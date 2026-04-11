@@ -695,6 +695,16 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
           </div>
 
           <div class="form-section">
+            <h3>Advisor Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-advStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-advHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-advDesc" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>Promotion Screen</h3>
+            <div class="form-row"><div class="form-group"><label>Heading</label><input id="txt-promoHeading" /></div></div>
+            <div class="form-group" style="margin-bottom:14px"><label>Description</label><textarea id="txt-promoDesc" rows="2"></textarea></div>
+          </div>
+          <div class="form-section">
             <h3>Briefing Screen</h3>
             <div class="form-row"><div class="form-group"><label>Step Label</label><input id="txt-brfStepLabel" /></div><div class="form-group"><label>Heading</label><input id="txt-brfHeading" /></div></div>
             <div class="form-group" style="margin-bottom:8px"><label>Description</label><textarea id="txt-brfDesc" rows="2"></textarea></div>
@@ -19973,6 +19983,13 @@ function populateText() {
   document.getElementById('txt-misStepLabel').value=ms.stepLabel||'';
   document.getElementById('txt-misHeading').value=ms.heading||'';
   document.getElementById('txt-misDesc').value=ms.description||'';
+  const adv=pt.advisorScreen||{};
+  document.getElementById('txt-advStepLabel').value=adv.stepLabel||'';
+  document.getElementById('txt-advHeading').value=adv.heading||'';
+  document.getElementById('txt-advDesc').value=adv.description||'';
+  const pr=pt.promoScreen||{};
+  document.getElementById('txt-promoHeading').value=pr.heading||'';
+  document.getElementById('txt-promoDesc').value=pr.description||'';
   const gm=pt.gameScreen||{};
   document.getElementById('txt-gameActionH').value=gm.actionHeading||'';
   document.getElementById('txt-gameEndBtn').value=gm.endRoundButton||'';
@@ -20120,6 +20137,8 @@ function saveText() {
   pt.charScreen={stepLabel:document.getElementById('txt-charStepLabel').value,heading:document.getElementById('txt-charHeading').value,description:document.getElementById('txt-charDesc').value};
   pt.orgScreen={stepLabel:document.getElementById('txt-orgStepLabel').value,heading:document.getElementById('txt-orgHeading').value,description:document.getElementById('txt-orgDesc').value};
   pt.missionScreen={stepLabel:document.getElementById('txt-misStepLabel').value,heading:document.getElementById('txt-misHeading').value,description:document.getElementById('txt-misDesc').value};
+  pt.advisorScreen={stepLabel:document.getElementById('txt-advStepLabel').value,heading:document.getElementById('txt-advHeading').value,description:document.getElementById('txt-advDesc').value};
+  pt.promoScreen={heading:document.getElementById('txt-promoHeading').value,description:document.getElementById('txt-promoDesc').value};
   pt.gameScreen={actionHeading:document.getElementById('txt-gameActionH').value,endRoundButton:document.getElementById('txt-gameEndBtn').value,noApMessage:document.getElementById('txt-gameNoAP').value};
   pt.endScreen={failureTitle:document.getElementById('txt-endFail').value,anotherYearTitle:document.getElementById('txt-endYear').value,promotionTitle:document.getElementById('txt-endPromo').value,retirementTitle:document.getElementById('txt-endRetire').value};
   pt.briefingScreen = {

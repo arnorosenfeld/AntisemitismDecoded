@@ -1302,9 +1302,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="char-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 1 of 4 — Character Creation</span>
-      <h2>Who Are You?</h2>
-      <p>Your background and traits shape how the community responds to you — and what options open up when crises hit.</p>
+      <span class="step-ind" id="char-step-label">Step 1 of 4 — Character Creation</span>
+      <h2 id="char-heading">Who Are You?</h2>
+      <p id="char-desc">Your background and traits shape how the community responds to you — and what options open up when crises hit.</p>
     </div>
     <span class="label">Character Name <span style="color:#c0392b">*required</span></span>
     <div class="name-wrap">
@@ -1329,9 +1329,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="org-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 2 of 4 — Organization</span>
-      <h2>Choose Your Organization</h2>
-      <p>Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
+      <span class="step-ind" id="org-step-label">Step 2 of 4 — Organization</span>
+      <h2 id="org-heading">Choose Your Organization</h2>
+      <p id="org-desc">Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
     </div>
     <div class="card-grid" id="org-grid"></div>
     <div class="btn-row">
@@ -1345,9 +1345,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="mission-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 3 of 4 — Mission</span>
-      <h2>What Is Your Mission?</h2>
-      <p>Your mission defines what your organization stands for. Every decision you make will be flagged as <strong>Mission Aligned ✓</strong> or <strong>Mission Opposed ✗</strong> — and you'll see it before you choose.</p>
+      <span class="step-ind" id="mission-step-label">Step 3 of 4 — Mission</span>
+      <h2 id="mission-heading">What Is Your Mission?</h2>
+      <p id="mission-desc">Your mission defines what your organization stands for. Every decision you make will be flagged as <strong>Mission Aligned ✓</strong> or <strong>Mission Opposed ✗</strong> — and you'll see it before you choose.</p>
     </div>
     <div class="mission-list" id="mission-list"></div>
     <div class="btn-row">
@@ -1361,9 +1361,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 <div id="advisor-screen" class="screen">
   <div class="container page-pad">
     <div class="section-header">
-      <span class="step-ind">Step 4 of 4 — Advisory Team</span>
-      <h2>Build Your Advisory Team</h2>
-      <p>Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.</p>
+      <span class="step-ind" id="advisor-step-label">Step 4 of 4 — Advisory Team</span>
+      <h2 id="advisor-heading">Build Your Advisory Team</h2>
+      <p id="advisor-desc">Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.</p>
     </div>
     <div class="advisor-selection-hint" id="advisor-hint">Select <strong>3</strong> advisors to continue</div>
     <div class="card-grid" id="advisor-grid"></div>
@@ -1554,7 +1554,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   </div>
   <div class="container page-pad" style="padding-top:0">
     <div class="section-header">
-      <h2>A Larger Stage Awaits</h2>
+      <h2 id="promo-heading">A Larger Stage Awaits</h2>
       <p id="promo-intro">Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you.</p>
     </div>
     <div class="promo-list" id="promo-list"></div>
@@ -1607,22 +1607,31 @@ const GAME_DATA = {
         ]
       },
       "charScreen": {
-        "stepLabel": "Step 3 of 6 — Mission",
-        "heading": "What Is Your Mission?",
-        "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned ✓, Mission Opposed ✗, or neutral — and you'll see it before you choose."
+        "stepLabel": "Step 1 of 4 — Character Creation",
+        "heading": "Who Are You?",
+        "description": "Your background and traits shape how the community responds to you — and what options open up when crises hit."
       },
       "orgScreen": {
-        "stepLabel": "",
-        "heading": "",
-        "description": ""
+        "stepLabel": "Step 2 of 4 — Organization",
+        "heading": "Choose Your Organization",
+        "description": "Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game."
       },
       "missionScreen": {
-        "stepLabel": "",
-        "heading": "",
-        "description": ""
+        "stepLabel": "Step 3 of 4 — Mission",
+        "heading": "What Is Your Mission?",
+        "description": "Your mission defines what your organization stands for. Every decision you make will be flagged as Mission Aligned ✓ or Mission Opposed ✗ — and you'll see it before you choose."
+      },
+      "advisorScreen": {
+        "stepLabel": "Step 4 of 4 — Advisory Team",
+        "heading": "Build Your Advisory Team",
+        "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
+      },
+      "promoScreen": {
+        "heading": "A Larger Stage Awaits",
+        "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
       },
       "gameScreen": {
-        "actionHeading": "A Distinguished Career",
+        "actionHeading": "",
         "endRoundButton": "",
         "noApMessage": ""
       },
@@ -1632,24 +1641,15 @@ const GAME_DATA = {
         "promotionTitle": "",
         "retirementTitle": ""
       },
-      "promoScreen": {
-        "heading": "A Larger Stage Awaits",
-        "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
-      },
-      "advisorScreen": {
-        "stepLabel": "Step 5 of 6 — Advisory Team",
-        "heading": "Build Your Advisory Team",
-        "description": "Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game."
-      },
       "briefingScreen": {
-        "stepLabel": "Choose Your Next Action",
+        "stepLabel": "",
         "heading": "",
         "description": "",
-        "advisorName": "Choose Your Next Action",
-        "advisorRole": "End Round →",
+        "advisorName": "",
+        "advisorRole": "",
         "openingQuote": "",
         "closingQuote": "",
-        "helpButtonLabel": "End of Year",
+        "helpButtonLabel": "",
         "items": []
       }
     },
@@ -17951,6 +17951,30 @@ function inferPoliticalLean(choice, scenario) {
 
 // ═══════════════ BOOT ═══════════════
 OUTGOING_ED = GAME_DATA.config.outgoingED || { name: 'Avi Rosen', portrait: 'art/advisors/avi_rosen' };
+
+// Apply author-editable page text to static screen elements. Each target
+// element has the current default text as its initial HTML, so missing
+// pageText fields leave the defaults untouched.
+function applyPageText() {
+  var pt = (GAME_DATA.config && GAME_DATA.config.pageText) || {};
+  function set(id, val) {
+    if (val == null || val === '') return;
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  var ch = pt.charScreen || {};
+  set('char-step-label', ch.stepLabel); set('char-heading', ch.heading); set('char-desc', ch.description);
+  var og = pt.orgScreen || {};
+  set('org-step-label', og.stepLabel); set('org-heading', og.heading); set('org-desc', og.description);
+  var ms = pt.missionScreen || {};
+  set('mission-step-label', ms.stepLabel); set('mission-heading', ms.heading); set('mission-desc', ms.description);
+  var adv = pt.advisorScreen || {};
+  set('advisor-step-label', adv.stepLabel); set('advisor-heading', adv.heading); set('advisor-desc', adv.description);
+  var pr = pt.promoScreen || {};
+  set('promo-heading', pr.heading); set('promo-intro', pr.description);
+}
+applyPageText();
+
 initIntro(); initChar(); initOrg();
 
 // ═══ ADVISOR SYSTEM ═══

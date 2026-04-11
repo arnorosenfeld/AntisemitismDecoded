@@ -91,7 +91,7 @@ Op cost is currently 5/5 in the deployed game (index.html), which removes all fi
 
 ---
 
-## 6. [ ] Page Text panel — wire up + parity
+## 6. [x] Page Text panel — wire up + parity (static screen labels only; briefing/gameScreen/endScreen dynamic strings deferred)
 
 **Risk:** Medium-high — touches engine AND editor; affects multiple screens.
 

@@ -15690,6 +15690,735 @@ const GAME_DATA = {
           "budgetEffect": 0
         }
       ]
+    },
+    {
+      "id": "call_tali_fundraising",
+      "type": "advisor",
+      "advisorId": "community_organizer",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Progressive Fundraising"
+      },
+      "applicableOrgs": [
+        "left"
+      ],
+      "callableBy": [
+        "left"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "So fundraising. I know it's not my specialty, but I've been thinking — we're leaving money on the table with our grassroots base. Small-dollar donors give more when they feel like they're part of a movement, not just writing a check. What if we launched a monthly giving program tied to specific campaigns?",
+          "responses": [
+            {
+              "text": "I love that. A recurring-donor program with campaign updates would build real community. Let's design it.",
+              "approach": "Enthusiastic",
+              "dispositionDelta": 12,
+              "next": "n1_good"
+            },
+            {
+              "text": "Small-dollar is nice but we need major gifts to survive. Can you help me get meetings with progressive foundations instead?",
+              "approach": "Redirect",
+              "dispositionDelta": 3,
+              "next": "n1_redirect"
+            },
+            {
+              "text": "What numbers are we talking about? I need to know if this is worth the staff time.",
+              "approach": "Analytical",
+              "dispositionDelta": 5,
+              "next": "n1_numbers"
+            }
+          ]
+        },
+        "n1_good": {
+          "characterLine": "I already have a list of 200 people from our last rally who asked 'how can I help beyond showing up.' That's our seed list. If even half convert to monthly donors at $25, that's $2,500 a month — not nothing.",
+          "responses": [
+            {
+              "text": "Start reaching out. I'll get the dev team to set up the infrastructure.",
+              "approach": "Action",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Draft a pitch and show me before you send anything. I want to make sure the messaging is right.",
+              "approach": "Careful",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_redirect": {
+          "characterLine": "I can try, but honestly, foundation work isn't my lane. I know people at the grassroots level. If you want foundation meetings, that's more Miriam's territory. I can help you build a donor base that doesn't depend on any single major gift.",
+          "responses": [
+            {
+              "text": "Fair enough. Let's try both — you build the grassroots pipeline, I'll work the foundations separately.",
+              "approach": "Inclusive",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "OK, focus on what you know. Get me a grassroots fundraising plan by next week.",
+              "approach": "Direct",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_numbers": {
+          "characterLine": "Based on comparable orgs, a grassroots monthly program could generate $3,000-$5,000 per month within six months. Setup cost is mostly staff time — about 20 hours to build the list, create the materials, and launch. After that it's low-maintenance.",
+          "responses": [
+            {
+              "text": "The ROI is solid. Green light — build it.",
+              "approach": "Decisive",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's pilot it with 50 people first before we commit. Proof of concept.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "A New Revenue Stream",
+          "text": "Tali's grassroots fundraising initiative has real potential. Her energy and your buy-in could build a sustainable small-dollar donor base.",
+          "effects": {
+            "donors": 3,
+            "morale": 2
+          },
+          "budgetEffect": 5
+        },
+        {
+          "minDisposition": 40,
+          "heading": "An Idea on the Table",
+          "text": "The fundraising conversation was productive but noncommittal. Tali will explore options but needs more direction.",
+          "effects": {
+            "morale": 1
+          },
+          "budgetEffect": 2
+        },
+        {
+          "minDisposition": 0,
+          "heading": "Missed Connection",
+          "text": "Tali feels her fundraising instincts were dismissed. She'll stick to organizing.",
+          "effects": {
+            "morale": -1
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_tali_campus",
+      "type": "advisor",
+      "advisorId": "community_organizer",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Campus Outreach"
+      },
+      "applicableOrgs": [
+        "left"
+      ],
+      "callableBy": [
+        "left"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I've been hearing from students at the university. There's a lot of anxiety — Jewish students feel caught between the Hillel crowd and the progressive activist crowd. They want a third option. We could be that option if we show up right.",
+          "responses": [
+            {
+              "text": "What does 'showing up right' look like? I don't want to parachute in — we need to be invited.",
+              "approach": "Respectful",
+              "dispositionDelta": 12,
+              "next": "n1_invited"
+            },
+            {
+              "text": "Set up a town hall on campus. Let's get the students in a room and hear what they actually need.",
+              "approach": "Bold",
+              "dispositionDelta": 8,
+              "next": "n1_townhall"
+            },
+            {
+              "text": "Is this the best use of our time? We have a lot on our plate already.",
+              "approach": "Hesitant",
+              "dispositionDelta": -3,
+              "next": "n1_hesitant"
+            }
+          ]
+        },
+        "n1_invited": {
+          "characterLine": "I know three student leaders who've been asking for exactly this. If I introduce you, they'll set up the meeting themselves. We just need to show up, listen, and not try to control the conversation.",
+          "responses": [
+            {
+              "text": "Perfect. Make the introduction. I'll clear my calendar for whenever they want to meet.",
+              "approach": "Committed",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let me talk to them first by phone before we commit to anything in person.",
+              "approach": "Cautious",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_townhall": {
+          "characterLine": "A town hall could work, but it could also blow up. Campus events on Jewish identity tend to get heated. If we do it, we need a skilled moderator and clear ground rules. I can find the moderator if you handle the venue.",
+          "responses": [
+            {
+              "text": "Deal. Let's plan it for next month — gives us time to do it right.",
+              "approach": "Organized",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "On second thought, maybe something smaller first. A dinner, not a town hall.",
+              "approach": "Scale back",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_hesitant": {
+          "characterLine": "I hear you, but these students are the next generation of our community. If we're not there for them now, someone else will be — and it might be someone we don't agree with.",
+          "responses": [
+            {
+              "text": "You're right. Let's find a way to make time for this. What's the minimum viable engagement?",
+              "approach": "Concede",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Put together a one-pager on what campus outreach would look like and what it would cost us. I'll review it.",
+              "approach": "Process",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Campus Doors Opening",
+          "text": "Tali's campus connections could give your organization a meaningful presence with Jewish students who feel politically homeless.",
+          "effects": {
+            "trust": 3,
+            "morale": 2
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "A Possibility",
+          "text": "The campus conversation showed potential but needs follow-through. Students are watching to see if you're serious.",
+          "effects": {
+            "trust": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Missed Generation",
+          "text": "Tali is frustrated that campus outreach isn't a priority. The students will look elsewhere.",
+          "effects": {
+            "trust": -1,
+            "morale": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_leonard_israel",
+      "type": "advisor",
+      "advisorId": "major_donor_rep",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Israel Advocacy Strategy"
+      },
+      "applicableOrgs": [
+        "right"
+      ],
+      "callableBy": [
+        "right"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I want to talk about our Israel messaging. We're in a tough spot — the old playbook of 'unconditional support' is losing the under-40 crowd, but our donors over 60 won't accept anything less. How do we thread this?",
+          "responses": [
+            {
+              "text": "We need a two-track approach — one message for donors, another for the broader community. It's not dishonest, it's audience-appropriate.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n1_twotrack"
+            },
+            {
+              "text": "We don't change the message. Our donors are our base and our base supports Israel fully. The young people will come around.",
+              "approach": "Hold firm",
+              "dispositionDelta": 5,
+              "next": "n1_firm"
+            },
+            {
+              "text": "What if we frame it as 'pro-Israel AND pro-peace'? It lets us keep the core commitment while acknowledging complexity.",
+              "approach": "Reframe",
+              "dispositionDelta": 8,
+              "next": "n1_reframe"
+            }
+          ]
+        },
+        "n1_twotrack": {
+          "characterLine": "That could work, but it's risky. If a donor sees the community-facing message and thinks we've gone soft, we'll hear about it. I can manage that — but only if you keep me in the loop on every public statement about Israel before it goes out.",
+          "responses": [
+            {
+              "text": "Done. You'll see every Israel-related statement 24 hours before publication.",
+              "approach": "Trust",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "I'll keep you informed but I can't give you veto power over our communications.",
+              "approach": "Boundary",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_firm": {
+          "characterLine": "I respect the consistency. But I'm telling you, we're going to lose the next generation if we don't at least acknowledge their concerns. I've seen it in my own family — my granddaughter stopped going to AIPAC events.",
+          "responses": [
+            {
+              "text": "Maybe we can create a 'next generation' program that lets young people engage with Israel on their own terms, without changing our core advocacy.",
+              "approach": "Creative",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Your granddaughter will come back when she has kids and needs to explain why Israel matters. They always do.",
+              "approach": "Dismissive",
+              "dispositionDelta": -5,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_reframe": {
+          "characterLine": "Pro-Israel AND pro-peace... I can sell that to most of our donors. The hardliners won't love it, but they're maybe 15% of our base. If we lose 15% but gain 30% of the younger demographic, that's a net win.",
+          "responses": [
+            {
+              "text": "Run the numbers and let's make the case to the board. If the math works, we pivot.",
+              "approach": "Data-driven",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's test it quietly first — a few social media posts, see how the reaction lands.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Messaging Breakthrough",
+          "text": "Leonard sees a path forward on Israel messaging that could expand your reach without losing your base. His donor management skills are your insurance policy.",
+          "effects": {
+            "donors": 3,
+            "trust": 2
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Work in Progress",
+          "text": "The Israel conversation surfaced real tensions but no resolution yet. Leonard will keep managing donors while you figure out the messaging.",
+          "effects": {
+            "donors": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Rift Forming",
+          "text": "Leonard worries you're either too rigid or too soft on Israel. Either way, donor confidence is shaky.",
+          "effects": {
+            "donors": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_leonard_media",
+      "type": "advisor",
+      "advisorId": "major_donor_rep",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Managing Media Pressure"
+      },
+      "applicableOrgs": [
+        "right"
+      ],
+      "callableBy": [
+        "right"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "We need to talk about the media situation. Progressive outlets keep framing us as 'the right-wing Israel lobby' and it's starting to stick. Two potential new donors told me they Googled us before their meeting and got cold feet. What's our media strategy?",
+          "responses": [
+            {
+              "text": "We need a proactive media campaign — op-eds, interviews, human interest stories that show the full range of our work, not just Israel advocacy.",
+              "approach": "Proactive",
+              "dispositionDelta": 12,
+              "next": "n1_proactive"
+            },
+            {
+              "text": "Ignore it. Our people don't read those outlets. Chasing progressive media approval is a waste of time.",
+              "approach": "Dismiss",
+              "dispositionDelta": -2,
+              "next": "n1_ignore"
+            },
+            {
+              "text": "Can we get a friendly reporter to write a more balanced profile? Someone at the Jewish press who knows the nuance?",
+              "approach": "Targeted",
+              "dispositionDelta": 8,
+              "next": "n1_targeted"
+            }
+          ]
+        },
+        "n1_proactive": {
+          "characterLine": "Good. I know an editor at the Wall Street Journal op-ed page who owes me a favor. And we should get you on a podcast — there's a Jewish leadership podcast with 50,000 listeners. Both would reshape how people find us online.",
+          "responses": [
+            {
+              "text": "Set up both. I'll write the op-ed this week if you can get me the contact.",
+              "approach": "Committed",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "The podcast yes, the WSJ op-ed might be too political. Can we find something more centrist?",
+              "approach": "Moderate",
+              "dispositionDelta": 4,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_ignore": {
+          "characterLine": "I hear you, but Google doesn't care who our people are. When someone searches our name, the first three results define us. Right now those results aren't flattering. This is a practical problem, not a media relations exercise.",
+          "responses": [
+            {
+              "text": "OK, you've convinced me. What's the cheapest way to improve our search results?",
+              "approach": "Practical",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Fine, hire a PR consultant. But I'm not changing our positions to please reporters.",
+              "approach": "Grudging",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_targeted": {
+          "characterLine": "I know someone at the Jewish Telegraphic Agency who's fair. She'd do a real profile — not a puff piece, but honest. The risk is she'll ask hard questions about our donor relationships. Are you comfortable with that?",
+          "responses": [
+            {
+              "text": "I can handle hard questions. Set it up. Transparency is better than mystery.",
+              "approach": "Confident",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let me prep for it first. Send me the five hardest questions she might ask and I'll practice my answers.",
+              "approach": "Prepared",
+              "dispositionDelta": 6,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Media Strategy Taking Shape",
+          "text": "Leonard's connections could reshape how your organization is perceived. Better media coverage means better donor pipeline.",
+          "effects": {
+            "trust": 3,
+            "donors": 2
+          },
+          "budgetEffect": 3
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Awareness Raised",
+          "text": "You're now aware of the media problem. Whether you act on it is another question.",
+          "effects": {
+            "trust": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "Head in the Sand",
+          "text": "Leonard is worried you're not taking the reputational risk seriously enough. Potential donors are still Googling — and still walking away.",
+          "effects": {
+            "trust": -1,
+            "donors": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_rachel_controversy",
+      "type": "advisor",
+      "advisorId": "board_chair",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Navigating Controversies"
+      },
+      "applicableOrgs": [
+        "center"
+      ],
+      "callableBy": [
+        "center"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I wanted to talk about how we handle the next controversy — because there will be one. Every time something blows up, we're scrambling. I think we need a crisis communication protocol before we need it. What's your instinct on response time?",
+          "responses": [
+            {
+              "text": "We should aim for a public statement within 4 hours of any major incident. Speed matters more than perfection in the first response.",
+              "approach": "Fast",
+              "dispositionDelta": 8,
+              "next": "n1_fast"
+            },
+            {
+              "text": "Take 24 hours minimum. A thoughtful response beats a hasty one. Our credibility is built on being the adults in the room.",
+              "approach": "Deliberate",
+              "dispositionDelta": 10,
+              "next": "n1_slow"
+            },
+            {
+              "text": "It depends on the crisis. Some need immediate response, others need careful deliberation. Can we categorize by severity?",
+              "approach": "Structured",
+              "dispositionDelta": 12,
+              "next": "n1_tiered"
+            }
+          ]
+        },
+        "n1_fast": {
+          "characterLine": "Four hours is ambitious. We'd need pre-drafted templates and a clear approval chain. I can draft three templates — one for antisemitic incidents, one for Israel-related controversies, one for internal crises. You approve them now, and we just fill in the specifics when something hits.",
+          "responses": [
+            {
+              "text": "Brilliant. Draft them and I'll review by end of week. This could save us from so many slow-news-day disasters.",
+              "approach": "Aligned",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Templates feel too corporate for us. Can we have bullet-point guidelines instead of full drafts?",
+              "approach": "Flexible",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_slow": {
+          "characterLine": "I agree on principle, but there's a cost to silence. During the last incident, our 24-hour pause was interpreted as 'they don't care.' The news cycle moved on and our statement landed to an empty room. Maybe a 'holding statement' within 2 hours, then the real response within 24?",
+          "responses": [
+            {
+              "text": "That's a good compromise. A brief 'we're aware and will respond shortly' buys us time without looking absent.",
+              "approach": "Pragmatic",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Fine, but the holding statement should say as little as possible. 'We are monitoring the situation' — nothing more.",
+              "approach": "Minimal",
+              "dispositionDelta": 4,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_tiered": {
+          "characterLine": "I love the tiered approach. Tier 1 — antisemitic violence or direct threats: immediate response. Tier 2 — political controversies: 12-hour window. Tier 3 — cultural disputes: 48 hours. Does that framework work?",
+          "responses": [
+            {
+              "text": "That's exactly right. Let's formalize it and share it with the board so everyone knows the protocol.",
+              "approach": "Systematic",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Good framework, but let's keep it internal. I don't want the board second-guessing our response times.",
+              "approach": "Guarded",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Crisis Playbook Ready",
+          "text": "Rachel's crisis protocol gives you a real advantage — next time something hits, you'll respond with confidence instead of panic.",
+          "effects": {
+            "trust": 3,
+            "morale": 3
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Good Intentions",
+          "text": "The crisis conversation was productive but the protocol isn't locked yet. When the next incident comes, you'll be better prepared but not fully ready.",
+          "effects": {
+            "trust": 1,
+            "morale": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "Still Unprepared",
+          "text": "Rachel is concerned that your organization still has no crisis protocol. The next controversy will catch you flat-footed again.",
+          "effects": {
+            "trust": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_rachel_outreach",
+      "type": "advisor",
+      "advisorId": "board_chair",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Community Engagement"
+      },
+      "applicableOrgs": [
+        "center"
+      ],
+      "callableBy": [
+        "center"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I've been thinking about our community engagement — or lack of it. We're great at responding to crises, but when's the last time we proactively brought the community together for something positive? A celebration, a learning event, a town hall that wasn't about a crisis?",
+          "responses": [
+            {
+              "text": "You're right, we've been entirely reactive. What if we launched a monthly community conversation series — casual, no agenda, just connection?",
+              "approach": "Creative",
+              "dispositionDelta": 12,
+              "next": "n1_series"
+            },
+            {
+              "text": "We don't have the budget for programming. Our job is advocacy, not community building. That's what synagogues and JCCs are for.",
+              "approach": "Pushback",
+              "dispositionDelta": -3,
+              "next": "n1_pushback"
+            },
+            {
+              "text": "What did previous directors do? Is there a program we used to run that we could revive?",
+              "approach": "Historical",
+              "dispositionDelta": 6,
+              "next": "n1_revive"
+            }
+          ]
+        },
+        "n1_series": {
+          "characterLine": "I love it. We used to do something similar — 'Coffee & Community' on the first Thursday of every month. It died during COVID and never came back. I still have the mailing list. Want me to dust it off?",
+          "responses": [
+            {
+              "text": "Yes! Relaunch it with a fresh name and invite list. I'll host the first one personally.",
+              "approach": "Personal",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's update it first — the pre-COVID format might feel stale. What if we added a guest speaker each month?",
+              "approach": "Modernize",
+              "dispositionDelta": 7,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_pushback": {
+          "characterLine": "With all due respect, advocacy without community is just shouting into the void. The people we're advocating for need to see us, know us, and feel connected to us — otherwise we're just another organization sending emails they delete.",
+          "responses": [
+            {
+              "text": "OK, point taken. What's the cheapest, lightest-touch thing we could do?",
+              "approach": "Concede",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "I hear you, but right now every dollar needs to go toward our core mission. Maybe next year.",
+              "approach": "Defer",
+              "dispositionDelta": -2,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_revive": {
+          "characterLine": "We had a great 'Coffee & Community' monthly gathering that ran for five years before COVID killed it. Cheap to run, high impact. The attendees became our most reliable donors and volunteers. Want me to bring it back?",
+          "responses": [
+            {
+              "text": "Absolutely. If it worked before, it'll work again. What do you need from me?",
+              "approach": "Supportive",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's try a one-off first and see what turnout looks like before committing to monthly.",
+              "approach": "Test",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Community Reconnected",
+          "text": "Rachel's community engagement idea could transform how people experience your organization — from distant advocacy group to neighborhood anchor.",
+          "effects": {
+            "trust": 4,
+            "morale": 2,
+            "donors": 1
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Seeds Planted",
+          "text": "The community engagement conversation opened doors but nothing concrete is scheduled yet. The idea is alive but needs follow-through.",
+          "effects": {
+            "trust": 1,
+            "morale": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "An Opportunity Missed",
+          "text": "Rachel worries your organization is becoming invisible between crises. The community doesn't feel connected to you.",
+          "effects": {
+            "trust": -2
+          }
+        }
+      ]
     }
   ],
   "tooltips": [],
@@ -20142,21 +20871,37 @@ function openCallMenu() {
   html += '</div>';
   html += '<p style="font-size:12px;color:var(--muted);margin-bottom:16px">Choose someone to call. You have ' + (maxCalls - (G.callsThisRound || 0)) + ' call' + ((maxCalls - (G.callsThisRound || 0)) !== 1 ? 's' : '') + ' remaining this round. Calls don\'t cost action points.</p>';
 
+  // Group conversations by advisor so each advisor shows once with multiple topics
+  var byAdvisor = {};
   calls.forEach(function(conv) {
-    var adv = pool.find(function(a) { return a.id === conv.advisorId; });
-    var name = adv ? adv.name : conv.advisorId;
+    var aid = conv.advisorId || '_unknown';
+    if (!byAdvisor[aid]) byAdvisor[aid] = [];
+    byAdvisor[aid].push(conv);
+  });
+
+  Object.keys(byAdvisor).forEach(function(aid) {
+    var convs = byAdvisor[aid];
+    var adv = pool.find(function(a) { return a.id === aid; });
+    var name = adv ? adv.name : aid;
     var role = adv ? (adv.role || adv.type || '') : '';
-    var topic = (conv.trigger && conv.trigger.topic) || 'General Discussion';
-    var portrait = adv ? advPortrait(adv, 'neutral', 44) : '';
-    html += '<div style="display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;background:#f9f7f2;border:1px solid var(--border);cursor:pointer;transition:background 0.15s" onclick="startProactiveCall(\'' + conv.id + '\')" onmouseenter="this.style.background=\'#f0ede4\'" onmouseleave="this.style.background=\'#f9f7f2\'">';
+    var portrait = adv ? advPortrait(adv, 'neutral', 48) : '';
+
+    html += '<div style="padding:16px;margin-bottom:10px;background:#f9f7f2;border:1px solid var(--border)">';
+    html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">';
     html += portrait;
-    html += '<div style="flex:1">';
-    html += '<div style="font-weight:700;font-size:13px">' + esc(name) + '</div>';
+    html += '<div>';
+    html += '<div style="font-weight:700;font-size:14px">' + esc(name) + '</div>';
     if (role) html += '<div style="font-size:11px;color:var(--muted)">' + esc(role) + '</div>';
-    html += '<div style="font-size:12px;color:var(--gold);margin-top:3px">' + esc(topic) + '</div>';
-    html += '</div>';
-    html += '<span style="font-size:18px">📞</span>';
-    html += '</div>';
+    html += '</div></div>';
+    html += '<div style="display:flex;flex-direction:column;gap:6px">';
+    convs.forEach(function(conv) {
+      var topic = (conv.trigger && conv.trigger.topic) || 'General Discussion';
+      html += '<button style="text-align:left;padding:10px 14px;background:var(--white);border:1px solid var(--border);cursor:pointer;font-family:inherit;font-size:12px;transition:all 0.12s;display:flex;align-items:center;gap:8px" onmouseenter="this.style.borderColor=\'#b8860b\';this.style.background=\'#fffdf5\'" onmouseleave="this.style.borderColor=\'\';this.style.background=\'var(--white)\'" onclick="startProactiveCall(\'' + conv.id + '\')">';
+      html += '<span style="font-size:16px">📞</span>';
+      html += '<span style="color:var(--ink);font-weight:600">' + esc(topic) + '</span>';
+      html += '</button>';
+    });
+    html += '</div></div>';
   });
 
   html += '</div>';

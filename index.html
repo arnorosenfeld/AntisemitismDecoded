@@ -15113,9 +15113,14 @@ function applySegmentEffects(trustDelta, choice, scenario) {
       // No political signal + high consensus = flat effect
       segEffect = trustDelta;
     } else {
-      // Calculate alignment on both political axes
+      // Calculate alignment on both political axes.
+      // ?devdesk dev panel can override the Israel lean for the next choice
+      // via G._devIsraelLeanOverride — used for testing how segments react
+      // to specific Israel-axis values without editing scenario data.
       var usLean = (choice && choice.politicalLean) || 0;
-      var israelLean = (choice && choice.israelLean) || 0;
+      var israelLean = (typeof G._devIsraelLeanOverride === 'number')
+        ? G._devIsraelLeanOverride
+        : ((choice && choice.israelLean) || 0);
 
       var alignmentBonus = 0;
       var axisCount = 0;
@@ -16892,6 +16897,45 @@ function devResetTutorial() {
   try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
   alert('Tutorial reset — start a new game to see Avi\u2019s onboarding.');
 }
+// Skip the rest of the current run and render the end-of-year screen.
+function devSkipToEndGame() {
+  if (typeof G === 'undefined' || !G || !G.stats) { alert('No game in progress'); return; }
+  if (typeof endYear === 'function') endYear();
+}
+// Force-advance to the next round (or year-end) regardless of AP remaining.
+function devEndRoundNow() {
+  if (typeof G === 'undefined' || !G) { alert('No game in progress'); return; }
+  G.apRemaining = 0;
+  if (typeof showRoundTransition === 'function') showRoundTransition();
+  else if (typeof endRound === 'function') endRound();
+}
+// Direct setters for political state (re-render HUD to reflect changes).
+function devSetPoliticalPosition(val) {
+  var v = parseFloat(val);
+  if (isNaN(v)) return;
+  G.politicalPosition = Math.max(0, Math.min(100, v));
+  if (typeof updateHUD === 'function') updateHUD();
+  updateDeskDevPanel();
+}
+function devSetPoliticalClout(val) {
+  var v = parseFloat(val);
+  if (isNaN(v)) return;
+  G.politicalClout = Math.max(0, Math.min(100, v));
+  if (typeof updateHUD === 'function') updateHUD();
+  updateDeskDevPanel();
+}
+// Override the israelLean on the next choice's segment-effect calculation.
+// Setting to 'none' clears the override so choices use their authored lean.
+function devSetIsraelLean(val) {
+  if (val === 'none' || val === '' || val == null) {
+    G._devIsraelLeanOverride = undefined;
+  } else {
+    var v = parseFloat(val);
+    if (isNaN(v)) return;
+    G._devIsraelLeanOverride = v;
+  }
+  updateDeskDevPanel();
+}
 function updateDeskDevPanel() {
   var p = document.getElementById('desk-dev-panel');
   if (!p) return;
@@ -16904,6 +16948,29 @@ function updateDeskDevPanel() {
   setBg('[data-field="postit-on"]', G._deskDevPostit === true);
   setBg('[data-field="postit-off"]', G._deskDevPostit === false);
   setBg('[data-field="postit-natural"]', typeof G._deskDevPostit !== 'boolean');
+  // Politics sliders + israel override
+  var posSlider = p.querySelector('[data-field="pol-pos-slider"]');
+  var posLabel  = p.querySelector('[data-field="pol-pos-label"]');
+  var cloSlider = p.querySelector('[data-field="pol-clout-slider"]');
+  var cloLabel  = p.querySelector('[data-field="pol-clout-label"]');
+  var ilSlider  = p.querySelector('[data-field="il-lean-slider"]');
+  var ilLabel   = p.querySelector('[data-field="il-lean-label"]');
+  if (posSlider && typeof G.politicalPosition === 'number') {
+    posSlider.value = G.politicalPosition;
+    if (posLabel) posLabel.textContent = Math.round(G.politicalPosition);
+  }
+  if (cloSlider && typeof G.politicalClout === 'number') {
+    cloSlider.value = G.politicalClout;
+    if (cloLabel) cloLabel.textContent = Math.round(G.politicalClout);
+  }
+  if (ilLabel) {
+    ilLabel.textContent = (typeof G._devIsraelLeanOverride === 'number')
+      ? (G._devIsraelLeanOverride > 0 ? '+' : '') + G._devIsraelLeanOverride
+      : 'off';
+  }
+  if (ilSlider && typeof G._devIsraelLeanOverride === 'number') {
+    ilSlider.value = G._devIsraelLeanOverride;
+  }
 }
 function initDeskDevPanel() {
   if (!/[?&]devdesk/.test(location.search)) return;
@@ -16917,9 +16984,15 @@ function initDeskDevPanel() {
   var btnStyle = 'margin-right:3px;padding:3px 8px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#2a2a33;color:#e8e8ec;font-family:inherit;';
   var quickStartBtnStyle = 'width:100%;padding:6px 10px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#14532d;color:#86efac;font-family:inherit;font-weight:700;letter-spacing:0.3px;';
   var resetBtnStyle = 'width:100%;padding:5px 10px;margin-top:5px;border:0;border-radius:3px;cursor:pointer;font-size:10px;background:#2a2a33;color:#cbd5e1;font-family:inherit;';
+  var halfBtnStyle = 'flex:1;padding:5px 8px;border:0;border-radius:3px;cursor:pointer;font-size:10px;background:#2a2a33;color:#cbd5e1;font-family:inherit;';
+  var dangerHalfStyle = 'flex:1;padding:5px 8px;border:0;border-radius:3px;cursor:pointer;font-size:10px;background:#7f1d1d;color:#fecaca;font-family:inherit;';
   p.innerHTML =
     '<div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #333;">' +
       '<button onclick="devQuickStart()" style="' + quickStartBtnStyle + '">⚡ Quick start game (random setup)</button>' +
+      '<div style="display:flex;gap:5px;margin-top:5px;">' +
+        '<button onclick="devEndRoundNow()" style="' + halfBtnStyle + '">⏭ End round</button>' +
+        '<button onclick="devSkipToEndGame()" style="' + dangerHalfStyle + '">⏹ Skip to end</button>' +
+      '</div>' +
       '<button onclick="devResetTutorial()" style="' + resetBtnStyle + '">↻ Reset Avi tutorial flag</button>' +
     '</div>' +
     '<div style="font-weight:700;margin-bottom:7px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Desk Dev</div>' +
@@ -16932,10 +17005,35 @@ function initDeskDevPanel() {
         return '<button data-field="morale-'+m+'" onclick="devSetDesk(null,\''+m+'\',null)" style="' + btnStyle + '">'+m+'</button>';
       }).join('') +
     '</div>' +
-    '<div><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">postit</span>' +
+    '<div style="margin-bottom:5px;"><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">postit</span>' +
       '<button data-field="postit-on" onclick="devSetDesk(null,null,true)" style="' + btnStyle + '">on</button>' +
       '<button data-field="postit-off" onclick="devSetDesk(null,null,false)" style="' + btnStyle + '">off</button>' +
       '<button data-field="postit-natural" onclick="G._deskDevPostit=undefined;renderMain();updateDeskDevPanel();" style="' + btnStyle + '">natural</button>' +
+    '</div>' +
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #333;">' +
+      '<div style="font-weight:700;margin-bottom:6px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Politics</div>' +
+      '<div style="margin-bottom:5px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;opacity:0.9;margin-bottom:2px;">' +
+          '<span style="opacity:0.55;font-size:10px;">position (0 L → 100 R)</span>' +
+          '<span data-field="pol-pos-label" style="font-family:Menlo,monospace;color:#86efac;font-size:10px;">—</span>' +
+        '</div>' +
+        '<input data-field="pol-pos-slider" type="range" min="0" max="100" step="1" value="50" oninput="devSetPoliticalPosition(this.value)" style="width:100%;display:block;">' +
+      '</div>' +
+      '<div style="margin-bottom:5px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;opacity:0.9;margin-bottom:2px;">' +
+          '<span style="opacity:0.55;font-size:10px;">clout (0–100)</span>' +
+          '<span data-field="pol-clout-label" style="font-family:Menlo,monospace;color:#86efac;font-size:10px;">—</span>' +
+        '</div>' +
+        '<input data-field="pol-clout-slider" type="range" min="0" max="100" step="1" value="20" oninput="devSetPoliticalClout(this.value)" style="width:100%;display:block;">' +
+      '</div>' +
+      '<div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;opacity:0.9;margin-bottom:2px;">' +
+          '<span style="opacity:0.55;font-size:10px;">israel lean override</span>' +
+          '<span data-field="il-lean-label" style="font-family:Menlo,monospace;color:#86efac;font-size:10px;">off</span>' +
+        '</div>' +
+        '<input data-field="il-lean-slider" type="range" min="-10" max="10" step="1" value="0" oninput="devSetIsraelLean(this.value)" style="width:100%;display:block;">' +
+        '<button onclick="devSetIsraelLean(\'none\')" style="' + resetBtnStyle + '">clear israel override</button>' +
+      '</div>' +
     '</div>';
   document.body.appendChild(p);
   updateDeskDevPanel();
@@ -16990,11 +17088,11 @@ function renderMain(){
   // Ensure channel queues are populated
   if (!G.channelQueues || !G.channelQueues.monitor) distributeScenarios();
 
-  // Round info
-  var ri = GAME_DATA.config.roundNames[G.round-1]||{year:'',round:'',hebrew:'',english:''};
+  // Round info — year/season shown in the HUD / round transition screens,
+  // so the desk status line only needs round count + AP remaining, separated
+  // by the existing em dash so no extra bullet is needed.
   var totalRounds = GAME_DATA.config.totalRounds || 6;
-  var roundHeading = 'Round ' + G.round + ' of ' + totalRounds + ' — ' + ri.year;
-  if (ri.hebrew) roundHeading += ' — ' + ri.hebrew + ' / ' + ri.english;
+  var roundHeading = 'Round ' + G.round + ' of ' + totalRounds;
 
   // End round button (only when AP = 0)
   var endRoundHtml = disabled ? '<button class="btn btn-sm btn-primary ap-end" onclick="endRound()" style="margin-top:12px">End Round \u2192</button>' : '';
@@ -17054,10 +17152,10 @@ function renderMain(){
     monitorScreenHtml: monScreenHtml
   });
 
-  // Proposal B: single-line status (round + AP) with a mid-dot separator;
+  // Single-line status: "Round X of Y — N actions remaining".
   // "Your Desk" h2 removed since the art makes the heading redundant.
   var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
-  var statusLine = roundHeading + ' · ' + apLabel;
+  var statusLine = roundHeading + ' \u2014 ' + apLabel;
 
   el.innerHTML = ''
     + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue.</div>' : '')

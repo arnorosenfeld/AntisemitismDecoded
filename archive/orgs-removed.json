@@ -1,0 +1,189 @@
+{
+  "local": [
+    {
+      "id": "left",
+      "name": "Tikkun Olam Alliance",
+      "badge": "Progressive",
+      "badgeClass": "badge-left",
+      "description": "A left-wing advocacy org focused on social justice, Palestinian rights, anti-racism, and progressive domestic policy.",
+      "traits": [
+        "Progressive donor base: bold stances required",
+        "Coalition-dependent: allies can turn quickly",
+        "Authenticity under constant scrutiny"
+      ],
+      "statModifiers": {
+        "morale": 5,
+        "donors": -3
+      },
+      "politicalTilt": [
+        "left"
+      ],
+      "promotionEligible": [
+        "left",
+        "center"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "progressive"
+      ],
+      "segmentWeights": {
+        "orthodox": 5,
+        "conservative_denom": 8,
+        "reform": 25,
+        "unaffiliated": 27,
+        "youngAdults": 25,
+        "olderAdults": 10
+      },
+      "allocationPoints": 75,
+      "startingBudget": 50
+    },
+    {
+      "id": "center",
+      "name": "Jewish Federation of Metroland",
+      "badge": "Centrist",
+      "badgeClass": "badge-center",
+      "description": "A centrist advocacy org seeking bipartisan coalitions on antisemitism, Israel, and Jewish continuity.",
+      "traits": [
+        "Bipartisan by design: balance is everything",
+        "Moderate donors: no dramatic moves",
+        "Credibility through consistency"
+      ],
+      "statModifiers": {
+        "trust": 3,
+        "donors": 8
+      },
+      "politicalTilt": [
+        "center"
+      ],
+      "promotionEligible": [
+        "left",
+        "right",
+        "center"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "centrist"
+      ],
+      "segmentWeights": {
+        "orthodox": 12,
+        "conservative_denom": 20,
+        "reform": 22,
+        "unaffiliated": 12,
+        "youngAdults": 14,
+        "olderAdults": 20
+      },
+      "allocationPoints": 85,
+      "startingBudget": 100
+    },
+    {
+      "id": "jcc",
+      "name": "Ashford JCC",
+      "badge": "Apolitical",
+      "badgeClass": "badge-apolitical",
+      "description": "A community hub providing programs, childcare, fitness, and cultural events for Jews of all backgrounds in a city without much Jewish infrastructure.",
+      "traits": [
+        "Pluralistic mandate: serve all Jews",
+        "Budget driven by membership revenue",
+        "Apolitical pressure: controversy is costly"
+      ],
+      "statModifiers": {
+        "trust": 5,
+        "morale": 5
+      },
+      "politicalTilt": [
+        "center"
+      ],
+      "promotionEligible": [
+        "left",
+        "right",
+        "center",
+        "jcc"
+      ],
+      "orgLevel": "local",
+      "scenarioCategories": [
+        "centrist"
+      ],
+      "segmentWeights": {
+        "orthodox": 10,
+        "conservative_denom": 18,
+        "reform": 22,
+        "unaffiliated": 18,
+        "youngAdults": 18,
+        "olderAdults": 14
+      },
+      "allocationPoints": 80,
+      "startingBudget": 80
+    }
+  ],
+  "national": [
+    {
+      "id": "nat_right",
+      "name": "Lion of Judah",
+      "badge": "Conservative National",
+      "badgeClass": "badge-right",
+      "description": "A national pro-Israel advocacy organization with deep congressional relationships, focused on US-Israel relations and combating left-wing antisemitism.",
+      "traits": [
+        "Major donor network spans Wall Street and Silicon Valley",
+        "Congressional relationships on both sides of the aisle",
+        "High expectations: any misstep is front-page news"
+      ],
+      "statModifiers": {
+        "trust": -5,
+        "donors": 10
+      },
+      "politicalTilt": [
+        "right"
+      ],
+      "startingBudget": 150,
+      "orgLevel": "national",
+      "scenarioCategories": [
+        "conservative"
+      ],
+      "segmentWeights": {
+        "orthodox": 22,
+        "conservative_denom": 25,
+        "reform": 10,
+        "unaffiliated": 5,
+        "youngAdults": 8,
+        "olderAdults": 30
+      },
+      "allocationPoints": 80,
+      "promotionEligible": []
+    },
+    {
+      "id": "nat_jcc",
+      "name": "Synagogue Council",
+      "badge": "National Network",
+      "badgeClass": "badge-apolitical",
+      "description": "A national network providing resources and networking opportunities to hundreds of mostly Reform, Conservative and Reconstructionist synagogues, along with some modern Orthodox congregations.",
+      "traits": [
+        "Network of 1,200 synagogues depending on your leadership",
+        "Apolitical brand: politics fractures the network",
+        "Security and continuity are the twin mandates"
+      ],
+      "statModifiers": {
+        "trust": 7,
+        "donors": -3
+      },
+      "politicalTilt": [
+        "center"
+      ],
+      "startingBudget": 90,
+      "orgLevel": "national",
+      "scenarioCategories": [
+        "centrist"
+      ],
+      "segmentWeights": {
+        "orthodox": 8,
+        "conservative_denom": 18,
+        "reform": 24,
+        "unaffiliated": 20,
+        "youngAdults": 18,
+        "olderAdults": 12
+      },
+      "allocationPoints": 85,
+      "promotionEligible": []
+    }
+  ],
+  "notes": "Orgs removed in the 3-org reduction. The local `left` (Tikkun Olam Alliance) and local `center` (Jewish Federation of Metroland) are fully retired. The nat_left (Jews for Justice) and nat_center (Association of American Jews) are KEPT in the game but renamed to `left` and `center` respectively \u2014 they are NOT in this archive file. Only orgs that are fully retired from the game are here."
+}

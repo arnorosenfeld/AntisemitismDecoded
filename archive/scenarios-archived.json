@@ -1,0 +1,360 @@
+{
+  "scenarios": [
+    {
+      "id": "jcc_pride_programming",
+      "tag": "Community",
+      "title": "Pride Month at the JCC",
+      "body": "Your program director has planned a Pride Month celebration including a family drag queen story hour, a 'Jewish & Queer' film screening, and rainbow decorations throughout the building. Three Orthodox families who use the JCC daily \u2014 including two whose children are in the preschool \u2014 have told you they will pull their kids and memberships if the programming proceeds. A group of LGBTQ Jewish parents has written to say this programming is 'the reason we chose this JCC.' Your board is meeting tomorrow.",
+      "applicableOrgs": [
+        "jcc"
+      ],
+      "categories": [
+        "apolitical"
+      ],
+      "orgLevel": "both",
+      "complexity": 4,
+      "highStakes": true,
+      "communityConsensus": 0.3,
+      "advisorQuotes": [
+        {
+          "advisorId": "program_dir",
+          "text": "These LGBTQ families are some of our most active members. If we cancel this, we're telling them they don't belong here.",
+          "mood": "neutral",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "morale": 3
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "dev_director",
+          "text": "The Orthodox families aren't just members \u2014 two of them are significant donors. And word will spread to their community fast.",
+          "mood": "neutral",
+          "recommendsChoice": null,
+          "effectModifier": {},
+          "explicit": false
+        }
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Proceed with all planned Pride programming. A JCC that serves all Jews means ALL Jews, including LGBTQ families.",
+          "missionAligned": [
+            "social_justice"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Pride Month is a hit. Attendance is strong. The LGBTQ families are thrilled and several new members join specifically because of the programming. The three Orthodox families leave. The Orthodox community whispers that your JCC isn't for them.",
+              "effects": {
+                "trust": 1,
+                "morale": 4,
+                "donors": -2
+              },
+              "weight": 65,
+              "contextNote": "",
+              "conditions": []
+            },
+            {
+              "text": "The story makes the local paper. Conservative commentators call it 'another institution captured by the radical left.' Your membership numbers are a wash \u2014 gains offset by losses \u2014 but the controversy exhausts your staff.",
+              "effects": {
+                "trust": -1,
+                "morale": -1,
+                "donors": -1
+              },
+              "weight": 35,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": -3,
+          "segmentOverrides": {
+            "orthodox": -5,
+            "conservative_denom": -2,
+            "reform": 3,
+            "unaffiliated": 3,
+            "youngAdults": 4,
+            "olderAdults": -1
+          }
+        },
+        {
+          "id": "c1",
+          "text": "Scale back the most visible elements. Keep the film screening and support groups but cancel the drag story hour and reduce the decorations. Frame it as 'appropriate for all our families.'",
+          "missionAligned": [],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The LGBTQ parents are hurt. 'You edited our existence for someone else's comfort,' one writes in an email to the board. The Orthodox families stay. Your staff feels you compromised their values for money.",
+              "effects": {
+                "trust": -2,
+                "morale": -3,
+                "donors": 1
+              },
+              "weight": 100,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": 2,
+            "reform": -2,
+            "unaffiliated": -3,
+            "youngAdults": -3,
+            "olderAdults": 1
+          }
+        },
+        {
+          "id": "c2",
+          "text": "Proceed with programming but add complementary events: a 'Torah and Identity' series, a traditional family Shabbat, and other content that signals the JCC serves the full spectrum of Jewish life.",
+          "missionAligned": [
+            "jewish_identity",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The expanded calendar satisfies most members. Pride programming happens alongside traditional programming. One Orthodox family stays; two leave but say they 'appreciate the effort.' Your schedule is brutal \u2014 your staff is stretched incredibly thin.",
+              "effects": {
+                "trust": 3,
+                "morale": -1
+              },
+              "weight": 100,
+              "contextNote": "Pluralism is exhausting to administer.",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": 1,
+            "conservative_denom": 2,
+            "reform": 2,
+            "unaffiliated": 1,
+            "youngAdults": 1,
+            "olderAdults": 1
+          }
+        },
+        {
+          "id": "c3",
+          "text": "Before the board meeting, personally reach out to the Orthodox families \u2014 not to negotiate, but to listen. Acknowledge their discomfort while explaining why the JCC must be inclusive. Your empathy skills might keep them in the building.",
+          "missionAligned": [
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your personal conversations are genuinely moving. Two of the three families decide to stay, saying 'we don't agree, but we feel heard.' The programming proceeds. Your ability to sit with discomfort \u2014 yours and theirs \u2014 made the difference.",
+              "effects": {
+                "trust": 4,
+                "morale": 4,
+                "donors": 1
+              },
+              "weight": 100,
+              "contextNote": "Your burnout survivor's empathy did what policy memos couldn't.",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": 2,
+            "conservative_denom": 2,
+            "reform": 3,
+            "unaffiliated": 2,
+            "youngAdults": 3,
+            "olderAdults": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "jcc_modesty_hours",
+      "tag": "Internal",
+      "title": "Women-Only Swim Hours Under Fire",
+      "body": "Your JCC has offered women-only swim hours on Sunday mornings for 15 years \u2014 originally created to accommodate Orthodox women who observe modesty laws. Muslim women in the neighborhood have also started attending, making it a quiet interfaith success story. Now a male member has filed a formal complaint calling the policy 'gender discrimination.' A local newspaper has picked up the story. The headline reads: 'JCC Bans Men from Pool \u2014 Is It Legal?'",
+      "applicableOrgs": [
+        "jcc"
+      ],
+      "categories": [
+        "all"
+      ],
+      "orgLevel": "both",
+      "complexity": 3,
+      "highStakes": false,
+      "communityConsensus": 0.4,
+      "advisorQuotes": [
+        {
+          "advisorId": "rabbi_scholar",
+          "text": "Tzniut is not a policy preference. It's a religious obligation for these women. Ending these hours would effectively ban Orthodox women from swimming here.",
+          "mood": "neutral",
+          "recommendsChoice": 0,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": true
+        },
+        {
+          "advisorId": "media_strategist",
+          "text": "The headline is bad. But the story underneath is actually beautiful \u2014 Jewish and Muslim women swimming together. We need to reframe this fast.",
+          "mood": "neutral",
+          "recommendsChoice": 2,
+          "effectModifier": {
+            "trust": 2
+          },
+          "explicit": true
+        }
+      ],
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Keep the women-only hours and defend them publicly as a religious accommodation. Make clear the JCC respects the modesty requirements of its diverse members.",
+          "missionAligned": [
+            "jewish_identity",
+            "community_hub"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The complaining member cancels his membership and posts a negative review online. But the Orthodox and Muslim women who use those hours send a joint thank-you letter to your board. It's shared widely as a feel-good story.",
+              "effects": {
+                "trust": 3,
+                "morale": 3
+              },
+              "weight": 70,
+              "contextNote": "",
+              "conditions": []
+            },
+            {
+              "text": "A second complaint is filed, this time threatening legal action. Your lawyer says you're probably fine under religious accommodation law, but the legal review costs $5,000.",
+              "effects": {
+                "trust": 1,
+                "morale": 1
+              },
+              "weight": 30,
+              "contextNote": "",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": 5,
+            "conservative_denom": 2,
+            "reform": 1,
+            "youngAdults": 1,
+            "olderAdults": 2
+          }
+        },
+        {
+          "id": "c1",
+          "text": "Compromise: reduce women-only hours from two hours to one, and add a men-only hour to demonstrate equal treatment.",
+          "missionAligned": [],
+          "missionOpposed": [
+            "community_hub"
+          ],
+          "outcomes": [
+            {
+              "text": "Nobody asked for men-only hours. The men-only slot sits empty. The Orthodox women say one hour isn't enough. The complaining member says you still haven't addressed the core issue. You've created a solution that satisfies no one.",
+              "effects": {
+                "trust": -2,
+                "morale": -2,
+                "donors": -1
+              },
+              "weight": 100,
+              "contextNote": "False equivalence is not compromise.",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": -3,
+            "reform": -1,
+            "youngAdults": -1
+          }
+        },
+        {
+          "id": "c2",
+          "text": "Proactively pitch the interfaith angle to media. Invite a journalist to see Orthodox Jewish and Muslim women swimming together. Turn the story from 'JCC bans men' to 'JCC bridges faiths.'",
+          "missionAligned": [
+            "community_hub",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "A local TV station runs a three-minute segment on the interfaith swim hours. It's charming and human. The original complainant looks petty. New membership inquiries spike for a month. The story completely flips.",
+              "effects": {
+                "trust": 4,
+                "morale": 4,
+                "donors": 2
+              },
+              "weight": 60,
+              "contextNote": "",
+              "conditions": []
+            },
+            {
+              "text": "A reporter shows up but only wants to ask the women about their views on Israel. It gets awkward quick, and several of the women stop showing up after being forced into an uncomfortable conversation in front of a journalist.",
+              "effects": {
+                "trust": -3,
+                "morale": -5
+              },
+              "weight": 40,
+              "contextNote": "",
+              "conditions": [],
+              "cloutEffect": -6
+            }
+          ],
+          "budgetCost": 0,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": 3,
+            "conservative_denom": 2,
+            "reform": 2,
+            "unaffiliated": 2,
+            "youngAdults": 2,
+            "olderAdults": 2
+          }
+        },
+        {
+          "id": "c3",
+          "text": "Draft a formal religious accommodation policy grounded in both halacha and civil rights law \u2014 creating a legal and moral framework that protects these hours permanently.",
+          "missionAligned": [
+            "jewish_identity",
+            "community_hub"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your policy document is praised by the JCC Association of North America and adopted as a template by three other JCCs. The legal framework makes future complaints nearly impossible. Your scholarly approach built something that will outlast you.",
+              "effects": {
+                "trust": 4,
+                "morale": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "contextNote": "Your Jewish learning protected a community practice for generations.",
+              "conditions": []
+            }
+          ],
+          "budgetCost": 5,
+          "politicalLean": 0,
+          "segmentOverrides": {
+            "orthodox": 5,
+            "conservative_denom": 3,
+            "reform": 2,
+            "youngAdults": 1,
+            "olderAdults": 2
+          },
+          "requiresUnlock": "jewish_scholar"
+        }
+      ]
+    }
+  ],
+  "notes": "Scenarios removed in the 3-org reduction because they are structurally tied to JCC-specific facilities (preschools, swimming pools, programming calendars) that the 3 remaining advocacy organizations do not operate. Preserved here in full so they can be reintroduced as DLC if a JCC org is ever added back."
+}

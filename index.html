@@ -442,6 +442,21 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-phone-alert { color: #ef4444; margin-right: 2px; }
 .desk-phone-empty { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999; }
 
+/* Phone tab bar (inbox vs compose) */
+.desk-phone-tabs { display: flex; border-bottom: 1px solid rgba(0,0,0,0.1); background: #d0dce6; }
+.desk-phone-tab { flex: 1; padding: 4px 0; font-size: 8px; font-weight: 700; text-align: center; cursor: pointer; color: #666; border-bottom: 2px solid transparent; transition: all 0.15s; }
+.desk-phone-tab.active { color: var(--ink); border-bottom-color: var(--gold); background: #dce8f0; }
+.desk-phone-tab:hover:not(.active) { background: #d5e1ea; }
+
+/* Social post cards inside compose tab */
+.social-post-card { padding: 5px 7px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.12s; font-size: 8px; line-height: 1.35; color: #333; }
+.social-post-card:hover { background: rgba(0,0,0,0.05); }
+.social-post-card .post-text { margin-bottom: 2px; }
+.social-post-card .post-effects { font-size: 7px; color: #888; }
+.social-post-card .post-chip { display: inline-block; padding: 0 3px; border-radius: 2px; font-size: 6px; font-weight: 700; margin-right: 2px; }
+.social-post-card .post-chip-pos { background: #d4ead4; color: #1a4a1a; }
+.social-post-card .post-chip-neg { background: #ead4d4; color: #4a1a1a; }
+
 /* Ring animation — used by inbox popup on new messages */
 @keyframes deskRingOnce { 0%{transform:rotate(0)} 5%{transform:rotate(-5deg)} 10%{transform:rotate(5deg)} 15%{transform:rotate(-3deg)} 20%{transform:rotate(3deg)} 25%,100%{transform:rotate(0)} }
 
@@ -2040,7 +2055,9 @@ const GAME_DATA = {
         "Heads up: {stat} is trending low. Consider making it a priority over the next two rounds."
       ]
     },
-    "maxCallsPerRound": 1
+    "maxCallsPerRound": 1,
+    "socialMediaDecayRate": 0.5,
+    "socialMediaWarningAfter": 2
   },
   "stats": [
     {
@@ -15796,6 +15813,169 @@ const GAME_DATA = {
         }
       ]
     }
+  ],
+  "socialMediaPosts": [
+    {
+      "id": "tweet_solidarity",
+      "text": "Standing with our community today and every day. Antisemitism has no place in America.",
+      "category": "generic",
+      "alwaysAvailable": true,
+      "effects": {
+        "trust": 2,
+        "morale": 1
+      },
+      "negativeEffects": {
+        "donors": -1
+      },
+      "politicalLean": 0
+    },
+    {
+      "id": "tweet_fundraising",
+      "text": "Our work depends on your generosity. Every dollar supports the fight against hate. Link in bio.",
+      "category": "fundraising",
+      "alwaysAvailable": true,
+      "effects": {
+        "donors": 3
+      },
+      "negativeEffects": {
+        "trust": -1,
+        "morale": -1
+      },
+      "budgetEffect": 3,
+      "politicalLean": 0
+    },
+    {
+      "id": "tweet_call_to_action",
+      "text": "Contact your representatives today. Jewish communities need legislative allies, not just sympathetic words.",
+      "category": "advocacy",
+      "alwaysAvailable": true,
+      "effects": {
+        "trust": 2
+      },
+      "negativeEffects": {
+        "morale": -1
+      },
+      "politicalLean": -1,
+      "cloutEffect": 2
+    },
+    {
+      "id": "tweet_unity",
+      "text": "What unites us is stronger than what divides us. Am Yisrael Chai.",
+      "category": "generic",
+      "alwaysAvailable": true,
+      "effects": {
+        "trust": 1,
+        "morale": 2
+      },
+      "negativeEffects": {},
+      "politicalLean": 0
+    },
+    {
+      "id": "tweet_progressive_coalition",
+      "text": "Fighting antisemitism means fighting ALL forms of hate. Proud to stand with our civil rights allies.",
+      "category": "progressive",
+      "alwaysAvailable": false,
+      "conditions": {
+        "orgIds": [
+          "left"
+        ]
+      },
+      "effects": {
+        "trust": 3,
+        "morale": 2
+      },
+      "negativeEffects": {
+        "donors": -2
+      },
+      "politicalLean": -3
+    },
+    {
+      "id": "tweet_israel_support",
+      "text": "Israel's right to defend itself is non-negotiable. We stand with our allies — always.",
+      "category": "conservative",
+      "alwaysAvailable": false,
+      "conditions": {
+        "orgIds": [
+          "right"
+        ]
+      },
+      "effects": {
+        "donors": 4,
+        "trust": 1
+      },
+      "negativeEffects": {
+        "trust": -2,
+        "morale": -1
+      },
+      "politicalLean": 4
+    },
+    {
+      "id": "tweet_bipartisan",
+      "text": "Antisemitism isn't a left issue or a right issue. It's an American issue. We need both parties at the table.",
+      "category": "centrist",
+      "alwaysAvailable": false,
+      "conditions": {
+        "orgIds": [
+          "center"
+        ]
+      },
+      "effects": {
+        "trust": 3,
+        "morale": 1
+      },
+      "negativeEffects": {
+        "donors": -1
+      },
+      "politicalLean": 0,
+      "cloutEffect": 2
+    },
+    {
+      "id": "tweet_campus_support",
+      "text": "Jewish students deserve to feel safe on campus. We're working with faculty and admin to make it happen.",
+      "category": "submission",
+      "alwaysAvailable": false,
+      "subMissionId": "sub_campus_coalition",
+      "effects": {
+        "trust": 2
+      },
+      "negativeEffects": {
+        "trust": -1
+      },
+      "politicalLean": -1,
+      "subMissionEffect": 0.5
+    },
+    {
+      "id": "tweet_anti_bds",
+      "text": "Economic discrimination against Israel hurts American workers too. Support the anti-BDS bill in our state legislature.",
+      "category": "submission",
+      "alwaysAvailable": false,
+      "subMissionId": "sub_anti_bds_bill",
+      "effects": {
+        "donors": 3,
+        "trust": 1
+      },
+      "negativeEffects": {
+        "trust": -2
+      },
+      "politicalLean": 4,
+      "subMissionEffect": 0.5
+    },
+    {
+      "id": "tweet_task_force",
+      "text": "A bipartisan antisemitism task force isn't about politics. It's about protecting our community. Call the governor's office today.",
+      "category": "submission",
+      "alwaysAvailable": false,
+      "subMissionId": "sub_task_force",
+      "effects": {
+        "trust": 3
+      },
+      "negativeEffects": {
+        "morale": -1
+      },
+      "politicalLean": 0,
+      "cloutEffect": 1,
+      "subMissionEffect": 0.5
+    }
   ]
 };
 /* GAME_DATA_END */
@@ -15848,8 +16028,9 @@ let G = {
   inboxMessages:[], // {id, scenario, unread, expired, timerRemaining}
   // Coalition strikes
   coalitionStrikes:{}, // {coalitionId: strikeCount}
-  // Landline calls
+  // Phone: landline calls + social media
   callsThisRound: 0,
+  postsThisRound: 0,
   // Sub-mission system
   activeSubMissions: [],    // [{id, progress, activatedRound, checkpointStatus: {cpId: 'pending'|'complete'|'failed'}}]
   completedSubMissions: [],
@@ -17136,6 +17317,7 @@ function beginRound(){
   G.round++;
   G.breakingNewsThisRound = 0;
   G.callsThisRound = 0;
+  G.postsThisRound = 0;
   if(G.round>GAME_DATA.config.totalRounds){endYear();return;}
 
   // Check if we've exhausted all scenarios
@@ -18082,10 +18264,19 @@ function renderMain(){
   var folQ = G.channelQueues.folder || [];
   var keyQ = G.channelQueues.keys || [];
 
-  // Build inbox popup HTML (same structure as old on-phone overlay, now in the floating popup)
+  // Build phone popup HTML with tabs: Inbox | Compose (social media)
+  var availPosts = getAvailablePosts();
   var inboxScreenHtml = '';
+
+  // Tab bar
+  inboxScreenHtml += '<div class="desk-phone-tabs">';
+  inboxScreenHtml += '<div class="desk-phone-tab active" onclick="event.stopPropagation();switchPhoneTab(\'inbox\')">Inbox' + (activeInbox.length > 0 ? ' (' + activeInbox.length + ')' : '') + '</div>';
+  inboxScreenHtml += '<div class="desk-phone-tab" onclick="event.stopPropagation();switchPhoneTab(\'compose\')">Post' + (availPosts.length > 0 ? ' (' + availPosts.length + ')' : '') + '</div>';
+  inboxScreenHtml += '</div>';
+
+  // Inbox content
+  inboxScreenHtml += '<div id="phone-tab-inbox" style="flex:1;display:flex;flex-direction:column;overflow:hidden">';
   if (activeInbox.length > 0) {
-    inboxScreenHtml = '<div class="desk-phone-status"><span>Inbox</span><span>' + activeInbox.length + ' msg</span></div>';
     inboxScreenHtml += '<div class="desk-phone-messages">';
     activeInbox.forEach(function(m) {
       var sc = m.scenario || {};
@@ -18098,8 +18289,32 @@ function renderMain(){
     inboxScreenHtml += '</div>';
     inboxScreenHtml += '<div class="desk-phone-fade"></div>';
   } else {
-    inboxScreenHtml = '<div class="desk-phone-empty">No messages</div>';
+    inboxScreenHtml += '<div class="desk-phone-empty">No messages</div>';
   }
+  inboxScreenHtml += '</div>';
+
+  // Compose content (hidden by default)
+  inboxScreenHtml += '<div id="phone-tab-compose" style="flex:1;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">';
+  if (availPosts.length > 0) {
+    availPosts.forEach(function(post) {
+      var decay = GAME_DATA.config.socialMediaDecayRate || 0.5;
+      var posDecay = Math.pow(decay, G.postsThisRound || 0);
+      var chipHtml = '';
+      GAME_DATA.stats.forEach(function(stat) {
+        var pos = (post.effects || {})[stat.id] || 0;
+        if (pos > 0) { var d = Math.round(pos * posDecay); if (d > 0) chipHtml += '<span class="post-chip post-chip-pos">+' + d + '</span>'; }
+        var neg = (post.negativeEffects || {})[stat.id] || 0;
+        if (neg < 0) chipHtml += '<span class="post-chip post-chip-neg">' + neg + '</span>';
+      });
+      inboxScreenHtml += '<div class="social-post-card" onclick="event.stopPropagation();executeSocialPost(\'' + post.id + '\')">';
+      inboxScreenHtml += '<div class="post-text">' + esc(post.text.length > 80 ? post.text.substring(0, 77) + '...' : post.text) + '</div>';
+      if (chipHtml) inboxScreenHtml += '<div class="post-effects">' + chipHtml + '</div>';
+      inboxScreenHtml += '</div>';
+    });
+  } else {
+    inboxScreenHtml += '<div class="desk-phone-empty">No posts available</div>';
+  }
+  inboxScreenHtml += '</div>';
 
   // Build monitor-screen animation HTML (same content, now rendered inside the green-box overlay)
   var monScreenHtml = '<div class="desk-mon-desktop">'
@@ -19752,6 +19967,115 @@ function getAdvisorBonus(scenario, choiceIndex) {
     var stackExplanation = '<span style="color:#7a5800;font-size:12px;font-style:italic">Your advisors collectively influenced this outcome.</span>';
     return { effects: combined, chips: chipParts.join(''), explanation: stackExplanation };
   }
+}
+
+// Phone tab switching (inbox vs compose/social media)
+function switchPhoneTab(tab) {
+  var inbox = document.getElementById('phone-tab-inbox');
+  var compose = document.getElementById('phone-tab-compose');
+  if (!inbox || !compose) return;
+  var tabs = document.querySelectorAll('.desk-phone-tab');
+  tabs.forEach(function(t, i) {
+    t.classList.toggle('active', (tab === 'inbox' && i === 0) || (tab === 'compose' && i === 1));
+  });
+  inbox.style.display = tab === 'inbox' ? 'flex' : 'none';
+  compose.style.display = tab === 'compose' ? 'flex' : 'none';
+}
+
+// ═══════════════ SOCIAL MEDIA POST SYSTEM ═══════════════
+
+// Get available social media posts for the current state.
+function getAvailablePosts() {
+  return (GAME_DATA.socialMediaPosts || []).filter(function(post) {
+    if (post.alwaysAvailable) return true;
+    if (post.conditions && post.conditions.orgIds && !post.conditions.orgIds.includes(G.orgId)) return false;
+    if (post.subMissionId) {
+      if (!(G.activeSubMissions || []).some(function(sm) { return sm.id === post.subMissionId; })) return false;
+    }
+    return true;
+  });
+}
+
+// Execute a social media post with asymmetric decay.
+// Positive effects decay with each successive post; negative effects stay at full strength.
+function executeSocialPost(postId) {
+  var post = (GAME_DATA.socialMediaPosts || []).find(function(p) { return p.id === postId; });
+  if (!post) return;
+
+  var decay = GAME_DATA.config.socialMediaDecayRate || 0.5;
+  var warnAfter = GAME_DATA.config.socialMediaWarningAfter || 2;
+  var postNum = G.postsThisRound || 0;
+  var posDecay = Math.pow(decay, postNum); // post 0 = 1.0, post 1 = 0.5, post 2 = 0.25, etc.
+
+  // Apply positive effects (decayed)
+  var chips = '';
+  var posEffects = post.effects || {};
+  GAME_DATA.stats.forEach(function(stat) {
+    var pos = posEffects[stat.id] || 0;
+    if (pos > 0) {
+      var decayed = Math.round(pos * posDecay * 10) / 10;
+      if (decayed >= 0.5) {
+        G.stats[stat.id] = Math.max(0, Math.min(100, (G.stats[stat.id] || 0) + decayed));
+        chips += '<span class="chip chip-pos">+' + decayed.toFixed(0) + ' ' + stat.label + '</span>';
+      }
+    }
+  });
+
+  // Apply negative effects (NOT decayed — full strength always)
+  var negEffects = post.negativeEffects || {};
+  GAME_DATA.stats.forEach(function(stat) {
+    var neg = negEffects[stat.id] || 0;
+    if (neg < 0) {
+      G.stats[stat.id] = Math.max(0, Math.min(100, (G.stats[stat.id] || 0) + neg));
+      chips += '<span class="chip chip-neg">' + neg + ' ' + stat.label + '</span>';
+    }
+  });
+
+  // Budget effect (decayed like positive)
+  if (post.budgetEffect && post.budgetEffect > 0) {
+    var bfx = Math.round(post.budgetEffect * posDecay);
+    if (bfx > 0) { G.budget += bfx; G.budgetIncomeThisYear += bfx; chips += '<span class="chip chip-pos">+' + bfx + ' Gelt</span>'; }
+  }
+
+  // Clout effect (decayed)
+  if (post.cloutEffect && post.cloutEffect > 0) {
+    var cfx = Math.round(post.cloutEffect * posDecay);
+    if (cfx > 0) { G.politicalClout = Math.min(100, G.politicalClout + cfx); chips += '<span class="chip chip-pos">+' + cfx + ' Clout</span>'; }
+  }
+
+  // Political lean
+  if (post.politicalLean) {
+    G.politicalPosition = Math.max(0, Math.min(100, G.politicalPosition + post.politicalLean));
+  }
+
+  // Sub-mission progress (small fractional advances)
+  if (post.subMissionId && post.subMissionEffect) {
+    var smEntry = (G.activeSubMissions || []).find(function(sm) { return sm.id === post.subMissionId; });
+    if (smEntry) {
+      var effectiveProgress = post.subMissionEffect * posDecay;
+      if (effectiveProgress >= 0.3) updateSubMissionProgress(post.subMissionId, effectiveProgress);
+    }
+  }
+
+  G.postsThisRound = postNum + 1;
+  G.stats.trust = computeCompositeTrust();
+  updateHUD();
+  if (checkFailure()) return;
+
+  // Toast notification
+  var toastMsg = '📱 Posted: "' + esc(post.text.substring(0, 60)) + '..."';
+  if (chips) toastMsg += '<br>' + chips;
+  showCoachingWarning(toastMsg, 'info');
+
+  // Avi warning after N posts
+  if (G.postsThisRound >= warnAfter && G.postsThisRound === warnAfter) {
+    setTimeout(function() {
+      showCoachingWarning('Careful — posting too much in one round tends to backfire. The positive impact shrinks but the negatives don\'t.', 'yellow');
+    }, 1500);
+  }
+
+  // Refresh the popup to show updated state
+  renderMain();
 }
 
 // ═══════════════ LANDLINE CALL SYSTEM ═══════════════

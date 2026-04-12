@@ -754,13 +754,19 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- CONVERSATIONS PANEL -->
         <div id="panel-conversations" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Branching conversations with characters and advisors. These fire before or after scenarios, at round start, or standalone. Each conversation is a node tree where player responses affect disposition, leading to different outcomes.</p>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Branching conversations with characters and advisors. Triggered conversations fire before/after scenarios. <strong>Landline calls</strong> are proactive conversations the player initiates from the desk phone — grouped by advisor with selectable topics.</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px;background:#f5f4f0;border:1px solid var(--border)">
             <input type="text" id="conv-search" placeholder="Search by ID or character..." oninput="filterConversations()" style="flex:1;min-width:160px;padding:6px 10px;font-size:12px;border:1px solid var(--border)" />
             <select id="conv-filter-type" onchange="filterConversations()" style="font-size:11px;padding:5px">
               <option value="">All Types</option>
               <option value="character">Character</option>
               <option value="advisor">Advisor</option>
+            </select>
+            <select id="conv-filter-trigger" onchange="filterConversations()" style="font-size:11px;padding:5px">
+              <option value="">All Triggers</option>
+              <option value="proactive">Landline Calls</option>
+              <option value="afterScenario">After Scenario</option>
+              <option value="beforeScenario">Before Scenario</option>
             </select>
             <select id="conv-filter-group" onchange="filterConversations()" style="font-size:11px;padding:5px">
               <option value="">All (Grouped & Standalone)</option>
@@ -15970,16 +15976,23 @@ function populateConversations(){
     var groups = {};
     var standalone = [];
     convs.forEach(function(c, i) {
-      if(c.groupId) {
-        if(!groups[c.groupId]) groups[c.groupId] = [];
-        groups[c.groupId].push({c:c, i:i});
+      // Auto-group landline calls by advisor even without a groupId
+      var isLandline = c.trigger && c.trigger.type === 'proactive';
+      var gid = c.groupId;
+      if (!gid && isLandline && c.advisorId) {
+        var adv = (GD.advisorPool||[]).find(function(a){return a.id===c.advisorId});
+        gid = '📞 ' + (adv ? adv.name : c.advisorId) + ' — Landline Topics';
+      }
+      if(gid) {
+        if(!groups[gid]) groups[gid] = [];
+        groups[gid].push({c:c, i:i});
       } else {
         standalone.push({c:c, i:i});
       }
     });
     Object.keys(groups).sort().forEach(function(gid) {
       html += '<div class="scenario-group">';
-      html += '<div class="scenario-group-header">Group: '+esc(gid)+' <span style="font-weight:400;color:var(--muted)">('+groups[gid].length+' variants)</span></div>';
+      html += '<div class="scenario-group-header">'+esc(gid)+' <span style="font-weight:400;color:var(--muted)">('+groups[gid].length+')</span></div>';
       groups[gid].forEach(function(item) {
         if(conversationMatchesFilters(item.c)) html += renderConversationCard(item.c, item.i) + renderConversationForm(item.c, item.i);
       });
@@ -16007,10 +16020,13 @@ function conversationMatchesFilters(c) {
     } else {
       matchName = ((c.character||{}).name||'').toLowerCase();
     }
-    if(!matchId && !matchName.includes(search)) return false;
+    var matchTopic = ((c.trigger && c.trigger.topic) || '').toLowerCase();
+    if(!matchId && !matchName.includes(search) && !matchTopic.includes(search)) return false;
   }
   var typeFilter = document.getElementById('conv-filter-type')?.value||'';
   if(typeFilter && c.type !== typeFilter) return false;
+  var triggerFilter = document.getElementById('conv-filter-trigger')?.value||'';
+  if(triggerFilter && (!c.trigger || c.trigger.type !== triggerFilter)) return false;
   var groupFilter = document.getElementById('conv-filter-group')?.value||'';
   if(groupFilter === 'grouped' && !c.groupId) return false;
   if(groupFilter === 'standalone' && c.groupId) return false;
@@ -16036,6 +16052,8 @@ function renderConversationCard(c, i){
   var typeBadge = c.type==='advisor' ?
     '<span class="tag tag-blue">Advisor</span>' :
     '<span class="tag tag-green">Character</span>';
+  var isLandline = c.trigger && c.trigger.type === 'proactive';
+  if (isLandline) typeBadge = '<span class="tag" style="background:#fef3c7;color:#92400e">📞 Landline</span>';
   var charName = '';
   if(c.type==='advisor'){
     var adv = (GD.advisorPool||[]).find(function(a){return a.id===c.advisorId});
@@ -16045,8 +16063,9 @@ function renderConversationCard(c, i){
   }
   var trig = c.trigger||{};
   var trigDesc = trig.type||'?';
-  if(trig.scenarioId) trigDesc += ' → '+trig.scenarioId;
-  if(trig.choiceIndex!=null) trigDesc += ' [choice '+trig.choiceIndex+']';
+  if(isLandline && trig.topic) trigDesc = 'landline · ' + trig.topic;
+  else if(trig.scenarioId) trigDesc += ' → '+trig.scenarioId;
+  if(trig.choiceIndex!=null && !isLandline) trigDesc += ' [choice '+trig.choiceIndex+']';
   var nodeCount = Object.keys(c.nodes||{}).length;
   var outcomeCount = (c.outcomes||[]).length;
   var badges = typeBadge+' '+esc(charName)+' · '+esc(trigDesc)+' · '+nodeCount+' nodes · '+outcomeCount+' outcomes';

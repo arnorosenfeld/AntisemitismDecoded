@@ -18211,51 +18211,34 @@ function beginRound(){
 }
 
 // Called after coalition offer is accepted/declined (or skipped).
-// Now also checks for pending sub-mission offers before continuing.
+// Sub-mission offers are now shown inline in the transition screen,
+// so this just continues to endRoundContinue.
 function afterCoalitionCheck(){
-  var smOffers = checkSubMissionOffers();
-  if (smOffers.length > 0) {
-    showSubMissionOffer(smOffers[0]);
-  } else {
-    endRoundContinue();
-  }
+  endRoundContinue();
 }
 
-function showSubMissionOffer(sm) {
-  var el = document.getElementById('game-inner');
-  if (!el) { endRoundContinue(); return; }
-  el.innerHTML =
-    '<div style="max-width:600px;margin:40px auto;padding:28px;background:var(--white);border:2px solid var(--ink)">' +
-    '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">New Sub-Mission Available</div>' +
-    '<h2 style="font-family:Merriweather,serif;font-size:20px;margin-bottom:10px">' + esc(sm.name) + '</h2>' +
-    '<p style="font-size:14px;line-height:1.7;color:var(--muted);margin-bottom:18px">' + esc(sm.description) + '</p>' +
-    '<div style="margin-bottom:18px;padding:14px;background:#f9f7f2;border:1px solid var(--border)">' +
-    '<div style="font-size:11px;font-weight:700;margin-bottom:8px">Checkpoints</div>' +
-    (sm.checkpoints || []).map(function(cp) {
-      return '<div style="font-size:12px;margin-bottom:4px">⬜ <strong>' + esc(cp.name) + '</strong> — ' + esc(cp.description) + '</div>';
-    }).join('') +
-    '<div style="margin-top:10px;font-size:11px;color:var(--muted)">Deadline: ' + (sm.deadlineRounds || 3) + ' rounds to complete</div>' +
-    '</div>' +
-    '<div style="display:flex;gap:10px">' +
-    '<button class="btn btn-primary" onclick="acceptSubMissionFromOffer(\'' + sm.id + '\')">Accept Sub-Mission</button>' +
-    '<button class="btn btn-secondary" onclick="declineSubMissionFromOffer(\'' + sm.id + '\')">Decline</button>' +
-    '</div>' +
-    '</div>';
-}
-
-function acceptSubMissionFromOffer(smId) {
+// Accept/decline sub-mission from the round transition screen.
+function acceptSmTransition(smId) {
   acceptSubMissionOffer(smId);
-  // Check for more offers
-  var more = checkSubMissionOffers();
-  if (more.length > 0) showSubMissionOffer(more[0]);
-  else endRoundContinue();
+  var smDiv = document.getElementById('rt-submission');
+  if (smDiv) smDiv.innerHTML = '<div style="text-align:center;padding:16px;color:#2d6a4f;font-weight:700">\u2705 Sub-mission accepted!</div>';
+  enableTransitionContinue();
 }
-
-function declineSubMissionFromOffer(smId) {
+function declineSmTransition(smId) {
   declineSubMissionOffer(smId);
-  var more = checkSubMissionOffers();
-  if (more.length > 0) showSubMissionOffer(more[0]);
-  else endRoundContinue();
+  var smDiv = document.getElementById('rt-submission');
+  if (smDiv) smDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-style:italic">Sub-mission declined.</div>';
+  enableTransitionContinue();
+}
+// Enable the "Begin Round" button if no pending offers remain.
+function enableTransitionContinue() {
+  var coalDiv = document.getElementById('rt-coalition');
+  var coalHasButtons = coalDiv && coalDiv.querySelector('button');
+  if (coalHasButtons) return; // coalition offer still pending
+  var btn = document.getElementById('rt-continue-btn');
+  var msg = document.getElementById('rt-continue-msg');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+  if (msg) msg.remove();
 }
 
 function endRoundContinue(){
@@ -18543,7 +18526,15 @@ function deskHasPostit() {
 
 function getDeskBgPath() {
   var skin = G.deskSkin || 'basic';
-  var morale = G.deskMoraleState || 'plain';
+  // Morale state now computed live (not stale from round boundary) so the desk
+  // responds to mid-round morale changes. Round 1 stays 'plain'.
+  var morale;
+  if ((G.round || 0) <= 1) {
+    morale = 'plain';
+  } else {
+    var currentMorale = (G.stats && typeof G.stats.morale === 'number') ? G.stats.morale : 50;
+    morale = getDeskMoraleKey(currentMorale);
+  }
   var postit = deskHasPostit() ? '-postit' : '';
   return 'art/desk-' + skin + '-' + morale + postit + '.png';
 }
@@ -19772,11 +19763,65 @@ function showRoundTransition() {
     (headlines.length > 0 ? '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">The Jewish Gazette</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' : '') +
     gazetteHtml +
     // Coalition
-    coalitionHtml +
+    coalitionHtml;
+
+  // Sub-mission offer (inline in transition screen, like coalition)
+  var smOfferHtml = '';
+  var hasSmOffer = false;
+  var pendingSm = checkSubMissionOffers();
+  if (pendingSm.length > 0) {
+    hasSmOffer = true;
+    var sm = pendingSm[0];
+    var rewardParts = [];
+    if (sm.rewards && sm.rewards.effects) {
+      Object.entries(sm.rewards.effects).forEach(function(e) {
+        var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0];
+        if (e[1] > 0) rewardParts.push('+' + e[1] + ' ' + lbl);
+      });
+    }
+    if (sm.rewards && sm.rewards.cloutEffect) rewardParts.push('+' + sm.rewards.cloutEffect + ' Clout');
+    if (sm.rewards && sm.rewards.missionStars) rewardParts.push('+' + sm.rewards.missionStars + ' Mission Star');
+    if (sm.rewards && sm.rewards.budgetEffect) rewardParts.push('+' + sm.rewards.budgetEffect + ' Gelt');
+    var penaltyParts = [];
+    if (sm.penalties && sm.penalties.effects) {
+      Object.entries(sm.penalties.effects).forEach(function(e) {
+        var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0];
+        if (e[1] < 0) penaltyParts.push(e[1] + ' ' + lbl);
+      });
+    }
+    var checkpointListHtml = (sm.checkpoints || []).map(function(cp) {
+      return '\u2b1c <strong>' + esc(cp.name) + '</strong>';
+    }).join('<br>');
+
+    smOfferHtml = '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Sub-Mission Opportunity</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
+      '<div id="rt-submission" style="background:var(--white);border:2px solid #b8860b;padding:20px 24px;margin-bottom:24px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
+          '<span style="font-size:24px">\ud83d\udccb</span>' +
+          '<span style="font-family:Merriweather,serif;font-weight:900;font-size:16px">' + esc(sm.name) + '</span>' +
+          '<span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#b8860b;background:rgba(184,134,11,0.1);padding:2px 8px;margin-left:auto">New</span>' +
+        '</div>' +
+        '<div style="font-size:13px;line-height:1.7;color:#3a3528;margin-bottom:14px">' + esc(sm.description) + '</div>' +
+        '<div style="background:#f9f7f2;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6">' +
+          '<div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Checkpoints (' + (sm.deadlineRounds || 3) + ' rounds to complete)</div>' +
+          checkpointListHtml +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+          '<div style="background:#e8f5e9;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">If you succeed</div><div style="font-size:12px;color:#2d6a4f">' + (rewardParts.join(', ') || 'Recognition') + '</div></div>' +
+          '<div style="background:#fce4ec;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">If you fail</div><div style="font-size:12px;color:#c0392b">' + (penaltyParts.join(', ') || 'Reputation damage') + '</div></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:12px;justify-content:center">' +
+          '<button class="btn btn-gold" onclick="acceptSmTransition(\'' + esc(sm.id) + '\')">Accept Sub-Mission \u2192</button>' +
+          '<button class="btn btn-secondary" onclick="declineSmTransition(\'' + esc(sm.id) + '\')">Decline</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  var hasPending = hasCoalition || hasSmOffer;
+  html += smOfferHtml +
     // Continue button
     '<div style="text-align:center;margin-top:8px">' +
-      '<button id="rt-continue-btn" class="btn btn-primary" style="padding:16px 40px;font-size:13px" onclick="continueFromTransition()" ' + (hasCoalition ? 'disabled style="padding:16px 40px;font-size:13px;opacity:0.4;cursor:not-allowed"' : '') + '>Begin Round ' + nextRound + ': ' + esc(nextSeason.english || '') + ' \u2192</button>' +
-      (hasCoalition ? '<div id="rt-continue-msg" style="font-size:11px;color:var(--muted);margin-top:6px;font-style:italic">Accept or decline the coalition offer to continue</div>' : '') +
+      '<button id="rt-continue-btn" class="btn btn-primary" style="padding:16px 40px;font-size:13px" onclick="continueFromTransition()" ' + (hasPending ? 'disabled style="padding:16px 40px;font-size:13px;opacity:0.4;cursor:not-allowed"' : '') + '>Begin Round ' + nextRound + ': ' + esc(nextSeason.english || '') + ' \u2192</button>' +
+      (hasPending ? '<div id="rt-continue-msg" style="font-size:11px;color:var(--muted);margin-top:6px;font-style:italic">Resolve all offers above to continue</div>' : '') +
     '</div>' +
   '</div>';
 
@@ -19849,6 +19894,10 @@ function declineCoalitionTransition(coalId) {
 }
 
 function enableContinueButton() {
+  // Only enable if there's no pending sub-mission offer too
+  var smDiv = document.getElementById('rt-submission');
+  var smHasButtons = smDiv && smDiv.querySelector('button');
+  if (smHasButtons) return; // sub-mission offer still pending
   var btn = document.getElementById('rt-continue-btn');
   if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; }
   var msg = document.getElementById('rt-continue-msg');

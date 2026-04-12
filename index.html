@@ -9903,6 +9903,962 @@ const GAME_DATA = {
       "politicalRange": {
         "max": 40
       }
+    },
+    {
+      "id": "sub_campus_faculty",
+      "tag": "Sub-Mission",
+      "title": "Faculty Letter on Campus Antisemitism",
+      "body": "Three professors at the university have agreed to draft a letter supporting the anti-hate policy — but they want your help with the language. The letter needs to address antisemitism without appearing to suppress criticism of Israel.",
+      "subMissionId": "sub_campus_coalition",
+      "categories": [
+        "all"
+      ],
+      "complexity": 3,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Help them draft language that explicitly names antisemitism alongside other forms of hate, including examples like Holocaust denial and conspiracy theories. Avoid mentioning Israel.",
+          "missionAligned": [
+            "antisemitism_right",
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The letter lands well with most faculty. Three more professors sign on. The Jewish studies department chair calls it 'exactly the right framing.' Progressive student groups are cautiously supportive.",
+              "effects": {
+                "trust": 3,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "faculty",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Include a clause distinguishing between antisemitism and legitimate criticism of Israeli policy — making clear both are real and both matter.",
+          "missionAligned": [
+            "antisemitism_all",
+            "israel_peace"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The nuanced language wins broad support from the faculty senate. It's the first time 'criticism of Israel' and 'antisemitism' have been addressed together on this campus without a blowup.",
+              "effects": {
+                "trust": 4,
+                "donors": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "faculty",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Focus on procedure rather than definition — push for a bias response team instead of trying to define what counts as antisemitism.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The procedural approach avoids controversy but also avoids progress. The response team is formed but has no clear mandate on antisemitism specifically. Faculty interest wanes.",
+              "effects": {
+                "trust": 1
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Push for language that explicitly includes anti-Zionism as a form of antisemitism, citing the IHRA working definition.",
+          "missionAligned": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "israel_peace"
+          ],
+          "outcomes": [
+            {
+              "text": "The IHRA framing rallies pro-Israel faculty but alienates progressive professors. The letter gets signatures but also a counter-letter. Your coalition fractures along predictable lines.",
+              "effects": {
+                "donors": 4,
+                "trust": -3,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "faculty",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_campus_bds",
+      "tag": "Sub-Mission",
+      "title": "BDS Activists Demand Changes to the Anti-Hate Policy",
+      "body": "A coalition of progressive student groups — your natural allies on most issues — has published an open letter demanding that the anti-hate policy explicitly exclude 'criticism of Israel, Zionism, or Israeli state policy' from its definition of antisemitism. They're threatening to withdraw their endorsement if the policy could be used to 'silence Palestinian solidarity.' Your campus coalition is fracturing.",
+      "subMissionId": "sub_campus_coalition",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Meet with the student coalition privately. Acknowledge their concerns, propose adding a free-speech protection clause, and ask them to stay in the coalition.",
+          "missionAligned": [
+            "antisemitism_all",
+            "social_justice"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The private meeting is tense but productive. The students agree to a free-speech clause and stay in the coalition — for now. You've bought time, but the underlying tension isn't resolved.",
+              "effects": {
+                "trust": 3,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Publicly reject their demand. The policy is about fighting hate, not protecting political movements. If they can't support that, they're welcome to leave.",
+          "missionAligned": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "Your firmness earns praise from pro-Israel groups and some faculty. But six progressive student organizations withdraw from the coalition, and the campus newspaper runs a story about 'Jewish org silencing Palestinian voices.'",
+              "effects": {
+                "donors": 3,
+                "trust": -4,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Agree to their exclusion language. Keeping the coalition together is more important than winning the definitional fight.",
+          "missionAligned": [
+            "social_justice",
+            "israel_peace"
+          ],
+          "missionOpposed": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "The coalition holds, but Jewish students are furious. 'You just told the university that some antisemitism is acceptable,' one writes. The Hillel director stops returning your calls.",
+              "effects": {
+                "morale": -3,
+                "trust": -2,
+                "donors": -3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Propose a facilitated dialogue between Jewish students and Palestinian solidarity groups, moderated by a respected faculty member. Let the community work it out together.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The dialogue is emotional but ultimately productive. Both sides agree to language that protects free speech while acknowledging antisemitism as a distinct harm. The process itself becomes a model.",
+              "effects": {
+                "trust": 5,
+                "morale": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_campus_president",
+      "tag": "Sub-Mission",
+      "title": "Meeting with the University President",
+      "body": "The university president has agreed to a private meeting about the anti-hate policy. She's sympathetic but cautious — she doesn't want the university to become a national flashpoint. She tells you: 'I'll sign this, but only if I'm confident it won't blow up in my face. Convince me.'",
+      "subMissionId": "sub_campus_coalition",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Present the broad coalition you've built — faculty, students, community leaders — as proof that the policy has consensus support. Frame signing as low-risk, high-reward.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The president is impressed by the coalition's breadth. 'If this many people are behind it, I can defend it.' She agrees to sign at next month's faculty senate meeting.",
+              "effects": {
+                "trust": 5,
+                "morale": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "president",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Appeal to her personal values. Share stories of Jewish students who've experienced antisemitism on campus and ask her to lead, not follow.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "She's moved by the stories but hesitant about the politics. 'I'll sign a version, but I want my general counsel to review the language first.' It's not a yes, but it's not a no.",
+              "effects": {
+                "trust": 2,
+                "morale": 1
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Be direct: if the university doesn't act, your organization will go public with a report documenting every antisemitic incident the administration has ignored. Frame it as a choice between leading and being led.",
+          "missionAligned": [
+            "antisemitism_left"
+          ],
+          "missionOpposed": [
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The president doesn't appreciate the pressure. 'Threatening me is not how you build partnerships.' She agrees to review the policy — but your relationship is damaged and she may water it down.",
+              "effects": {
+                "trust": -2,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "president",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Offer to co-brand the initiative as a university-community partnership, giving her office shared credit and shared ownership of the rollout.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The co-branding idea appeals to her. 'If we do this together, I can frame it as community engagement, not political capitulation.' She agrees to sign a joint announcement.",
+              "effects": {
+                "trust": 6,
+                "morale": 2,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "president",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_bds_sponsor",
+      "tag": "Sub-Mission",
+      "title": "Finding a Bill Sponsor",
+      "body": "Your legislative contacts have identified two possible sponsors for the anti-BDS bill. State Senator Martinez (R) is a reliable pro-Israel vote but carries baggage from a recent ethics investigation. Assemblymember Chen (D) is a moderate Democrat who'd give the bill bipartisan credibility but wants significant concessions on the bill's scope.",
+      "subMissionId": "sub_anti_bds_bill",
+      "categories": [
+        "all"
+      ],
+      "complexity": 3,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Go with Senator Martinez. He's committed, he has the votes on his side of the aisle, and the ethics issue will blow over. Speed matters more than optics.",
+          "missionAligned": [
+            "israel_security",
+            "antisemitism_left"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Martinez agrees immediately and files the bill the next week. But the Democratic caucus frames it as 'the ethics-scandal senator's distraction bill.' You have a sponsor but a messaging problem.",
+              "effects": {
+                "donors": 3,
+                "trust": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Court Assemblymember Chen. A bipartisan bill is stronger politically and legally. Accept her scope revisions — targeting discriminatory boycotts broadly, not just Israel-specific ones.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "Chen agrees to sponsor a broader anti-discrimination bill that includes the anti-BDS provision. It's less explicitly pro-Israel, but it has bipartisan backing and is harder for the ACLU to oppose.",
+              "effects": {
+                "trust": 4,
+                "donors": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Approach both simultaneously and let them compete for the sponsorship. Whoever commits first gets the bill.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Both legislators feel played. Martinez's chief of staff calls you 'amateurish' and Chen withdraws interest entirely. You've burned two relationships and have no sponsor.",
+              "effects": {
+                "trust": -3,
+                "donors": -2,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Ask your major donors to make the case directly — have three of your biggest contributors call both legislators and make clear the community is watching.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The donor pressure works. Martinez files the bill and Chen agrees to co-sponsor. But the progressive press writes about 'dark money behind anti-BDS legislation' and your methods become part of the story.",
+              "effects": {
+                "donors": 5,
+                "trust": -3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_bds_committee",
+      "tag": "Sub-Mission",
+      "title": "The Committee Hearing",
+      "body": "The anti-BDS bill has its committee hearing tomorrow. The ACLU has submitted written testimony opposing it as a free-speech violation. Three committee members are undecided. You've been invited to testify. Your donors expect you to be forceful; your legal team warns you to be careful.",
+      "subMissionId": "sub_anti_bds_bill",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Testify with a focus on discrimination, not Israel. Frame BDS as economic discrimination against a country, comparable to boycotting businesses owned by other minority groups. Make the ACLU argument look inconsistent.",
+          "missionAligned": [
+            "antisemitism_all",
+            "israel_security"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your framing shifts the debate. Two of the three undecided members vote yes in committee. The ACLU representative looks uncomfortable defending boycotts as 'expression.' The bill advances.",
+              "effects": {
+                "trust": 4,
+                "donors": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "committee",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Be explicitly pro-Israel. Testify about the BDS movement's ties to groups that deny Israel's right to exist. Name names. Make this about existential threats.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "antisemitism_all"
+          ],
+          "outcomes": [
+            {
+              "text": "Your passionate testimony fires up pro-Israel supporters in the gallery. But one undecided member calls it 'advocacy, not testimony' and votes no. The bill still advances 5-3, but the margin is tighter than expected.",
+              "effects": {
+                "donors": 5,
+                "trust": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "committee",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Bring a panel of small business owners who've been affected by boycott campaigns. Let them testify instead of you. Make it personal, not political.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The business owners' testimony is powerful. One tells the committee about losing a catering contract because she's Israeli. All three undecided members vote yes. The bill passes committee unanimously.",
+              "effects": {
+                "trust": 5,
+                "morale": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "committee",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Skip the hearing and work the undecided members privately instead. Committee theatrics are for cameras; votes are won in hallways.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your absence from the hearing is noticed. The ACLU testimony goes unchallenged and one undecided member flips to no. The bill barely passes committee 4-3. Your donors are annoyed you weren't at the table.",
+              "effects": {
+                "trust": -2,
+                "donors": -2
+              },
+              "weight": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_bds_floor",
+      "tag": "Sub-Mission",
+      "title": "The Floor Vote",
+      "body": "The anti-BDS bill is headed to the full legislature for a floor vote. You have a slim majority, but a last-minute amendment has been proposed that would add a 'sunset clause' — the bill expires in two years unless renewed. Supporters see it as a compromise; opponents see it as a way to kill the bill slowly. Three swing votes are watching your reaction.",
+      "subMissionId": "sub_anti_bds_bill",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Accept the sunset clause. A two-year bill that passes is better than a permanent bill that fails. You can fight for renewal when the time comes.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The sunset clause brings two swing votes on board. The bill passes 52-46. Your donors are lukewarm — 'we wanted permanent' — but you delivered a legislative win. Renewal is your next campaign.",
+              "effects": {
+                "trust": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Reject the amendment publicly. The bill must be permanent or it sends the message that fighting BDS is temporary. Rally your base to pressure the swing votes.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your hardline stance energizes your base but alienates the swing votes who wanted the compromise. The bill fails 48-50. You were two votes short. The blame game begins.",
+              "effects": {
+                "donors": -4,
+                "trust": -3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Work behind the scenes — call in favors with both legislators' chiefs of staff. Offer political cover: arrange a separate Israel resolution the amendment sponsor can champion.",
+          "missionAligned": [
+            "israel_security",
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your backroom dealing works. The amendment sponsor withdraws it in exchange for the separate resolution. The bill passes without the sunset clause, 51-47. Your political skills are noted.",
+              "effects": {
+                "trust": 4,
+                "donors": 5
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Propose your own amendment: instead of a sunset clause, add a mandatory review and public report on the bill's impact after two years. Accountability without expiration.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The review-clause compromise satisfies the swing votes without weakening the bill. It passes 54-44 — a comfortable margin. Both sides claim victory, which in politics means you actually won.",
+              "effects": {
+                "trust": 5,
+                "donors": 3,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_tf_governor",
+      "tag": "Sub-Mission",
+      "title": "Pitching the Governor",
+      "body": "You've secured a fifteen-minute meeting with the governor to pitch the bipartisan antisemitism task force. Her chief of staff has warned you: the governor is interested but worried about getting dragged into 'the Israel thing.' She wants to fight antisemitism without touching the third rail of Middle East politics.",
+      "subMissionId": "sub_task_force",
+      "categories": [
+        "all"
+      ],
+      "complexity": 3,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Pitch the task force as a law-enforcement and education initiative — security grants for synagogues, Holocaust education in schools, bias-crime tracking. Keep Israel out of the conversation entirely.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The governor lights up. 'Security and education — that I can sell to both caucuses.' She asks you to draft a proposal by next week. You have her interest.",
+              "effects": {
+                "trust": 4,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "governor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Be honest: antisemitism in America is inseparable from the Israel debate. A task force that ignores it will look like it's avoiding the hardest questions. She needs to be brave.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The governor respects your honesty but pushes back: 'Brave gets you a news cycle. Effective gets you a task force.' She's still interested but wants a narrower scope. You'll need to negotiate.",
+              "effects": {
+                "trust": 2,
+                "donors": -1
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Frame it as the governor's legacy project — 'the first bipartisan antisemitism initiative in the state's history.' Appeal to her ambition, not her caution.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "She likes the legacy angle. 'First in the state? I can work with that.' She tells her chief of staff to find it in the budget. You're moving forward — but the 'legacy' framing means she'll want her name on everything.",
+              "effects": {
+                "trust": 3,
+                "morale": 1,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "governor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Bring data: charts showing the rise in antisemitic incidents statewide, the economic cost, the FBI threat assessments. Let the numbers make the case.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The data is compelling. The governor's policy director starts taking notes. 'Put together a one-pager and send it to my office. I want to move on this before the session ends.' You have a committed partner.",
+              "effects": {
+                "trust": 5,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "governor",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_tf_membership",
+      "tag": "Sub-Mission",
+      "title": "Negotiating the Task Force Membership",
+      "body": "The governor's office has sent you a draft membership list for the task force. It includes three slots you can influence. The Republican caucus wants a prominent pro-Israel advocate. The Democratic caucus wants a progressive civil-rights leader who has been critical of Israel. Both are threatening to pull support if the other side 'dominates.'",
+      "subMissionId": "sub_task_force",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Propose a balanced slate: one from each side, plus a nonpartisan academic who studies antisemitism. Frame the academic as the 'tiebreaker' that keeps the task force credible.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Both caucuses accept the balanced approach. The academic — a well-regarded Georgetown professor — gives the task force intellectual credibility. Neither side got everything, but neither side walked.",
+              "effects": {
+                "trust": 5,
+                "morale": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Lean toward the Republican pick. The pro-Israel advocate will ensure the task force takes seriously the forms of antisemitism your donors care most about.",
+          "missionAligned": [
+            "israel_security",
+            "antisemitism_left"
+          ],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The pro-Israel advocate is appointed. Democrats are furious — 'This isn't bipartisan, it's a pro-Israel talking shop.' Two Democratic members threaten to resign before the first meeting.",
+              "effects": {
+                "donors": 4,
+                "trust": -4,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Lean toward the Democratic pick. Including a progressive critic of Israel signals that the task force won't be used to silence dissent — and that's worth the discomfort.",
+          "missionAligned": [
+            "social_justice",
+            "israel_peace"
+          ],
+          "missionOpposed": [
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "The civil-rights leader's appointment is praised by progressives and condemned by pro-Israel groups. Your donors send worried emails. But the task force has progressive credibility it wouldn't otherwise have.",
+              "effects": {
+                "trust": 3,
+                "morale": 2,
+                "donors": -4
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Suggest expanding the task force by two seats — one for each caucus's pick plus a community representative. More seats, more consensus.",
+          "missionAligned": [
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The expansion is accepted. Both caucuses get their pick, and you get to add a grassroots community leader. The task force is larger than planned but more representative. The governor's staff grumbles about logistics.",
+              "effects": {
+                "trust": 4,
+                "morale": 1
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_tf_announcement",
+      "tag": "Sub-Mission",
+      "title": "The Task Force Announcement",
+      "body": "The governor is ready to announce the antisemitism task force at a press conference next week. But a leaked draft of the announcement has already hit social media. Progressive groups are calling it 'a tool to criminalize criticism of Israel.' Conservative media is calling it 'performative wokeness.' Both narratives are gaining traction. The governor's office is getting nervous.",
+      "subMissionId": "sub_task_force",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Get ahead of the narrative: brief friendly reporters from both sides with embargoed details that counter the leaked draft's distortions. Shape the coverage before the press conference.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your pre-briefing strategy works. Morning-of coverage frames the task force as 'a rare bipartisan effort' rather than a political weapon. The governor's team is relieved. The press conference goes smoothly.",
+              "effects": {
+                "trust": 5,
+                "morale": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "announcement",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Call the governor and tell her to delay the announcement until the social media storm passes. Better to launch quietly than into a firestorm.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The delay signals weakness. Both sides claim they 'killed' the task force. The governor's office is frustrated with you. She'll still do it, but your standing as a trusted partner has taken a hit.",
+              "effects": {
+                "trust": -3,
+                "morale": -2
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Organize a rapid-response coalition: get five prominent voices from across the political spectrum to co-sign a statement supporting the task force before the press conference.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The coalition statement drops at 7 AM. By the time the press conference starts at 10, the narrative has shifted from 'controversial' to 'broadly supported.' The governor is visibly grateful at the podium.",
+              "effects": {
+                "trust": 6,
+                "morale": 4,
+                "donors": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "announcement",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Ignore the noise and let the press conference speak for itself. The task force's merits will be obvious once people hear the details. Don't dignify the critics with a response.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The press conference is competent but the coverage is dominated by the prior controversy. The headline isn't 'Governor Launches Task Force' — it's 'Governor Pushes Ahead Despite Opposition.' The task force launches but with a cloud over it.",
+              "effects": {
+                "trust": 1,
+                "morale": -1
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "announcement",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "inboxScenarios": [
@@ -14157,7 +15113,154 @@ const GAME_DATA = {
     }
   ],
   "tooltips": [],
-  "subMissions": []
+  "subMissions": [
+    {
+      "id": "sub_campus_coalition",
+      "name": "Build a Campus Anti-Hate Coalition",
+      "description": "Rally student groups, faculty, and administration at the local university to adopt a comprehensive anti-hate policy that includes antisemitism — without letting it become a weapon against Palestinian solidarity activism.",
+      "applicableOrgs": [
+        "left"
+      ],
+      "trigger": {
+        "type": "roundEnd",
+        "minRound": 2,
+        "maxRound": 4
+      },
+      "maxProgress": 3,
+      "deadlineRounds": 3,
+      "rewards": {
+        "effects": {
+          "trust": 8,
+          "morale": 5
+        },
+        "cloutEffect": 5,
+        "missionStars": 1,
+        "text": "The university adopts a comprehensive anti-hate policy that explicitly includes antisemitism. Your coalition-building is credited across the community."
+      },
+      "penalties": {
+        "effects": {
+          "trust": -5,
+          "morale": -3
+        },
+        "text": "The anti-hate policy stalls. The university adopts a version that doesn't mention antisemitism, and your organization looks ineffective."
+      },
+      "checkpoints": [
+        {
+          "id": "faculty",
+          "name": "Secure Faculty Endorsement",
+          "description": "Convince faculty members to publicly support the policy."
+        },
+        {
+          "id": "bds_nav",
+          "name": "Navigate the BDS Complication",
+          "description": "Handle the intersection of anti-Zionism and antisemitism in the policy language without losing progressive allies."
+        },
+        {
+          "id": "president",
+          "name": "University President Signs",
+          "description": "Get the university president to formally adopt and sign the policy."
+        }
+      ]
+    },
+    {
+      "id": "sub_anti_bds_bill",
+      "name": "Pass State Anti-BDS Legislation",
+      "description": "Push a bill through the state legislature that bars state contractors from boycotting Israel. Counter civil-liberties opposition without alienating free-speech conservatives or triggering a progressive backlash.",
+      "applicableOrgs": [
+        "right"
+      ],
+      "trigger": {
+        "type": "roundEnd",
+        "minRound": 2,
+        "maxRound": 4
+      },
+      "maxProgress": 3,
+      "deadlineRounds": 3,
+      "rewards": {
+        "effects": {
+          "donors": 10,
+          "trust": 3
+        },
+        "cloutEffect": 8,
+        "budgetEffect": 15,
+        "text": "The anti-BDS bill passes with your organization's name prominently attached. Major donors are thrilled and pro-Israel groups celebrate your leadership."
+      },
+      "penalties": {
+        "effects": {
+          "donors": -6,
+          "trust": -4
+        },
+        "cloutEffect": -5,
+        "text": "The bill dies in committee. Your donors question why they fund an organization that can't deliver on its core legislative agenda."
+      },
+      "checkpoints": [
+        {
+          "id": "sponsor",
+          "name": "Secure the Bill Sponsor",
+          "description": "Lock in a committed legislative sponsor and co-sponsors for the bill."
+        },
+        {
+          "id": "committee",
+          "name": "Survive the Committee Hearing",
+          "description": "Testify effectively and counter ACLU opposition without alienating civil-liberties allies."
+        },
+        {
+          "id": "floor_vote",
+          "name": "Win the Floor Vote",
+          "description": "Whip enough votes for passage while managing last-minute amendments."
+        }
+      ]
+    },
+    {
+      "id": "sub_task_force",
+      "name": "Launch a Bipartisan Antisemitism Task Force",
+      "description": "Convince the governor to create a state-level antisemitism task force with appointees from across the political spectrum. Navigate both parties' attempts to hijack it for their own messaging.",
+      "applicableOrgs": [
+        "center"
+      ],
+      "trigger": {
+        "type": "roundEnd",
+        "minRound": 2,
+        "maxRound": 4
+      },
+      "maxProgress": 3,
+      "deadlineRounds": 3,
+      "rewards": {
+        "effects": {
+          "trust": 10,
+          "morale": 4
+        },
+        "cloutEffect": 7,
+        "missionStars": 1,
+        "text": "The governor announces the task force with your organization as the convening partner. Both parties praise it as a model for bipartisan cooperation."
+      },
+      "penalties": {
+        "effects": {
+          "trust": -6,
+          "morale": -4
+        },
+        "cloutEffect": -4,
+        "text": "The task force collapses before launch. Both parties blame each other, and your organization is seen as unable to bridge the divide."
+      },
+      "checkpoints": [
+        {
+          "id": "governor",
+          "name": "Secure the Governor's Interest",
+          "description": "Get a private meeting with the governor and pitch the task force concept."
+        },
+        {
+          "id": "membership",
+          "name": "Negotiate the Membership List",
+          "description": "Propose a balanced membership that both parties can accept without feeling outnumbered."
+        },
+        {
+          "id": "announcement",
+          "name": "Survive the Public Announcement",
+          "description": "Manage the media rollout so neither side torpedoes the task force before it starts."
+        }
+      ]
+    }
+  ]
 };
 /* GAME_DATA_END */
 
@@ -15633,10 +16736,52 @@ function beginRound(){
   afterCoalitionCheck();
 }
 
-// Called after coalition offer is accepted/declined (or skipped)
+// Called after coalition offer is accepted/declined (or skipped).
+// Now also checks for pending sub-mission offers before continuing.
 function afterCoalitionCheck(){
-  // Gazette headlines now go to ticker, not popup
-  endRoundContinue();
+  var smOffers = checkSubMissionOffers();
+  if (smOffers.length > 0) {
+    showSubMissionOffer(smOffers[0]);
+  } else {
+    endRoundContinue();
+  }
+}
+
+function showSubMissionOffer(sm) {
+  var el = document.getElementById('game-inner');
+  if (!el) { endRoundContinue(); return; }
+  el.innerHTML =
+    '<div style="max-width:600px;margin:40px auto;padding:28px;background:var(--white);border:2px solid var(--ink)">' +
+    '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">New Sub-Mission Available</div>' +
+    '<h2 style="font-family:Merriweather,serif;font-size:20px;margin-bottom:10px">' + esc(sm.name) + '</h2>' +
+    '<p style="font-size:14px;line-height:1.7;color:var(--muted);margin-bottom:18px">' + esc(sm.description) + '</p>' +
+    '<div style="margin-bottom:18px;padding:14px;background:#f9f7f2;border:1px solid var(--border)">' +
+    '<div style="font-size:11px;font-weight:700;margin-bottom:8px">Checkpoints</div>' +
+    (sm.checkpoints || []).map(function(cp) {
+      return '<div style="font-size:12px;margin-bottom:4px">⬜ <strong>' + esc(cp.name) + '</strong> — ' + esc(cp.description) + '</div>';
+    }).join('') +
+    '<div style="margin-top:10px;font-size:11px;color:var(--muted)">Deadline: ' + (sm.deadlineRounds || 3) + ' rounds to complete</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px">' +
+    '<button class="btn btn-primary" onclick="acceptSubMissionFromOffer(\'' + sm.id + '\')">Accept Sub-Mission</button>' +
+    '<button class="btn btn-secondary" onclick="declineSubMissionFromOffer(\'' + sm.id + '\')">Decline</button>' +
+    '</div>' +
+    '</div>';
+}
+
+function acceptSubMissionFromOffer(smId) {
+  acceptSubMissionOffer(smId);
+  // Check for more offers
+  var more = checkSubMissionOffers();
+  if (more.length > 0) showSubMissionOffer(more[0]);
+  else endRoundContinue();
+}
+
+function declineSubMissionFromOffer(smId) {
+  declineSubMissionOffer(smId);
+  var more = checkSubMissionOffers();
+  if (more.length > 0) showSubMissionOffer(more[0]);
+  else endRoundContinue();
 }
 
 function endRoundContinue(){
@@ -16659,6 +17804,12 @@ function chooseScenario(sid,idx){
   checkCoalitionViolations(c);
   checkCoalitionStrikes(c);
   checkScenarioSubMissionTrigger(s.id, idx);
+  // Sub-mission checkpoint advancement/regression from outcome
+  if (outcome.subMissionCheckpoint) {
+    var smc = outcome.subMissionCheckpoint;
+    if (smc.action === 'advance') advanceSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+    else if (smc.action === 'damage') regressSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+  }
   G.history.push('EVENT: '+s.title+' → '+c.text.substring(0,55)+'...');
   updateHUD();
   if(checkFailure()) return;
@@ -16823,6 +17974,12 @@ function chooseInbox(sid,idx){
   recordEvent('choiceMade', {scenarioId:s.id, choiceIndex:idx});
   checkCoalitionViolations(c);
   checkCoalitionStrikes(c);
+  // Sub-mission checkpoint advancement/regression from inbox outcome
+  if (outcome.subMissionCheckpoint) {
+    var smc = outcome.subMissionCheckpoint;
+    if (smc.action === 'advance') advanceSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+    else if (smc.action === 'damage') regressSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+  }
   // Remove from inbox messages (answered)
   G.inboxMessages = (G.inboxMessages||[]).filter(function(m){return m.id!==s.id});
   updateInboxPanel();
@@ -17468,6 +18625,10 @@ function restartSameCharacter(){
   G.activeCoalitions = [];
   G.declinedCoalitions = [];
   G.brokenCoalitions = [];
+  G.activeSubMissions = [];
+  G.completedSubMissions = [];
+  G.failedSubMissions = [];
+  G.declinedSubMissions = [];
   G.statHistory = [];
   G.notableMoments = [];
   G.advisorChoiceLog = [];

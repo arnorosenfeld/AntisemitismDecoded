@@ -449,13 +449,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-phone-tab:hover:not(.active) { background: #d5e1ea; }
 
 /* Social post cards inside compose tab */
-.social-post-card { padding: 5px 7px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.12s; font-size: 8px; line-height: 1.35; color: #333; }
+.social-post-card { padding: 7px 8px; border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background 0.12s; font-size: 9px; line-height: 1.4; color: #333; }
 .social-post-card:hover { background: rgba(0,0,0,0.05); }
-.social-post-card .post-text { margin-bottom: 2px; }
-.social-post-card .post-effects { font-size: 7px; color: #888; }
-.social-post-card .post-chip { display: inline-block; padding: 0 3px; border-radius: 2px; font-size: 6px; font-weight: 700; margin-right: 2px; }
-.social-post-card .post-chip-pos { background: #d4ead4; color: #1a4a1a; }
-.social-post-card .post-chip-neg { background: #ead4d4; color: #4a1a1a; }
+.social-post-card .post-text { }
 
 /* Ring animation — used by inbox popup on new messages */
 @keyframes deskRingOnce { 0%{transform:rotate(0)} 5%{transform:rotate(-5deg)} 10%{transform:rotate(5deg)} 15%{transform:rotate(-3deg)} 20%{transform:rotate(3deg)} 25%,100%{transform:rotate(0)} }
@@ -16786,6 +16782,7 @@ let G = {
   coalitionStrikes:{}, // {coalitionId: strikeCount}
   // Phone: landline calls + social media
   callsThisRound: 0,
+  usedCallIds: [],  // proactive conversation IDs used this game (no repeats)
   postsThisRound: 0,
   // Sub-mission system
   activeSubMissions: [],    // [{id, progress, activatedRound, checkpointStatus: {cpId: 'pending'|'complete'|'failed'}}]
@@ -18968,7 +18965,22 @@ function distributeScenarios() {
   // How many scenarios to pre-pick (one per AP remaining + a couple extra)
   var needed = (G.apRemaining || 0) + 2;
   var picked = [];
-  for (var i = 0; i < needed; i++) {
+
+  // Priority: ensure at least one sub-mission-tagged scenario per active sub-mission
+  // (if available and not already used). This guarantees sub-mission content surfaces.
+  (G.activeSubMissions || []).forEach(function(smEntry) {
+    if (picked.length >= needed) return;
+    var smScenarios = GAME_DATA.scenarios.filter(function(s) {
+      return s.subMissionId === smEntry.id && !G.usedScenarioIds.includes(s.id) && !picked.includes(s.id) && scenarioApplies(s);
+    });
+    if (smScenarios.length > 0) {
+      var smPick = smScenarios[Math.floor(Math.random() * smScenarios.length)];
+      picked.push(smPick.id);
+    }
+  });
+
+  // Fill remaining slots from the general pool
+  for (var i = picked.length; i < needed; i++) {
     var eligible = GAME_DATA.scenarios.filter(function(s) {
       return !G.usedScenarioIds.includes(s.id) && !picked.includes(s.id) && scenarioApplies(s);
     });
@@ -19053,18 +19065,9 @@ function renderMain(){
   inboxScreenHtml += '<div id="phone-tab-compose" style="flex:1;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">';
   if (availPosts.length > 0) {
     availPosts.forEach(function(post) {
-      var decay = GAME_DATA.config.socialMediaDecayRate || 0.5;
-      var posDecay = Math.pow(decay, G.postsThisRound || 0);
-      var chipHtml = '';
-      GAME_DATA.stats.forEach(function(stat) {
-        var pos = (post.effects || {})[stat.id] || 0;
-        if (pos > 0) { var d = Math.round(pos * posDecay); if (d > 0) chipHtml += '<span class="post-chip post-chip-pos">+' + d + '</span>'; }
-        var neg = (post.negativeEffects || {})[stat.id] || 0;
-        if (neg < 0) chipHtml += '<span class="post-chip post-chip-neg">' + neg + '</span>';
-      });
+      // Show full post text, no effect preview — let the player post and see what happens
       inboxScreenHtml += '<div class="social-post-card" onclick="event.stopPropagation();executeSocialPost(\'' + post.id + '\')">';
-      inboxScreenHtml += '<div class="post-text">' + esc(post.text.length > 80 ? post.text.substring(0, 77) + '...' : post.text) + '</div>';
-      if (chipHtml) inboxScreenHtml += '<div class="post-effects">' + chipHtml + '</div>';
+      inboxScreenHtml += '<div class="post-text">' + esc(post.text) + '</div>';
       inboxScreenHtml += '</div>';
     });
   } else {
@@ -19191,8 +19194,19 @@ function renderScenario(s){
   const advisorHtml = renderAdvisorQuotes(s);
   // Reset advisor bonus multiplier for new scenario
   G.currentAdvisorBonusMultiplier = 1.0;
+  // Sub-mission banner: if this scenario is tied to an active sub-mission, show it
+  var smBanner = '';
+  if (s.subMissionId) {
+    var smDef = (GAME_DATA.subMissions || []).find(function(sm) { return sm.id === s.subMissionId; });
+    if (smDef) {
+      var smEntry = (G.activeSubMissions || []).find(function(a) { return a.id === s.subMissionId; });
+      var prog = smEntry ? smEntry.progress + '/' + (smDef.maxProgress || 3) : '';
+      smBanner = '<div style="background:#fffbeb;border:1px solid #f5c542;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#92400e"><strong>\ud83d\udccb Sub-Mission:</strong> ' + esc(smDef.name) + (prog ? ' <span style="color:#b8860b">(' + prog + ')</span>' : '') + '</div>';
+    }
+  }
   document.getElementById('game-inner').innerHTML=`
     <div class="event-card">
+      ${smBanner}
       <span class="event-tag">${s.tag}</span>
       <div class="event-title">${s.title}</div>
       <div class="event-body">${s.body}</div>
@@ -19320,10 +19334,18 @@ function chooseScenario(sid,idx){
   checkCoalitionStrikes(c);
   checkScenarioSubMissionTrigger(s.id, idx);
   // Sub-mission checkpoint advancement/regression from outcome
+  var smChip = '';
   if (outcome.subMissionCheckpoint) {
     var smc = outcome.subMissionCheckpoint;
-    if (smc.action === 'advance') advanceSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
-    else if (smc.action === 'damage') regressSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+    var smDefForChip = (GAME_DATA.subMissions || []).find(function(sm) { return sm.id === smc.subMissionId; });
+    var smNameForChip = smDefForChip ? smDefForChip.name : smc.subMissionId;
+    if (smc.action === 'advance') {
+      advanceSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+      smChip = '<span class="chip chip-pos">\u2705 Sub-mission advanced</span>';
+    } else if (smc.action === 'damage') {
+      regressSubMissionCheckpoint(smc.subMissionId, smc.checkpointId);
+      smChip = '<span class="chip chip-neg">\u274c Sub-mission setback</span>';
+    }
   }
   G.history.push('EVENT: '+s.title+' → '+c.text.substring(0,55)+'...');
   updateHUD();
@@ -19340,9 +19362,21 @@ function chooseScenario(sid,idx){
     contextParts.push(G._lastPoliticalContext);
     G._lastPoliticalContext = null;
   }
+  // Sub-mission context
+  if (outcome.subMissionCheckpoint) {
+    var smcDef = (GAME_DATA.subMissions || []).find(function(sm) { return sm.id === outcome.subMissionCheckpoint.subMissionId; });
+    if (smcDef) {
+      var smcEntry = (G.activeSubMissions || []).find(function(a) { return a.id === smcDef.id; });
+      var smcProg = smcEntry ? smcEntry.progress + '/' + (smcDef.maxProgress || 3) : '';
+      var smcNote = outcome.subMissionCheckpoint.action === 'advance'
+        ? '<strong>\ud83d\udccb ' + esc(smcDef.name) + ':</strong> checkpoint advanced. Progress: ' + smcProg
+        : '<strong>\ud83d\udccb ' + esc(smcDef.name) + ':</strong> setback. Progress: ' + smcProg;
+      contextParts.push(smcNote);
+    }
+  }
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(s, c, outcome, false);
-  showOutcome(s.title, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips, contextWithPol, function(){
+  showOutcome(s.title, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips+smChip, contextWithPol, function(){
     if (afterConv) {
       showConversation(afterConv.id, function(){ processQueue(); });
     } else {
@@ -20818,16 +20852,22 @@ function executeSocialPost(postId) {
   updateHUD();
   if (checkFailure()) return;
 
-  // Toast notification
-  var toastMsg = '📱 Posted: "' + esc(post.text.substring(0, 60)) + '..."';
-  if (chips) toastMsg += '<br>' + chips;
-  showCoachingWarning(toastMsg, 'info');
+  // Simple toast (not Avi's coaching system)
+  var div = document.createElement('div');
+  div.className = 'game-notification notif-toast';
+  div.style.background = '#eef2ff';
+  div.style.color = '#1a3a6b';
+  div.style.borderLeft = '4px solid #6366f1';
+  div.innerHTML = '<strong>📱 Posted</strong><br><span style="font-size:11px;color:#555">"' + esc(post.text.length > 80 ? post.text.substring(0, 77) + '...' : post.text) + '"</span>' + (chips ? '<br>' + chips : '');
+  document.body.appendChild(div);
+  if (typeof positionNotification === 'function') positionNotification(div);
+  setTimeout(function() { if (div.parentNode) div.remove(); }, 3500);
 
-  // Avi warning after N posts
+  // Avi warning after N posts (this one IS from Avi)
   if (G.postsThisRound >= warnAfter && G.postsThisRound === warnAfter) {
     setTimeout(function() {
       showCoachingWarning('Careful — posting too much in one round tends to backfire. The positive impact shrinks but the negatives don\'t.', 'yellow');
-    }, 1500);
+    }, 1800);
   }
 
   // Refresh the popup to show updated state
@@ -20840,8 +20880,10 @@ function executeSocialPost(postId) {
 function getAvailableCalls() {
   var maxCalls = GAME_DATA.config.maxCallsPerRound || 1;
   if ((G.callsThisRound || 0) >= maxCalls) return [];
+  var usedIds = G.usedCallIds || [];
   var convs = (GAME_DATA.conversations || []).filter(function(conv) {
     if (!conv.trigger || conv.trigger.type !== 'proactive') return false;
+    if (usedIds.includes(conv.id)) return false; // no repeats within a game
     if (conv.callableBy && conv.callableBy.length > 0 && !conv.callableBy.includes(G.orgId)) return false;
     if (conv.applicableOrgs && conv.applicableOrgs.length > 0 && !conv.applicableOrgs.includes(G.orgId)) return false;
     return true;
@@ -20924,6 +20966,8 @@ function closeCallMenu() {
 
 function startProactiveCall(convId) {
   G.callsThisRound = (G.callsThisRound || 0) + 1;
+  if (!G.usedCallIds) G.usedCallIds = [];
+  G.usedCallIds.push(convId); // prevent this conversation from appearing again
   showConversation(convId, function() {
     renderMain();
   });

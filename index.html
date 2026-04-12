@@ -18124,6 +18124,8 @@ function updateSubMissionProgress(subMissionId, delta) {
   entry.progress = Math.max(0, Math.min(sm.maxProgress || 3, entry.progress + delta));
   if (entry.progress >= (sm.maxProgress || 3)) {
     completeSubMission(subMissionId);
+  } else {
+    updateHUD(); // Refresh the strip badge to show new progress
   }
 }
 

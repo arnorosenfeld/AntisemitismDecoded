@@ -290,6 +290,7 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <button class="nav-item" onclick="showPanel('missions', this)">🎯 Missions</button>
 
         <div class="nav-section">Gameplay</div>
+        <button class="nav-item" onclick="showPanel('submissions', this)">🎯 Sub-Missions</button>
         <button class="nav-item" onclick="showPanel('scenarios', this)">📰 Scenarios / Events</button>
         <button class="nav-item" onclick="showPanel('inbox', this)">📬 Inbox Scenarios</button>
         <button class="nav-item" onclick="showPanel('conversations', this)">💬 Conversations</button>
@@ -515,6 +516,13 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
           <button class="add-btn" onclick="addMission()">+ Add New Mission</button>
         </div>
 
+        <!-- SUB-MISSIONS PANEL -->
+        <div id="panel-submissions" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Sub-missions are active campaigns the player pursues alongside the main scenario loop — each with checkpoints, a deadline, and success/failure outcomes. Tagged scenarios, inbox messages, social posts, and call topics only appear when the sub-mission is active.</p>
+          <div class="item-list" id="submissions-list"></div>
+          <button class="add-btn" onclick="addSubMission()">+ Add Sub-Mission</button>
+        </div>
+
         <!-- SCENARIOS PANEL -->
         <div id="panel-scenarios" class="panel">
           <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Scenarios are the main event cards triggered by player actions. Each choice has three-tier mission alignment (aligned/opposed/neutral), and scenarios target political categories — the mission IDs for which that choice counts as aligned. If the list is empty, the choice is never mission-aligned.</p>
@@ -525,6 +533,10 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
               <option value="progressive">Progressive</option>
               <option value="centrist">Centrist</option>
               <option value="conservative">Conservative</option>
+            </select>
+            <select id="sc-filter-sm" onchange="filterScenarios()" style="font-size:11px;padding:5px">
+              <option value="">All Sub-Missions</option>
+              <option value="_none">No Sub-Mission</option>
             </select>
             <select id="sc-filter-cplx" onchange="filterScenarios()" style="font-size:11px;padding:5px">
               <option value="">All Complexity</option>
@@ -13701,7 +13713,7 @@ function showToast(msg, type) {
 // ═══ PANEL NAVIGATION ═══
 const PANEL_TITLES = {
   github: 'Dashboard', config: 'Global Config', traits: 'Character Traits', avatars: 'Emoji Avatars',
-  orgs: 'Organizations', missions: 'Missions',
+  orgs: 'Organizations', missions: 'Missions', submissions: 'Sub-Missions',
   scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios', segments: 'Segments',
   scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration', politics: 'Political Mechanics',
   advisors: 'Characters', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
@@ -13714,6 +13726,7 @@ var PANEL_POPULATORS = {
   traits: function(){ populateTraits(); },
   avatars: function(){ populateAvatars(); },
   orgs: function(){ populateOrgs(); },
+  submissions: function(){ if(typeof populateSubMissions==='function') populateSubMissions(); },
   missions: function(){ populateMissions(); },
   scenarios: function(){ populateScenarios(); },
   inbox: function(){ populateInbox(); },
@@ -14112,8 +14125,144 @@ function addMission() {
 }
 
 
+// ═══ SUB-MISSIONS ═══
+function populateSubMissions() {
+  if (!GD.subMissions) GD.subMissions = [];
+  var list = document.getElementById('submissions-list');
+  if (!list) return;
+  list.innerHTML = GD.subMissions.map(function(sm, i) {
+    // Count tagged content across all panels
+    var taggedScenarios = (GD.scenarios || []).filter(function(s) { return s.subMissionId === sm.id; }).length;
+    var taggedInbox = (GD.inboxScenarios || []).filter(function(s) { return s.subMissionId === sm.id; }).length;
+    var taggedPosts = (GD.socialMediaPosts || []).filter(function(p) { return p.subMissionId === sm.id; }).length;
+    var taggedConvs = (GD.conversations || []).filter(function(c) { return c.subMissionId === sm.id; }).length;
+    var contentSummary = taggedScenarios + ' scenarios, ' + taggedInbox + ' inbox, ' + taggedPosts + ' posts, ' + taggedConvs + ' convs';
+    var checkpointList = (sm.checkpoints || []).map(function(cp) { return esc(cp.name); }).join(', ');
+    var orgs = (sm.applicableOrgs || []).join(', ');
+
+    return '<div class="item-card" id="sm-card-' + i + '" onclick="toggleEdit(\'sm\',' + i + ')">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<div><strong>' + esc(sm.name) + '</strong>' +
+        '<div style="font-size:10px;color:var(--muted)">' + esc(sm.id) + ' · orgs: ' + orgs + ' · deadline: ' + (sm.deadlineRounds || '?') + ' rd · ' + (sm.checkpoints || []).length + ' checkpoints</div>' +
+        '<div style="font-size:10px;color:#b8860b;margin-top:2px">' + contentSummary + '</div></div>' +
+        '<span style="font-size:18px;color:var(--muted)">▸</span>' +
+      '</div></div>' +
+      '<div class="edit-form" id="sm-edit-' + i + '">' +
+        '<div class="form-row"><div class="form-group"><label>ID</label><input id="sm-id-' + i + '" value="' + esc(sm.id) + '" /></div>' +
+        '<div class="form-group"><label>Name</label><input id="sm-name-' + i + '" value="' + esc(sm.name) + '" /></div></div>' +
+        '<div class="form-group"><label>Description</label><textarea id="sm-desc-' + i + '" rows="3">' + esc(sm.description || '') + '</textarea></div>' +
+        '<div class="form-row three">' +
+          '<div class="form-group"><label>Applicable Orgs (comma-sep)</label><input id="sm-orgs-' + i + '" value="' + (sm.applicableOrgs || []).join(',') + '" /></div>' +
+          '<div class="form-group"><label>Max Progress</label><input type="number" id="sm-maxprog-' + i + '" value="' + (sm.maxProgress || 3) + '" min="1" /></div>' +
+          '<div class="form-group"><label>Deadline (rounds)</label><input type="number" id="sm-deadline-' + i + '" value="' + (sm.deadlineRounds || 3) + '" min="1" /></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label>Trigger Type</label><select id="sm-trigtype-' + i + '"><option value="roundEnd" ' + ((sm.trigger && sm.trigger.type === 'roundEnd') ? 'selected' : '') + '>Round End Offer</option><option value="scenarioChoice" ' + ((sm.trigger && sm.trigger.type === 'scenarioChoice') ? 'selected' : '') + '>Scenario Choice</option></select></div>' +
+          '<div class="form-group"><label>Min Round (roundEnd)</label><input type="number" id="sm-minround-' + i + '" value="' + ((sm.trigger && sm.trigger.minRound) || 1) + '" /></div>' +
+          '<div class="form-group"><label>Max Round (roundEnd)</label><input type="number" id="sm-maxround-' + i + '" value="' + ((sm.trigger && sm.trigger.maxRound) || 6) + '" /></div>' +
+        '</div>' +
+        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Checkpoints</h3>' +
+          '<div id="sm-checkpoints-' + i + '">' + (sm.checkpoints || []).map(function(cp, ci) {
+            return '<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">' +
+              '<input style="width:120px" placeholder="ID" id="sm-cp-id-' + i + '-' + ci + '" value="' + esc(cp.id) + '" />' +
+              '<input style="flex:1" placeholder="Name" id="sm-cp-name-' + i + '-' + ci + '" value="' + esc(cp.name) + '" />' +
+              '<input style="flex:2" placeholder="Description" id="sm-cp-desc-' + i + '-' + ci + '" value="' + esc(cp.description || '') + '" />' +
+            '</div>';
+          }).join('') + '</div>' +
+        '</div>' +
+        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Reward Effects (on success)</h3>' +
+          '<div class="form-row three">' + (GD.stats || []).map(function(s) {
+            return '<div class="form-group"><label>' + esc(s.label) + '</label><input type="number" id="sm-rew-' + i + '-' + s.id + '" value="' + ((sm.rewards && sm.rewards.effects && sm.rewards.effects[s.id]) || 0) + '" /></div>';
+          }).join('') + '</div>' +
+          '<div class="form-group"><label>Reward Text</label><input id="sm-rewtxt-' + i + '" value="' + esc((sm.rewards && sm.rewards.text) || '') + '" /></div>' +
+        '</div>' +
+        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Penalty Effects (on failure)</h3>' +
+          '<div class="form-row three">' + (GD.stats || []).map(function(s) {
+            return '<div class="form-group"><label>' + esc(s.label) + '</label><input type="number" id="sm-pen-' + i + '-' + s.id + '" value="' + ((sm.penalties && sm.penalties.effects && sm.penalties.effects[s.id]) || 0) + '" /></div>';
+          }).join('') + '</div>' +
+          '<div class="form-group"><label>Penalty Text</label><input id="sm-pentxt-' + i + '" value="' + esc((sm.penalties && sm.penalties.text) || '') + '" /></div>' +
+        '</div>' +
+        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Tagged Content (read-only summary)</h3>' +
+          '<div style="font-size:11px;color:var(--muted)">' + contentSummary + '. Create or tag content in the Scenarios, Inbox, or Conversations panels using the subMissionId dropdown.</div>' +
+        '</div>' +
+        '<div class="form-row" style="margin-top:14px">' +
+          '<button class="btn btn-primary btn-sm" onclick="saveSubMission(' + i + ')">Save</button>' +
+          '<button class="btn btn-sm" style="background:#dc2626;color:#fff" onclick="deleteSubMission(' + i + ')">Delete</button>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function saveSubMission(i) {
+  var sm = GD.subMissions[i];
+  if (!sm) return;
+  sm.id = document.getElementById('sm-id-' + i)?.value || sm.id;
+  sm.name = document.getElementById('sm-name-' + i)?.value || sm.name;
+  sm.description = document.getElementById('sm-desc-' + i)?.value || '';
+  sm.applicableOrgs = (document.getElementById('sm-orgs-' + i)?.value || '').split(',').map(function(s){return s.trim()}).filter(Boolean);
+  sm.maxProgress = parseInt(document.getElementById('sm-maxprog-' + i)?.value) || 3;
+  sm.deadlineRounds = parseInt(document.getElementById('sm-deadline-' + i)?.value) || 3;
+  var trigType = document.getElementById('sm-trigtype-' + i)?.value || 'roundEnd';
+  sm.trigger = { type: trigType };
+  if (trigType === 'roundEnd') {
+    sm.trigger.minRound = parseInt(document.getElementById('sm-minround-' + i)?.value) || 1;
+    sm.trigger.maxRound = parseInt(document.getElementById('sm-maxround-' + i)?.value) || 6;
+  }
+  // Checkpoints
+  sm.checkpoints = [];
+  for (var ci = 0; ci < 20; ci++) {
+    var cpId = document.getElementById('sm-cp-id-' + i + '-' + ci);
+    if (!cpId) break;
+    sm.checkpoints.push({ id: cpId.value, name: document.getElementById('sm-cp-name-' + i + '-' + ci)?.value || '', description: document.getElementById('sm-cp-desc-' + i + '-' + ci)?.value || '' });
+  }
+  // Rewards
+  sm.rewards = sm.rewards || {};
+  sm.rewards.effects = {};
+  (GD.stats || []).forEach(function(s) { var v = parseInt(document.getElementById('sm-rew-' + i + '-' + s.id)?.value) || 0; if (v) sm.rewards.effects[s.id] = v; });
+  sm.rewards.text = document.getElementById('sm-rewtxt-' + i)?.value || '';
+  // Penalties
+  sm.penalties = sm.penalties || {};
+  sm.penalties.effects = {};
+  (GD.stats || []).forEach(function(s) { var v = parseInt(document.getElementById('sm-pen-' + i + '-' + s.id)?.value) || 0; if (v) sm.penalties.effects[s.id] = v; });
+  sm.penalties.text = document.getElementById('sm-pentxt-' + i)?.value || '';
+
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  setStatus('Sub-mission saved.', 'success');
+  populateSubMissions();
+}
+
+function deleteSubMission(i) {
+  if (!confirm('Delete this sub-mission? Tagged content will remain in the scenario/inbox panels but will become unlinked.')) return;
+  GD.subMissions.splice(i, 1);
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  populateSubMissions();
+}
+
+function addSubMission() {
+  if (!GD.subMissions) GD.subMissions = [];
+  GD.subMissions.push({
+    id: 'sub_' + Date.now(),
+    name: 'New Sub-Mission',
+    description: '',
+    applicableOrgs: ['left', 'right', 'center'],
+    trigger: { type: 'roundEnd', minRound: 2, maxRound: 4 },
+    maxProgress: 3,
+    deadlineRounds: 3,
+    rewards: { effects: {}, text: '' },
+    penalties: { effects: {}, text: '' },
+    checkpoints: [
+      { id: 'cp1', name: 'Checkpoint 1', description: '' },
+      { id: 'cp2', name: 'Checkpoint 2', description: '' },
+      { id: 'cp3', name: 'Checkpoint 3', description: '' }
+    ]
+  });
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  populateSubMissions();
+}
+
 // ═══ SCENARIOS ═══ (#2,6,7: categories, 3-tier alignment, multi-outcomes, complexity)
 function populateScenarios() {
+  refreshSubMissionFilters();
   var scenarios = GD.scenarios || [];
   var grouped = document.getElementById('sc-view-grouped')?.checked;
   var html = '';
@@ -14163,13 +14312,29 @@ function scenarioMatchesFilters(s) {
   if(search && !(s.title||'').toLowerCase().includes(search) && !(s.id||'').toLowerCase().includes(search)) return false;
   var catFilter = document.getElementById('sc-filter-cat')?.value||'';
   if(catFilter && !(s.categories||['all']).includes(catFilter)) return false;
-  // Level filter removed in the 3-org reduction.
+  var smFilter = document.getElementById('sc-filter-sm')?.value||'';
+  if(smFilter === '_none' && s.subMissionId) return false;
+  if(smFilter && smFilter !== '_none' && s.subMissionId !== smFilter) return false;
   var cplxFilter = document.getElementById('sc-filter-cplx')?.value||'';
   if(cplxFilter && (s.complexity||3) !== parseInt(cplxFilter)) return false;
   var groupFilter = document.getElementById('sc-filter-group')?.value||'';
   if(groupFilter === 'grouped' && !s.groupId) return false;
   if(groupFilter === 'standalone' && s.groupId) return false;
   return true;
+}
+
+// Populate the sub-mission filter dropdown dynamically from GD.subMissions
+function refreshSubMissionFilters() {
+  ['sc-filter-sm'].forEach(function(id) {
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    var val = sel.value;
+    sel.innerHTML = '<option value="">All Sub-Missions</option><option value="_none">No Sub-Mission</option>';
+    (GD.subMissions || []).forEach(function(sm) {
+      sel.innerHTML += '<option value="' + esc(sm.id) + '">' + esc(sm.name) + '</option>';
+    });
+    sel.value = val;
+  });
 }
 
 function filterScenarios() {
@@ -14194,6 +14359,7 @@ function renderScenarioCard(s, i, prefix) {
   const cats = (s.categories||['all']).join(', ');
   const cplx = s.complexity||3;
   var badges = esc(s.tag||'') + ' · ' + cats + ' · ★' + cplx + ' · ' + (s.choices||[]).length + ' choices';
+  if(s.subMissionId) badges += ' · <span style="color:#b8860b;font-weight:600">sub: '+esc(s.subMissionId)+'</span>';
   if(s.groupId) badges += ' · <span style="color:#6366f1;font-weight:600">group: '+esc(s.groupId)+'</span>';
   if(s.politicalRange) {
     var pr = s.politicalRange;

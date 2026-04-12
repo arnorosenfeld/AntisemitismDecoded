@@ -221,7 +221,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .badge-left   { background: #d4ead4; color: #1a4a1a; }
 .badge-right  { background: #ead4d4; color: #4a1a1a; }
 .badge-center { background: #d4d8ea; color: #1a2a5a; }
-.badge-apolitical { background: #eae8d4; color: #4a3a1a; }
 .card h3 { font-size: 14px; margin-bottom: 5px; }
 .card p { font-size: 12px; margin: 0; line-height: 1.6; }
 .card-traits { margin-top: 10px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 3px; }
@@ -1561,21 +1560,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   </div>
 </div>
 
-<!-- PROMOTION -->
-<div id="promo-screen" class="screen">
-  <div class="masthead">
-    <h1>You've Been <span>Promoted</span></h1>
-    <p class="masthead-sub">Choose your next organization</p>
-  </div>
-  <div class="container page-pad" style="padding-top:0">
-    <div class="section-header">
-      <h2 id="promo-heading">A Larger Stage Awaits</h2>
-      <p id="promo-intro">Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you.</p>
-    </div>
-    <div class="promo-list" id="promo-list"></div>
-    <div class="nav-row" style="margin-top:22px"><button class="btn btn-primary" id="promo-next-btn" disabled onclick="confirmPromoOrg()">Next →</button></div>
-  </div>
-</div>
+<!-- PROMOTION screen removed in the 3-org reduction; see archive/promotion-system.md -->
 
 
 <script>
@@ -1773,7 +1758,7 @@ const GAME_DATA = {
         "revealTitleAccent": "The Game",
         "revealSubtitle": "A leadership simulator for an impossible job",
         "revealPremise": "You’ve just been hired to lead a Jewish organization at one of the most polarized times in Jewish history. Your donors want one thing, your staff wants another, and every constituency in the community thinks you should be doing something else.",
-        "revealStakes": "Deliver results and you’ll be promoted to lead a national organization with higher stakes and a bigger stage. Lose the trust of your community, burn through your budget, or let morale collapse — and your board will fire you.",
+        "revealStakes": "Deliver results and you’ll earn your board’s long-term confidence. Lose the trust of your community, burn through your budget, or let morale collapse — and your board will fire you.",
         "ctaButtonPost": "That was day one. Ready for twelve months? →",
         "ctaTagline": "Choose your organization, build your team, and begin.",
         "bottomText": "Choose your organization, build your advisory team, set your priorities — then face twelve months of decisions that will test every alliance you have.",
@@ -1856,12 +1841,7 @@ const GAME_DATA = {
       "endScreen": {
         "failureTitle": "Your Tenure Has Ended",
         "anotherYearTitle": "End of Year",
-        "promotionTitle": "You've Been Promoted",
         "retirementTitle": "A Distinguished Career"
-      },
-      "promoScreen": {
-        "heading": "A Larger Stage Awaits",
-        "description": "Your success has attracted national attention. Based on your track record and political tilt, the following organizations are recruiting you."
       },
       "advisorScreen": {
         "stepLabel": "Step 5 of 6 — Advisory Team",
@@ -1984,12 +1964,12 @@ const GAME_DATA = {
       "onboarding": [
         {
           "mood": "neutral",
-          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act \u2014 and the board is always watching.",
+          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching.",
           "label": "What do I need to know?"
         },
         {
           "mood": "neutral",
-          "msg": "You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free \u2014 inbox messages don't cost action points.",
+          "msg": "You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free — inbox messages don't cost action points.",
           "label": "Got it. What am I trying to do?"
         },
         {
@@ -1999,27 +1979,27 @@ const GAME_DATA = {
         },
         {
           "mood": "approving",
-          "msg": "At year's end, the board evaluates your overall performance. Score above <strong>80</strong> and you'll be offered a promotion to a national organization. Stay above <strong>40</strong> and you keep your job. Below that\u2026 well, don't go below that.",
+          "msg": "At year's end, the board evaluates your overall performance. Score above <strong>80</strong> and you earn a distinguished-career end to your tenure. Stay above <strong>40</strong> and you keep your job. Below that… well, don't go below that.",
           "label": "Any other advice?"
         },
         {
           "mood": "neutral",
-          "msg": "You have a <strong>budget</strong> you can invest in your organization \u2014 marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost action points but they do cost money.",
+          "msg": "You have a <strong>budget</strong> you can invest in your organization — marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost action points but they do cost money.",
           "label": "One more thing?"
         },
         {
           "mood": "concerned",
-          "msg": "One more thing \u2014 every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.",
-          "label": "Let's do this \u2192"
+          "msg": "One more thing — every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.",
+          "label": "Let's do this →"
         }
       ],
-      "statDangerRed": "\ud83d\udea8 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
-      "statDangerOrange": "Heads up \u2014 your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
-      "investmentSuggestion": "Your <strong>{stat}</strong> is in trouble. Consider using investments to help \u2014 check the investment bar for options that boost {stat}.",
-      "missionStarLow": "Your mission stars are dangerously low. The board expects you to stay true to your stated priorities \u2014 losing all your stars means losing their confidence.",
+      "statDangerRed": "🚨 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
+      "statDangerOrange": "Heads up — your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
+      "investmentSuggestion": "Your <strong>{stat}</strong> is in trouble. Consider using investments to help — check the investment bar for options that boost {stat}.",
+      "missionStarLow": "Your mission stars are dangerously low. The board expects you to stay true to your stated priorities — losing all your stars means losing their confidence.",
       "missionStarMax": "You've earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.",
-      "communityCloutBonus": "\u26a1 +{amount} Clout from your position near the community's political center.",
-      "communityCloutBonusCentrist": "\u26a1 +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
+      "communityCloutBonus": "⚡ +{amount} Clout from your position near the community's political center.",
+      "communityCloutBonusCentrist": "⚡ +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
       "geltCrisis": "Your gelt is critically low. Some choices may be unavailable until finances improve.",
       "centristClout": "Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly."
     },
@@ -2030,12 +2010,12 @@ const GAME_DATA = {
         "Your {stat} is getting into uncomfortable territory. The board notices these trends."
       ],
       "stat_red": [
-        "\ud83d\udea8 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
-        "\ud83d\udea8 {stat} is in the danger zone. One more bad outcome and you could be out.",
-        "\ud83d\udea8 Crisis warning: {stat} is near the point of no return."
+        "🚨 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "🚨 {stat} is in the danger zone. One more bad outcome and you could be out.",
+        "🚨 Crisis warning: {stat} is near the point of no return."
       ],
       "final_round_stars": [
-        "You're heading into the final round with no mission stars. The board will see this as a failure of vision \u2014 regardless of your other numbers.",
+        "You're heading into the final round with no mission stars. The board will see this as a failure of vision — regardless of your other numbers.",
         "Zero mission stars going into the last round. Without a clear mission, the board has no reason to renew your contract."
       ],
       "final_round_avg": [
@@ -2043,7 +2023,7 @@ const GAME_DATA = {
         "The numbers aren't good. You need a strong final round to avoid a bad year-end review."
       ],
       "penultimate_warning": [
-        "{stat} is below 35 with two rounds to go. You still have time to turn this around \u2014 but not much.",
+        "{stat} is below 35 with two rounds to go. You still have time to turn this around — but not much.",
         "Heads up: {stat} is trending low. Consider making it a priority over the next two rounds."
       ]
     }
@@ -2162,40 +2142,35 @@ const GAME_DATA = {
   "organizations": [
     {
       "id": "left",
-      "name": "Tikkun Olam Alliance",
+      "name": "Jews for Justice",
       "badge": "Progressive",
       "badgeClass": "badge-left",
-      "description": "A left-wing advocacy org focused on social justice, Palestinian rights, anti-racism, and progressive domestic policy.",
+      "description": "A national progressive Jewish advocacy organization working on social justice, voting rights, and Israeli-Palestinian peace at the federal level.",
       "traits": [
-        "Progressive donor base: bold stances required",
-        "Coalition-dependent: allies can turn quickly",
-        "Authenticity under constant scrutiny"
+        "National media: every statement is amplified",
+        "Large progressive donor base across 30+ cities",
+        "Coalition work with major civil rights organizations"
       ],
       "statModifiers": {
         "morale": 5,
-        "donors": -3
+        "donors": -7
       },
       "politicalTilt": [
         "left"
       ],
-      "promotionEligible": [
-        "left",
-        "center"
-      ],
-      "orgLevel": "local",
       "scenarioCategories": [
         "progressive"
       ],
       "segmentWeights": {
         "orthodox": 5,
         "conservative_denom": 8,
-        "reform": 25,
-        "unaffiliated": 27,
-        "youngAdults": 25,
+        "reform": 27,
+        "unaffiliated": 28,
+        "youngAdults": 22,
         "olderAdults": 10
       },
-      "allocationPoints": 75,
-      "startingBudget": 50
+      "allocationPoints": 80,
+      "startingBudget": 80
     },
     {
       "id": "right",
@@ -2215,11 +2190,6 @@ const GAME_DATA = {
       "politicalTilt": [
         "right"
       ],
-      "promotionEligible": [
-        "right",
-        "center"
-      ],
-      "orgLevel": "local",
       "scenarioCategories": [
         "conservative"
       ],
@@ -2236,155 +2206,8 @@ const GAME_DATA = {
     },
     {
       "id": "center",
-      "name": "Jewish Federation of Metroland",
-      "badge": "Centrist",
-      "badgeClass": "badge-center",
-      "description": "A centrist advocacy org seeking bipartisan coalitions on antisemitism, Israel, and Jewish continuity.",
-      "traits": [
-        "Bipartisan by design: balance is everything",
-        "Moderate donors: no dramatic moves",
-        "Credibility through consistency"
-      ],
-      "statModifiers": {
-        "trust": 3,
-        "donors": 8
-      },
-      "politicalTilt": [
-        "center"
-      ],
-      "promotionEligible": [
-        "left",
-        "right",
-        "center"
-      ],
-      "orgLevel": "local",
-      "scenarioCategories": [
-        "centrist"
-      ],
-      "segmentWeights": {
-        "orthodox": 12,
-        "conservative_denom": 20,
-        "reform": 22,
-        "unaffiliated": 12,
-        "youngAdults": 14,
-        "olderAdults": 20
-      },
-      "allocationPoints": 85,
-      "startingBudget": 100
-    },
-    {
-      "id": "jcc",
-      "name": "Ashford JCC",
-      "badge": "Apolitical",
-      "badgeClass": "badge-apolitical",
-      "description": "A community hub providing programs, childcare, fitness, and cultural events for Jews of all backgrounds in a city without much Jewish infrastructure.",
-      "traits": [
-        "Pluralistic mandate: serve all Jews",
-        "Budget driven by membership revenue",
-        "Apolitical pressure: controversy is costly"
-      ],
-      "statModifiers": {
-        "trust": 5,
-        "morale": 5
-      },
-      "politicalTilt": [
-        "center"
-      ],
-      "promotionEligible": [
-        "left",
-        "right",
-        "center",
-        "jcc"
-      ],
-      "orgLevel": "local",
-      "scenarioCategories": [
-        "centrist"
-      ],
-      "segmentWeights": {
-        "orthodox": 10,
-        "conservative_denom": 18,
-        "reform": 22,
-        "unaffiliated": 18,
-        "youngAdults": 18,
-        "olderAdults": 14
-      },
-      "allocationPoints": 80,
-      "startingBudget": 80
-    }
-  ],
-  "nationalOrganizations": [
-    {
-      "id": "nat_left",
-      "name": "Jews for Justice",
-      "badge": "Progressive National",
-      "badgeClass": "badge-left",
-      "description": "A national progressive Jewish advocacy organization working on social justice, voting rights, and Israeli-Palestinian peace at the federal level.",
-      "traits": [
-        "National media: every statement is amplified",
-        "Large progressive donor base across 30+ cities",
-        "Coalition work with major civil rights organizations"
-      ],
-      "statModifiers": {
-        "morale": 5,
-        "donors": -7
-      },
-      "politicalTilt": [
-        "left"
-      ],
-      "startingBudget": 80,
-      "orgLevel": "national",
-      "scenarioCategories": [
-        "progressive"
-      ],
-      "segmentWeights": {
-        "orthodox": 5,
-        "conservative_denom": 8,
-        "reform": 27,
-        "unaffiliated": 28,
-        "youngAdults": 22,
-        "olderAdults": 10
-      },
-      "allocationPoints": 80,
-      "promotionEligible": []
-    },
-    {
-      "id": "nat_right",
-      "name": "Lion of Judah",
-      "badge": "Conservative National",
-      "badgeClass": "badge-right",
-      "description": "A national pro-Israel advocacy organization with deep congressional relationships, focused on US-Israel relations and combating left-wing antisemitism.",
-      "traits": [
-        "Major donor network spans Wall Street and Silicon Valley",
-        "Congressional relationships on both sides of the aisle",
-        "High expectations: any misstep is front-page news"
-      ],
-      "statModifiers": {
-        "trust": -5,
-        "donors": 10
-      },
-      "politicalTilt": [
-        "right"
-      ],
-      "startingBudget": 150,
-      "orgLevel": "national",
-      "scenarioCategories": [
-        "conservative"
-      ],
-      "segmentWeights": {
-        "orthodox": 22,
-        "conservative_denom": 25,
-        "reform": 10,
-        "unaffiliated": 5,
-        "youngAdults": 8,
-        "olderAdults": 30
-      },
-      "allocationPoints": 80,
-      "promotionEligible": []
-    },
-    {
-      "id": "nat_center",
       "name": "Association of American Jews",
-      "badge": "Centrist National",
+      "badge": "Centrist",
       "badgeClass": "badge-center",
       "description": "The umbrella body for mainstream American Jewish advocacy, representing hundreds of local organizations and speaking for the communal consensus.",
       "traits": [
@@ -2399,8 +2222,6 @@ const GAME_DATA = {
       "politicalTilt": [
         "center"
       ],
-      "startingBudget": 120,
-      "orgLevel": "national",
       "scenarioCategories": [
         "centrist"
       ],
@@ -2413,53 +2234,17 @@ const GAME_DATA = {
         "olderAdults": 23
       },
       "allocationPoints": 90,
-      "promotionEligible": []
-    },
-    {
-      "id": "nat_jcc",
-      "name": "Synagogue Council",
-      "badge": "National Network",
-      "badgeClass": "badge-apolitical",
-      "description": "A national network providing resources and networking opportunities to hundreds of mostly Reform, Conservative and Reconstructionist synagogues, along with some modern Orthodox congregations.",
-      "traits": [
-        "Network of 1,200 synagogues depending on your leadership",
-        "Apolitical brand: politics fractures the network",
-        "Security and continuity are the twin mandates"
-      ],
-      "statModifiers": {
-        "trust": 7,
-        "donors": -3
-      },
-      "politicalTilt": [
-        "center"
-      ],
-      "startingBudget": 90,
-      "orgLevel": "national",
-      "scenarioCategories": [
-        "centrist"
-      ],
-      "segmentWeights": {
-        "orthodox": 8,
-        "conservative_denom": 18,
-        "reform": 24,
-        "unaffiliated": 20,
-        "youngAdults": 18,
-        "olderAdults": 12
-      },
-      "allocationPoints": 85,
-      "promotionEligible": []
+      "startingBudget": 120
     }
   ],
+  "nationalOrganizations": [],
   "missions": [
     {
       "id": "antisemitism_all",
       "name": "Combat Antisemitism Across the Political Spectrum",
       "description": "Your organization fights antisemitism wherever it comes from — far right, far left, and everywhere in between.",
       "availableTo": [
-        "center",
-        "jcc",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "trust": 5,
@@ -2472,11 +2257,7 @@ const GAME_DATA = {
       "description": "You focus on left-wing antisemitism — in progressive movements, on campuses, and in political discourse.",
       "availableTo": [
         "right",
-        "center",
-        "jcc",
-        "nat_right",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "morale": -2,
@@ -2489,11 +2270,7 @@ const GAME_DATA = {
       "description": "You focus on right-wing and white nationalist antisemitism — the most statistically deadly threat to Jewish Americans.",
       "availableTo": [
         "left",
-        "center",
-        "jcc",
-        "nat_left",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "trust": 8,
@@ -2507,11 +2284,7 @@ const GAME_DATA = {
       "description": "Your primary mission is securing American political and financial support for Israel.",
       "availableTo": [
         "right",
-        "center",
-        "jcc",
-        "nat_right",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "trust": -5,
@@ -2524,11 +2297,7 @@ const GAME_DATA = {
       "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
       "availableTo": [
         "left",
-        "center",
-        "jcc",
-        "nat_left",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "trust": -3,
@@ -2542,11 +2311,7 @@ const GAME_DATA = {
       "description": "You ground your work in Jewish values — tikkun olam and tzedakah — applied to racial justice, immigrant rights, and economic equality.",
       "availableTo": [
         "left",
-        "center",
-        "jcc",
-        "nat_left",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "trust": 2,
@@ -2559,10 +2324,7 @@ const GAME_DATA = {
       "name": "Jewish Identity and Continuity",
       "description": "Your mission is keeping Jews Jewish — through education, culture, day schools, and any form of engagement you can manage.",
       "availableTo": [
-        "center",
-        "jcc",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "morale": 5,
@@ -2574,10 +2336,7 @@ const GAME_DATA = {
       "name": "Unite the Jewish Diaspora",
       "description": "You work to build bridges across denominations, politics, and geographies.",
       "availableTo": [
-        "center",
-        "jcc",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ],
       "statBonus": {
         "trust": 5,
@@ -2595,8 +2354,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -2758,7 +2516,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -2803,8 +2560,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -2933,7 +2689,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -2979,8 +2734,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -3129,10 +2883,8 @@ const GAME_DATA = {
       ],
       "categories": [
         "centrist",
-        "conservative",
-        "apolitical"
+        "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -3181,8 +2933,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -3307,7 +3058,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 2,
       "highStakes": true,
       "advisorQuotes": [
@@ -3343,8 +3093,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -3483,7 +3232,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -3647,10 +3395,8 @@ const GAME_DATA = {
       ],
       "categories": [
         "progressive",
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -3817,7 +3563,6 @@ const GAME_DATA = {
         "centrist",
         "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "advisorQuotes": [
@@ -3858,14 +3603,12 @@ const GAME_DATA = {
       "id": "jcc_bomb_threat",
       "tag": "Crisis",
       "title": "A Bomb Threat",
-      "body": "At 9:15 on a Tuesday morning, your JCC receives a bomb threat by phone — the third at a JCC in your region this month. You evacuate 84 people including 31 children. Police sweep the building and find nothing. You must decide how to respond.",
-      "applicableOrgs": [
-        "jcc"
-      ],
+      "body": "At 9:15 on a Tuesday morning, a local JCC in your community receives a bomb threat by phone — the third at a JCC in your region this month. 84 people are evacuated including 31 children. Police sweep the building and find nothing. The JCC's director is asking your organization to weigh in publicly — how should the community respond?",
+      "applicableOrgs": [],
       "choices": [
         {
           "id": "c0",
-          "text": "Reopen the next morning with enhanced visible security and a clear, calm communication to families.",
+          "text": "Issue a supportive public statement alongside the JCC's reopening, emphasizing community resilience and coordinated security — calm leadership, no fearmongering.",
           "missionAligned": [
             "community_hub"
           ],
@@ -3897,7 +3640,7 @@ const GAME_DATA = {
         },
         {
           "id": "c1",
-          "text": "Close for a week while you secure federal security grants and upgrade your infrastructure.",
+          "text": "Use your political relationships to fast-track federal security grants for the JCC and every Jewish site in the region. Make the effort public.",
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
@@ -3927,7 +3670,7 @@ const GAME_DATA = {
         },
         {
           "id": "c2",
-          "text": "Reopen immediately and say as little as possible to avoid alarming the community.",
+          "text": "Say nothing publicly — the JCC handles its own messaging, and you don't want to amplify the threat or turn a local incident into a national story.",
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
@@ -3954,7 +3697,7 @@ const GAME_DATA = {
         },
         {
           "id": "c3",
-          "text": "Host an emergency community meeting that evening, inviting law enforcement and community leaders.",
+          "text": "Co-host an emergency community meeting that evening alongside the JCC, inviting law enforcement, elected officials, and community leaders.",
           "missionAligned": [
             "community_hub",
             "diaspora_unity",
@@ -3995,7 +3738,6 @@ const GAME_DATA = {
       "categories": [
         "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "communityConsensus": 0.5
     },
@@ -4007,8 +3749,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -4117,7 +3858,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "advisorQuotes": [
@@ -4347,10 +4087,8 @@ const GAME_DATA = {
       ],
       "categories": [
         "progressive",
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "highStakes": false
     },
@@ -4362,8 +4100,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.75,
       "advisorQuotes": [
@@ -4581,7 +4318,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": false
     },
@@ -4593,8 +4329,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.25,
       "advisorQuotes": [
@@ -4728,10 +4463,8 @@ const GAME_DATA = {
       ],
       "categories": [
         "progressive",
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "national",
       "complexity": 4,
       "highStakes": false
     },
@@ -4741,8 +4474,7 @@ const GAME_DATA = {
       "title": "Interfaith Seder Goes Off the Rails",
       "body": "Your annual interfaith Passover seder — co-hosted with a prominent church and mosque — was going beautifully until the imam made an unscripted comparison between Palestinians and the Israelites enslaved in Egypt. Half the Jewish attendees walked out. The imam says he was speaking from his heart and won’t retract. The pastor is trying to mediate. Local media is picking up the story.",
       "applicableOrgs": [
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.35,
       "endangersCoalition": [
@@ -4900,8 +4632,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.25,
       "advisorQuotes": [
@@ -5059,7 +4790,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": false
     },
@@ -5071,8 +4801,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.15,
       "advisorQuotes": [
@@ -5260,7 +4989,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "national",
       "complexity": 4,
       "channel": [
         "monitor",
@@ -5276,8 +5004,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.1,
       "advisorQuotes": [
@@ -5414,10 +5141,8 @@ const GAME_DATA = {
         }
       ],
       "categories": [
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": false
     },
@@ -5429,8 +5154,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.8,
       "advisorQuotes": [
@@ -5589,8 +5313,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.35,
       "advisorQuotes": [
@@ -5746,8 +5469,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.4,
       "advisorQuotes": [
@@ -5914,7 +5636,6 @@ const GAME_DATA = {
       "title": "A Jewish Day School on the Brink",
       "body": "The only Jewish day school in your area is losing enrollment fast — down 30% in three years. The board is asking your organization to lead a community rescue effort. The school is Modern Orthodox in orientation but serves families across denominations. Saving it would cost significant political capital and budget, but losing it would be a devastating blow to Jewish continuity in your region.",
       "applicableOrgs": [
-        "jcc",
         "center"
       ],
       "communityConsensus": 0.55,
@@ -6386,8 +6107,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.3,
       "advisorQuotes": [
@@ -6536,8 +6256,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "communityConsensus": 0.2,
       "advisorQuotes": [
@@ -6703,7 +6422,6 @@ const GAME_DATA = {
       "categories": [
         "progressive"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.15,
@@ -6915,7 +6633,6 @@ const GAME_DATA = {
       "categories": [
         "progressive"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.2,
@@ -7091,7 +6808,6 @@ const GAME_DATA = {
       "categories": [
         "progressive"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.2,
@@ -7275,7 +6991,6 @@ const GAME_DATA = {
       "categories": [
         "progressive"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.35,
@@ -7460,7 +7175,6 @@ const GAME_DATA = {
       "categories": [
         "progressive"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.15,
@@ -7638,7 +7352,6 @@ const GAME_DATA = {
       "categories": [
         "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.3,
@@ -7824,7 +7537,6 @@ const GAME_DATA = {
       "categories": [
         "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.3,
@@ -8013,7 +7725,6 @@ const GAME_DATA = {
       "categories": [
         "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.25,
@@ -8191,7 +7902,6 @@ const GAME_DATA = {
       "categories": [
         "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.35,
@@ -8369,7 +8079,6 @@ const GAME_DATA = {
       "categories": [
         "conservative"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": false,
       "communityConsensus": 0.35,
@@ -8541,7 +8250,6 @@ const GAME_DATA = {
       "categories": [
         "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.2,
@@ -8716,10 +8424,8 @@ const GAME_DATA = {
         "center"
       ],
       "categories": [
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0,
@@ -8918,10 +8624,8 @@ const GAME_DATA = {
         "center"
       ],
       "categories": [
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "communityConsensus": 0.35,
@@ -9084,7 +8788,6 @@ const GAME_DATA = {
       "categories": [
         "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.15,
@@ -9289,10 +8992,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "center"
       ],
-      "categories": [
-        "apolitical"
-      ],
-      "orgLevel": "both",
+      "categories": [],
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.25,
@@ -9456,14 +9156,9 @@ const GAME_DATA = {
       "id": "jcc_flag_controversy",
       "tag": "Community",
       "title": "The Flag in the Lobby",
-      "body": "An Israeli flag has hung in your JCC lobby since the building opened in 1987. A group of younger members — many of them parents of preschoolers — has formally petitioned the board to remove it, arguing it makes non-Zionist and anti-Zionist Jewish families feel excluded from a space meant to serve all Jews. A counter-petition from older members has gathered twice as many signatures, calling the flag 'non-negotiable.' Both groups are threatening to cancel their memberships.",
-      "applicableOrgs": [
-        "jcc"
-      ],
-      "categories": [
-        "apolitical"
-      ],
-      "orgLevel": "both",
+      "body": "An Israeli flag has hung in the lobby of a local JCC since the building opened in 1987. A group of younger members — many of them parents of preschoolers — has formally petitioned the JCC's board to remove it, arguing it makes non-Zionist and anti-Zionist Jewish families feel excluded from a space meant to serve all Jews. A counter-petition from older members has gathered twice as many signatures, calling the flag 'non-negotiable.' Both sides are threatening to cancel their memberships. The JCC board is split and has publicly asked your organization to weigh in — they know your position will shape their decision.",
+      "applicableOrgs": [],
+      "categories": [],
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.25,
@@ -9500,7 +9195,7 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Remove the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, it needs to go.",
+          "text": "Publicly support removing the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, your organization should say so clearly.",
           "missionAligned": [],
           "missionOpposed": [
             "israel_security",
@@ -9542,7 +9237,7 @@ const GAME_DATA = {
         },
         {
           "id": "c1",
-          "text": "Create a new 'identity wall' in the lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
+          "text": "Propose a compromise: a new 'identity wall' in the JCC lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
           "missionAligned": [
             "jewish_identity",
             "diaspora_unity"
@@ -9583,7 +9278,7 @@ const GAME_DATA = {
         },
         {
           "id": "c2",
-          "text": "Keep the flag. It's been there since 1987 and represents a connection to Israel that is part of the JCC's identity. You won't be bullied into erasing it.",
+          "text": "Publicly back keeping the flag. It's been there since 1987 and represents a connection to Israel that is part of the JCC's identity. Your organization won't support caving to pressure.",
           "missionAligned": [
             "israel_security",
             "jewish_identity"
@@ -9615,7 +9310,7 @@ const GAME_DATA = {
         },
         {
           "id": "c3",
-          "text": "Address the community directly — hold a moderated town hall on what the flag means, what the JCC means, and what it means to be a pluralistic Jewish space. Let the community decide together, using your staff support skills to hold the room.",
+          "text": "Offer to facilitate a moderated community town hall on what the flag means, what the JCC means, and what it means to be a pluralistic Jewish space. Use your organization's experience holding difficult conversations.",
           "missionAligned": [
             "diaspora_unity"
           ],
@@ -9647,189 +9342,14 @@ const GAME_DATA = {
       ]
     },
     {
-      "id": "jcc_pride_programming",
-      "tag": "Community",
-      "title": "Pride Month at the JCC",
-      "body": "Your program director has planned a Pride Month celebration including a family drag queen story hour, a 'Jewish & Queer' film screening, and rainbow decorations throughout the building. Three Orthodox families who use the JCC daily — including two whose children are in the preschool — have told you they will pull their kids and memberships if the programming proceeds. A group of LGBTQ Jewish parents has written to say this programming is 'the reason we chose this JCC.' Your board is meeting tomorrow.",
-      "applicableOrgs": [
-        "jcc"
-      ],
-      "categories": [
-        "apolitical"
-      ],
-      "orgLevel": "both",
-      "complexity": 4,
-      "highStakes": true,
-      "communityConsensus": 0.3,
-      "advisorQuotes": [
-        {
-          "advisorId": "program_dir",
-          "text": "These LGBTQ families are some of our most active members. If we cancel this, we're telling them they don't belong here.",
-          "mood": "neutral",
-          "recommendsChoice": 0,
-          "effectModifier": {
-            "morale": 3
-          },
-          "explicit": true
-        },
-        {
-          "advisorId": "dev_director",
-          "text": "The Orthodox families aren't just members — two of them are significant donors. And word will spread to their community fast.",
-          "mood": "neutral",
-          "recommendsChoice": null,
-          "effectModifier": {},
-          "explicit": false
-        }
-      ],
-      "choices": [
-        {
-          "id": "c0",
-          "text": "Proceed with all planned Pride programming. A JCC that serves all Jews means ALL Jews, including LGBTQ families.",
-          "missionAligned": [
-            "social_justice"
-          ],
-          "missionOpposed": [],
-          "outcomes": [
-            {
-              "text": "Pride Month is a hit. Attendance is strong. The LGBTQ families are thrilled and several new members join specifically because of the programming. The three Orthodox families leave. The Orthodox community whispers that your JCC isn't for them.",
-              "effects": {
-                "trust": 1,
-                "morale": 4,
-                "donors": -2
-              },
-              "weight": 65,
-              "contextNote": "",
-              "conditions": []
-            },
-            {
-              "text": "The story makes the local paper. Conservative commentators call it 'another institution captured by the radical left.' Your membership numbers are a wash — gains offset by losses — but the controversy exhausts your staff.",
-              "effects": {
-                "trust": -1,
-                "morale": -1,
-                "donors": -1
-              },
-              "weight": 35,
-              "contextNote": "",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": -3,
-          "segmentOverrides": {
-            "orthodox": -5,
-            "conservative_denom": -2,
-            "reform": 3,
-            "unaffiliated": 3,
-            "youngAdults": 4,
-            "olderAdults": -1
-          }
-        },
-        {
-          "id": "c1",
-          "text": "Scale back the most visible elements. Keep the film screening and support groups but cancel the drag story hour and reduce the decorations. Frame it as 'appropriate for all our families.'",
-          "missionAligned": [],
-          "missionOpposed": [
-            "social_justice"
-          ],
-          "outcomes": [
-            {
-              "text": "The LGBTQ parents are hurt. 'You edited our existence for someone else's comfort,' one writes in an email to the board. The Orthodox families stay. Your staff feels you compromised their values for money.",
-              "effects": {
-                "trust": -2,
-                "morale": -3,
-                "donors": 1
-              },
-              "weight": 100,
-              "contextNote": "",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": 2,
-            "reform": -2,
-            "unaffiliated": -3,
-            "youngAdults": -3,
-            "olderAdults": 1
-          }
-        },
-        {
-          "id": "c2",
-          "text": "Proceed with programming but add complementary events: a 'Torah and Identity' series, a traditional family Shabbat, and other content that signals the JCC serves the full spectrum of Jewish life.",
-          "missionAligned": [
-            "jewish_identity",
-            "diaspora_unity"
-          ],
-          "missionOpposed": [],
-          "outcomes": [
-            {
-              "text": "The expanded calendar satisfies most members. Pride programming happens alongside traditional programming. One Orthodox family stays; two leave but say they 'appreciate the effort.' Your schedule is brutal — your staff is stretched incredibly thin.",
-              "effects": {
-                "trust": 3,
-                "morale": -1
-              },
-              "weight": 100,
-              "contextNote": "Pluralism is exhausting to administer.",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": 1,
-            "conservative_denom": 2,
-            "reform": 2,
-            "unaffiliated": 1,
-            "youngAdults": 1,
-            "olderAdults": 1
-          }
-        },
-        {
-          "id": "c3",
-          "text": "Before the board meeting, personally reach out to the Orthodox families — not to negotiate, but to listen. Acknowledge their discomfort while explaining why the JCC must be inclusive. Your empathy skills might keep them in the building.",
-          "missionAligned": [
-            "diaspora_unity"
-          ],
-          "missionOpposed": [],
-          "outcomes": [
-            {
-              "text": "Your personal conversations are genuinely moving. Two of the three families decide to stay, saying 'we don't agree, but we feel heard.' The programming proceeds. Your ability to sit with discomfort — yours and theirs — made the difference.",
-              "effects": {
-                "trust": 4,
-                "morale": 4,
-                "donors": 1
-              },
-              "weight": 100,
-              "contextNote": "Your burnout survivor's empathy did what policy memos couldn't.",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": 2,
-            "conservative_denom": 2,
-            "reform": 3,
-            "unaffiliated": 2,
-            "youngAdults": 3,
-            "olderAdults": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "jcc_bds_rental",
       "tag": "Governance",
       "title": "The Event Space Request",
-      "body": "A local chapter of Jewish Voice for Peace — which supports BDS — has submitted a rental application to use your JCC's main event hall for a panel discussion on 'Human Rights in Israel-Palestine.' Your rental policy says the JCC is available to all Jewish community organizations. JVP argues they are a Jewish organization. Your board has never dealt with this question because no one has ever asked before. The application is technically compliant with your written policy.",
-      "applicableOrgs": [
-        "jcc"
-      ],
+      "body": "A local chapter of Jewish Voice for Peace — which supports BDS — has submitted a rental application to use a local JCC's main event hall for a panel discussion on 'Human Rights in Israel-Palestine.' The JCC's rental policy says the hall is available to all Jewish community organizations. JVP argues they qualify. The JCC's board has never dealt with this question before and has asked your organization to weigh in before they decide.",
+      "applicableOrgs": [],
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.2,
@@ -9856,7 +9376,7 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Approve the rental. Your policy is clear, and a JCC that decides which Jews are 'Jewish enough' for the building has lost its way.",
+          "text": "Tell the JCC board to approve the rental. Their policy is clear, and a Jewish community space that decides which Jews are 'Jewish enough' for the building has lost its way.",
           "missionAligned": [
             "community_hub",
             "diaspora_unity"
@@ -9901,7 +9421,7 @@ const GAME_DATA = {
         },
         {
           "id": "c1",
-          "text": "Deny the specific event but revise your rental policy to require that all events align with the JCC's mission of 'building Jewish community' — creating a principled framework for future decisions.",
+          "text": "Tell the JCC board to deny this specific event but help them revise their rental policy to require that all events align with 'building Jewish community' — creating a principled framework for future decisions.",
           "missionAligned": [
             "jewish_identity"
           ],
@@ -9932,7 +9452,7 @@ const GAME_DATA = {
         },
         {
           "id": "c2",
-          "text": "Reject the rental and be direct about why: your JCC does not host events organized by groups that support boycotts of Israel, period.",
+          "text": "Tell the JCC board to reject the rental and be direct about why: Jewish institutions should not host events organized by groups that support boycotts of Israel, period.",
           "missionAligned": [
             "israel_security"
           ],
@@ -9966,7 +9486,7 @@ const GAME_DATA = {
         },
         {
           "id": "c3",
-          "text": "Approve the rental but propose a condition: the JCC co-hosts, adding a second panel with a range of Jewish perspectives on Israel. Turn a one-sided event into a community dialogue, using your grassroots network to ensure diverse attendance.",
+          "text": "Propose a creative compromise to the JCC: approve the rental but have the JCC co-host, adding a second panel with a range of Jewish perspectives on Israel. Turn a one-sided event into a community dialogue — your organization's grassroots network can help ensure diverse attendance.",
           "missionAligned": [
             "community_hub",
             "diaspora_unity"
@@ -10009,200 +9529,12 @@ const GAME_DATA = {
       ]
     },
     {
-      "id": "jcc_modesty_hours",
-      "tag": "Internal",
-      "title": "Women-Only Swim Hours Under Fire",
-      "body": "Your JCC has offered women-only swim hours on Sunday mornings for 15 years — originally created to accommodate Orthodox women who observe modesty laws. Muslim women in the neighborhood have also started attending, making it a quiet interfaith success story. Now a male member has filed a formal complaint calling the policy 'gender discrimination.' A local newspaper has picked up the story. The headline reads: 'JCC Bans Men from Pool — Is It Legal?'",
-      "applicableOrgs": [
-        "jcc"
-      ],
-      "categories": [
-        "all"
-      ],
-      "orgLevel": "both",
-      "complexity": 3,
-      "highStakes": false,
-      "communityConsensus": 0.4,
-      "advisorQuotes": [
-        {
-          "advisorId": "rabbi_scholar",
-          "text": "Tzniut is not a policy preference. It's a religious obligation for these women. Ending these hours would effectively ban Orthodox women from swimming here.",
-          "mood": "neutral",
-          "recommendsChoice": 0,
-          "effectModifier": {
-            "trust": 2
-          },
-          "explicit": true
-        },
-        {
-          "advisorId": "media_strategist",
-          "text": "The headline is bad. But the story underneath is actually beautiful — Jewish and Muslim women swimming together. We need to reframe this fast.",
-          "mood": "neutral",
-          "recommendsChoice": 2,
-          "effectModifier": {
-            "trust": 2
-          },
-          "explicit": true
-        }
-      ],
-      "choices": [
-        {
-          "id": "c0",
-          "text": "Keep the women-only hours and defend them publicly as a religious accommodation. Make clear the JCC respects the modesty requirements of its diverse members.",
-          "missionAligned": [
-            "jewish_identity",
-            "community_hub"
-          ],
-          "missionOpposed": [],
-          "outcomes": [
-            {
-              "text": "The complaining member cancels his membership and posts a negative review online. But the Orthodox and Muslim women who use those hours send a joint thank-you letter to your board. It's shared widely as a feel-good story.",
-              "effects": {
-                "trust": 3,
-                "morale": 3
-              },
-              "weight": 70,
-              "contextNote": "",
-              "conditions": []
-            },
-            {
-              "text": "A second complaint is filed, this time threatening legal action. Your lawyer says you're probably fine under religious accommodation law, but the legal review costs $5,000.",
-              "effects": {
-                "trust": 1,
-                "morale": 1
-              },
-              "weight": 30,
-              "contextNote": "",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": 5,
-            "conservative_denom": 2,
-            "reform": 1,
-            "youngAdults": 1,
-            "olderAdults": 2
-          }
-        },
-        {
-          "id": "c1",
-          "text": "Compromise: reduce women-only hours from two hours to one, and add a men-only hour to demonstrate equal treatment.",
-          "missionAligned": [],
-          "missionOpposed": [
-            "community_hub"
-          ],
-          "outcomes": [
-            {
-              "text": "Nobody asked for men-only hours. The men-only slot sits empty. The Orthodox women say one hour isn't enough. The complaining member says you still haven't addressed the core issue. You've created a solution that satisfies no one.",
-              "effects": {
-                "trust": -2,
-                "morale": -2,
-                "donors": -1
-              },
-              "weight": 100,
-              "contextNote": "False equivalence is not compromise.",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": -3,
-            "reform": -1,
-            "youngAdults": -1
-          }
-        },
-        {
-          "id": "c2",
-          "text": "Proactively pitch the interfaith angle to media. Invite a journalist to see Orthodox Jewish and Muslim women swimming together. Turn the story from 'JCC bans men' to 'JCC bridges faiths.'",
-          "missionAligned": [
-            "community_hub",
-            "diaspora_unity"
-          ],
-          "missionOpposed": [],
-          "outcomes": [
-            {
-              "text": "A local TV station runs a three-minute segment on the interfaith swim hours. It's charming and human. The original complainant looks petty. New membership inquiries spike for a month. The story completely flips.",
-              "effects": {
-                "trust": 4,
-                "morale": 4,
-                "donors": 2
-              },
-              "weight": 60,
-              "contextNote": "",
-              "conditions": []
-            },
-            {
-              "text": "A reporter shows up but only wants to ask the women about their views on Israel. It gets awkward quick, and several of the women stop showing up after being forced into an uncomfortable conversation in front of a journalist.",
-              "effects": {
-                "trust": -3,
-                "morale": -5
-              },
-              "weight": 40,
-              "contextNote": "",
-              "conditions": [],
-              "cloutEffect": -6
-            }
-          ],
-          "budgetCost": 0,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": 3,
-            "conservative_denom": 2,
-            "reform": 2,
-            "unaffiliated": 2,
-            "youngAdults": 2,
-            "olderAdults": 2
-          }
-        },
-        {
-          "id": "c3",
-          "text": "Draft a formal religious accommodation policy grounded in both halacha and civil rights law — creating a legal and moral framework that protects these hours permanently.",
-          "missionAligned": [
-            "jewish_identity",
-            "community_hub"
-          ],
-          "missionOpposed": [],
-          "outcomes": [
-            {
-              "text": "Your policy document is praised by the JCC Association of North America and adopted as a template by three other JCCs. The legal framework makes future complaints nearly impossible. Your scholarly approach built something that will outlast you.",
-              "effects": {
-                "trust": 4,
-                "morale": 3,
-                "donors": 2
-              },
-              "weight": 100,
-              "contextNote": "Your Jewish learning protected a community practice for generations.",
-              "conditions": []
-            }
-          ],
-          "budgetCost": 5,
-          "politicalLean": 0,
-          "segmentOverrides": {
-            "orthodox": 5,
-            "conservative_denom": 3,
-            "reform": 2,
-            "youngAdults": 1,
-            "olderAdults": 2
-          },
-          "requiresUnlock": "jewish_scholar"
-        }
-      ]
-    },
-    {
       "id": "jcc_preschool_teacher",
       "tag": "Internal",
       "title": "The Preschool Teacher's Posts",
-      "body": "A parent in your JCC preschool has forwarded you screenshots from a teacher's personal Instagram account. The teacher — beloved by kids and parents, three years on staff — has posted a series of stories calling Israel \"a genocidal apartheid state,\" sharing graphic images from Gaza, and writing \"Zionism is racism.\" The parent says: \"I'm not sending my four-year-old to be taught by someone who hates our people.\" The teacher has never brought politics into the classroom.",
-      "applicableOrgs": [
-        "jcc"
-      ],
-      "categories": [
-        "apolitical"
-      ],
-      "orgLevel": "both",
+      "body": "A parent at a local JCC preschool has forwarded screenshots from a teacher's personal Instagram account to your organization, asking you to intervene. The teacher — beloved by kids and parents, three years on staff — has posted a series of stories calling Israel \"a genocidal apartheid state,\" sharing graphic images from Gaza, and writing \"Zionism is racism.\" The parent says: \"I'm not sending my four-year-old to be taught by someone who hates our people.\" The teacher has never brought politics into the classroom. The JCC's director is asking what your organization thinks they should do.",
+      "applicableOrgs": [],
+      "categories": [],
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.15,
@@ -10231,7 +9563,7 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Terminate the teacher. A JCC preschool teacher who publicly calls Zionism racism cannot represent your institution, regardless of what happens in the classroom.",
+          "text": "Tell the JCC to terminate the teacher. A preschool teacher at a Jewish institution who publicly calls Zionism racism cannot represent the community, regardless of what happens in the classroom.",
           "missionAligned": [
             "antisemitism_left",
             "israel_security"
@@ -10267,7 +9599,7 @@ const GAME_DATA = {
         },
         {
           "id": "c1",
-          "text": "Meet with the teacher privately. Explain the situation. Ask her to make her social media private and separate her personal views from her professional role at the JCC.",
+          "text": "Advise the JCC to meet with the teacher privately. Explain the situation, ask her to make her social media private, and separate her personal views from her professional role.",
           "missionAligned": [
             "community_hub"
           ],
@@ -10314,7 +9646,7 @@ const GAME_DATA = {
         },
         {
           "id": "c2",
-          "text": "Do nothing about the teacher but institute a new social media policy for all staff going forward.",
+          "text": "Advise the JCC to institute a new social media policy for all staff going forward, but take no direct action against this teacher specifically.",
           "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
@@ -10340,7 +9672,7 @@ const GAME_DATA = {
         },
         {
           "id": "c3",
-          "text": "Publicly defend the teacher's right to share her views, but work to quietly reassure the parents that you're handling the issue internally. Ask the teacher to delete some of the most inflammatory posts and be more careful about what she shares going forward.",
+          "text": "Publicly defend the teacher's right to share her views on her own time, but work quietly with the JCC to reassure the parents that the issue is being handled internally. Ask the teacher to delete the most inflammatory posts and be more careful going forward.",
           "missionAligned": [
             "community_hub",
             "diaspora_unity"
@@ -10388,8 +9720,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -10528,10 +9859,8 @@ const GAME_DATA = {
       ],
       "categories": [
         "progressive",
-        "centrist",
-        "apolitical"
+        "centrist"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "highStakes": true,
       "advisorQuotes": [
@@ -10583,8 +9912,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -10680,7 +10008,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -10720,8 +10047,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -10815,7 +10141,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "expiresIn": 2,
       "expiredOutcome": {
@@ -10838,8 +10163,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -10927,7 +10251,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -10957,8 +10280,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -11054,7 +10376,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "communityConsensus": 0.5
     },
@@ -11067,8 +10388,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "choices": [
         {
@@ -11153,7 +10473,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 3,
       "highStakes": true,
       "advisorQuotes": [
@@ -11193,8 +10512,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "timerRounds": 1,
       "advisorQuotes": [
@@ -11323,8 +10641,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "advisorQuotes": [
         {
@@ -11457,8 +10774,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "advisorQuotes": [
         {
@@ -11578,8 +10894,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "timerRounds": 1,
       "advisorQuotes": [
@@ -11713,8 +11028,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "advisorQuotes": [
         {
@@ -12250,15 +11564,6 @@ const GAME_DATA = {
     {
       "trigger": {
         "type": "choiceMade",
-        "scenarioId": "jcc_pride_programming",
-        "choiceIndex": 0
-      },
-      "headline": "JCC Proceeds with Full Pride Month Programming Over Orthodox Objections",
-      "subline": "LGBTQ families celebrate; three Orthodox families withdraw memberships."
-    },
-    {
-      "trigger": {
-        "type": "choiceMade",
         "scenarioId": "jcc_bds_rental",
         "choiceIndex": 0
       },
@@ -12282,15 +11587,6 @@ const GAME_DATA = {
       },
       "headline": "JCC Fires Preschool Teacher Over Anti-Israel Social Media Posts",
       "subline": "Parents relieved; staff morale plummets as free speech concerns mount."
-    },
-    {
-      "trigger": {
-        "type": "choiceMade",
-        "scenarioId": "jcc_modesty_hours",
-        "choiceIndex": 2
-      },
-      "headline": "JCC's Women-Only Swim Hours Become Interfaith Success Story",
-      "subline": "TV segment on Jewish-Muslim swimming program goes viral."
     }
   ],
   "breakingNews": [
@@ -12307,7 +11603,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "choices": [
         {
@@ -12393,7 +11688,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "choices": [
         {
@@ -12477,7 +11771,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "choices": [
         {
@@ -12559,7 +11852,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 5,
       "advisorQuotes": [
         {
@@ -12660,7 +11952,6 @@ const GAME_DATA = {
       "categories": [
         "all"
       ],
-      "orgLevel": "both",
       "complexity": 4,
       "advisorQuotes": [
         {
@@ -12794,11 +12085,7 @@ const GAME_DATA = {
       },
       "applicableOrgs": [
         "left",
-        "center",
-        "jcc",
-        "nat_left",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ]
     },
     {
@@ -12842,11 +12129,7 @@ const GAME_DATA = {
       },
       "applicableOrgs": [
         "right",
-        "center",
-        "jcc",
-        "nat_right",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ]
     },
     {
@@ -12932,11 +12215,7 @@ const GAME_DATA = {
       },
       "applicableOrgs": [
         "right",
-        "center",
-        "jcc",
-        "nat_right",
-        "nat_center",
-        "nat_jcc"
+        "center"
       ]
     },
     {
@@ -13192,8 +12471,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "startDisposition": 35,
       "totalNodes": 4,
@@ -13826,8 +13104,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "startDisposition": 45,
       "totalNodes": 4,
@@ -13992,8 +13269,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "startDisposition": 50,
       "totalNodes": 4,
@@ -14180,8 +13456,7 @@ const GAME_DATA = {
       },
       "applicableOrgs": [
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "startDisposition": 40,
       "totalNodes": 4,
@@ -14367,8 +13642,7 @@ const GAME_DATA = {
       "applicableOrgs": [
         "left",
         "right",
-        "center",
-        "jcc"
+        "center"
       ],
       "startDisposition": 55,
       "totalNodes": 4,
@@ -14536,9 +13810,7 @@ const GAME_DATA = {
         "scenarioId": "jcc_bomb_threat",
         "choiceIndex": null
       },
-      "applicableOrgs": [
-        "jcc"
-      ],
+      "applicableOrgs": [],
       "startDisposition": 25,
       "totalNodes": 4,
       "nodes": {
@@ -14923,7 +14195,7 @@ let G = {
   missionId:null, priorities:{}, stats:{}, missionStars:0,
   round:0, apRemaining:0, history:[], pendingQueue:[],
   roundActions:[], usedScenarioIds:[], usedInboxIds:[],
-  activeUnlocks:[], promotionLevel:0,
+  activeUnlocks:[],
   actionsThisRound:0, inboxDelivered:0,
   roundInboxQueue:[], pendingInbox:[],
   channelQueues: null, phoneMessages: [],
@@ -15287,13 +14559,7 @@ function scenarioApplies(scenario) {
   const allOrgs = [...GAME_DATA.organizations, ...GAME_DATA.nationalOrganizations];
   const org = allOrgs.find(o => o.id === G.orgId);
   if (!org) return false;
-  
-  // Check org level
-  const level = scenario.orgLevel || 'both';
-  const orgLvl = org.orgLevel || (GAME_DATA.nationalOrganizations.find(o=>o.id===G.orgId) ? 'national' : 'local');
-  if (level !== 'both' && level !== orgLvl) return false;
-  
-  // Check categories
+  // orgLevel gating removed in the 3-org reduction — local/national tiers no longer exist.
   const cats = scenario.categories || ['all'];
   if (cats.includes('all')) return true;
   const orgCats = org.scenarioCategories || org.politicalTilt || [];
@@ -15465,7 +14731,7 @@ function initIntro() {
   var rstakes = document.getElementById('lp-reveal-stakes');
   if (rstakes && pt.revealStakes) {
     var stakesHtml = esc(pt.revealStakes);
-    stakesHtml = stakesHtml.replace(/promoted to lead a national organization/, '<span class="stakes-promote">promoted to lead a national organization</span>');
+    stakesHtml = stakesHtml.replace(/long-term confidence/, '<span class="stakes-promote">long-term confidence</span>');
     stakesHtml = stakesHtml.replace(/your board will fire you/, '<span class="stakes-fire">your board will fire you</span>');
     rstakes.innerHTML = stakesHtml;
   }
@@ -15835,7 +15101,7 @@ function toggleHelpPanel() {
     if (body) {
       body.innerHTML =
         '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">\ud83d\udea8 How You Get Fired</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">If any stat drops to ' + (GAME_DATA.config.failureBarThreshold || 15) + ' or below, the board calls an emergency meeting and your tenure ends immediately.</div></div>' +
-        '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">\ud83c\udfc6 How You Win</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">Score ' + (GAME_DATA.config.promotionThreshold || 75) + ' or above at year\'s end and you\'ll be offered a promotion. Score below ' + (GAME_DATA.config.failureScoreThreshold || 30) + ' and your contract won\'t be renewed.</div></div>' +
+        '<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;margin-bottom:4px">\ud83c\udfc6 How You Win</div><div style="font-size:12px;line-height:1.6;color:var(--muted)">Score ' + (GAME_DATA.config.promotionThreshold || 75) + ' or above at year\'s end and you finish your tenure with distinction. Score below ' + (GAME_DATA.config.failureScoreThreshold || 30) + ' and your contract won\'t be renewed.</div></div>' +
         '<div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.7">' +
           '<div style="margin-bottom:10px"><strong>\u2b50 Mission Stars:</strong> Your mission stars reflect how consistently you stay true to your stated priorities. They boost your year-end score.</div>' +
           '<div style="margin-bottom:10px"><strong>\ud83d\udcb0 Gelt:</strong> You earn gelt each round from base income and fundraising. Spend it on investments, or save for emergencies. Some choices cost gelt.</div>' +
@@ -16108,7 +15374,7 @@ function startGame(){
     const t=GAME_DATA.characterTraits.find(t=>t.id===tid);
     if(t) G.activeUnlocks.push(t.id);
   });
-  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[]; G.promotionLevel=0;
+  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[];
   G.inboxMessages=[]; G.coalitionStrikes={};
   G.advisorBonusLog = [];
   G.currentAdvisorBonusMultiplier = 1.0;
@@ -16197,78 +15463,8 @@ function startGame(){
   setTimeout(showOnboarding, 600);
 }
 
-function startPromoGame(){
-  clearSave();
-  const org=GAME_DATA.nationalOrganizations.find(o=>o.id===G.orgId);
-
-  // Stats already computed by autoAllocateStats with floor of 30
-  var baselines = G._baselines || {};
-  GAME_DATA.stats.forEach(function(s){
-    var base = baselines[s.id] || 0;
-    var alloc = G.priorities[s.id] || 0;
-    var promoBonus = 10; // promotion stat boost
-    G.stats[s.id] = Math.max(0, Math.min(100, base + alloc + promoBonus));
-  });
-  G.missionStars=GAME_DATA.config.missionStartStars||3;
-  G.round=0; G.history=[]; G.promotionLevel=1;
-  G.inboxMessages=[];
-  // Initialize budget for national org
-  var bc = GAME_DATA.config.budgetConfig || {};
-  var orgBudgetOverrides = org.budgetOverrides || {};
-  G.budget = org.startingBudget || bc.startingBudget || 120;
-  G.budgetMax = G.budget;
-  G.budgetIncomeThisYear = 0; G.budgetSpentThisYear = 0;
-  G.orgOperatingCost = orgBudgetOverrides.operatingCost || bc.operatingCostPerRound || 8;
-  G.orgBaseIncome = orgBudgetOverrides.baseIncome || bc.baseIncomePerRound || 5;
-  // National investment pool: rounds × national multiplier
-  var totalRounds = GAME_DATA.config.totalRounds || 6;
-  G.investmentPool = totalRounds * (bc.nationalInvestmentsPerYear || 2);
-  G.investmentsUsed = 0;
-  G.pendingReserves = [];
-  // Reset political position based on national org's tilt
-  var tiltPositions = GAME_DATA.config.tiltPositions || {left:25, center:50, right:75};
-  var orgTilt = (Array.isArray(org.politicalTilt) ? org.politicalTilt[0] : org.politicalTilt) || 'center';
-  G.politicalPosition = tiltPositions[orgTilt] || 50;
-  // Reset coalitions for national level
-  G.activeCoalitions = []; G.declinedCoalitions = []; G.brokenCoalitions = []; G.coalitionStrikes = {};
-  // Initialize constituency segments for national org
-  initSegmentApprovals(G.orgId);
-
-  // Apply trust bonuses proportionally
-  var trustBonus = (G._baselines.trust || 0) + (G.priorities.trust || 0);
-  if (trustBonus > 0 && G.segmentApproval) {
-    applyTrustBonusProportionally(trustBonus);
-  }
-
-  // Enforce floor
-  G.stats.trust = computeCompositeTrust();
-  var attempts = 0;
-  while (G.stats.trust < 30 && attempts < 20) {
-    applyTrustBonusProportionally(2);
-    G.stats.trust = computeCompositeTrust();
-    attempts++;
-  }
-
-  // Save starting segment snapshot for end-screen deltas
-  if (G.segmentApproval) {
-    G._startingSegments = {};
-    Object.keys(G.segmentApproval).forEach(function(k) {
-      G._startingSegments[k] = G.segmentApproval[k];
-    });
-  }
-  G.politicalClout = Math.min(100, G.politicalClout + 15); // promotion clout bonus
-  // Save starting values for end-screen deltas
-  G._startingPoliticalPosition = G.politicalPosition;
-  G._startingPoliticalClout = G.politicalClout;
-
-  // Pick initial desk skin from starting donors (promo game — likely fancy but uses same rule).
-  initDeskSkin();
-  preloadDeskImages();
-
-  showScreen('game-screen');
-  initTicker();
-  beginRound();
-}
+// startPromoGame() removed in the 3-org reduction — promotion system is gone.
+// See archive/promotion-system.md for a note on what this used to do.
 
 // ═══════════════ ROUND ═══════════════
 // ═══════════════ ROUND ENTROPY ═══════════════
@@ -17890,9 +17086,11 @@ function endYear(){
   const fail=GAME_DATA.config.failureScoreThreshold||40;
   const promo=GAME_DATA.config.promotionThreshold||80;
   if(score<fail){renderEndScreen(score,false,null,false,false,false);showScreen('end-screen');return;}
+  // Promotion system removed in the 3-org reduction — a high score now
+  // shows the retirement / distinguished-career end screen instead of
+  // offering a promotion to a national org.
   if(score>=promo){
-    if(G.promotionLevel>=1){renderEndScreen(score,false,null,true,false,false);}
-    else{renderEndScreen(score,false,null,false,true,false);}
+    renderEndScreen(score,false,null,true,false,false);
     showScreen('end-screen');return;
   }
   renderEndScreen(score,false,null,false,false,true);
@@ -18110,16 +17308,13 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';
-  if(promotion){
-    const b=document.createElement('button');
-    b.className='btn btn-gold'; b.textContent='Choose Your Next Organization \u2192'; b.onclick=showPromoScreen;
-    actEl.appendChild(b);
-  } else if(retirement){
+  // Promotion branch removed — 'promotion' flag is vestigial and never true.
+  if(retirement){
     actEl.innerHTML='<button class="btn btn-gold" onclick="restartSameCharacter()">Play Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character</button>';
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
-    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(G.promotionLevel>0?(bc.nationalInvestmentsPerYear||2):(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
+    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(bc.investmentsPerYear||1);G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
     actEl.appendChild(b);
     const b2=document.createElement('button');
     b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
@@ -18132,68 +17327,23 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   }
 }
 
-// ═══════════════ PROMOTION ═══════════════
-var _isPromotionFlow = false;
-
+// Onboarding navigation — _isPromotionFlow plumbing removed; these now
+// always go to the standard next/previous screens.
 function advanceFromMission() {
-  if (_isPromotionFlow) {
-    _isPromotionFlow = false;
-    autoAllocateStats();
-    startPromoGame();
-  } else {
-    showScreen('advisor-screen');
-  }
+  showScreen('advisor-screen');
 }
 
 function backFromMission() {
-  if (_isPromotionFlow) {
-    _isPromotionFlow = false;
-    showScreen('promo-screen');
-  } else {
-    showScreen('org-screen');
-  }
+  showScreen('org-screen');
 }
 
-function showPromoScreen(){
-  const org=GAME_DATA.organizations.find(o=>o.id===G.orgId);
-  const eligible=org?.promotionEligible||['center'];
-  const natOrgs=GAME_DATA.nationalOrganizations.filter(o=>{
-    const tilts = Array.isArray(o.politicalTilt) ? o.politicalTilt : [o.politicalTilt];
-    return eligible.some(e => tilts.includes(e));
-  });
-  document.getElementById('promo-next-btn').disabled = true;
-  document.getElementById('promo-list').innerHTML=natOrgs.map(o=>{
-    const mods=Object.entries(o.statModifiers||{}).filter(([k])=>k!=='budget');
-    const bc = GAME_DATA.config.budgetConfig || {};
-    const orgBudget = o.startingBudget || bc.startingBudget || 120;
-    return `<div class="card" id="poc-${o.id}" onclick="selectPromoOrg('${o.id}')">
-      <span class="card-badge ${o.badgeClass}">${(o.badge||'').replace(/\s*National\s*/i,'')}</span>
-      <h3>${o.name}</h3>
-      <p style="margin-bottom:0">${o.description}</p>
-      ${o.traits?.length?`<ul class="card-traits">${o.traits.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}
-      <div class="org-budget-tag">💰 Starting Budget: ${orgBudget}</div>
-      ${mods.length?`<div class="card-mods">${mods.map(([k,v])=>`<span class="chip ${v>0?'chip-pos':'chip-neg'}">${v>0?'+':''}${v} ${k}</span>`).join('')}</div>`:''}
-    </div>`;
-  }).join('');
-  showScreen('promo-screen');
-}
-
-function selectPromoOrg(id){
-  G.orgId=id;
-  document.querySelectorAll('#promo-list .card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('poc-'+id)?.classList.add('selected');
-  document.getElementById('promo-next-btn').disabled=false;
-}
-function confirmPromoOrg(){
-  if(!G.orgId) return;
-  _isPromotionFlow = true;
-  showScreen('mission-screen');
-}
+// showPromoScreen / selectPromoOrg / confirmPromoOrg removed in the 3-org reduction.
+// See archive/promotion-system.md for details on what they used to do.
 
 // ═══════════════ RESET ═══════════════
 function resetGame(){
   clearSave();
-  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],promotionLevel:0,actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],advisorChoiceLog:[],investmentsFrozen:false,_probationLifted:false,endowmentIncome:0,_dangerWarningsShown:{},breakingNewsCount:0,breakingNewsThisRound:0};
+  G={charName:'',charEmoji:'',charTraits:[],orgId:null,missionId:null,priorities:{},stats:{},missionStars:0,round:0,apRemaining:0,history:[],pendingQueue:[],roundActions:[],usedScenarioIds:[],usedInboxIds:[],activeUnlocks:[],actionsThisRound:0,inboxDelivered:0,roundInboxQueue:[],pendingInbox:[],inboxMessages:[],coalitionStrikes:{},budget:0,budgetMax:100,budgetIncomeThisYear:0,budgetSpentThisYear:0,orgOperatingCost:0,orgBaseIncome:0,investmentPool:0,investmentsUsed:0,investmentUses:{},pendingReserves:[],_allocBudget:100,_allocMin:1,_allocMax:55,politicalPosition:50,politicalClout:20,_startingPoliticalPosition:50,_startingPoliticalClout:20,segmentApproval:null,segmentHistory:{},segmentSnapshots:[],_coachWarningsLifetime:{},_coachWarningsThisRound:{},notableMoments:[],advisorChoiceLog:[],investmentsFrozen:false,_probationLifted:false,endowmentIncome:0,_dangerWarningsShown:{},breakingNewsCount:0,breakingNewsThisRound:0};
   
   var ticker = document.getElementById('news-ticker');
   if(ticker) ticker.classList.remove('active');
@@ -18209,7 +17359,6 @@ function restartSameCharacter(){
   var orgId = G.orgId;
   var missionId = G.missionId;
   var selectedAdvisors = G.selectedAdvisors;
-  var promotionLevel = G.promotionLevel || 0;
   var activeUnlocks = G.activeUnlocks || [];
 
   // Reset game state but keep character
@@ -18247,16 +17396,11 @@ function restartSameCharacter(){
   G.orgId = orgId;
   G.missionId = missionId;
   G.selectedAdvisors = selectedAdvisors;
-  G.promotionLevel = promotionLevel;
   G.activeUnlocks = activeUnlocks;
 
   // Auto-allocate and start
   autoAllocateStats();
-  if (promotionLevel > 0) {
-    startPromoGame();
-  } else {
-    startGame();
-  }
+  startGame();
 }
 
 // ═══════════════ INVESTMENT STRIP ═══════════════

@@ -1267,7 +1267,10 @@ var EDITOR_DATA =
         "{stat} is below 35 with two rounds to go. You still have time to turn this around — but not much.",
         "Heads up: {stat} is trending low. Consider making it a priority over the next two rounds."
       ]
-    }
+    },
+    "maxCallsPerRound": 1,
+    "socialMediaDecayRate": 0.5,
+    "socialMediaWarningAfter": 2
   },
   "stats": [
     {
@@ -1485,6 +1488,8 @@ var EDITOR_DATA =
       "name": "Combat Antisemitism Across the Political Spectrum",
       "description": "Your organization fights antisemitism wherever it comes from — far right, far left, and everywhere in between.",
       "availableTo": [
+        "left",
+        "right",
         "center"
       ],
       "statBonus": {
@@ -1494,7 +1499,7 @@ var EDITOR_DATA =
     },
     {
       "id": "antisemitism_left",
-      "name": "Counter Antisemitism and Anti-Zioinsm from the Progressive Left",
+      "name": "Counter Antisemitism and Anti-Zioinsm from the Left",
       "description": "You focus on left-wing antisemitism — in progressive movements, on campuses, and in political discourse.",
       "availableTo": [
         "right",
@@ -1534,7 +1539,7 @@ var EDITOR_DATA =
     },
     {
       "id": "israel_peace",
-      "name": "Advocate for Peace and Justice in the Middle East",
+      "name": "Advocate for Palestinian Rights",
       "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
       "availableTo": [
         "left",
@@ -1558,18 +1563,6 @@ var EDITOR_DATA =
         "trust": 2,
         "morale": 8,
         "donors": -3
-      }
-    },
-    {
-      "id": "jewish_identity",
-      "name": "Jewish Identity and Continuity",
-      "description": "Your mission is keeping Jews Jewish — through education, culture, day schools, and any form of engagement you can manage.",
-      "availableTo": [
-        "center"
-      ],
-      "statBonus": {
-        "morale": 5,
-        "donors": 5
       }
     },
     {
@@ -9141,6 +9134,962 @@ var EDITOR_DATA =
       "politicalRange": {
         "max": 40
       }
+    },
+    {
+      "id": "sub_campus_faculty",
+      "tag": "Sub-Mission",
+      "title": "Faculty Letter on Campus Antisemitism",
+      "body": "Three professors at the university have agreed to draft a letter supporting the anti-hate policy — but they want your help with the language. The letter needs to address antisemitism without appearing to suppress criticism of Israel.",
+      "subMissionId": "sub_campus_coalition",
+      "categories": [
+        "all"
+      ],
+      "complexity": 3,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Help them draft language that explicitly names antisemitism alongside other forms of hate, including examples like Holocaust denial and conspiracy theories. Avoid mentioning Israel.",
+          "missionAligned": [
+            "antisemitism_right",
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The letter lands well with most faculty. Three more professors sign on. The Jewish studies department chair calls it 'exactly the right framing.' Progressive student groups are cautiously supportive.",
+              "effects": {
+                "trust": 3,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "faculty",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Include a clause distinguishing between antisemitism and legitimate criticism of Israeli policy — making clear both are real and both matter.",
+          "missionAligned": [
+            "antisemitism_all",
+            "israel_peace"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The nuanced language wins broad support from the faculty senate. It's the first time 'criticism of Israel' and 'antisemitism' have been addressed together on this campus without a blowup.",
+              "effects": {
+                "trust": 4,
+                "donors": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "faculty",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Focus on procedure rather than definition — push for a bias response team instead of trying to define what counts as antisemitism.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The procedural approach avoids controversy but also avoids progress. The response team is formed but has no clear mandate on antisemitism specifically. Faculty interest wanes.",
+              "effects": {
+                "trust": 1
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Push for language that explicitly includes anti-Zionism as a form of antisemitism, citing the IHRA working definition.",
+          "missionAligned": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "israel_peace"
+          ],
+          "outcomes": [
+            {
+              "text": "The IHRA framing rallies pro-Israel faculty but alienates progressive professors. The letter gets signatures but also a counter-letter. Your coalition fractures along predictable lines.",
+              "effects": {
+                "donors": 4,
+                "trust": -3,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "faculty",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_campus_bds",
+      "tag": "Sub-Mission",
+      "title": "BDS Activists Demand Changes to the Anti-Hate Policy",
+      "body": "A coalition of progressive student groups — your natural allies on most issues — has published an open letter demanding that the anti-hate policy explicitly exclude 'criticism of Israel, Zionism, or Israeli state policy' from its definition of antisemitism. They're threatening to withdraw their endorsement if the policy could be used to 'silence Palestinian solidarity.' Your campus coalition is fracturing.",
+      "subMissionId": "sub_campus_coalition",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Meet with the student coalition privately. Acknowledge their concerns, propose adding a free-speech protection clause, and ask them to stay in the coalition.",
+          "missionAligned": [
+            "antisemitism_all",
+            "social_justice"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The private meeting is tense but productive. The students agree to a free-speech clause and stay in the coalition — for now. You've bought time, but the underlying tension isn't resolved.",
+              "effects": {
+                "trust": 3,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Publicly reject their demand. The policy is about fighting hate, not protecting political movements. If they can't support that, they're welcome to leave.",
+          "missionAligned": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "Your firmness earns praise from pro-Israel groups and some faculty. But six progressive student organizations withdraw from the coalition, and the campus newspaper runs a story about 'Jewish org silencing Palestinian voices.'",
+              "effects": {
+                "donors": 3,
+                "trust": -4,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Agree to their exclusion language. Keeping the coalition together is more important than winning the definitional fight.",
+          "missionAligned": [
+            "social_justice",
+            "israel_peace"
+          ],
+          "missionOpposed": [
+            "antisemitism_left",
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "The coalition holds, but Jewish students are furious. 'You just told the university that some antisemitism is acceptable,' one writes. The Hillel director stops returning your calls.",
+              "effects": {
+                "morale": -3,
+                "trust": -2,
+                "donors": -3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Propose a facilitated dialogue between Jewish students and Palestinian solidarity groups, moderated by a respected faculty member. Let the community work it out together.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The dialogue is emotional but ultimately productive. Both sides agree to language that protects free speech while acknowledging antisemitism as a distinct harm. The process itself becomes a model.",
+              "effects": {
+                "trust": 5,
+                "morale": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "bds_nav",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_campus_president",
+      "tag": "Sub-Mission",
+      "title": "Meeting with the University President",
+      "body": "The university president has agreed to a private meeting about the anti-hate policy. She's sympathetic but cautious — she doesn't want the university to become a national flashpoint. She tells you: 'I'll sign this, but only if I'm confident it won't blow up in my face. Convince me.'",
+      "subMissionId": "sub_campus_coalition",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Present the broad coalition you've built — faculty, students, community leaders — as proof that the policy has consensus support. Frame signing as low-risk, high-reward.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The president is impressed by the coalition's breadth. 'If this many people are behind it, I can defend it.' She agrees to sign at next month's faculty senate meeting.",
+              "effects": {
+                "trust": 5,
+                "morale": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "president",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Appeal to her personal values. Share stories of Jewish students who've experienced antisemitism on campus and ask her to lead, not follow.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "She's moved by the stories but hesitant about the politics. 'I'll sign a version, but I want my general counsel to review the language first.' It's not a yes, but it's not a no.",
+              "effects": {
+                "trust": 2,
+                "morale": 1
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Be direct: if the university doesn't act, your organization will go public with a report documenting every antisemitic incident the administration has ignored. Frame it as a choice between leading and being led.",
+          "missionAligned": [
+            "antisemitism_left"
+          ],
+          "missionOpposed": [
+            "diaspora_unity"
+          ],
+          "outcomes": [
+            {
+              "text": "The president doesn't appreciate the pressure. 'Threatening me is not how you build partnerships.' She agrees to review the policy — but your relationship is damaged and she may water it down.",
+              "effects": {
+                "trust": -2,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "president",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Offer to co-brand the initiative as a university-community partnership, giving her office shared credit and shared ownership of the rollout.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The co-branding idea appeals to her. 'If we do this together, I can frame it as community engagement, not political capitulation.' She agrees to sign a joint announcement.",
+              "effects": {
+                "trust": 6,
+                "morale": 2,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_campus_coalition",
+                "checkpointId": "president",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_bds_sponsor",
+      "tag": "Sub-Mission",
+      "title": "Finding a Bill Sponsor",
+      "body": "Your legislative contacts have identified two possible sponsors for the anti-BDS bill. State Senator Martinez (R) is a reliable pro-Israel vote but carries baggage from a recent ethics investigation. Assemblymember Chen (D) is a moderate Democrat who'd give the bill bipartisan credibility but wants significant concessions on the bill's scope.",
+      "subMissionId": "sub_anti_bds_bill",
+      "categories": [
+        "all"
+      ],
+      "complexity": 3,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Go with Senator Martinez. He's committed, he has the votes on his side of the aisle, and the ethics issue will blow over. Speed matters more than optics.",
+          "missionAligned": [
+            "israel_security",
+            "antisemitism_left"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Martinez agrees immediately and files the bill the next week. But the Democratic caucus frames it as 'the ethics-scandal senator's distraction bill.' You have a sponsor but a messaging problem.",
+              "effects": {
+                "donors": 3,
+                "trust": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Court Assemblymember Chen. A bipartisan bill is stronger politically and legally. Accept her scope revisions — targeting discriminatory boycotts broadly, not just Israel-specific ones.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "Chen agrees to sponsor a broader anti-discrimination bill that includes the anti-BDS provision. It's less explicitly pro-Israel, but it has bipartisan backing and is harder for the ACLU to oppose.",
+              "effects": {
+                "trust": 4,
+                "donors": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Approach both simultaneously and let them compete for the sponsorship. Whoever commits first gets the bill.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Both legislators feel played. Martinez's chief of staff calls you 'amateurish' and Chen withdraws interest entirely. You've burned two relationships and have no sponsor.",
+              "effects": {
+                "trust": -3,
+                "donors": -2,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Ask your major donors to make the case directly — have three of your biggest contributors call both legislators and make clear the community is watching.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The donor pressure works. Martinez files the bill and Chen agrees to co-sponsor. But the progressive press writes about 'dark money behind anti-BDS legislation' and your methods become part of the story.",
+              "effects": {
+                "donors": 5,
+                "trust": -3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "sponsor",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_bds_committee",
+      "tag": "Sub-Mission",
+      "title": "The Committee Hearing",
+      "body": "The anti-BDS bill has its committee hearing tomorrow. The ACLU has submitted written testimony opposing it as a free-speech violation. Three committee members are undecided. You've been invited to testify. Your donors expect you to be forceful; your legal team warns you to be careful.",
+      "subMissionId": "sub_anti_bds_bill",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Testify with a focus on discrimination, not Israel. Frame BDS as economic discrimination against a country, comparable to boycotting businesses owned by other minority groups. Make the ACLU argument look inconsistent.",
+          "missionAligned": [
+            "antisemitism_all",
+            "israel_security"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your framing shifts the debate. Two of the three undecided members vote yes in committee. The ACLU representative looks uncomfortable defending boycotts as 'expression.' The bill advances.",
+              "effects": {
+                "trust": 4,
+                "donors": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "committee",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Be explicitly pro-Israel. Testify about the BDS movement's ties to groups that deny Israel's right to exist. Name names. Make this about existential threats.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [
+            "antisemitism_all"
+          ],
+          "outcomes": [
+            {
+              "text": "Your passionate testimony fires up pro-Israel supporters in the gallery. But one undecided member calls it 'advocacy, not testimony' and votes no. The bill still advances 5-3, but the margin is tighter than expected.",
+              "effects": {
+                "donors": 5,
+                "trust": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "committee",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Bring a panel of small business owners who've been affected by boycott campaigns. Let them testify instead of you. Make it personal, not political.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The business owners' testimony is powerful. One tells the committee about losing a catering contract because she's Israeli. All three undecided members vote yes. The bill passes committee unanimously.",
+              "effects": {
+                "trust": 5,
+                "morale": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "committee",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Skip the hearing and work the undecided members privately instead. Committee theatrics are for cameras; votes are won in hallways.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your absence from the hearing is noticed. The ACLU testimony goes unchallenged and one undecided member flips to no. The bill barely passes committee 4-3. Your donors are annoyed you weren't at the table.",
+              "effects": {
+                "trust": -2,
+                "donors": -2
+              },
+              "weight": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_bds_floor",
+      "tag": "Sub-Mission",
+      "title": "The Floor Vote",
+      "body": "The anti-BDS bill is headed to the full legislature for a floor vote. You have a slim majority, but a last-minute amendment has been proposed that would add a 'sunset clause' — the bill expires in two years unless renewed. Supporters see it as a compromise; opponents see it as a way to kill the bill slowly. Three swing votes are watching your reaction.",
+      "subMissionId": "sub_anti_bds_bill",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Accept the sunset clause. A two-year bill that passes is better than a permanent bill that fails. You can fight for renewal when the time comes.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The sunset clause brings two swing votes on board. The bill passes 52-46. Your donors are lukewarm — 'we wanted permanent' — but you delivered a legislative win. Renewal is your next campaign.",
+              "effects": {
+                "trust": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Reject the amendment publicly. The bill must be permanent or it sends the message that fighting BDS is temporary. Rally your base to pressure the swing votes.",
+          "missionAligned": [
+            "israel_security"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your hardline stance energizes your base but alienates the swing votes who wanted the compromise. The bill fails 48-50. You were two votes short. The blame game begins.",
+              "effects": {
+                "donors": -4,
+                "trust": -3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Work behind the scenes — call in favors with both legislators' chiefs of staff. Offer political cover: arrange a separate Israel resolution the amendment sponsor can champion.",
+          "missionAligned": [
+            "israel_security",
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your backroom dealing works. The amendment sponsor withdraws it in exchange for the separate resolution. The bill passes without the sunset clause, 51-47. Your political skills are noted.",
+              "effects": {
+                "trust": 4,
+                "donors": 5
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Propose your own amendment: instead of a sunset clause, add a mandatory review and public report on the bill's impact after two years. Accountability without expiration.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The review-clause compromise satisfies the swing votes without weakening the bill. It passes 54-44 — a comfortable margin. Both sides claim victory, which in politics means you actually won.",
+              "effects": {
+                "trust": 5,
+                "donors": 3,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_anti_bds_bill",
+                "checkpointId": "floor_vote",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_tf_governor",
+      "tag": "Sub-Mission",
+      "title": "Pitching the Governor",
+      "body": "You've secured a fifteen-minute meeting with the governor to pitch the bipartisan antisemitism task force. Her chief of staff has warned you: the governor is interested but worried about getting dragged into 'the Israel thing.' She wants to fight antisemitism without touching the third rail of Middle East politics.",
+      "subMissionId": "sub_task_force",
+      "categories": [
+        "all"
+      ],
+      "complexity": 3,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Pitch the task force as a law-enforcement and education initiative — security grants for synagogues, Holocaust education in schools, bias-crime tracking. Keep Israel out of the conversation entirely.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The governor lights up. 'Security and education — that I can sell to both caucuses.' She asks you to draft a proposal by next week. You have her interest.",
+              "effects": {
+                "trust": 4,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "governor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Be honest: antisemitism in America is inseparable from the Israel debate. A task force that ignores it will look like it's avoiding the hardest questions. She needs to be brave.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The governor respects your honesty but pushes back: 'Brave gets you a news cycle. Effective gets you a task force.' She's still interested but wants a narrower scope. You'll need to negotiate.",
+              "effects": {
+                "trust": 2,
+                "donors": -1
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Frame it as the governor's legacy project — 'the first bipartisan antisemitism initiative in the state's history.' Appeal to her ambition, not her caution.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "She likes the legacy angle. 'First in the state? I can work with that.' She tells her chief of staff to find it in the budget. You're moving forward — but the 'legacy' framing means she'll want her name on everything.",
+              "effects": {
+                "trust": 3,
+                "morale": 1,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "governor",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Bring data: charts showing the rise in antisemitic incidents statewide, the economic cost, the FBI threat assessments. Let the numbers make the case.",
+          "missionAligned": [
+            "antisemitism_all",
+            "antisemitism_right"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The data is compelling. The governor's policy director starts taking notes. 'Put together a one-pager and send it to my office. I want to move on this before the session ends.' You have a committed partner.",
+              "effects": {
+                "trust": 5,
+                "morale": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "governor",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_tf_membership",
+      "tag": "Sub-Mission",
+      "title": "Negotiating the Task Force Membership",
+      "body": "The governor's office has sent you a draft membership list for the task force. It includes three slots you can influence. The Republican caucus wants a prominent pro-Israel advocate. The Democratic caucus wants a progressive civil-rights leader who has been critical of Israel. Both are threatening to pull support if the other side 'dominates.'",
+      "subMissionId": "sub_task_force",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Propose a balanced slate: one from each side, plus a nonpartisan academic who studies antisemitism. Frame the academic as the 'tiebreaker' that keeps the task force credible.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Both caucuses accept the balanced approach. The academic — a well-regarded Georgetown professor — gives the task force intellectual credibility. Neither side got everything, but neither side walked.",
+              "effects": {
+                "trust": 5,
+                "morale": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Lean toward the Republican pick. The pro-Israel advocate will ensure the task force takes seriously the forms of antisemitism your donors care most about.",
+          "missionAligned": [
+            "israel_security",
+            "antisemitism_left"
+          ],
+          "missionOpposed": [
+            "social_justice"
+          ],
+          "outcomes": [
+            {
+              "text": "The pro-Israel advocate is appointed. Democrats are furious — 'This isn't bipartisan, it's a pro-Israel talking shop.' Two Democratic members threaten to resign before the first meeting.",
+              "effects": {
+                "donors": 4,
+                "trust": -4,
+                "morale": -2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "damage"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Lean toward the Democratic pick. Including a progressive critic of Israel signals that the task force won't be used to silence dissent — and that's worth the discomfort.",
+          "missionAligned": [
+            "social_justice",
+            "israel_peace"
+          ],
+          "missionOpposed": [
+            "israel_security"
+          ],
+          "outcomes": [
+            {
+              "text": "The civil-rights leader's appointment is praised by progressives and condemned by pro-Israel groups. Your donors send worried emails. But the task force has progressive credibility it wouldn't otherwise have.",
+              "effects": {
+                "trust": 3,
+                "morale": 2,
+                "donors": -4
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Suggest expanding the task force by two seats — one for each caucus's pick plus a community representative. More seats, more consensus.",
+          "missionAligned": [
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The expansion is accepted. Both caucuses get their pick, and you get to add a grassroots community leader. The task force is larger than planned but more representative. The governor's staff grumbles about logistics.",
+              "effects": {
+                "trust": 4,
+                "morale": 1
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "membership",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sub_tf_announcement",
+      "tag": "Sub-Mission",
+      "title": "The Task Force Announcement",
+      "body": "The governor is ready to announce the antisemitism task force at a press conference next week. But a leaked draft of the announcement has already hit social media. Progressive groups are calling it 'a tool to criminalize criticism of Israel.' Conservative media is calling it 'performative wokeness.' Both narratives are gaining traction. The governor's office is getting nervous.",
+      "subMissionId": "sub_task_force",
+      "categories": [
+        "all"
+      ],
+      "complexity": 4,
+      "choices": [
+        {
+          "id": "c0",
+          "text": "Get ahead of the narrative: brief friendly reporters from both sides with embargoed details that counter the leaked draft's distortions. Shape the coverage before the press conference.",
+          "missionAligned": [
+            "antisemitism_all"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "Your pre-briefing strategy works. Morning-of coverage frames the task force as 'a rare bipartisan effort' rather than a political weapon. The governor's team is relieved. The press conference goes smoothly.",
+              "effects": {
+                "trust": 5,
+                "morale": 3,
+                "donors": 2
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "announcement",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c1",
+          "text": "Call the governor and tell her to delay the announcement until the social media storm passes. Better to launch quietly than into a firestorm.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The delay signals weakness. Both sides claim they 'killed' the task force. The governor's office is frustrated with you. She'll still do it, but your standing as a trusted partner has taken a hit.",
+              "effects": {
+                "trust": -3,
+                "morale": -2
+              },
+              "weight": 100
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "text": "Organize a rapid-response coalition: get five prominent voices from across the political spectrum to co-sign a statement supporting the task force before the press conference.",
+          "missionAligned": [
+            "antisemitism_all",
+            "diaspora_unity"
+          ],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The coalition statement drops at 7 AM. By the time the press conference starts at 10, the narrative has shifted from 'controversial' to 'broadly supported.' The governor is visibly grateful at the podium.",
+              "effects": {
+                "trust": 6,
+                "morale": 4,
+                "donors": 3
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "announcement",
+                "action": "advance"
+              }
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "text": "Ignore the noise and let the press conference speak for itself. The task force's merits will be obvious once people hear the details. Don't dignify the critics with a response.",
+          "missionAligned": [],
+          "missionOpposed": [],
+          "outcomes": [
+            {
+              "text": "The press conference is competent but the coverage is dominated by the prior controversy. The headline isn't 'Governor Launches Task Force' — it's 'Governor Pushes Ahead Despite Opposition.' The task force launches but with a cloud over it.",
+              "effects": {
+                "trust": 1,
+                "morale": -1
+              },
+              "weight": 100,
+              "subMissionCheckpoint": {
+                "subMissionId": "sub_task_force",
+                "checkpointId": "announcement",
+                "action": "advance"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "inboxScenarios": [
@@ -13392,9 +14341,1584 @@ var EDITOR_DATA =
           "text": "Howard Feldstein pulls his entire gift. Two other families follow. Your donor representative tells the board chair privately that ‘the executive director doesn’t understand donor relations.’ Your budget next year will have a $400,000 hole."
         }
       ]
+    },
+    {
+      "id": "call_tali_strategy",
+      "type": "advisor",
+      "advisorId": "community_organizer",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Community Organizing Strategy"
+      },
+      "applicableOrgs": [
+        "left"
+      ],
+      "callableBy": [
+        "left"
+      ],
+      "startDisposition": 55,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "Good, you called. I've been thinking about our coalition-building approach. We have two paths right now: we can go deep with a few committed allies, or go wide and try to build a broader but thinner coalition. What's your instinct?",
+          "responses": [
+            {
+              "text": "Go deep. I'd rather have five organizations that will show up when it matters than fifty that signed a letter and disappeared.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n1_deep"
+            },
+            {
+              "text": "Go wide. We need numbers to show the community we're not alone. Depth can come later.",
+              "approach": "Pragmatic",
+              "dispositionDelta": 5,
+              "next": "n1_wide"
+            },
+            {
+              "text": "What do you think? You've been doing this longer than I have.",
+              "approach": "Defer",
+              "dispositionDelta": 8,
+              "next": "n1_defer"
+            }
+          ]
+        },
+        "n1_deep": {
+          "characterLine": "I like that. Let me tell you what I'm seeing on the ground. The racial justice groups are nervous about being seen as 'pro-Israel' if they work with us. But they care about hate crimes — that's our entry point. Should I lead with antisemitism or with the broader hate-crime framing?",
+          "responses": [
+            {
+              "text": "Lead with hate crimes broadly, then work antisemitism into the conversation naturally. Don't ask them to sign up for something they're not ready for.",
+              "approach": "Patient",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "Be upfront about antisemitism from the start. If they can't handle that word, they're not real allies.",
+              "approach": "Direct",
+              "dispositionDelta": -3,
+              "next": "n2_tense"
+            },
+            {
+              "text": "Let them set the framing. We join their coalition on their terms, and over time we earn the right to add our issues.",
+              "approach": "Yielding",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n1_wide": {
+          "characterLine": "OK, numbers it is. I can get us endorsements from the teachers' union, two churches, and the city council's progressive caucus. But none of them will put antisemitism in their endorsement language — they'll say 'hate' generically. Is that good enough?",
+          "responses": [
+            {
+              "text": "For now, yes. Getting them in the tent matters more than getting the wording perfect.",
+              "approach": "Pragmatic",
+              "dispositionDelta": 8,
+              "next": "n2_ok"
+            },
+            {
+              "text": "No. If they can't name antisemitism, what are they actually endorsing? Push for specific language.",
+              "approach": "Principled",
+              "dispositionDelta": -2,
+              "next": "n2_tense"
+            },
+            {
+              "text": "Get the endorsements with generic language, but separately ask each to add a one-line statement about antisemitism on their own platforms.",
+              "approach": "Creative",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            }
+          ]
+        },
+        "n1_defer": {
+          "characterLine": "Honestly? I think we need both, but in sequence. Go deep with three or four groups first — build something real — then use that as proof of concept to go wide. The broad coalition sees the deep one working and wants in.",
+          "responses": [
+            {
+              "text": "That's smart. Let's start with the groups you trust most. Who are your top three?",
+              "approach": "Trust",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "I hear you, but we don't have time for a phased approach. We need to move on multiple fronts now.",
+              "approach": "Urgent",
+              "dispositionDelta": 2,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n2_good": {
+          "characterLine": "This is good. I feel like we're actually building something here — not just reacting to crises. I'll start making calls today. One more thing: I think we should consider a joint op-ed with one of our non-Jewish allies. It sends a powerful signal. I have someone in mind.",
+          "responses": [
+            {
+              "text": "Do it. A joint op-ed from us and a civil rights ally would be worth more than ten press releases.",
+              "approach": "Enthusiastic",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Let me see a draft first. I want to make sure we're not giving away too much of our message to make them comfortable.",
+              "approach": "Careful",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_ok": {
+          "characterLine": "Alright, I'll work with what we've got. I think we're making progress even if it doesn't feel fast enough. Anything else you need from me this week?",
+          "responses": [
+            {
+              "text": "Just keep doing what you're doing. I trust your judgment on the ground.",
+              "approach": "Supportive",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "Send me a weekly report on who you've talked to and what commitments we've secured.",
+              "approach": "Managerial",
+              "dispositionDelta": -2,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_tense": {
+          "characterLine": "Look, I get where you're coming from, but if we draw every line in the sand right now, we'll be standing alone on a very small island. I'll do my best, but don't be surprised if some doors close.",
+          "responses": [
+            {
+              "text": "You're right, I'm pushing too hard. Let's find a middle ground.",
+              "approach": "Concede",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "I'd rather have fewer allies who actually stand with us than a crowd that disappears when things get hard.",
+              "approach": "Firm",
+              "dispositionDelta": -5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Productive Strategy Session",
+          "text": "Tali leaves the call energized and aligned with your vision. Her ground-level organizing will be more effective with clear direction from leadership.",
+          "effects": {
+            "trust": 4,
+            "morale": 3
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 45,
+          "heading": "A Decent Check-In",
+          "text": "The call was useful but not transformative. Tali will keep working her contacts, though you sense she wishes you'd given her more room to operate.",
+          "effects": {
+            "morale": 2
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Tense Exchange",
+          "text": "Tali is frustrated by what she sees as micromanagement and rigidity. She'll do the work, but the spark is dimming.",
+          "effects": {
+            "morale": -2,
+            "trust": -1
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_leonard_fundraising",
+      "type": "advisor",
+      "advisorId": "major_donor_rep",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Donor Relations & Fundraising"
+      },
+      "applicableOrgs": [
+        "right"
+      ],
+      "callableBy": [
+        "right"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "Thanks for the call. Let me cut to the chase — I've been hearing from three of our major donors. They're not unhappy yet, but they're asking questions. 'What are we getting for our money?' That kind of thing. How do you want to handle it?",
+          "responses": [
+            {
+              "text": "Set up one-on-one dinners with each of them. Personal attention is worth more than any report. I'll attend all three.",
+              "approach": "Relationship",
+              "dispositionDelta": 12,
+              "next": "n1_personal"
+            },
+            {
+              "text": "Prepare a detailed impact report showing exactly what their donations have achieved this year. Data speaks louder than wine.",
+              "approach": "Analytical",
+              "dispositionDelta": 8,
+              "next": "n1_report"
+            },
+            {
+              "text": "Are they threatening to reduce their gifts, or just grumbling? There's a difference.",
+              "approach": "Probe",
+              "dispositionDelta": 5,
+              "next": "n1_probe"
+            }
+          ]
+        },
+        "n1_personal": {
+          "characterLine": "Good instinct. Now, one of these donors — Ruth Abramowitz — she's been talking about earmarking her gift for Israel advocacy specifically. The last director wouldn't let her. What's your position?",
+          "responses": [
+            {
+              "text": "If she wants to earmark, let her. A restricted gift is better than no gift, and it aligns with our mission anyway.",
+              "approach": "Flexible",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "No earmarks. We need unrestricted dollars to operate effectively. Explain to her that our Israel work is a core priority regardless.",
+              "approach": "Principled",
+              "dispositionDelta": 2,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Offer a compromise: she can designate her gift toward our Israel programming, but we define what that means operationally.",
+              "approach": "Creative",
+              "dispositionDelta": 8,
+              "next": "n2_good"
+            }
+          ]
+        },
+        "n1_report": {
+          "characterLine": "I can put that together. But honestly, what they really want to hear is that we're making a difference on Israel specifically. Our general anti-hate work doesn't excite them the way a legislative win on anti-BDS would. Can I lean into the Israel angle in the report?",
+          "responses": [
+            {
+              "text": "Absolutely. Our Israel advocacy is our strongest suit with these donors. Lead with it.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "Include it prominently but don't make it the whole story. We fight antisemitism on every front, not just the Israel front.",
+              "approach": "Balanced",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Be honest about what we've accomplished and what we haven't. If the report oversells, they'll find out.",
+              "approach": "Transparent",
+              "dispositionDelta": 3,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n1_probe": {
+          "characterLine": "Grumbling, mostly. But in donor world, grumbling in January becomes reduced giving in June. I've seen it before. The question is: do you want to be proactive or wait until it becomes a problem?",
+          "responses": [
+            {
+              "text": "Proactive. Always proactive. What do you recommend?",
+              "approach": "Action",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "Let's not overreact. If they're just grumbling, a strong year-end report will settle them down.",
+              "approach": "Calm",
+              "dispositionDelta": 0,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n2_good": {
+          "characterLine": "Perfect. I also want to float something: there's a tech executive — new to the Jewish philanthropy world — who's interested in our work. She's worth cultivating but she's progressive on Israel. Could be a big get, could be a complication. Your call.",
+          "responses": [
+            {
+              "text": "Set up a meeting. We need to diversify our donor base, and a tech executive brings networks we don't have.",
+              "approach": "Expansive",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Not right now. Our existing donors are already asking questions — adding a progressive voice to the mix will make them nervous.",
+              "approach": "Conservative",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_ok": {
+          "characterLine": "Alright. I'll handle what I can on my end. Just remember — donor relationships are like gardens. Neglect them and they don't die overnight, they just slowly stop producing.",
+          "responses": [
+            {
+              "text": "Noted. Keep me posted on any changes in sentiment, even small ones.",
+              "approach": "Attentive",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "I hear you, Leonard. We've got a lot on our plate but donors are the priority.",
+              "approach": "Reassure",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Strong Fundraising Alignment",
+          "text": "Leonard is energized by your engagement. He'll personally reach out to the three donors and you'll likely see increased giving this quarter.",
+          "effects": {
+            "donors": 5,
+            "morale": 2
+          },
+          "budgetEffect": 10
+        },
+        {
+          "minDisposition": 45,
+          "heading": "A Routine Check-In",
+          "text": "The call was fine but didn't move the needle much. Leonard will manage the donor relationships as usual.",
+          "effects": {
+            "donors": 2
+          },
+          "budgetEffect": 3
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Missed Opportunity",
+          "text": "Leonard is disappointed by your passivity. He'll keep the donors from leaving but the enthusiasm gap is widening.",
+          "effects": {
+            "donors": -2
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_rachel_board",
+      "type": "advisor",
+      "advisorId": "board_chair",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Board Management & Strategy"
+      },
+      "applicableOrgs": [
+        "center"
+      ],
+      "callableBy": [
+        "center"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "I'm glad you called. The board meeting is next week and I want to make sure we're aligned. There are two issues that are going to dominate: the budget shortfall and the question of whether we should take a position on the latest IHRA controversy. Which do you want to tackle first?",
+          "responses": [
+            {
+              "text": "Budget first. If we don't have the money, nothing else matters.",
+              "approach": "Practical",
+              "dispositionDelta": 8,
+              "next": "n1_budget"
+            },
+            {
+              "text": "IHRA first. The budget is a spreadsheet problem; the IHRA question could define our organization for years.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n1_ihra"
+            },
+            {
+              "text": "Let's talk about both — I need your read on where the board stands before I walk in there.",
+              "approach": "Prepared",
+              "dispositionDelta": 6,
+              "next": "n1_both"
+            }
+          ]
+        },
+        "n1_budget": {
+          "characterLine": "The shortfall is about $40,000. We can close it by cutting the spring gala, which nobody likes anyway, or by asking three board members for bridge gifts. The gala cut is permanent savings; the bridge gifts are a one-time fix. What's your preference?",
+          "responses": [
+            {
+              "text": "Cut the gala. It costs us more in staff time than it raises. Permanent savings is the right structural move.",
+              "approach": "Decisive",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "Ask for bridge gifts. The gala has symbolic value even if it's not a money-maker. Cutting it sends the wrong signal to the community.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Do both — cut the gala AND ask for bridge gifts. Build a reserve so we're not in this position again next year.",
+              "approach": "Ambitious",
+              "dispositionDelta": 8,
+              "next": "n2_good"
+            }
+          ]
+        },
+        "n1_ihra": {
+          "characterLine": "The board is split down the middle on IHRA. Three want us to endorse it publicly, three think it's too controversial, and two are genuinely undecided. If you walk in without a position, both sides will try to claim you. What are you going to say?",
+          "responses": [
+            {
+              "text": "I'll recommend we endorse IHRA with a qualifying statement that distinguishes antisemitism from legitimate policy debate about Israel. Threading the needle.",
+              "approach": "Nuanced",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "I'll recommend we don't take a position as an organization. Individual board members can endorse personally, but the org stays neutral.",
+              "approach": "Neutral",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            },
+            {
+              "text": "I'll listen to both sides at the meeting and make a decision after. I don't want to walk in with my mind made up.",
+              "approach": "Open",
+              "dispositionDelta": 3,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n1_both": {
+          "characterLine": "On budget, we're $40K short. On IHRA, the board is split 3-3-2. The undecideds will follow your lead. My honest advice? Pick one battle for this meeting and table the other. You can't win two fights in one session.",
+          "responses": [
+            {
+              "text": "Good advice. Let's solve the budget this meeting and schedule a special session on IHRA when we can give it the time it deserves.",
+              "approach": "Wise",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "I disagree — I think we can handle both if we structure the agenda right. Give me 20 minutes on budget, 40 on IHRA.",
+              "approach": "Confident",
+              "dispositionDelta": 3,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Which one do YOU think is more urgent?",
+              "approach": "Defer",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n2_good": {
+          "characterLine": "I feel good about this. One more thing — two board members have been whispering about whether you're 'too political' for a centrist org. I've pushed back, but you should know it's out there. My advice: at the meeting, make at least one comment that demonstrates you see both sides. It'll quiet the whispers.",
+          "responses": [
+            {
+              "text": "Appreciate the heads up. I'll make sure to acknowledge the tension between engagement and neutrality — show them I'm aware of the tightrope.",
+              "approach": "Savvy",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Let them whisper. My job is to lead, not to be liked. If they have concerns, they can bring them to me directly.",
+              "approach": "Bold",
+              "dispositionDelta": -3,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_ok": {
+          "characterLine": "Alright. I'll make sure the agenda is tight and the right people are seated next to each other. Board dynamics are half the battle. See you next week.",
+          "responses": [
+            {
+              "text": "Thanks, Rachel. Your institutional knowledge is invaluable. I mean that.",
+              "approach": "Grateful",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "See you there. Let me know if anything changes between now and then.",
+              "approach": "Professional",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Well-Prepared Leader",
+          "text": "Rachel is confident you'll handle the board meeting well. Her pre-briefing gives you a significant advantage — you'll walk in knowing where every vote stands.",
+          "effects": {
+            "trust": 4,
+            "morale": 3,
+            "donors": 2
+          },
+          "budgetEffect": 5
+        },
+        {
+          "minDisposition": 45,
+          "heading": "A Decent Prep Session",
+          "text": "The call was helpful but Rachel senses you're still figuring out the board dynamics. She'll be supportive at the meeting but isn't sure you have the votes on IHRA.",
+          "effects": {
+            "trust": 2,
+            "morale": 1
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Concerning Disconnect",
+          "text": "Rachel is worried you're not reading the board correctly. She'll do damage control behind the scenes, but the meeting may not go the way you expect.",
+          "effects": {
+            "trust": -2,
+            "morale": -1,
+            "donors": -1
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_tali_fundraising",
+      "type": "advisor",
+      "advisorId": "community_organizer",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Progressive Fundraising"
+      },
+      "applicableOrgs": [
+        "left"
+      ],
+      "callableBy": [
+        "left"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "So fundraising. I know it's not my specialty, but I've been thinking — we're leaving money on the table with our grassroots base. Small-dollar donors give more when they feel like they're part of a movement, not just writing a check. What if we launched a monthly giving program tied to specific campaigns?",
+          "responses": [
+            {
+              "text": "I love that. A recurring-donor program with campaign updates would build real community. Let's design it.",
+              "approach": "Enthusiastic",
+              "dispositionDelta": 12,
+              "next": "n1_good"
+            },
+            {
+              "text": "Small-dollar is nice but we need major gifts to survive. Can you help me get meetings with progressive foundations instead?",
+              "approach": "Redirect",
+              "dispositionDelta": 3,
+              "next": "n1_redirect"
+            },
+            {
+              "text": "What numbers are we talking about? I need to know if this is worth the staff time.",
+              "approach": "Analytical",
+              "dispositionDelta": 5,
+              "next": "n1_numbers"
+            }
+          ]
+        },
+        "n1_good": {
+          "characterLine": "I already have a list of 200 people from our last rally who asked 'how can I help beyond showing up.' That's our seed list. If even half convert to monthly donors at $25, that's $2,500 a month — not nothing.",
+          "responses": [
+            {
+              "text": "Start reaching out. I'll get the dev team to set up the infrastructure.",
+              "approach": "Action",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Draft a pitch and show me before you send anything. I want to make sure the messaging is right.",
+              "approach": "Careful",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_redirect": {
+          "characterLine": "I can try, but honestly, foundation work isn't my lane. I know people at the grassroots level. If you want foundation meetings, that's more Miriam's territory. I can help you build a donor base that doesn't depend on any single major gift.",
+          "responses": [
+            {
+              "text": "Fair enough. Let's try both — you build the grassroots pipeline, I'll work the foundations separately.",
+              "approach": "Inclusive",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "OK, focus on what you know. Get me a grassroots fundraising plan by next week.",
+              "approach": "Direct",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_numbers": {
+          "characterLine": "Based on comparable orgs, a grassroots monthly program could generate $3,000-$5,000 per month within six months. Setup cost is mostly staff time — about 20 hours to build the list, create the materials, and launch. After that it's low-maintenance.",
+          "responses": [
+            {
+              "text": "The ROI is solid. Green light — build it.",
+              "approach": "Decisive",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's pilot it with 50 people first before we commit. Proof of concept.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "A New Revenue Stream",
+          "text": "Tali's grassroots fundraising initiative has real potential. Her energy and your buy-in could build a sustainable small-dollar donor base.",
+          "effects": {
+            "donors": 3,
+            "morale": 2
+          },
+          "budgetEffect": 5
+        },
+        {
+          "minDisposition": 40,
+          "heading": "An Idea on the Table",
+          "text": "The fundraising conversation was productive but noncommittal. Tali will explore options but needs more direction.",
+          "effects": {
+            "morale": 1
+          },
+          "budgetEffect": 2
+        },
+        {
+          "minDisposition": 0,
+          "heading": "Missed Connection",
+          "text": "Tali feels her fundraising instincts were dismissed. She'll stick to organizing.",
+          "effects": {
+            "morale": -1
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_tali_campus",
+      "type": "advisor",
+      "advisorId": "community_organizer",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Campus Outreach"
+      },
+      "applicableOrgs": [
+        "left"
+      ],
+      "callableBy": [
+        "left"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I've been hearing from students at the university. There's a lot of anxiety — Jewish students feel caught between the Hillel crowd and the progressive activist crowd. They want a third option. We could be that option if we show up right.",
+          "responses": [
+            {
+              "text": "What does 'showing up right' look like? I don't want to parachute in — we need to be invited.",
+              "approach": "Respectful",
+              "dispositionDelta": 12,
+              "next": "n1_invited"
+            },
+            {
+              "text": "Set up a town hall on campus. Let's get the students in a room and hear what they actually need.",
+              "approach": "Bold",
+              "dispositionDelta": 8,
+              "next": "n1_townhall"
+            },
+            {
+              "text": "Is this the best use of our time? We have a lot on our plate already.",
+              "approach": "Hesitant",
+              "dispositionDelta": -3,
+              "next": "n1_hesitant"
+            }
+          ]
+        },
+        "n1_invited": {
+          "characterLine": "I know three student leaders who've been asking for exactly this. If I introduce you, they'll set up the meeting themselves. We just need to show up, listen, and not try to control the conversation.",
+          "responses": [
+            {
+              "text": "Perfect. Make the introduction. I'll clear my calendar for whenever they want to meet.",
+              "approach": "Committed",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let me talk to them first by phone before we commit to anything in person.",
+              "approach": "Cautious",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_townhall": {
+          "characterLine": "A town hall could work, but it could also blow up. Campus events on Jewish identity tend to get heated. If we do it, we need a skilled moderator and clear ground rules. I can find the moderator if you handle the venue.",
+          "responses": [
+            {
+              "text": "Deal. Let's plan it for next month — gives us time to do it right.",
+              "approach": "Organized",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "On second thought, maybe something smaller first. A dinner, not a town hall.",
+              "approach": "Scale back",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_hesitant": {
+          "characterLine": "I hear you, but these students are the next generation of our community. If we're not there for them now, someone else will be — and it might be someone we don't agree with.",
+          "responses": [
+            {
+              "text": "You're right. Let's find a way to make time for this. What's the minimum viable engagement?",
+              "approach": "Concede",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Put together a one-pager on what campus outreach would look like and what it would cost us. I'll review it.",
+              "approach": "Process",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Campus Doors Opening",
+          "text": "Tali's campus connections could give your organization a meaningful presence with Jewish students who feel politically homeless.",
+          "effects": {
+            "trust": 3,
+            "morale": 2
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "A Possibility",
+          "text": "The campus conversation showed potential but needs follow-through. Students are watching to see if you're serious.",
+          "effects": {
+            "trust": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Missed Generation",
+          "text": "Tali is frustrated that campus outreach isn't a priority. The students will look elsewhere.",
+          "effects": {
+            "trust": -1,
+            "morale": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_leonard_israel",
+      "type": "advisor",
+      "advisorId": "major_donor_rep",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Israel Advocacy Strategy"
+      },
+      "applicableOrgs": [
+        "right"
+      ],
+      "callableBy": [
+        "right"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I want to talk about our Israel messaging. We're in a tough spot — the old playbook of 'unconditional support' is losing the under-40 crowd, but our donors over 60 won't accept anything less. How do we thread this?",
+          "responses": [
+            {
+              "text": "We need a two-track approach — one message for donors, another for the broader community. It's not dishonest, it's audience-appropriate.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n1_twotrack"
+            },
+            {
+              "text": "We don't change the message. Our donors are our base and our base supports Israel fully. The young people will come around.",
+              "approach": "Hold firm",
+              "dispositionDelta": 5,
+              "next": "n1_firm"
+            },
+            {
+              "text": "What if we frame it as 'pro-Israel AND pro-peace'? It lets us keep the core commitment while acknowledging complexity.",
+              "approach": "Reframe",
+              "dispositionDelta": 8,
+              "next": "n1_reframe"
+            }
+          ]
+        },
+        "n1_twotrack": {
+          "characterLine": "That could work, but it's risky. If a donor sees the community-facing message and thinks we've gone soft, we'll hear about it. I can manage that — but only if you keep me in the loop on every public statement about Israel before it goes out.",
+          "responses": [
+            {
+              "text": "Done. You'll see every Israel-related statement 24 hours before publication.",
+              "approach": "Trust",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "I'll keep you informed but I can't give you veto power over our communications.",
+              "approach": "Boundary",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_firm": {
+          "characterLine": "I respect the consistency. But I'm telling you, we're going to lose the next generation if we don't at least acknowledge their concerns. I've seen it in my own family — my granddaughter stopped going to AIPAC events.",
+          "responses": [
+            {
+              "text": "Maybe we can create a 'next generation' program that lets young people engage with Israel on their own terms, without changing our core advocacy.",
+              "approach": "Creative",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Your granddaughter will come back when she has kids and needs to explain why Israel matters. They always do.",
+              "approach": "Dismissive",
+              "dispositionDelta": -5,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_reframe": {
+          "characterLine": "Pro-Israel AND pro-peace... I can sell that to most of our donors. The hardliners won't love it, but they're maybe 15% of our base. If we lose 15% but gain 30% of the younger demographic, that's a net win.",
+          "responses": [
+            {
+              "text": "Run the numbers and let's make the case to the board. If the math works, we pivot.",
+              "approach": "Data-driven",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's test it quietly first — a few social media posts, see how the reaction lands.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Messaging Breakthrough",
+          "text": "Leonard sees a path forward on Israel messaging that could expand your reach without losing your base. His donor management skills are your insurance policy.",
+          "effects": {
+            "donors": 3,
+            "trust": 2
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Work in Progress",
+          "text": "The Israel conversation surfaced real tensions but no resolution yet. Leonard will keep managing donors while you figure out the messaging.",
+          "effects": {
+            "donors": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Rift Forming",
+          "text": "Leonard worries you're either too rigid or too soft on Israel. Either way, donor confidence is shaky.",
+          "effects": {
+            "donors": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_leonard_media",
+      "type": "advisor",
+      "advisorId": "major_donor_rep",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Managing Media Pressure"
+      },
+      "applicableOrgs": [
+        "right"
+      ],
+      "callableBy": [
+        "right"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "We need to talk about the media situation. Progressive outlets keep framing us as 'the right-wing Israel lobby' and it's starting to stick. Two potential new donors told me they Googled us before their meeting and got cold feet. What's our media strategy?",
+          "responses": [
+            {
+              "text": "We need a proactive media campaign — op-eds, interviews, human interest stories that show the full range of our work, not just Israel advocacy.",
+              "approach": "Proactive",
+              "dispositionDelta": 12,
+              "next": "n1_proactive"
+            },
+            {
+              "text": "Ignore it. Our people don't read those outlets. Chasing progressive media approval is a waste of time.",
+              "approach": "Dismiss",
+              "dispositionDelta": -2,
+              "next": "n1_ignore"
+            },
+            {
+              "text": "Can we get a friendly reporter to write a more balanced profile? Someone at the Jewish press who knows the nuance?",
+              "approach": "Targeted",
+              "dispositionDelta": 8,
+              "next": "n1_targeted"
+            }
+          ]
+        },
+        "n1_proactive": {
+          "characterLine": "Good. I know an editor at the Wall Street Journal op-ed page who owes me a favor. And we should get you on a podcast — there's a Jewish leadership podcast with 50,000 listeners. Both would reshape how people find us online.",
+          "responses": [
+            {
+              "text": "Set up both. I'll write the op-ed this week if you can get me the contact.",
+              "approach": "Committed",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "The podcast yes, the WSJ op-ed might be too political. Can we find something more centrist?",
+              "approach": "Moderate",
+              "dispositionDelta": 4,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_ignore": {
+          "characterLine": "I hear you, but Google doesn't care who our people are. When someone searches our name, the first three results define us. Right now those results aren't flattering. This is a practical problem, not a media relations exercise.",
+          "responses": [
+            {
+              "text": "OK, you've convinced me. What's the cheapest way to improve our search results?",
+              "approach": "Practical",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Fine, hire a PR consultant. But I'm not changing our positions to please reporters.",
+              "approach": "Grudging",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_targeted": {
+          "characterLine": "I know someone at the Jewish Telegraphic Agency who's fair. She'd do a real profile — not a puff piece, but honest. The risk is she'll ask hard questions about our donor relationships. Are you comfortable with that?",
+          "responses": [
+            {
+              "text": "I can handle hard questions. Set it up. Transparency is better than mystery.",
+              "approach": "Confident",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let me prep for it first. Send me the five hardest questions she might ask and I'll practice my answers.",
+              "approach": "Prepared",
+              "dispositionDelta": 6,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Media Strategy Taking Shape",
+          "text": "Leonard's connections could reshape how your organization is perceived. Better media coverage means better donor pipeline.",
+          "effects": {
+            "trust": 3,
+            "donors": 2
+          },
+          "budgetEffect": 3
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Awareness Raised",
+          "text": "You're now aware of the media problem. Whether you act on it is another question.",
+          "effects": {
+            "trust": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "Head in the Sand",
+          "text": "Leonard is worried you're not taking the reputational risk seriously enough. Potential donors are still Googling — and still walking away.",
+          "effects": {
+            "trust": -1,
+            "donors": -2
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_rachel_controversy",
+      "type": "advisor",
+      "advisorId": "board_chair",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Navigating Controversies"
+      },
+      "applicableOrgs": [
+        "center"
+      ],
+      "callableBy": [
+        "center"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I wanted to talk about how we handle the next controversy — because there will be one. Every time something blows up, we're scrambling. I think we need a crisis communication protocol before we need it. What's your instinct on response time?",
+          "responses": [
+            {
+              "text": "We should aim for a public statement within 4 hours of any major incident. Speed matters more than perfection in the first response.",
+              "approach": "Fast",
+              "dispositionDelta": 8,
+              "next": "n1_fast"
+            },
+            {
+              "text": "Take 24 hours minimum. A thoughtful response beats a hasty one. Our credibility is built on being the adults in the room.",
+              "approach": "Deliberate",
+              "dispositionDelta": 10,
+              "next": "n1_slow"
+            },
+            {
+              "text": "It depends on the crisis. Some need immediate response, others need careful deliberation. Can we categorize by severity?",
+              "approach": "Structured",
+              "dispositionDelta": 12,
+              "next": "n1_tiered"
+            }
+          ]
+        },
+        "n1_fast": {
+          "characterLine": "Four hours is ambitious. We'd need pre-drafted templates and a clear approval chain. I can draft three templates — one for antisemitic incidents, one for Israel-related controversies, one for internal crises. You approve them now, and we just fill in the specifics when something hits.",
+          "responses": [
+            {
+              "text": "Brilliant. Draft them and I'll review by end of week. This could save us from so many slow-news-day disasters.",
+              "approach": "Aligned",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Templates feel too corporate for us. Can we have bullet-point guidelines instead of full drafts?",
+              "approach": "Flexible",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_slow": {
+          "characterLine": "I agree on principle, but there's a cost to silence. During the last incident, our 24-hour pause was interpreted as 'they don't care.' The news cycle moved on and our statement landed to an empty room. Maybe a 'holding statement' within 2 hours, then the real response within 24?",
+          "responses": [
+            {
+              "text": "That's a good compromise. A brief 'we're aware and will respond shortly' buys us time without looking absent.",
+              "approach": "Pragmatic",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Fine, but the holding statement should say as little as possible. 'We are monitoring the situation' — nothing more.",
+              "approach": "Minimal",
+              "dispositionDelta": 4,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_tiered": {
+          "characterLine": "I love the tiered approach. Tier 1 — antisemitic violence or direct threats: immediate response. Tier 2 — political controversies: 12-hour window. Tier 3 — cultural disputes: 48 hours. Does that framework work?",
+          "responses": [
+            {
+              "text": "That's exactly right. Let's formalize it and share it with the board so everyone knows the protocol.",
+              "approach": "Systematic",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Good framework, but let's keep it internal. I don't want the board second-guessing our response times.",
+              "approach": "Guarded",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Crisis Playbook Ready",
+          "text": "Rachel's crisis protocol gives you a real advantage — next time something hits, you'll respond with confidence instead of panic.",
+          "effects": {
+            "trust": 3,
+            "morale": 3
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Good Intentions",
+          "text": "The crisis conversation was productive but the protocol isn't locked yet. When the next incident comes, you'll be better prepared but not fully ready.",
+          "effects": {
+            "trust": 1,
+            "morale": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "Still Unprepared",
+          "text": "Rachel is concerned that your organization still has no crisis protocol. The next controversy will catch you flat-footed again.",
+          "effects": {
+            "trust": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "call_rachel_outreach",
+      "type": "advisor",
+      "advisorId": "board_chair",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Community Engagement"
+      },
+      "applicableOrgs": [
+        "center"
+      ],
+      "callableBy": [
+        "center"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 2,
+      "nodes": {
+        "n0": {
+          "characterLine": "I've been thinking about our community engagement — or lack of it. We're great at responding to crises, but when's the last time we proactively brought the community together for something positive? A celebration, a learning event, a town hall that wasn't about a crisis?",
+          "responses": [
+            {
+              "text": "You're right, we've been entirely reactive. What if we launched a monthly community conversation series — casual, no agenda, just connection?",
+              "approach": "Creative",
+              "dispositionDelta": 12,
+              "next": "n1_series"
+            },
+            {
+              "text": "We don't have the budget for programming. Our job is advocacy, not community building. That's what synagogues and JCCs are for.",
+              "approach": "Pushback",
+              "dispositionDelta": -3,
+              "next": "n1_pushback"
+            },
+            {
+              "text": "What did previous directors do? Is there a program we used to run that we could revive?",
+              "approach": "Historical",
+              "dispositionDelta": 6,
+              "next": "n1_revive"
+            }
+          ]
+        },
+        "n1_series": {
+          "characterLine": "I love it. We used to do something similar — 'Coffee & Community' on the first Thursday of every month. It died during COVID and never came back. I still have the mailing list. Want me to dust it off?",
+          "responses": [
+            {
+              "text": "Yes! Relaunch it with a fresh name and invite list. I'll host the first one personally.",
+              "approach": "Personal",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's update it first — the pre-COVID format might feel stale. What if we added a guest speaker each month?",
+              "approach": "Modernize",
+              "dispositionDelta": 7,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_pushback": {
+          "characterLine": "With all due respect, advocacy without community is just shouting into the void. The people we're advocating for need to see us, know us, and feel connected to us — otherwise we're just another organization sending emails they delete.",
+          "responses": [
+            {
+              "text": "OK, point taken. What's the cheapest, lightest-touch thing we could do?",
+              "approach": "Concede",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "I hear you, but right now every dollar needs to go toward our core mission. Maybe next year.",
+              "approach": "Defer",
+              "dispositionDelta": -2,
+              "next": "end"
+            }
+          ]
+        },
+        "n1_revive": {
+          "characterLine": "We had a great 'Coffee & Community' monthly gathering that ran for five years before COVID killed it. Cheap to run, high impact. The attendees became our most reliable donors and volunteers. Want me to bring it back?",
+          "responses": [
+            {
+              "text": "Absolutely. If it worked before, it'll work again. What do you need from me?",
+              "approach": "Supportive",
+              "dispositionDelta": 10,
+              "next": "end"
+            },
+            {
+              "text": "Let's try a one-off first and see what turnout looks like before committing to monthly.",
+              "approach": "Test",
+              "dispositionDelta": 5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 65,
+          "heading": "Community Reconnected",
+          "text": "Rachel's community engagement idea could transform how people experience your organization — from distant advocacy group to neighborhood anchor.",
+          "effects": {
+            "trust": 4,
+            "morale": 2,
+            "donors": 1
+          }
+        },
+        {
+          "minDisposition": 40,
+          "heading": "Seeds Planted",
+          "text": "The community engagement conversation opened doors but nothing concrete is scheduled yet. The idea is alive but needs follow-through.",
+          "effects": {
+            "trust": 1,
+            "morale": 1
+          }
+        },
+        {
+          "minDisposition": 0,
+          "heading": "An Opportunity Missed",
+          "text": "Rachel worries your organization is becoming invisible between crises. The community doesn't feel connected to you.",
+          "effects": {
+            "trust": -2
+          }
+        }
+      ]
     }
   ],
-  "tooltips": []
+  "tooltips": [],
+  "subMissions": [
+    {
+      "id": "sub_campus_coalition",
+      "name": "Build a Campus Anti-Hate Coalition",
+      "description": "Rally student groups, faculty, and administration at the local university to adopt a comprehensive anti-hate policy that includes antisemitism — without letting it become a weapon against Palestinian solidarity activism.",
+      "applicableOrgs": [
+        "left"
+      ],
+      "trigger": {
+        "type": "roundEnd",
+        "minRound": 2,
+        "maxRound": 4
+      },
+      "maxProgress": 3,
+      "deadlineRounds": 3,
+      "rewards": {
+        "effects": {
+          "trust": 8,
+          "morale": 5
+        },
+        "cloutEffect": 5,
+        "missionStars": 1,
+        "text": "The university adopts a comprehensive anti-hate policy that explicitly includes antisemitism. Your coalition-building is credited across the community."
+      },
+      "penalties": {
+        "effects": {
+          "trust": -5,
+          "morale": -3
+        },
+        "text": "The anti-hate policy stalls. The university adopts a version that doesn't mention antisemitism, and your organization looks ineffective."
+      },
+      "checkpoints": [
+        {
+          "id": "faculty",
+          "name": "Secure Faculty Endorsement",
+          "description": "Convince faculty members to publicly support the policy."
+        },
+        {
+          "id": "bds_nav",
+          "name": "Navigate the BDS Complication",
+          "description": "Handle the intersection of anti-Zionism and antisemitism in the policy language without losing progressive allies."
+        },
+        {
+          "id": "president",
+          "name": "University President Signs",
+          "description": "Get the university president to formally adopt and sign the policy."
+        }
+      ]
+    },
+    {
+      "id": "sub_anti_bds_bill",
+      "name": "Pass State Anti-BDS Legislation",
+      "description": "Push a bill through the state legislature that bars state contractors from boycotting Israel. Counter civil-liberties opposition without alienating free-speech conservatives or triggering a progressive backlash.",
+      "applicableOrgs": [
+        "right"
+      ],
+      "trigger": {
+        "type": "roundEnd",
+        "minRound": 2,
+        "maxRound": 4
+      },
+      "maxProgress": 3,
+      "deadlineRounds": 3,
+      "rewards": {
+        "effects": {
+          "donors": 10,
+          "trust": 3
+        },
+        "cloutEffect": 8,
+        "budgetEffect": 15,
+        "text": "The anti-BDS bill passes with your organization's name prominently attached. Major donors are thrilled and pro-Israel groups celebrate your leadership."
+      },
+      "penalties": {
+        "effects": {
+          "donors": -6,
+          "trust": -4
+        },
+        "cloutEffect": -5,
+        "text": "The bill dies in committee. Your donors question why they fund an organization that can't deliver on its core legislative agenda."
+      },
+      "checkpoints": [
+        {
+          "id": "sponsor",
+          "name": "Secure the Bill Sponsor",
+          "description": "Lock in a committed legislative sponsor and co-sponsors for the bill."
+        },
+        {
+          "id": "committee",
+          "name": "Survive the Committee Hearing",
+          "description": "Testify effectively and counter ACLU opposition without alienating civil-liberties allies."
+        },
+        {
+          "id": "floor_vote",
+          "name": "Win the Floor Vote",
+          "description": "Whip enough votes for passage while managing last-minute amendments."
+        }
+      ]
+    },
+    {
+      "id": "sub_task_force",
+      "name": "Launch a Bipartisan Antisemitism Task Force",
+      "description": "Convince the governor to create a state-level antisemitism task force with appointees from across the political spectrum. Navigate both parties' attempts to hijack it for their own messaging.",
+      "applicableOrgs": [
+        "center"
+      ],
+      "trigger": {
+        "type": "roundEnd",
+        "minRound": 2,
+        "maxRound": 4
+      },
+      "maxProgress": 3,
+      "deadlineRounds": 3,
+      "rewards": {
+        "effects": {
+          "trust": 10,
+          "morale": 4
+        },
+        "cloutEffect": 7,
+        "missionStars": 1,
+        "text": "The governor announces the task force with your organization as the convening partner. Both parties praise it as a model for bipartisan cooperation."
+      },
+      "penalties": {
+        "effects": {
+          "trust": -6,
+          "morale": -4
+        },
+        "cloutEffect": -4,
+        "text": "The task force collapses before launch. Both parties blame each other, and your organization is seen as unable to bridge the divide."
+      },
+      "checkpoints": [
+        {
+          "id": "governor",
+          "name": "Secure the Governor's Interest",
+          "description": "Get a private meeting with the governor and pitch the task force concept."
+        },
+        {
+          "id": "membership",
+          "name": "Negotiate the Membership List",
+          "description": "Propose a balanced membership that both parties can accept without feeling outnumbered."
+        },
+        {
+          "id": "announcement",
+          "name": "Survive the Public Announcement",
+          "description": "Manage the media rollout so neither side torpedoes the task force before it starts."
+        }
+      ]
+    }
+  ],
+  "socialMediaPosts": [
+    {
+      "id": "tweet_solidarity",
+      "text": "Standing with our community today and every day. Antisemitism has no place in America.",
+      "category": "generic",
+      "alwaysAvailable": true,
+      "effects": {
+        "trust": 2,
+        "morale": 1
+      },
+      "negativeEffects": {
+        "donors": -1
+      },
+      "politicalLean": 0
+    },
+    {
+      "id": "tweet_fundraising",
+      "text": "Our work depends on your generosity. Every dollar supports the fight against hate. Link in bio.",
+      "category": "fundraising",
+      "alwaysAvailable": true,
+      "effects": {
+        "donors": 3
+      },
+      "negativeEffects": {
+        "trust": -1,
+        "morale": -1
+      },
+      "budgetEffect": 3,
+      "politicalLean": 0
+    },
+    {
+      "id": "tweet_call_to_action",
+      "text": "Contact your representatives today. Jewish communities need legislative allies, not just sympathetic words.",
+      "category": "advocacy",
+      "alwaysAvailable": true,
+      "effects": {
+        "trust": 2
+      },
+      "negativeEffects": {
+        "morale": -1
+      },
+      "politicalLean": -1,
+      "cloutEffect": 2
+    },
+    {
+      "id": "tweet_unity",
+      "text": "What unites us is stronger than what divides us. Am Yisrael Chai.",
+      "category": "generic",
+      "alwaysAvailable": true,
+      "effects": {
+        "trust": 1,
+        "morale": 2
+      },
+      "negativeEffects": {},
+      "politicalLean": 0
+    },
+    {
+      "id": "tweet_progressive_coalition",
+      "text": "Fighting antisemitism means fighting ALL forms of hate. Proud to stand with our civil rights allies.",
+      "category": "progressive",
+      "alwaysAvailable": false,
+      "conditions": {
+        "orgIds": [
+          "left"
+        ]
+      },
+      "effects": {
+        "trust": 3,
+        "morale": 2
+      },
+      "negativeEffects": {
+        "donors": -2
+      },
+      "politicalLean": -3
+    },
+    {
+      "id": "tweet_israel_support",
+      "text": "Israel's right to defend itself is non-negotiable. We stand with our allies — always.",
+      "category": "conservative",
+      "alwaysAvailable": false,
+      "conditions": {
+        "orgIds": [
+          "right"
+        ]
+      },
+      "effects": {
+        "donors": 4,
+        "trust": 1
+      },
+      "negativeEffects": {
+        "trust": -2,
+        "morale": -1
+      },
+      "politicalLean": 4
+    },
+    {
+      "id": "tweet_bipartisan",
+      "text": "Antisemitism isn't a left issue or a right issue. It's an American issue. We need both parties at the table.",
+      "category": "centrist",
+      "alwaysAvailable": false,
+      "conditions": {
+        "orgIds": [
+          "center"
+        ]
+      },
+      "effects": {
+        "trust": 3,
+        "morale": 1
+      },
+      "negativeEffects": {
+        "donors": -1
+      },
+      "politicalLean": 0,
+      "cloutEffect": 2
+    },
+    {
+      "id": "tweet_campus_support",
+      "text": "Jewish students deserve to feel safe on campus. We're working with faculty and admin to make it happen.",
+      "category": "submission",
+      "alwaysAvailable": false,
+      "subMissionId": "sub_campus_coalition",
+      "effects": {
+        "trust": 2
+      },
+      "negativeEffects": {
+        "trust": -1
+      },
+      "politicalLean": -1,
+      "subMissionEffect": 0.5
+    },
+    {
+      "id": "tweet_anti_bds",
+      "text": "Economic discrimination against Israel hurts American workers too. Support the anti-BDS bill in our state legislature.",
+      "category": "submission",
+      "alwaysAvailable": false,
+      "subMissionId": "sub_anti_bds_bill",
+      "effects": {
+        "donors": 3,
+        "trust": 1
+      },
+      "negativeEffects": {
+        "trust": -2
+      },
+      "politicalLean": 4,
+      "subMissionEffect": 0.5
+    },
+    {
+      "id": "tweet_task_force",
+      "text": "A bipartisan antisemitism task force isn't about politics. It's about protecting our community. Call the governor's office today.",
+      "category": "submission",
+      "alwaysAvailable": false,
+      "subMissionId": "sub_task_force",
+      "effects": {
+        "trust": 3
+      },
+      "negativeEffects": {
+        "morale": -1
+      },
+      "politicalLean": 0,
+      "cloutEffect": 1,
+      "subMissionEffect": 0.5
+    }
+  ]
 }
 
 ;
@@ -14137,66 +16661,109 @@ function populateSubMissions() {
   var list = document.getElementById('submissions-list');
   if (!list) return;
   list.innerHTML = GD.subMissions.map(function(sm, i) {
-    // Count tagged content across all panels
-    var taggedScenarios = (GD.scenarios || []).filter(function(s) { return s.subMissionId === sm.id; }).length;
-    var taggedInbox = (GD.inboxScenarios || []).filter(function(s) { return s.subMissionId === sm.id; }).length;
-    var taggedPosts = (GD.socialMediaPosts || []).filter(function(p) { return p.subMissionId === sm.id; }).length;
-    var taggedConvs = (GD.conversations || []).filter(function(c) { return c.subMissionId === sm.id; }).length;
-    var contentSummary = taggedScenarios + ' scenarios, ' + taggedInbox + ' inbox, ' + taggedPosts + ' posts, ' + taggedConvs + ' convs';
-    var checkpointList = (sm.checkpoints || []).map(function(cp) { return esc(cp.name); }).join(', ');
+    var taggedScenarios = (GD.scenarios || []).filter(function(s) { return s.subMissionId === sm.id; });
+    var taggedInbox = (GD.inboxScenarios || []).filter(function(s) { return s.subMissionId === sm.id; });
+    var taggedPosts = (GD.socialMediaPosts || []).filter(function(p) { return p.subMissionId === sm.id; });
+    var taggedConvs = (GD.conversations || []).filter(function(c) { return c.subMissionId === sm.id; });
+    var contentSummary = taggedScenarios.length + ' scenarios, ' + taggedInbox.length + ' inbox, ' + taggedPosts.length + ' posts, ' + taggedConvs.length + ' convs';
     var orgs = (sm.applicableOrgs || []).join(', ');
 
-    return '<div class="item-card" id="sm-card-' + i + '" onclick="toggleEdit(\'sm\',' + i + ')">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center">' +
-        '<div><strong>' + esc(sm.name) + '</strong>' +
-        '<div style="font-size:10px;color:var(--muted)">' + esc(sm.id) + ' · orgs: ' + orgs + ' · deadline: ' + (sm.deadlineRounds || '?') + ' rd · ' + (sm.checkpoints || []).length + ' checkpoints</div>' +
-        '<div style="font-size:10px;color:#b8860b;margin-top:2px">' + contentSummary + '</div></div>' +
-        '<span style="font-size:18px;color:var(--muted)">▸</span>' +
-      '</div></div>' +
-      '<div class="edit-form" id="sm-edit-' + i + '">' +
-        '<div class="form-row"><div class="form-group"><label>ID</label><input id="sm-id-' + i + '" value="' + esc(sm.id) + '" /></div>' +
-        '<div class="form-group"><label>Name</label><input id="sm-name-' + i + '" value="' + esc(sm.name) + '" /></div></div>' +
-        '<div class="form-group"><label>Description</label><textarea id="sm-desc-' + i + '" rows="3">' + esc(sm.description || '') + '</textarea></div>' +
-        '<div class="form-row three">' +
-          '<div class="form-group"><label>Applicable Orgs (comma-sep)</label><input id="sm-orgs-' + i + '" value="' + (sm.applicableOrgs || []).join(',') + '" /></div>' +
-          '<div class="form-group"><label>Max Progress</label><input type="number" id="sm-maxprog-' + i + '" value="' + (sm.maxProgress || 3) + '" min="1" /></div>' +
-          '<div class="form-group"><label>Deadline (rounds)</label><input type="number" id="sm-deadline-' + i + '" value="' + (sm.deadlineRounds || 3) + '" min="1" /></div>' +
+    // Collapsed card header
+    var card = '<div class="item-card" id="sm-card-' + i + '" onclick="toggleEdit(\'sm\',' + i + ')">' +
+      '<span class="expand-icon" id="sm-exp-' + i + '">\u25b8</span>' +
+      '<div class="item-card-info"><div class="item-card-name">' + esc(sm.name) + '</div>' +
+      '<div style="font-family:monospace;font-size:10px;color:var(--muted);margin-bottom:2px">' + esc(sm.id) + '</div>' +
+      '<div class="item-card-desc">orgs: ' + orgs + ' \u00b7 deadline: ' + (sm.deadlineRounds || '?') + ' rd \u00b7 ' + (sm.checkpoints || []).length + ' cp \u00b7 <span style="color:#b8860b">' + contentSummary + '</span></div></div>' +
+    '</div>';
+
+    // Tagged content compact list helper
+    function taggedList(items, panelId) {
+      if (!items.length) return '<div style="font-size:11px;color:var(--muted);padding:4px 0;font-style:italic">None yet.</div>';
+      return items.map(function(item) {
+        var label = item.title || item.subject || (item.text ? item.text.substring(0, 60) : '') || item.id || '(untitled)';
+        return '<div style="padding:5px 10px;background:#f9f7f2;border:1px solid #e8e0d0;margin-bottom:3px;font-size:11px;cursor:pointer" ' +
+          'onclick="event.stopPropagation();showPanel(\'' + panelId + '\');setTimeout(function(){var s=document.getElementById(\'' + panelId.substring(0,2) + '-search\');if(s){s.value=\'' + esc(item.id || '').replace(/'/g, '') + '\';s.dispatchEvent(new Event(\'input\'))}},150)">' +
+          '<strong>' + esc(typeof label === 'string' ? (label.length > 70 ? label.substring(0,67)+'...' : label) : '') + '</strong>' +
+          '<div style="font-size:9px;color:var(--muted);font-family:monospace">' + esc(item.id || '') + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // Expandable edit form
+    var form = '<div class="edit-form" id="sm-edit-' + i + '">' +
+      '<div class="form-row"><div class="form-group"><label>ID</label><input id="sm-id-' + i + '" value="' + esc(sm.id) + '" /></div>' +
+      '<div class="form-group"><label>Name</label><input id="sm-name-' + i + '" value="' + esc(sm.name) + '" /></div></div>' +
+      '<div class="form-group"><label>Description</label><textarea id="sm-desc-' + i + '" rows="3">' + esc(sm.description || '') + '</textarea></div>' +
+      '<div class="form-row three">' +
+        '<div class="form-group"><label>Applicable Orgs (comma-sep)</label><input id="sm-orgs-' + i + '" value="' + (sm.applicableOrgs || []).join(',') + '" /></div>' +
+        '<div class="form-group"><label>Max Progress</label><input type="number" id="sm-maxprog-' + i + '" value="' + (sm.maxProgress || 3) + '" min="1" /></div>' +
+        '<div class="form-group"><label>Deadline (rounds)</label><input type="number" id="sm-deadline-' + i + '" value="' + (sm.deadlineRounds || 3) + '" min="1" /></div>' +
+      '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Trigger Type</label><select id="sm-trigtype-' + i + '"><option value="roundEnd" ' + ((sm.trigger && sm.trigger.type === 'roundEnd') ? 'selected' : '') + '>Round End Offer</option><option value="scenarioChoice" ' + ((sm.trigger && sm.trigger.type === 'scenarioChoice') ? 'selected' : '') + '>Scenario Choice</option></select></div>' +
+        '<div class="form-group"><label>Min Round</label><input type="number" id="sm-minround-' + i + '" value="' + ((sm.trigger && sm.trigger.minRound) || 1) + '" /></div>' +
+        '<div class="form-group"><label>Max Round</label><input type="number" id="sm-maxround-' + i + '" value="' + ((sm.trigger && sm.trigger.maxRound) || 6) + '" /></div>' +
+      '</div>' +
+      '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Checkpoints</h3>' +
+        '<div id="sm-checkpoints-' + i + '">' + (sm.checkpoints || []).map(function(cp, ci) {
+          return '<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">' +
+            '<input style="width:100px" placeholder="ID" id="sm-cp-id-' + i + '-' + ci + '" value="' + esc(cp.id) + '" />' +
+            '<input style="flex:1" placeholder="Name" id="sm-cp-name-' + i + '-' + ci + '" value="' + esc(cp.name) + '" />' +
+            '<input style="flex:2" placeholder="Description" id="sm-cp-desc-' + i + '-' + ci + '" value="' + esc(cp.description || '') + '" />' +
+          '</div>';
+        }).join('') + '</div>' +
+      '</div>' +
+      '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Rewards (on success)</h3>' +
+        '<div class="form-row three">' + (GD.stats || []).map(function(s) {
+          return '<div class="form-group"><label>' + esc(s.label) + '</label><input type="number" id="sm-rew-' + i + '-' + s.id + '" value="' + ((sm.rewards && sm.rewards.effects && sm.rewards.effects[s.id]) || 0) + '" /></div>';
+        }).join('') + '</div>' +
+        '<div class="form-group"><label>Reward Text</label><input id="sm-rewtxt-' + i + '" value="' + esc((sm.rewards && sm.rewards.text) || '') + '" /></div>' +
+      '</div>' +
+      '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Penalties (on failure)</h3>' +
+        '<div class="form-row three">' + (GD.stats || []).map(function(s) {
+          return '<div class="form-group"><label>' + esc(s.label) + '</label><input type="number" id="sm-pen-' + i + '-' + s.id + '" value="' + ((sm.penalties && sm.penalties.effects && sm.penalties.effects[s.id]) || 0) + '" /></div>';
+        }).join('') + '</div>' +
+        '<div class="form-group"><label>Penalty Text</label><input id="sm-pentxt-' + i + '" value="' + esc((sm.penalties && sm.penalties.text) || '') + '" /></div>' +
+      '</div>' +
+      '<div class="form-section" style="margin-top:18px;border-top:2px solid #b8860b;padding-top:14px">' +
+        '<h3 style="font-size:13px;color:#b8860b;margin-bottom:10px">Tagged Content</h3>' +
+        '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;margin-bottom:4px">Scenarios (' + taggedScenarios.length + ') <button class="btn btn-sm" style="font-size:10px;padding:2px 8px;margin-left:8px" onclick="event.stopPropagation();addTaggedScenario(\'' + esc(sm.id) + '\')">+ Add</button></div>' +
+          taggedList(taggedScenarios, 'scenarios') +
         '</div>' +
-        '<div class="form-row">' +
-          '<div class="form-group"><label>Trigger Type</label><select id="sm-trigtype-' + i + '"><option value="roundEnd" ' + ((sm.trigger && sm.trigger.type === 'roundEnd') ? 'selected' : '') + '>Round End Offer</option><option value="scenarioChoice" ' + ((sm.trigger && sm.trigger.type === 'scenarioChoice') ? 'selected' : '') + '>Scenario Choice</option></select></div>' +
-          '<div class="form-group"><label>Min Round (roundEnd)</label><input type="number" id="sm-minround-' + i + '" value="' + ((sm.trigger && sm.trigger.minRound) || 1) + '" /></div>' +
-          '<div class="form-group"><label>Max Round (roundEnd)</label><input type="number" id="sm-maxround-' + i + '" value="' + ((sm.trigger && sm.trigger.maxRound) || 6) + '" /></div>' +
+        '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;margin-bottom:4px">Inbox Messages (' + taggedInbox.length + ') <button class="btn btn-sm" style="font-size:10px;padding:2px 8px;margin-left:8px" onclick="event.stopPropagation();addTaggedInbox(\'' + esc(sm.id) + '\')">+ Add</button></div>' +
+          taggedList(taggedInbox, 'inbox') +
         '</div>' +
-        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Checkpoints</h3>' +
-          '<div id="sm-checkpoints-' + i + '">' + (sm.checkpoints || []).map(function(cp, ci) {
-            return '<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">' +
-              '<input style="width:120px" placeholder="ID" id="sm-cp-id-' + i + '-' + ci + '" value="' + esc(cp.id) + '" />' +
-              '<input style="flex:1" placeholder="Name" id="sm-cp-name-' + i + '-' + ci + '" value="' + esc(cp.name) + '" />' +
-              '<input style="flex:2" placeholder="Description" id="sm-cp-desc-' + i + '-' + ci + '" value="' + esc(cp.description || '') + '" />' +
-            '</div>';
-          }).join('') + '</div>' +
+        '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;margin-bottom:4px">Social Posts (' + taggedPosts.length + ')</div>' +
+          taggedList(taggedPosts, 'scenarios') +
         '</div>' +
-        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Reward Effects (on success)</h3>' +
-          '<div class="form-row three">' + (GD.stats || []).map(function(s) {
-            return '<div class="form-group"><label>' + esc(s.label) + '</label><input type="number" id="sm-rew-' + i + '-' + s.id + '" value="' + ((sm.rewards && sm.rewards.effects && sm.rewards.effects[s.id]) || 0) + '" /></div>';
-          }).join('') + '</div>' +
-          '<div class="form-group"><label>Reward Text</label><input id="sm-rewtxt-' + i + '" value="' + esc((sm.rewards && sm.rewards.text) || '') + '" /></div>' +
+        '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;margin-bottom:4px">Conversations (' + taggedConvs.length + ')</div>' +
+          taggedList(taggedConvs, 'conversations') +
         '</div>' +
-        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Penalty Effects (on failure)</h3>' +
-          '<div class="form-row three">' + (GD.stats || []).map(function(s) {
-            return '<div class="form-group"><label>' + esc(s.label) + '</label><input type="number" id="sm-pen-' + i + '-' + s.id + '" value="' + ((sm.penalties && sm.penalties.effects && sm.penalties.effects[s.id]) || 0) + '" /></div>';
-          }).join('') + '</div>' +
-          '<div class="form-group"><label>Penalty Text</label><input id="sm-pentxt-' + i + '" value="' + esc((sm.penalties && sm.penalties.text) || '') + '" /></div>' +
-        '</div>' +
-        '<div class="form-section" style="margin-top:14px"><h3 style="font-size:13px">Tagged Content (read-only summary)</h3>' +
-          '<div style="font-size:11px;color:var(--muted)">' + contentSummary + '. Create or tag content in the Scenarios, Inbox, or Conversations panels using the subMissionId dropdown.</div>' +
-        '</div>' +
-        '<div class="form-row" style="margin-top:14px">' +
-          '<button class="btn btn-primary btn-sm" onclick="saveSubMission(' + i + ')">Save</button>' +
-          '<button class="btn btn-sm" style="background:#dc2626;color:#fff" onclick="deleteSubMission(' + i + ')">Delete</button>' +
-        '</div>' +
-      '</div>';
+      '</div>' +
+      '<div class="form-row" style="margin-top:14px">' +
+        '<button class="btn btn-primary btn-sm" onclick="saveSubMission(' + i + ')">Save</button>' +
+        '<button class="btn btn-sm" style="background:#dc2626;color:#fff" onclick="deleteSubMission(' + i + ')">Delete</button>' +
+      '</div>' +
+    '</div>';
+
+    return card + form;
   }).join('');
+}
+
+function addTaggedScenario(smId) {
+  GD.scenarios.push({id:'sc_sm_'+Date.now(),tag:'Sub-Mission',trigger:'community',title:'New Sub-Mission Scenario',body:'',categories:['all'],subMissionId:smId,complexity:3,choices:[]});
+  localStorage.setItem('gd_cache',JSON.stringify(GD));
+  populateSubMissions();
+  _invalidateAndRefresh(['scenarios']);
+  setStatus('New scenario created and tagged to sub-mission ' + smId, 'success');
+}
+
+function addTaggedInbox(smId) {
+  GD.inboxScenarios.push({id:'inbox_sm_'+Date.now(),tag:'Email',from:'',subject:'New Sub-Mission Message',body:'',categories:['all'],subMissionId:smId,complexity:3,choices:[]});
+  localStorage.setItem('gd_cache',JSON.stringify(GD));
+  populateSubMissions();
+  _invalidateAndRefresh(['inbox']);
+  setStatus('New inbox scenario created and tagged to sub-mission ' + smId, 'success');
 }
 
 function saveSubMission(i) {
@@ -14214,31 +16781,27 @@ function saveSubMission(i) {
     sm.trigger.minRound = parseInt(document.getElementById('sm-minround-' + i)?.value) || 1;
     sm.trigger.maxRound = parseInt(document.getElementById('sm-maxround-' + i)?.value) || 6;
   }
-  // Checkpoints
   sm.checkpoints = [];
   for (var ci = 0; ci < 20; ci++) {
     var cpId = document.getElementById('sm-cp-id-' + i + '-' + ci);
     if (!cpId) break;
     sm.checkpoints.push({ id: cpId.value, name: document.getElementById('sm-cp-name-' + i + '-' + ci)?.value || '', description: document.getElementById('sm-cp-desc-' + i + '-' + ci)?.value || '' });
   }
-  // Rewards
   sm.rewards = sm.rewards || {};
   sm.rewards.effects = {};
   (GD.stats || []).forEach(function(s) { var v = parseInt(document.getElementById('sm-rew-' + i + '-' + s.id)?.value) || 0; if (v) sm.rewards.effects[s.id] = v; });
   sm.rewards.text = document.getElementById('sm-rewtxt-' + i)?.value || '';
-  // Penalties
   sm.penalties = sm.penalties || {};
   sm.penalties.effects = {};
   (GD.stats || []).forEach(function(s) { var v = parseInt(document.getElementById('sm-pen-' + i + '-' + s.id)?.value) || 0; if (v) sm.penalties.effects[s.id] = v; });
   sm.penalties.text = document.getElementById('sm-pentxt-' + i)?.value || '';
-
   localStorage.setItem('gd_cache', JSON.stringify(GD));
   setStatus('Sub-mission saved.', 'success');
   populateSubMissions();
 }
 
 function deleteSubMission(i) {
-  if (!confirm('Delete this sub-mission? Tagged content will remain in the scenario/inbox panels but will become unlinked.')) return;
+  if (!confirm('Delete this sub-mission? Tagged content will remain in scenario/inbox panels but will become unlinked.')) return;
   GD.subMissions.splice(i, 1);
   localStorage.setItem('gd_cache', JSON.stringify(GD));
   populateSubMissions();

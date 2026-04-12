@@ -213,6 +213,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* CARDS */
 .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-bottom: 22px; max-width: 100%; }
+/* Org-selection grid: 3 columns so left/center/right lay out across a single row
+   in political-spectrum order. Cards can grow taller than on the 2-col layouts. */
+#org-grid { grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
 .card { border: 1.5px solid var(--border); background: var(--white); padding: 18px 16px; cursor: pointer; transition: all 0.17s; position: relative; }
 .card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
 .card.selected { border-color: var(--gold); border-width: 2px; }
@@ -544,9 +547,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .end-replay-text strong { color: var(--ink); }
 .end-score-breakdown { font-size: 12px; color: var(--muted); margin-top: 4px; margin-bottom: 16px; }
 .end-score-breakdown strong { color: var(--ink); }
-
-/* PROMOTION SCREEN */
-.promo-list { display: flex; flex-direction: column; gap: 11px; margin-bottom: 22px; }
 
 /* RESPONSIVE */
 @media (max-width: 580px) {
@@ -14872,7 +14872,15 @@ function tryAdvanceChar(){
 
 // ═══════════════ ORG ═══════════════
 function initOrg(){
-  document.getElementById('org-grid').innerHTML = GAME_DATA.organizations.map(o=>{
+  // Render the 3 orgs in political-spectrum order (left → center → right)
+  // so the grid columns visually match the political layout.
+  const order = { left: 0, center: 1, right: 2 };
+  const orgsSorted = (GAME_DATA.organizations || []).slice().sort((a, b) => {
+    const at = Array.isArray(a.politicalTilt) ? a.politicalTilt[0] : a.politicalTilt;
+    const bt = Array.isArray(b.politicalTilt) ? b.politicalTilt[0] : b.politicalTilt;
+    return (order[at] ?? 99) - (order[bt] ?? 99);
+  });
+  document.getElementById('org-grid').innerHTML = orgsSorted.map(o=>{
     const mods=Object.entries(o.statModifiers||{}).filter(([k])=>k!=='budget');
     const bc = GAME_DATA.config.budgetConfig || {};
     const orgBudget = o.startingBudget || bc.startingBudget || 100;

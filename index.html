@@ -2039,7 +2039,8 @@ const GAME_DATA = {
         "{stat} is below 35 with two rounds to go. You still have time to turn this around — but not much.",
         "Heads up: {stat} is trending low. Consider making it a priority over the next two rounds."
       ]
-    }
+    },
+    "maxCallsPerRound": 1
   },
   "stats": [
     {
@@ -15110,6 +15111,541 @@ const GAME_DATA = {
           "text": "Howard Feldstein pulls his entire gift. Two other families follow. Your donor representative tells the board chair privately that ‘the executive director doesn’t understand donor relations.’ Your budget next year will have a $400,000 hole."
         }
       ]
+    },
+    {
+      "id": "call_tali_strategy",
+      "type": "advisor",
+      "advisorId": "community_organizer",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Community Organizing Strategy"
+      },
+      "applicableOrgs": [
+        "left"
+      ],
+      "callableBy": [
+        "left"
+      ],
+      "startDisposition": 55,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "Good, you called. I've been thinking about our coalition-building approach. We have two paths right now: we can go deep with a few committed allies, or go wide and try to build a broader but thinner coalition. What's your instinct?",
+          "responses": [
+            {
+              "text": "Go deep. I'd rather have five organizations that will show up when it matters than fifty that signed a letter and disappeared.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n1_deep"
+            },
+            {
+              "text": "Go wide. We need numbers to show the community we're not alone. Depth can come later.",
+              "approach": "Pragmatic",
+              "dispositionDelta": 5,
+              "next": "n1_wide"
+            },
+            {
+              "text": "What do you think? You've been doing this longer than I have.",
+              "approach": "Defer",
+              "dispositionDelta": 8,
+              "next": "n1_defer"
+            }
+          ]
+        },
+        "n1_deep": {
+          "characterLine": "I like that. Let me tell you what I'm seeing on the ground. The racial justice groups are nervous about being seen as 'pro-Israel' if they work with us. But they care about hate crimes — that's our entry point. Should I lead with antisemitism or with the broader hate-crime framing?",
+          "responses": [
+            {
+              "text": "Lead with hate crimes broadly, then work antisemitism into the conversation naturally. Don't ask them to sign up for something they're not ready for.",
+              "approach": "Patient",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "Be upfront about antisemitism from the start. If they can't handle that word, they're not real allies.",
+              "approach": "Direct",
+              "dispositionDelta": -3,
+              "next": "n2_tense"
+            },
+            {
+              "text": "Let them set the framing. We join their coalition on their terms, and over time we earn the right to add our issues.",
+              "approach": "Yielding",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n1_wide": {
+          "characterLine": "OK, numbers it is. I can get us endorsements from the teachers' union, two churches, and the city council's progressive caucus. But none of them will put antisemitism in their endorsement language — they'll say 'hate' generically. Is that good enough?",
+          "responses": [
+            {
+              "text": "For now, yes. Getting them in the tent matters more than getting the wording perfect.",
+              "approach": "Pragmatic",
+              "dispositionDelta": 8,
+              "next": "n2_ok"
+            },
+            {
+              "text": "No. If they can't name antisemitism, what are they actually endorsing? Push for specific language.",
+              "approach": "Principled",
+              "dispositionDelta": -2,
+              "next": "n2_tense"
+            },
+            {
+              "text": "Get the endorsements with generic language, but separately ask each to add a one-line statement about antisemitism on their own platforms.",
+              "approach": "Creative",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            }
+          ]
+        },
+        "n1_defer": {
+          "characterLine": "Honestly? I think we need both, but in sequence. Go deep with three or four groups first — build something real — then use that as proof of concept to go wide. The broad coalition sees the deep one working and wants in.",
+          "responses": [
+            {
+              "text": "That's smart. Let's start with the groups you trust most. Who are your top three?",
+              "approach": "Trust",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "I hear you, but we don't have time for a phased approach. We need to move on multiple fronts now.",
+              "approach": "Urgent",
+              "dispositionDelta": 2,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n2_good": {
+          "characterLine": "This is good. I feel like we're actually building something here — not just reacting to crises. I'll start making calls today. One more thing: I think we should consider a joint op-ed with one of our non-Jewish allies. It sends a powerful signal. I have someone in mind.",
+          "responses": [
+            {
+              "text": "Do it. A joint op-ed from us and a civil rights ally would be worth more than ten press releases.",
+              "approach": "Enthusiastic",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Let me see a draft first. I want to make sure we're not giving away too much of our message to make them comfortable.",
+              "approach": "Careful",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_ok": {
+          "characterLine": "Alright, I'll work with what we've got. I think we're making progress even if it doesn't feel fast enough. Anything else you need from me this week?",
+          "responses": [
+            {
+              "text": "Just keep doing what you're doing. I trust your judgment on the ground.",
+              "approach": "Supportive",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "Send me a weekly report on who you've talked to and what commitments we've secured.",
+              "approach": "Managerial",
+              "dispositionDelta": -2,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_tense": {
+          "characterLine": "Look, I get where you're coming from, but if we draw every line in the sand right now, we'll be standing alone on a very small island. I'll do my best, but don't be surprised if some doors close.",
+          "responses": [
+            {
+              "text": "You're right, I'm pushing too hard. Let's find a middle ground.",
+              "approach": "Concede",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "I'd rather have fewer allies who actually stand with us than a crowd that disappears when things get hard.",
+              "approach": "Firm",
+              "dispositionDelta": -5,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Productive Strategy Session",
+          "text": "Tali leaves the call energized and aligned with your vision. Her ground-level organizing will be more effective with clear direction from leadership.",
+          "effects": {
+            "trust": 4,
+            "morale": 3
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 45,
+          "heading": "A Decent Check-In",
+          "text": "The call was useful but not transformative. Tali will keep working her contacts, though you sense she wishes you'd given her more room to operate.",
+          "effects": {
+            "morale": 2
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Tense Exchange",
+          "text": "Tali is frustrated by what she sees as micromanagement and rigidity. She'll do the work, but the spark is dimming.",
+          "effects": {
+            "morale": -2,
+            "trust": -1
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_leonard_fundraising",
+      "type": "advisor",
+      "advisorId": "major_donor_rep",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Donor Relations & Fundraising"
+      },
+      "applicableOrgs": [
+        "right"
+      ],
+      "callableBy": [
+        "right"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "Thanks for the call. Let me cut to the chase — I've been hearing from three of our major donors. They're not unhappy yet, but they're asking questions. 'What are we getting for our money?' That kind of thing. How do you want to handle it?",
+          "responses": [
+            {
+              "text": "Set up one-on-one dinners with each of them. Personal attention is worth more than any report. I'll attend all three.",
+              "approach": "Relationship",
+              "dispositionDelta": 12,
+              "next": "n1_personal"
+            },
+            {
+              "text": "Prepare a detailed impact report showing exactly what their donations have achieved this year. Data speaks louder than wine.",
+              "approach": "Analytical",
+              "dispositionDelta": 8,
+              "next": "n1_report"
+            },
+            {
+              "text": "Are they threatening to reduce their gifts, or just grumbling? There's a difference.",
+              "approach": "Probe",
+              "dispositionDelta": 5,
+              "next": "n1_probe"
+            }
+          ]
+        },
+        "n1_personal": {
+          "characterLine": "Good instinct. Now, one of these donors — Ruth Abramowitz — she's been talking about earmarking her gift for Israel advocacy specifically. The last director wouldn't let her. What's your position?",
+          "responses": [
+            {
+              "text": "If she wants to earmark, let her. A restricted gift is better than no gift, and it aligns with our mission anyway.",
+              "approach": "Flexible",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "No earmarks. We need unrestricted dollars to operate effectively. Explain to her that our Israel work is a core priority regardless.",
+              "approach": "Principled",
+              "dispositionDelta": 2,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Offer a compromise: she can designate her gift toward our Israel programming, but we define what that means operationally.",
+              "approach": "Creative",
+              "dispositionDelta": 8,
+              "next": "n2_good"
+            }
+          ]
+        },
+        "n1_report": {
+          "characterLine": "I can put that together. But honestly, what they really want to hear is that we're making a difference on Israel specifically. Our general anti-hate work doesn't excite them the way a legislative win on anti-BDS would. Can I lean into the Israel angle in the report?",
+          "responses": [
+            {
+              "text": "Absolutely. Our Israel advocacy is our strongest suit with these donors. Lead with it.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "Include it prominently but don't make it the whole story. We fight antisemitism on every front, not just the Israel front.",
+              "approach": "Balanced",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Be honest about what we've accomplished and what we haven't. If the report oversells, they'll find out.",
+              "approach": "Transparent",
+              "dispositionDelta": 3,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n1_probe": {
+          "characterLine": "Grumbling, mostly. But in donor world, grumbling in January becomes reduced giving in June. I've seen it before. The question is: do you want to be proactive or wait until it becomes a problem?",
+          "responses": [
+            {
+              "text": "Proactive. Always proactive. What do you recommend?",
+              "approach": "Action",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "Let's not overreact. If they're just grumbling, a strong year-end report will settle them down.",
+              "approach": "Calm",
+              "dispositionDelta": 0,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n2_good": {
+          "characterLine": "Perfect. I also want to float something: there's a tech executive — new to the Jewish philanthropy world — who's interested in our work. She's worth cultivating but she's progressive on Israel. Could be a big get, could be a complication. Your call.",
+          "responses": [
+            {
+              "text": "Set up a meeting. We need to diversify our donor base, and a tech executive brings networks we don't have.",
+              "approach": "Expansive",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Not right now. Our existing donors are already asking questions — adding a progressive voice to the mix will make them nervous.",
+              "approach": "Conservative",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_ok": {
+          "characterLine": "Alright. I'll handle what I can on my end. Just remember — donor relationships are like gardens. Neglect them and they don't die overnight, they just slowly stop producing.",
+          "responses": [
+            {
+              "text": "Noted. Keep me posted on any changes in sentiment, even small ones.",
+              "approach": "Attentive",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "I hear you, Leonard. We've got a lot on our plate but donors are the priority.",
+              "approach": "Reassure",
+              "dispositionDelta": 3,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Strong Fundraising Alignment",
+          "text": "Leonard is energized by your engagement. He'll personally reach out to the three donors and you'll likely see increased giving this quarter.",
+          "effects": {
+            "donors": 5,
+            "morale": 2
+          },
+          "budgetEffect": 10
+        },
+        {
+          "minDisposition": 45,
+          "heading": "A Routine Check-In",
+          "text": "The call was fine but didn't move the needle much. Leonard will manage the donor relationships as usual.",
+          "effects": {
+            "donors": 2
+          },
+          "budgetEffect": 3
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Missed Opportunity",
+          "text": "Leonard is disappointed by your passivity. He'll keep the donors from leaving but the enthusiasm gap is widening.",
+          "effects": {
+            "donors": -2
+          },
+          "budgetEffect": 0
+        }
+      ]
+    },
+    {
+      "id": "call_rachel_board",
+      "type": "advisor",
+      "advisorId": "board_chair",
+      "trigger": {
+        "type": "proactive",
+        "topic": "Board Management & Strategy"
+      },
+      "applicableOrgs": [
+        "center"
+      ],
+      "callableBy": [
+        "center"
+      ],
+      "startDisposition": 50,
+      "totalNodes": 3,
+      "nodes": {
+        "n0": {
+          "characterLine": "I'm glad you called. The board meeting is next week and I want to make sure we're aligned. There are two issues that are going to dominate: the budget shortfall and the question of whether we should take a position on the latest IHRA controversy. Which do you want to tackle first?",
+          "responses": [
+            {
+              "text": "Budget first. If we don't have the money, nothing else matters.",
+              "approach": "Practical",
+              "dispositionDelta": 8,
+              "next": "n1_budget"
+            },
+            {
+              "text": "IHRA first. The budget is a spreadsheet problem; the IHRA question could define our organization for years.",
+              "approach": "Strategic",
+              "dispositionDelta": 10,
+              "next": "n1_ihra"
+            },
+            {
+              "text": "Let's talk about both — I need your read on where the board stands before I walk in there.",
+              "approach": "Prepared",
+              "dispositionDelta": 6,
+              "next": "n1_both"
+            }
+          ]
+        },
+        "n1_budget": {
+          "characterLine": "The shortfall is about $40,000. We can close it by cutting the spring gala, which nobody likes anyway, or by asking three board members for bridge gifts. The gala cut is permanent savings; the bridge gifts are a one-time fix. What's your preference?",
+          "responses": [
+            {
+              "text": "Cut the gala. It costs us more in staff time than it raises. Permanent savings is the right structural move.",
+              "approach": "Decisive",
+              "dispositionDelta": 10,
+              "next": "n2_good"
+            },
+            {
+              "text": "Ask for bridge gifts. The gala has symbolic value even if it's not a money-maker. Cutting it sends the wrong signal to the community.",
+              "approach": "Cautious",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Do both — cut the gala AND ask for bridge gifts. Build a reserve so we're not in this position again next year.",
+              "approach": "Ambitious",
+              "dispositionDelta": 8,
+              "next": "n2_good"
+            }
+          ]
+        },
+        "n1_ihra": {
+          "characterLine": "The board is split down the middle on IHRA. Three want us to endorse it publicly, three think it's too controversial, and two are genuinely undecided. If you walk in without a position, both sides will try to claim you. What are you going to say?",
+          "responses": [
+            {
+              "text": "I'll recommend we endorse IHRA with a qualifying statement that distinguishes antisemitism from legitimate policy debate about Israel. Threading the needle.",
+              "approach": "Nuanced",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "I'll recommend we don't take a position as an organization. Individual board members can endorse personally, but the org stays neutral.",
+              "approach": "Neutral",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            },
+            {
+              "text": "I'll listen to both sides at the meeting and make a decision after. I don't want to walk in with my mind made up.",
+              "approach": "Open",
+              "dispositionDelta": 3,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n1_both": {
+          "characterLine": "On budget, we're $40K short. On IHRA, the board is split 3-3-2. The undecideds will follow your lead. My honest advice? Pick one battle for this meeting and table the other. You can't win two fights in one session.",
+          "responses": [
+            {
+              "text": "Good advice. Let's solve the budget this meeting and schedule a special session on IHRA when we can give it the time it deserves.",
+              "approach": "Wise",
+              "dispositionDelta": 12,
+              "next": "n2_good"
+            },
+            {
+              "text": "I disagree — I think we can handle both if we structure the agenda right. Give me 20 minutes on budget, 40 on IHRA.",
+              "approach": "Confident",
+              "dispositionDelta": 3,
+              "next": "n2_ok"
+            },
+            {
+              "text": "Which one do YOU think is more urgent?",
+              "approach": "Defer",
+              "dispositionDelta": 5,
+              "next": "n2_ok"
+            }
+          ]
+        },
+        "n2_good": {
+          "characterLine": "I feel good about this. One more thing — two board members have been whispering about whether you're 'too political' for a centrist org. I've pushed back, but you should know it's out there. My advice: at the meeting, make at least one comment that demonstrates you see both sides. It'll quiet the whispers.",
+          "responses": [
+            {
+              "text": "Appreciate the heads up. I'll make sure to acknowledge the tension between engagement and neutrality — show them I'm aware of the tightrope.",
+              "approach": "Savvy",
+              "dispositionDelta": 8,
+              "next": "end"
+            },
+            {
+              "text": "Let them whisper. My job is to lead, not to be liked. If they have concerns, they can bring them to me directly.",
+              "approach": "Bold",
+              "dispositionDelta": -3,
+              "next": "end"
+            }
+          ]
+        },
+        "n2_ok": {
+          "characterLine": "Alright. I'll make sure the agenda is tight and the right people are seated next to each other. Board dynamics are half the battle. See you next week.",
+          "responses": [
+            {
+              "text": "Thanks, Rachel. Your institutional knowledge is invaluable. I mean that.",
+              "approach": "Grateful",
+              "dispositionDelta": 5,
+              "next": "end"
+            },
+            {
+              "text": "See you there. Let me know if anything changes between now and then.",
+              "approach": "Professional",
+              "dispositionDelta": 2,
+              "next": "end"
+            }
+          ]
+        }
+      },
+      "outcomes": [
+        {
+          "minDisposition": 70,
+          "heading": "A Well-Prepared Leader",
+          "text": "Rachel is confident you'll handle the board meeting well. Her pre-briefing gives you a significant advantage — you'll walk in knowing where every vote stands.",
+          "effects": {
+            "trust": 4,
+            "morale": 3,
+            "donors": 2
+          },
+          "budgetEffect": 5
+        },
+        {
+          "minDisposition": 45,
+          "heading": "A Decent Prep Session",
+          "text": "The call was helpful but Rachel senses you're still figuring out the board dynamics. She'll be supportive at the meeting but isn't sure you have the votes on IHRA.",
+          "effects": {
+            "trust": 2,
+            "morale": 1
+          },
+          "budgetEffect": 0
+        },
+        {
+          "minDisposition": 0,
+          "heading": "A Concerning Disconnect",
+          "text": "Rachel is worried you're not reading the board correctly. She'll do damage control behind the scenes, but the meeting may not go the way you expect.",
+          "effects": {
+            "trust": -2,
+            "morale": -1,
+            "donors": -1
+          },
+          "budgetEffect": 0
+        }
+      ]
     }
   ],
   "tooltips": [],
@@ -15312,6 +15848,8 @@ let G = {
   inboxMessages:[], // {id, scenario, unread, expired, timerRemaining}
   // Coalition strikes
   coalitionStrikes:{}, // {coalitionId: strikeCount}
+  // Landline calls
+  callsThisRound: 0,
   // Sub-mission system
   activeSubMissions: [],    // [{id, progress, activatedRound, checkpointStatus: {cpId: 'pending'|'complete'|'failed'}}]
   completedSubMissions: [],
@@ -16597,6 +17135,7 @@ function startGame(){
 function beginRound(){
   G.round++;
   G.breakingNewsThisRound = 0;
+  G.callsThisRound = 0;
   if(G.round>GAME_DATA.config.totalRounds){endYear();return;}
 
   // Check if we've exhausted all scenarios
@@ -17172,8 +17711,12 @@ function renderDeskScene(opts) {
     onclick: "deskAction('keys')"
   });
 
-  // Landline hotspot — dormant stub, visible in DOM but not interactive until events are authored
-  html += _deskHotspotDiv('landline', hs.landline, { empty: true });
+  // Landline hotspot — proactive calls. Active when calls are available this round.
+  var callsAvailable = getAvailableCalls().length > 0;
+  html += _deskHotspotDiv('landline', hs.landline, {
+    empty: !callsAvailable,
+    onclick: "openCallMenu()"
+  });
 
   // Standalone count badges at their tagged anchor points (replaces old
   // top-right-of-rotated-rect positioning). Only rendered when the channel
@@ -17185,7 +17728,8 @@ function renderDeskScene(opts) {
     html += _deskBadgeDiv('postit', skin, (opts.folQ || []).length, false);
   }
   html += _deskBadgeDiv('keys',    skin, (opts.keyQ || []).length, false);
-  // Landline badge intentionally omitted — channel is dormant.
+  // Landline badge — show when calls are available this round
+  if (callsAvailable) html += _deskBadgeDiv('landline', skin, 1, false);
 
   // Inbox pop-up — reuses old phone.png as a frame, positioned above the phone hotspot
   if (hs.phone) {
@@ -19208,6 +19752,85 @@ function getAdvisorBonus(scenario, choiceIndex) {
     var stackExplanation = '<span style="color:#7a5800;font-size:12px;font-style:italic">Your advisors collectively influenced this outcome.</span>';
     return { effects: combined, chips: chipParts.join(''), explanation: stackExplanation };
   }
+}
+
+// ═══════════════ LANDLINE CALL SYSTEM ═══════════════
+
+// Get available proactive conversations for the current org.
+function getAvailableCalls() {
+  var maxCalls = GAME_DATA.config.maxCallsPerRound || 1;
+  if ((G.callsThisRound || 0) >= maxCalls) return [];
+  var convs = (GAME_DATA.conversations || []).filter(function(conv) {
+    if (!conv.trigger || conv.trigger.type !== 'proactive') return false;
+    if (conv.callableBy && conv.callableBy.length > 0 && !conv.callableBy.includes(G.orgId)) return false;
+    if (conv.applicableOrgs && conv.applicableOrgs.length > 0 && !conv.applicableOrgs.includes(G.orgId)) return false;
+    return true;
+  });
+  return convs;
+}
+
+// Open the landline call menu overlay.
+function openCallMenu() {
+  var maxCalls = GAME_DATA.config.maxCallsPerRound || 1;
+  if ((G.callsThisRound || 0) >= maxCalls) {
+    showCoachingWarning('You\'ve already made your call this round. You can make another next round.', 'info');
+    return;
+  }
+  var calls = getAvailableCalls();
+  if (calls.length === 0) {
+    showCoachingWarning('No one is available to call right now.', 'info');
+    return;
+  }
+  var pool = GAME_DATA.advisorPool || [];
+  // Group calls by advisor
+  var html = '<div style="max-width:520px;margin:30px auto;padding:24px;background:var(--white);border:2px solid var(--ink)">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
+  html += '<div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Landline</div>';
+  html += '<h2 style="font-family:Merriweather,serif;font-size:18px;margin:0">Make a Call</h2></div>';
+  html += '<button class="btn btn-sm btn-secondary" onclick="closeCallMenu()" style="padding:4px 12px;font-size:11px">Close</button>';
+  html += '</div>';
+  html += '<p style="font-size:12px;color:var(--muted);margin-bottom:16px">Choose someone to call. You have ' + (maxCalls - (G.callsThisRound || 0)) + ' call' + ((maxCalls - (G.callsThisRound || 0)) !== 1 ? 's' : '') + ' remaining this round. Calls don\'t cost action points.</p>';
+
+  calls.forEach(function(conv) {
+    var adv = pool.find(function(a) { return a.id === conv.advisorId; });
+    var name = adv ? adv.name : conv.advisorId;
+    var role = adv ? (adv.role || adv.type || '') : '';
+    var topic = (conv.trigger && conv.trigger.topic) || 'General Discussion';
+    var portrait = adv ? advPortrait(adv, 'neutral', 44) : '';
+    html += '<div style="display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;background:#f9f7f2;border:1px solid var(--border);cursor:pointer;transition:background 0.15s" onclick="startProactiveCall(\'' + conv.id + '\')" onmouseenter="this.style.background=\'#f0ede4\'" onmouseleave="this.style.background=\'#f9f7f2\'">';
+    html += portrait;
+    html += '<div style="flex:1">';
+    html += '<div style="font-weight:700;font-size:13px">' + esc(name) + '</div>';
+    if (role) html += '<div style="font-size:11px;color:var(--muted)">' + esc(role) + '</div>';
+    html += '<div style="font-size:12px;color:var(--gold);margin-top:3px">' + esc(topic) + '</div>';
+    html += '</div>';
+    html += '<span style="font-size:18px">📞</span>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  var el = document.getElementById('game-inner');
+  if (el) {
+    G._callMenuPrevHtml = el.innerHTML;
+    el.innerHTML = html;
+  }
+}
+
+function closeCallMenu() {
+  var el = document.getElementById('game-inner');
+  if (el && G._callMenuPrevHtml) {
+    el.innerHTML = G._callMenuPrevHtml;
+    G._callMenuPrevHtml = null;
+  } else {
+    renderMain();
+  }
+}
+
+function startProactiveCall(convId) {
+  G.callsThisRound = (G.callsThisRound || 0) + 1;
+  showConversation(convId, function() {
+    renderMain();
+  });
 }
 
 // ═══════════════ SUB-MISSION SYSTEM ═══════════════

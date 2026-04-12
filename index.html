@@ -743,6 +743,16 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .coalition-strip-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .coalition-strip-inner::-webkit-scrollbar{display:none}
 .coalition-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
+/* Sub-mission strip */
+.submission-strip{background:#1a2030;padding:7px 20px;position:relative;left:0;right:0;z-index:1;border-top:1px solid rgba(255,255,255,0.05)}
+.submission-strip-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
+.submission-strip-inner::-webkit-scrollbar{display:none}
+.sm-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
+.sm-badge{display:inline-flex;align-items:center;gap:6px;background:#2a2a44;color:#e8e8ec;padding:5px 11px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;white-space:nowrap;border:1px solid rgba(255,255,255,0.08);transition:background 0.15s}
+.sm-badge:hover{background:#3a3a54}
+.sm-progress{font-size:10px;color:#86efac;font-family:Menlo,monospace}
+.sm-deadline{font-size:10px;color:#fbbf24}
+.sm-badge.warning .sm-deadline{color:#f87171}
 .coal-badge{font-size:10px;background:var(--gold,#b08d3e);color:white;padding:2px 8px;border-radius:8px;font-weight:700;position:relative;cursor:pointer;transition:opacity 0.15s}
 .coal-badge:hover{opacity:0.85}
 .coal-strikes{font-size:9px;margin-left:3px;opacity:0.85}
@@ -1453,6 +1463,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   </div>
   <div class="coalition-strip" id="coalition-strip" style="display:none">
     <div class="coalition-strip-inner" id="coalition-strip-inner"></div>
+  </div>
+  <div class="submission-strip" id="submission-strip" style="display:none">
+    <div class="submission-strip-inner" id="submission-strip-inner"></div>
   </div>
   <div class="game-main">
     <div class="game-inner" id="game-inner"></div>
@@ -14143,7 +14156,8 @@ const GAME_DATA = {
       ]
     }
   ],
-  "tooltips": []
+  "tooltips": [],
+  "subMissions": []
 };
 /* GAME_DATA_END */
 
@@ -14195,6 +14209,11 @@ let G = {
   inboxMessages:[], // {id, scenario, unread, expired, timerRemaining}
   // Coalition strikes
   coalitionStrikes:{}, // {coalitionId: strikeCount}
+  // Sub-mission system
+  activeSubMissions: [],    // [{id, progress, activatedRound, checkpointStatus: {cpId: 'pending'|'complete'|'failed'}}]
+  completedSubMissions: [],
+  failedSubMissions: [],
+  declinedSubMissions: [],
   // Budget system
   budget: 0, budgetMax: 100, budgetIncomeThisYear: 0, budgetSpentThisYear: 0,
   investmentPool: 0, investmentsUsed: 0, pendingReserves: [], endowmentIncome: 0,
@@ -14229,6 +14248,8 @@ if (!GAME_DATA.advisorPool && GAME_DATA.advisors) {
   });
 }
 if (!GAME_DATA.config.advisorSlots) GAME_DATA.config.advisorSlots = 3;
+if (!GAME_DATA.subMissions) GAME_DATA.subMissions = [];
+if (!GAME_DATA.config.maxActiveSubMissions) GAME_DATA.config.maxActiveSubMissions = 3;
 if (!GAME_DATA.config.advisorBonusStacking) GAME_DATA.config.advisorBonusStacking = 'best';
 if (!GAME_DATA.conversations) GAME_DATA.conversations = [];
 function showScreen(id) {
@@ -14549,7 +14570,11 @@ function scenarioApplies(scenario) {
   const allOrgs = [...GAME_DATA.organizations, ...GAME_DATA.nationalOrganizations];
   const org = allOrgs.find(o => o.id === G.orgId);
   if (!org) return false;
-  // orgLevel gating removed in the 3-org reduction — local/national tiers no longer exist.
+  // Sub-mission gating: scenarios tagged with subMissionId only enter the pool
+  // when that sub-mission is active.
+  if (scenario.subMissionId) {
+    if (!(G.activeSubMissions || []).some(function(sm) { return sm.id === scenario.subMissionId; })) return false;
+  }
   const cats = scenario.categories || ['all'];
   if (cats.includes('all')) return true;
   const orgCats = org.scenarioCategories || org.politicalTilt || [];
@@ -15372,7 +15397,7 @@ function startGame(){
     const t=GAME_DATA.characterTraits.find(t=>t.id===tid);
     if(t) G.activeUnlocks.push(t.id);
   });
-  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[];
+  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[];G.activeSubMissions=[];G.completedSubMissions=[];G.failedSubMissions=[];G.declinedSubMissions=[];
   G.inboxMessages=[]; G.coalitionStrikes={};
   G.advisorBonusLog = [];
   G.currentAdvisorBonusMultiplier = 1.0;
@@ -15483,6 +15508,9 @@ function beginRound(){
 
   // Record stat snapshot
   recordStatSnapshot();
+
+  // Tick sub-mission deadlines (fail any that expired).
+  if (G.round > 1) tickSubMissionDeadlines();
 
   // Update desk skin (donor hysteresis) and morale state (silent — no toast/animation).
   // Round 1 stays 'plain'; round 2+ reads current morale band.
@@ -15763,7 +15791,19 @@ function updateHUD(){
       coalStrip.style.display = 'none';
     }
   }
-  
+
+  // Sub-mission strip
+  var smStrip = document.getElementById('submission-strip');
+  var smInner = document.getElementById('submission-strip-inner');
+  if (smStrip && smInner) {
+    if ((G.activeSubMissions || []).length > 0) {
+      smStrip.style.display = '';
+      smInner.innerHTML = '<span class="sm-strip-label">Sub-Missions</span>' + renderSubMissionBadges();
+    } else {
+      smStrip.style.display = 'none';
+    }
+  }
+
   // Inbox strip - horizontal bar above ticker
   updateInboxStrip();
   
@@ -16096,12 +16136,62 @@ function devSkipToEndGame() {
   if (typeof G === 'undefined' || !G || !G.stats) { alert('No game in progress'); return; }
   if (typeof endYear === 'function') endYear();
 }
-// Force-advance to the next round (or year-end) regardless of AP remaining.
 function devEndRoundNow() {
   if (typeof G === 'undefined' || !G) { alert('No game in progress'); return; }
   G.apRemaining = 0;
   if (typeof showRoundTransition === 'function') showRoundTransition();
   else if (typeof endRound === 'function') endRound();
+}
+// Dev: activate a test sub-mission (or a real one from GAME_DATA).
+function devActivateSubMission() {
+  var sms = (GAME_DATA.subMissions || []);
+  if (sms.length === 0) {
+    // Create a dummy test sub-mission
+    var testSm = {
+      id: 'test_sm_' + Date.now(),
+      name: 'Test Sub-Mission',
+      description: 'A dev-panel test sub-mission with 3 checkpoints.',
+      applicableOrgs: ['left', 'right', 'center'],
+      trigger: { type: 'manual' },
+      maxProgress: 3,
+      deadlineRounds: 4,
+      rewards: { effects: { trust: 5, morale: 5 }, text: 'Test sub-mission completed!' },
+      penalties: { effects: { trust: -3 }, text: 'Test sub-mission failed.' },
+      checkpoints: [
+        { id: 'cp1', name: 'Checkpoint 1', description: 'First step' },
+        { id: 'cp2', name: 'Checkpoint 2', description: 'Second step' },
+        { id: 'cp3', name: 'Checkpoint 3', description: 'Final step' }
+      ]
+    };
+    sms.push(testSm);
+  }
+  // Find first unactivated sub-mission applicable to current org
+  var candidate = sms.find(function(sm) {
+    if (sm.applicableOrgs && sm.applicableOrgs.length > 0 && !sm.applicableOrgs.includes(G.orgId)) return false;
+    if ((G.activeSubMissions || []).some(function(a) { return a.id === sm.id; })) return false;
+    if ((G.completedSubMissions || []).includes(sm.id)) return false;
+    if ((G.failedSubMissions || []).includes(sm.id)) return false;
+    return true;
+  });
+  if (!candidate) { alert('No available sub-missions to activate'); return; }
+  activateSubMission(candidate.id);
+}
+function devProgressSubMission() {
+  var entry = (G.activeSubMissions || [])[0];
+  if (!entry) { alert('No active sub-missions'); return; }
+  var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === entry.id; });
+  if (!sm) return;
+  // Find first pending checkpoint and advance it
+  var cp = (sm.checkpoints || []).find(function(c) { return entry.checkpointStatus[c.id] === 'pending'; });
+  if (cp) advanceSubMissionCheckpoint(entry.id, cp.id);
+  else updateSubMissionProgress(entry.id, 1);
+}
+function devClearSubMissions() {
+  G.activeSubMissions = [];
+  G.completedSubMissions = [];
+  G.failedSubMissions = [];
+  G.declinedSubMissions = [];
+  updateHUD();
 }
 // Direct setters for political state (re-render HUD to reflect changes).
 function devSetPoliticalPosition(val) {
@@ -16205,6 +16295,12 @@ function initDeskDevPanel() {
       '<button data-field="postit-natural" onclick="G._deskDevPostit=undefined;renderMain();updateDeskDevPanel();" style="' + btnStyle + '">natural</button>' +
     '</div>' +
     '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #333;">' +
+      '<div style="font-weight:700;margin-bottom:6px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Sub-Missions</div>' +
+      '<div style="display:flex;gap:5px;margin-bottom:10px;">' +
+        '<button onclick="devActivateSubMission()" style="' + halfBtnStyle + '">+ Activate</button>' +
+        '<button onclick="devProgressSubMission()" style="' + halfBtnStyle + '">⬆ Progress</button>' +
+        '<button onclick="devClearSubMissions()" style="' + dangerHalfStyle + '">✕ Clear</button>' +
+      '</div>' +
       '<div style="font-weight:700;margin-bottom:6px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Politics</div>' +
       '<div style="margin-bottom:5px;">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline;opacity:0.9;margin-bottom:2px;">' +
@@ -16562,6 +16658,7 @@ function chooseScenario(sid,idx){
   recordEvent('choiceMade', {scenarioId:s.id, choiceIndex:idx});
   checkCoalitionViolations(c);
   checkCoalitionStrikes(c);
+  checkScenarioSubMissionTrigger(s.id, idx);
   G.history.push('EVENT: '+s.title+' → '+c.text.substring(0,55)+'...');
   updateHUD();
   if(checkFailure()) return;
@@ -17950,6 +18047,212 @@ function getAdvisorBonus(scenario, choiceIndex) {
     var stackExplanation = '<span style="color:#7a5800;font-size:12px;font-style:italic">Your advisors collectively influenced this outcome.</span>';
     return { effects: combined, chips: chipParts.join(''), explanation: stackExplanation };
   }
+}
+
+// ═══════════════ SUB-MISSION SYSTEM ═══════════════
+
+// Render the sub-mission strip badges.
+function renderSubMissionBadges() {
+  return (G.activeSubMissions || []).map(function(entry) {
+    var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === entry.id; });
+    if (!sm) return '';
+    var roundsLeft = (sm.deadlineRounds || 99) - (G.round - entry.activatedRound);
+    var isWarning = roundsLeft <= 1;
+    var progressText = entry.progress + '/' + (sm.maxProgress || 3);
+    var deadlineText = roundsLeft > 90 ? '' : roundsLeft + ' rd left';
+    return '<div class="sm-badge' + (isWarning ? ' warning' : '') + '" onclick="showSubMissionDetail(\'' + entry.id + '\')">'
+      + '<span>' + esc(sm.name) + '</span>'
+      + '<span class="sm-progress">' + progressText + '</span>'
+      + (deadlineText ? '<span class="sm-deadline">' + deadlineText + '</span>' : '')
+      + '</div>';
+  }).join('');
+}
+
+// Show a detail popover for a sub-mission (placeholder — will be enhanced with briefing doc).
+function showSubMissionDetail(smId) {
+  var entry = (G.activeSubMissions || []).find(function(a) { return a.id === smId; });
+  var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === smId; });
+  if (!entry || !sm) return;
+  var cpHtml = (sm.checkpoints || []).map(function(cp) {
+    var status = entry.checkpointStatus[cp.id] || 'pending';
+    var icon = status === 'complete' ? '✅' : status === 'failed' ? '❌' : '⬜';
+    return icon + ' ' + esc(cp.name);
+  }).join('<br>');
+  var roundsLeft = (sm.deadlineRounds || 99) - (G.round - entry.activatedRound);
+  var html = '<strong>' + esc(sm.name) + '</strong><br>'
+    + '<span style="color:var(--muted);font-size:12px">' + esc(sm.description) + '</span><br><br>'
+    + '<strong>Progress:</strong> ' + entry.progress + '/' + (sm.maxProgress || 3) + '<br>'
+    + '<strong>Deadline:</strong> ' + (roundsLeft > 90 ? 'None' : roundsLeft + ' rounds remaining') + '<br><br>'
+    + '<strong>Checkpoints:</strong><br>' + cpHtml;
+  showCoachingWarning(html, 'info');
+}
+
+// Activate a sub-mission by ID. Returns true if activated.
+function activateSubMission(subMissionId) {
+  var maxActive = GAME_DATA.config.maxActiveSubMissions || 3;
+  if ((G.activeSubMissions || []).length >= maxActive) return false;
+  var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === subMissionId; });
+  if (!sm) return false;
+  // Don't activate if already active, completed, failed, or declined
+  if ((G.activeSubMissions || []).some(function(a) { return a.id === subMissionId; })) return false;
+  if ((G.completedSubMissions || []).includes(subMissionId)) return false;
+  if ((G.failedSubMissions || []).includes(subMissionId)) return false;
+  // Org check
+  if (sm.applicableOrgs && sm.applicableOrgs.length > 0 && !sm.applicableOrgs.includes(G.orgId)) return false;
+  // Build initial checkpoint status
+  var cpStatus = {};
+  (sm.checkpoints || []).forEach(function(cp) { cpStatus[cp.id] = 'pending'; });
+  G.activeSubMissions = G.activeSubMissions || [];
+  G.activeSubMissions.push({
+    id: subMissionId,
+    progress: 0,
+    activatedRound: G.round,
+    checkpointStatus: cpStatus
+  });
+  // Notification
+  showCoachingWarning('<strong>New Sub-Mission:</strong> ' + esc(sm.name) + ' — ' + esc(sm.description), 'info');
+  updateHUD();
+  return true;
+}
+
+// Update progress on an active sub-mission. Delta can be positive or negative.
+function updateSubMissionProgress(subMissionId, delta) {
+  var entry = (G.activeSubMissions || []).find(function(a) { return a.id === subMissionId; });
+  if (!entry) return;
+  var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === subMissionId; });
+  if (!sm) return;
+  entry.progress = Math.max(0, Math.min(sm.maxProgress || 3, entry.progress + delta));
+  if (entry.progress >= (sm.maxProgress || 3)) {
+    completeSubMission(subMissionId);
+  }
+}
+
+// Mark a specific checkpoint as complete and advance progress.
+function advanceSubMissionCheckpoint(subMissionId, checkpointId) {
+  var entry = (G.activeSubMissions || []).find(function(a) { return a.id === subMissionId; });
+  if (!entry || !entry.checkpointStatus) return;
+  if (entry.checkpointStatus[checkpointId] === 'complete') return; // already done
+  entry.checkpointStatus[checkpointId] = 'complete';
+  updateSubMissionProgress(subMissionId, 1);
+}
+
+// Mark a checkpoint as failed and regress progress.
+function regressSubMissionCheckpoint(subMissionId, checkpointId) {
+  var entry = (G.activeSubMissions || []).find(function(a) { return a.id === subMissionId; });
+  if (!entry || !entry.checkpointStatus) return;
+  if (entry.checkpointStatus[checkpointId] === 'failed') return;
+  entry.checkpointStatus[checkpointId] = 'failed';
+  updateSubMissionProgress(subMissionId, -1);
+}
+
+// Complete a sub-mission — apply rewards, move to completedSubMissions.
+function completeSubMission(subMissionId) {
+  var entry = (G.activeSubMissions || []).find(function(a) { return a.id === subMissionId; });
+  if (!entry) return;
+  var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === subMissionId; });
+  if (!sm) return;
+  // Apply rewards
+  var rewards = sm.rewards || {};
+  if (rewards.effects) {
+    GAME_DATA.stats.forEach(function(stat) {
+      if (rewards.effects[stat.id]) {
+        G.stats[stat.id] = Math.max(0, Math.min(100, (G.stats[stat.id] || 0) + rewards.effects[stat.id]));
+      }
+    });
+    G.stats.trust = computeCompositeTrust();
+  }
+  if (rewards.budgetEffect) G.budget = Math.min(G.budgetMax || 200, G.budget + rewards.budgetEffect);
+  if (rewards.cloutEffect) G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + rewards.cloutEffect));
+  if (rewards.missionStars) G.missionStars = Math.min(GAME_DATA.config.missionMaxStars || 5, G.missionStars + rewards.missionStars);
+  // Move to completed
+  G.activeSubMissions = (G.activeSubMissions || []).filter(function(a) { return a.id !== subMissionId; });
+  G.completedSubMissions = G.completedSubMissions || [];
+  G.completedSubMissions.push(subMissionId);
+  // Notification
+  var msg = rewards.text || ('Sub-mission complete: ' + sm.name);
+  showCoachingWarning('<strong>Sub-Mission Complete!</strong> ' + esc(msg), 'info');
+  updateHUD();
+}
+
+// Fail a sub-mission — apply penalties, move to failedSubMissions.
+function failSubMission(subMissionId) {
+  var entry = (G.activeSubMissions || []).find(function(a) { return a.id === subMissionId; });
+  if (!entry) return;
+  var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === subMissionId; });
+  if (!sm) return;
+  // Apply penalties
+  var penalties = sm.penalties || {};
+  if (penalties.effects) {
+    GAME_DATA.stats.forEach(function(stat) {
+      if (penalties.effects[stat.id]) {
+        G.stats[stat.id] = Math.max(0, Math.min(100, (G.stats[stat.id] || 0) + penalties.effects[stat.id]));
+      }
+    });
+    G.stats.trust = computeCompositeTrust();
+  }
+  if (penalties.budgetEffect) G.budget = Math.max(0, G.budget + penalties.budgetEffect);
+  if (penalties.cloutEffect) G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + penalties.cloutEffect));
+  // Move to failed
+  G.activeSubMissions = (G.activeSubMissions || []).filter(function(a) { return a.id !== subMissionId; });
+  G.failedSubMissions = G.failedSubMissions || [];
+  G.failedSubMissions.push(subMissionId);
+  // Notification
+  var msg = penalties.text || ('Sub-mission failed: ' + sm.name);
+  showCoachingWarning('<strong>Sub-Mission Failed.</strong> ' + esc(msg), 'red');
+  updateHUD();
+}
+
+// Check deadlines — called from beginRound(). Any sub-mission past its deadline
+// that hasn't reached maxProgress is failed. Those that have reached it are completed.
+function tickSubMissionDeadlines() {
+  (G.activeSubMissions || []).slice().forEach(function(entry) {
+    var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === entry.id; });
+    if (!sm) return;
+    var roundsActive = G.round - entry.activatedRound;
+    if (roundsActive >= (sm.deadlineRounds || 99)) {
+      if (entry.progress >= (sm.maxProgress || 3)) {
+        completeSubMission(entry.id);
+      } else {
+        failSubMission(entry.id);
+      }
+    }
+  });
+}
+
+// Check if a scenario choice should trigger a sub-mission activation.
+// Called from chooseScenario() after the choice is applied.
+function checkScenarioSubMissionTrigger(scenarioId, choiceIndex) {
+  (GAME_DATA.subMissions || []).forEach(function(sm) {
+    if (!sm.trigger || sm.trigger.type !== 'scenarioChoice') return;
+    if (sm.trigger.scenarioId !== scenarioId) return;
+    if (sm.trigger.choiceIndex !== undefined && sm.trigger.choiceIndex !== null && sm.trigger.choiceIndex !== choiceIndex) return;
+    activateSubMission(sm.id);
+  });
+}
+
+// Check for round-end sub-mission offers (similar to coalition offers).
+function checkSubMissionOffers() {
+  var offers = (GAME_DATA.subMissions || []).filter(function(sm) {
+    if (!sm.trigger || sm.trigger.type !== 'roundEnd') return false;
+    if (sm.trigger.minRound && G.round < sm.trigger.minRound) return false;
+    if (sm.trigger.maxRound && G.round > sm.trigger.maxRound) return false;
+    if (sm.applicableOrgs && sm.applicableOrgs.length > 0 && !sm.applicableOrgs.includes(G.orgId)) return false;
+    var maxActive = GAME_DATA.config.maxActiveSubMissions || 3;
+    if ((G.activeSubMissions || []).length >= maxActive) return false;
+    if ((G.activeSubMissions || []).some(function(a) { return a.id === sm.id; })) return false;
+    if ((G.completedSubMissions || []).includes(sm.id)) return false;
+    if ((G.failedSubMissions || []).includes(sm.id)) return false;
+    if ((G.declinedSubMissions || []).includes(sm.id)) return false;
+    return true;
+  });
+  return offers;
+}
+
+// Accept or decline a round-end sub-mission offer.
+function acceptSubMissionOffer(smId) { activateSubMission(smId); }
+function declineSubMissionOffer(smId) {
+  G.declinedSubMissions = G.declinedSubMissions || [];
+  G.declinedSubMissions.push(smId);
 }
 
 // ═══ CONVERSATION TRIGGERS ═══

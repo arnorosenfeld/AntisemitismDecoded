@@ -1253,7 +1253,182 @@ var EDITOR_DATA =
     },
     "maxCallsPerRound": 1,
     "socialMediaDecayRate": 0.5,
-    "socialMediaWarningAfter": 2
+    "socialMediaWarningAfter": 2,
+    "jewishSecurity": {
+      "categories": [
+        {
+          "id": "safety",
+          "name": "Physical Safety",
+          "color": "#e8a44a",
+          "leaves": [
+            {
+              "id": "harassment",
+              "name": "Harassment & hate crimes",
+              "startingScore": 35
+            },
+            {
+              "id": "violent",
+              "name": "Violent attacks & mass casualty",
+              "startingScore": 42
+            },
+            {
+              "id": "institutional",
+              "name": "Institutional security",
+              "startingScore": 70
+            }
+          ]
+        },
+        {
+          "id": "ideology",
+          "name": "Ideology",
+          "color": "#6ba5e7",
+          "leaves": [
+            {
+              "id": "warmFeelings",
+              "name": "Warm feelings toward Jews",
+              "startingScore": 45
+            },
+            {
+              "id": "zionism",
+              "name": "Acceptance of Zionism",
+              "startingScore": 40
+            },
+            {
+              "id": "farRight",
+              "name": "Containment of far-right",
+              "startingScore": 25
+            }
+          ]
+        },
+        {
+          "id": "democracy",
+          "name": "Democracy",
+          "color": "#c47ddb",
+          "leaves": [
+            {
+              "id": "ruleOfLaw",
+              "name": "Rule of law",
+              "startingScore": 30
+            },
+            {
+              "id": "minorityRights",
+              "name": "Minority rights",
+              "startingScore": 35
+            },
+            {
+              "id": "bipartisanship",
+              "name": "Bipartisanship",
+              "startingScore": 25
+            }
+          ]
+        },
+        {
+          "id": "vitality",
+          "name": "Communal Vitality",
+          "color": "#5ec49e",
+          "leaves": [
+            {
+              "id": "engagement",
+              "name": "Jewish communal engagement",
+              "startingScore": 55
+            },
+            {
+              "id": "bigTent",
+              "name": "Big Tent",
+              "startingScore": 35
+            },
+            {
+              "id": "sharedValues",
+              "name": "Shared Values",
+              "startingScore": 40
+            }
+          ]
+        }
+      ],
+      "systemicDrift": [
+        {
+          "stat": "trust",
+          "above": 60,
+          "leaf": "warmFeelings",
+          "delta": 1
+        },
+        {
+          "stat": "trust",
+          "below": 30,
+          "leaf": "warmFeelings",
+          "delta": -2
+        },
+        {
+          "stat": "donors",
+          "above": 60,
+          "leaf": "institutional",
+          "delta": 1
+        },
+        {
+          "stat": "donors",
+          "below": 30,
+          "leaf": "institutional",
+          "delta": -1
+        },
+        {
+          "stat": "morale",
+          "above": 60,
+          "leaf": "engagement",
+          "delta": 1
+        },
+        {
+          "stat": "morale",
+          "below": 30,
+          "leaf": "engagement",
+          "delta": -1
+        },
+        {
+          "stat": "morale",
+          "below": 30,
+          "leaf": "bigTent",
+          "delta": -1
+        },
+        {
+          "stat": "clout",
+          "above": 50,
+          "leaf": "bipartisanship",
+          "delta": 1
+        },
+        {
+          "stat": "clout",
+          "below": 20,
+          "leaf": "bipartisanship",
+          "delta": -1
+        }
+      ],
+      "coalitionDrift": [
+        {
+          "coalitionId": "coal_interfaith",
+          "leaf": "warmFeelings",
+          "delta": 1
+        },
+        {
+          "coalitionId": "coal_federation",
+          "leaf": "institutional",
+          "delta": 1
+        },
+        {
+          "coalitionId": "coal_campus",
+          "leaf": "zionism",
+          "delta": 1
+        },
+        {
+          "coalitionId": "coal_donor_circle",
+          "leaf": "engagement",
+          "delta": 1
+        },
+        {
+          "coalitionId": "coal_media",
+          "leaf": "warmFeelings",
+          "delta": 1
+        }
+      ]
+    }
   },
   "stats": [
     {
@@ -1397,7 +1572,37 @@ var EDITOR_DATA =
         "olderAdults": 10
       },
       "allocationPoints": 80,
-      "startingBudget": 80
+      "startingBudget": 80,
+      "securityWeights": {
+        "categoryWeights": {
+          "safety": 20,
+          "ideology": 15,
+          "democracy": 40,
+          "vitality": 25
+        },
+        "leafWeights": {
+          "safety": {
+            "harassment": 35,
+            "violent": 35,
+            "institutional": 30
+          },
+          "ideology": {
+            "warmFeelings": 40,
+            "zionism": 10,
+            "farRight": 50
+          },
+          "democracy": {
+            "ruleOfLaw": 35,
+            "minorityRights": 40,
+            "bipartisanship": 25
+          },
+          "vitality": {
+            "engagement": 30,
+            "bigTent": 50,
+            "sharedValues": 20
+          }
+        }
+      }
     },
     {
       "id": "right",
@@ -1429,7 +1634,37 @@ var EDITOR_DATA =
         "olderAdults": 30
       },
       "allocationPoints": 75,
-      "startingBudget": 70
+      "startingBudget": 70,
+      "securityWeights": {
+        "categoryWeights": {
+          "safety": 30,
+          "ideology": 30,
+          "democracy": 15,
+          "vitality": 25
+        },
+        "leafWeights": {
+          "safety": {
+            "harassment": 25,
+            "violent": 35,
+            "institutional": 40
+          },
+          "ideology": {
+            "warmFeelings": 25,
+            "zionism": 50,
+            "farRight": 25
+          },
+          "democracy": {
+            "ruleOfLaw": 30,
+            "minorityRights": 25,
+            "bipartisanship": 45
+          },
+          "vitality": {
+            "engagement": 30,
+            "bigTent": 20,
+            "sharedValues": 50
+          }
+        }
+      }
     },
     {
       "id": "center",
@@ -1461,7 +1696,37 @@ var EDITOR_DATA =
         "olderAdults": 23
       },
       "allocationPoints": 90,
-      "startingBudget": 120
+      "startingBudget": 120,
+      "securityWeights": {
+        "categoryWeights": {
+          "safety": 25,
+          "ideology": 22,
+          "democracy": 28,
+          "vitality": 25
+        },
+        "leafWeights": {
+          "safety": {
+            "harassment": 33,
+            "violent": 34,
+            "institutional": 33
+          },
+          "ideology": {
+            "warmFeelings": 35,
+            "zionism": 30,
+            "farRight": 35
+          },
+          "democracy": {
+            "ruleOfLaw": 35,
+            "minorityRights": 35,
+            "bipartisanship": 30
+          },
+          "vitality": {
+            "engagement": 30,
+            "bigTent": 35,
+            "sharedValues": 35
+          }
+        }
+      }
     }
   ],
   "nationalOrganizations": [],

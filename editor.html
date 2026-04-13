@@ -301,6 +301,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         <button class="nav-item" onclick="showPanel('text', this)">📝 Page Text</button>
         <button class="nav-item" onclick="showPanel('stats', this)">📊 Stat Configuration</button>
 
+        <div class="nav-section">Jewish Security</div>
+        <button class="nav-item" onclick="showPanel('security', this)">🛡️ Security Config</button>
+
         <div class="nav-section">Advanced</div>
         <button class="nav-item" onclick="showPanel('politics', this)">⚖️ Political Mechanics</button>
         <button class="nav-item" onclick="showPanel('advisors', this)">👥 Characters</button>
@@ -580,6 +583,26 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
         </div>
 
         
+        <!-- JEWISH SECURITY PANEL -->
+        <div id="panel-security" class="panel">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Configure the Jewish Security world-state system: categories, leaves (sub-metrics), starting scores, systemic drift rules, and per-org weight configurations.</p>
+          <div class="form-section">
+            <h3>Categories & Leaves</h3>
+            <div id="security-cats-editor"></div>
+          </div>
+          <div class="form-section" style="margin-top:24px">
+            <h3>Systemic Drift Rules</h3>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">These rules fire once per round. When an org stat crosses the threshold, the specified security leaf shifts by the delta amount.</p>
+            <div id="security-drift-editor"></div>
+          </div>
+          <div class="form-section" style="margin-top:24px">
+            <h3>Per-Org Weight Comparison</h3>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">How each organization weights the security categories. Edit these in each org's settings.</p>
+            <div id="security-weights-comparison"></div>
+          </div>
+          <button class="btn btn-primary" onclick="saveSecurityConfig()" style="margin-top:14px">Save Security Config</button>
+        </div>
+
         <!-- SEGMENTS PANEL -->
         <div id="panel-segments" class="panel">
           <div class="form-section">
@@ -1195,6 +1218,11 @@ var EDITOR_DATA =
           "mood": "neutral",
           "msg": "You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free — inbox messages don't cost action points.",
           "label": "Got it. What am I trying to do?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "See the bar at the top of your screen? That's the <strong>Jewish Security Index</strong> — it tracks the state of Jewish life in America across four dimensions: Physical Safety, Ideology, Democracy, and Communal Vitality. Your job isn't just to run this organization well — it's to actually make things better for Jews in this country. Every decision you make can affect both your org's health AND the world outside these walls.",
+          "label": "How does that work?"
         },
         {
           "mood": "concerned",
@@ -16490,7 +16518,7 @@ function showToast(msg, type) {
 // ═══ PANEL NAVIGATION ═══
 const PANEL_TITLES = {
   github: 'Dashboard', config: 'Global Config', traits: 'Character Traits', avatars: 'Emoji Avatars',
-  orgs: 'Organizations', missions: 'Missions', submissions: 'Sub-Missions',
+  orgs: 'Organizations', missions: 'Missions', submissions: 'Sub-Missions', security: 'Jewish Security',
   scenarios: 'Scenarios / Events', inbox: 'Inbox Scenarios', segments: 'Segments',
   scoring: 'Scoring Thresholds', text: 'Page Text', stats: 'Stat Configuration', politics: 'Political Mechanics',
   advisors: 'Characters', gazette: 'Jewish Gazette', breaking: 'Breaking News', coalitions: 'Coalition Offers',
@@ -16504,6 +16532,7 @@ var PANEL_POPULATORS = {
   avatars: function(){ populateAvatars(); },
   orgs: function(){ populateOrgs(); },
   submissions: function(){ if(typeof populateSubMissions==='function') populateSubMissions(); },
+  security: function(){ if(typeof populateSecurityConfig==='function') populateSecurityConfig(); },
   missions: function(){ populateMissions(); },
   scenarios: function(){ populateScenarios(); },
   inbox: function(){ populateInbox(); },
@@ -16901,6 +16930,84 @@ function addMission() {
   localStorage.setItem('gd_cache',JSON.stringify(GD)); populateMissions(); refreshDependentPanels('missions');
 }
 
+
+// ═══ JEWISH SECURITY CONFIG ═══
+function populateSecurityConfig() {
+  if (!GD.config) GD.config = {};
+  if (!GD.config.jewishSecurity) GD.config.jewishSecurity = { categories: [], systemicDrift: [], coalitionDrift: [] };
+  var jsCfg = GD.config.jewishSecurity;
+
+  // Categories & leaves editor
+  var catEl = document.getElementById('security-cats-editor');
+  if (catEl) {
+    var html = '';
+    (jsCfg.categories || []).forEach(function(cat, ci) {
+      html += '<div style="background:#f9f7f2;border:1px solid var(--border);padding:14px;margin-bottom:10px">';
+      html += '<div class="form-row" style="margin-bottom:8px"><div class="form-group"><label>Category ID</label><input id="jscat-id-' + ci + '" value="' + esc(cat.id) + '" /></div>';
+      html += '<div class="form-group"><label>Name</label><input id="jscat-name-' + ci + '" value="' + esc(cat.name) + '" /></div>';
+      html += '<div class="form-group"><label>Color</label><input type="color" id="jscat-color-' + ci + '" value="' + esc(cat.color || '#888888') + '" style="height:32px" /></div></div>';
+      (cat.leaves || []).forEach(function(leaf, li) {
+        html += '<div class="form-row" style="margin-left:20px;margin-bottom:4px">';
+        html += '<div class="form-group"><label>Leaf ID</label><input id="jslf-id-' + ci + '-' + li + '" value="' + esc(leaf.id) + '" style="font-size:11px" /></div>';
+        html += '<div class="form-group"><label>Name</label><input id="jslf-name-' + ci + '-' + li + '" value="' + esc(leaf.name) + '" style="font-size:11px" /></div>';
+        html += '<div class="form-group"><label>Starting Score</label><input type="number" id="jslf-start-' + ci + '-' + li + '" value="' + (leaf.startingScore || 50) + '" min="0" max="100" style="width:60px" /></div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+    catEl.innerHTML = html;
+  }
+
+  // Systemic drift editor
+  var driftEl = document.getElementById('security-drift-editor');
+  if (driftEl) {
+    var dhtml = '<table style="font-size:11px;width:100%;border-collapse:collapse">';
+    dhtml += '<tr style="font-weight:700;border-bottom:1px solid var(--border)"><th style="text-align:left;padding:4px">Stat</th><th>Condition</th><th>Leaf</th><th>Delta</th></tr>';
+    (jsCfg.systemicDrift || []).forEach(function(rule, ri) {
+      var cond = rule.above ? '> ' + rule.above : rule.below ? '< ' + rule.below : '?';
+      dhtml += '<tr style="border-bottom:1px solid #eee"><td style="padding:4px">' + esc(rule.stat) + '</td><td>' + cond + '</td><td>' + esc(rule.leaf) + '</td><td style="font-weight:700;color:' + (rule.delta > 0 ? '#2d6a4f' : '#c0392b') + '">' + (rule.delta > 0 ? '+' : '') + rule.delta + '</td></tr>';
+    });
+    dhtml += '</table>';
+    driftEl.innerHTML = dhtml;
+  }
+
+  // Per-org weight comparison
+  var compEl = document.getElementById('security-weights-comparison');
+  if (compEl) {
+    var orgs = GD.organizations || [];
+    var whtml = '<table style="font-size:11px;width:100%;border-collapse:collapse">';
+    whtml += '<tr style="font-weight:700;border-bottom:2px solid var(--border)"><th style="text-align:left;padding:4px">Category</th>';
+    orgs.forEach(function(o) { whtml += '<th style="text-align:center">' + esc(o.name) + '</th>'; });
+    whtml += '</tr>';
+    (jsCfg.categories || []).forEach(function(cat) {
+      whtml += '<tr style="border-bottom:1px solid #eee"><td style="padding:4px;font-weight:700;color:' + cat.color + '">' + esc(cat.name) + '</td>';
+      orgs.forEach(function(o) {
+        var cw = (o.securityWeights && o.securityWeights.categoryWeights) ? o.securityWeights.categoryWeights[cat.id] || 0 : 0;
+        whtml += '<td style="text-align:center;font-weight:700">' + cw + '</td>';
+      });
+      whtml += '</tr>';
+    });
+    whtml += '</table>';
+    compEl.innerHTML = whtml;
+  }
+}
+
+function saveSecurityConfig() {
+  var jsCfg = GD.config.jewishSecurity;
+  (jsCfg.categories || []).forEach(function(cat, ci) {
+    cat.id = document.getElementById('jscat-id-' + ci)?.value || cat.id;
+    cat.name = document.getElementById('jscat-name-' + ci)?.value || cat.name;
+    cat.color = document.getElementById('jscat-color-' + ci)?.value || cat.color;
+    (cat.leaves || []).forEach(function(leaf, li) {
+      leaf.id = document.getElementById('jslf-id-' + ci + '-' + li)?.value || leaf.id;
+      leaf.name = document.getElementById('jslf-name-' + ci + '-' + li)?.value || leaf.name;
+      leaf.startingScore = parseInt(document.getElementById('jslf-start-' + ci + '-' + li)?.value) || 50;
+    });
+  });
+  localStorage.setItem('gd_cache', JSON.stringify(GD));
+  setStatus('Jewish Security config saved.', 'success');
+  populateSecurityConfig();
+}
 
 // ═══ SUB-MISSIONS ═══
 function populateSubMissions() {

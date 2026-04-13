@@ -312,11 +312,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Board rating in HUD */
 .hud-board-rating { position: relative; cursor: pointer; text-align: center; }
 .hud-grade-letter { font-family: 'Merriweather', serif; font-weight: 900; font-size: 18px; padding: 2px 10px; border-radius: 4px; line-height: 1.2; display: inline-block; }
-.hud-grade-letter.grade-a { color: #2d6a4f; background: rgba(45,106,79,0.2); }
-.hud-grade-letter.grade-b { color: #b8860b; background: rgba(184,134,11,0.2); }
-.hud-grade-letter.grade-c { color: #927a1a; background: rgba(146,122,26,0.2); }
-.hud-grade-letter.grade-d { color: #c0392b; background: rgba(192,57,43,0.2); }
-.hud-grade-letter.grade-f { color: #8b1a1a; background: rgba(139,26,26,0.25); }
+.hud-grade-letter.grade-a { color: #4ade80; background: transparent; }
+.hud-grade-letter.grade-b { color: #fbbf24; background: transparent; }
+.hud-grade-letter.grade-c { color: #d4a843; background: transparent; }
+.hud-grade-letter.grade-d { color: #f87171; background: transparent; }
+.hud-grade-letter.grade-f { color: #ef4444; background: transparent; }
 .hud-board-rating:hover .grade-detail { display: block; }
 .grade-detail { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px; min-width: 240px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; margin-top: 6px; }
 .grade-detail::before { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #1a1a2e; border-left: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15); }
@@ -757,9 +757,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Jewish Security HUD bar */
 .security-bar{background:#1a1a2e;padding:8px 20px;position:relative;z-index:2;border-bottom:1px solid rgba(255,255,255,0.08)}
 .security-bar-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:16px}
-.security-composite{display:flex;align-items:center;gap:8px;white-space:nowrap}
-.security-composite-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8}
-.security-composite-val{font-family:Merriweather,serif;font-weight:900;font-size:22px;color:#faf8f4}
+/* Composite score — styled like Board Rating (title above, score below in a box) */
+.security-composite{text-align:center;min-width:80px}
+.security-composite-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;display:block;margin-bottom:3px}
+.security-composite-val{font-family:Merriweather,serif;font-weight:900;font-size:20px;color:#faf8f4;display:inline-block;padding:2px 12px;border-radius:4px;background:rgba(107,165,231,0.15);line-height:1.2}
+/* Category scores in a row */
 .security-categories{display:flex;gap:10px;flex:1;justify-content:space-around}
 .security-cat{text-align:center;cursor:pointer;position:relative;padding:4px 8px;border-radius:3px;transition:background 0.15s}
 .security-cat:hover{background:rgba(255,255,255,0.06)}
@@ -767,15 +769,18 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-cat-val{font-family:Merriweather,serif;font-weight:700;font-size:15px;display:block}
 .security-cat-bar{height:3px;border-radius:2px;margin-top:3px;background:rgba(255,255,255,0.1);overflow:hidden}
 .security-cat-fill{height:100%;border-radius:2px;transition:width 0.4s ease}
-/* Security category hover detail */
-.security-detail{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;z-index:100;min-width:200px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.4);margin-top:6px}
+/* Security category hover detail — matches .seg-tooltip pattern exactly */
+.security-detail{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:12px 16px;min-width:240px;z-index:9000;box-shadow:0 4px 16px rgba(0,0,0,0.3);margin-top:6px}
+.security-detail::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:8px;height:8px;background:#1a1a2e;border-left:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.15)}
 .security-cat:hover .security-detail{display:block}
-.security-detail-leaf{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.06)}
-.security-detail-leaf:last-child{border-bottom:0}
-.security-detail-leaf-name{color:#ccc}
-.security-detail-leaf-val{font-weight:700;font-family:Menlo,monospace}
-.security-detail-leaf-bar{flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin:0 8px;overflow:hidden}
-.security-detail-leaf-fill{height:100%;border-radius:2px}
+/* Leaf rows inside hover — match .seg-row pattern */
+.security-detail-title{font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:11px;margin-bottom:8px;letter-spacing:0.5px}
+.sec-leaf-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:10px}
+.sec-leaf-row:last-child{margin-bottom:0}
+.sec-leaf-name{width:130px;color:#a0aab8;font-weight:600;letter-spacing:0.5px;flex-shrink:0;font-size:9px}
+.sec-leaf-bar-wrap{flex:1;background:rgba(255,255,255,0.08);height:5px;min-width:50px}
+.sec-leaf-bar{height:100%;transition:width 0.4s ease,background 0.4s ease}
+.sec-leaf-val{width:28px;text-align:right;font-family:Merriweather,serif;font-weight:700;font-size:10px;color:#fff;flex-shrink:0}
 /* Security effect chips in outcome display */
 .chip-security{background:rgba(90,160,220,0.15);color:#6ba5e7;border:1px solid rgba(90,160,220,0.3)}
 
@@ -21214,12 +21219,14 @@ function updateSecurityHUD() {
   var jsCfg = GAME_DATA.config.jewishSecurity;
   var composite = calcSecurityComposite();
 
+  // Composite score — styled like Board Rating
   var html = '<div class="security-composite">';
-  html += '<div><span class="security-composite-label">Jewish Security</span>';
-  html += '<span class="security-composite-val">' + composite + '</span></div>';
+  html += '<span class="security-composite-label">Jewish Security</span>';
+  html += '<span class="security-composite-val">' + composite + '</span>';
   html += '</div>';
-  html += '<div class="security-categories">';
 
+  // Category scores with hover details matching the trust segment tooltip pattern
+  html += '<div class="security-categories">';
   (jsCfg.categories || []).forEach(function(cat) {
     var catScore = calcSecurityCategoryScore(cat.id);
     var color = cat.color || '#888';
@@ -21227,20 +21234,20 @@ function updateSecurityHUD() {
     html += '<span class="security-cat-name" style="color:' + color + '">' + esc(cat.name) + '</span>';
     html += '<span class="security-cat-val" style="color:' + color + '">' + catScore + '</span>';
     html += '<div class="security-cat-bar"><div class="security-cat-fill" style="width:' + catScore + '%;background:' + color + '"></div></div>';
-    // Hover detail showing leaves
+    // Hover detail — matches .seg-tooltip / .seg-row pattern
     html += '<div class="security-detail">';
+    html += '<div class="security-detail-title" style="color:' + color + '">' + esc(cat.name) + '</div>';
     (cat.leaves || []).forEach(function(leaf) {
       var val = G.security.leaves[leaf.id] || 0;
-      html += '<div class="security-detail-leaf">';
-      html += '<span class="security-detail-leaf-name">' + esc(leaf.name) + '</span>';
-      html += '<div class="security-detail-leaf-bar"><div class="security-detail-leaf-fill" style="width:' + val + '%;background:' + color + '"></div></div>';
-      html += '<span class="security-detail-leaf-val" style="color:' + color + '">' + val + '</span>';
+      html += '<div class="sec-leaf-row">';
+      html += '<span class="sec-leaf-name">' + esc(leaf.name) + '</span>';
+      html += '<div class="sec-leaf-bar-wrap"><div class="sec-leaf-bar" style="width:' + val + '%;background:' + color + '"></div></div>';
+      html += '<span class="sec-leaf-val">' + val + '</span>';
       html += '</div>';
     });
     html += '</div>';
     html += '</div>';
   });
-
   html += '</div>';
   inner.innerHTML = html;
 }

@@ -1418,6 +1418,20 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       <p id="org-desc">Each organization type comes with its own culture, donor base, and political pressures. Your org's traits combine with your own throughout the game.</p>
     </div>
     <div class="card-grid" id="org-grid"></div>
+    <!-- Weight customization — collapsed by default -->
+    <div id="org-weight-section" style="display:none;margin-top:16px">
+      <div style="text-align:center;margin-bottom:10px">
+        <a href="#" onclick="event.preventDefault();document.getElementById('org-weight-panel').style.display=document.getElementById('org-weight-panel').style.display==='none'?'block':'none'" style="font-size:11px;color:var(--gold);text-decoration:none">⚙ Advanced: Customize your organization's security priorities</a>
+      </div>
+      <div id="org-weight-panel" style="display:none;background:var(--white);border:1px solid var(--border);padding:18px;margin-bottom:14px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Adjust how much each dimension of Jewish Security matters to your organization. Higher weight = bigger impact on your composite score. Most players should use the defaults.</div>
+        <div id="org-weight-sliders"></div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="btn btn-sm btn-secondary" onclick="resetOrgWeights()">Reset to Defaults</button>
+          <span style="font-size:11px;color:var(--muted);align-self:center;margin-left:auto">Preview composite: <strong id="org-weight-preview">—</strong></span>
+        </div>
+      </div>
+    </div>
     <div class="btn-row">
       <button class="btn btn-secondary btn-sm" onclick="showScreen('char-screen')">← Back</button>
       <button class="btn btn-primary" id="org-next-btn" disabled onclick="goToMission()">Next: Set Your Mission →</button>
@@ -17772,8 +17786,112 @@ function selectOrg(id){
   document.querySelectorAll('#org-grid .card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('oc-'+id)?.classList.add('selected');
   document.getElementById('org-next-btn').disabled=false;
+  // Show weight customization panel
+  renderOrgWeightPanel();
 }
-function goToMission(){ initMission(); showScreen('mission-screen'); }
+function goToMission(){
+  // Save any customized weights before proceeding
+  saveOrgWeights();
+  initMission();
+  showScreen('mission-screen');
+}
+
+// Weight customization panel
+function renderOrgWeightPanel() {
+  var section = document.getElementById('org-weight-section');
+  if (!section) return;
+  var jsCfg = GAME_DATA.config.jewishSecurity;
+  if (!jsCfg || !jsCfg.categories) return;
+  var org = (GAME_DATA.organizations || []).find(function(o) { return o.id === G.orgId; });
+  if (!org || !org.securityWeights) return;
+  section.style.display = '';
+  var cw = org.securityWeights.categoryWeights || {};
+  var lw = org.securityWeights.leafWeights || {};
+  // Store working copy
+  G._customWeights = JSON.parse(JSON.stringify(org.securityWeights));
+
+  var html = '';
+  (jsCfg.categories || []).forEach(function(cat) {
+    var catW = (G._customWeights.categoryWeights || {})[cat.id] || 25;
+    html += '<div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">';
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">';
+    html += '<span style="font-weight:700;font-size:12px;color:' + cat.color + ';width:140px">' + esc(cat.name) + '</span>';
+    html += '<input type="range" min="5" max="60" value="' + catW + '" oninput="updateOrgWeight(\'cat\',\'' + cat.id + '\',this.value)" style="flex:1">';
+    html += '<span id="owv-cat-' + cat.id + '" style="font-family:Menlo,monospace;font-size:12px;width:35px;text-align:right;font-weight:700">' + catW + '</span>';
+    html += '</div>';
+    // Leaf weights within this category
+    var catLeafW = (G._customWeights.leafWeights || {})[cat.id] || {};
+    (cat.leaves || []).forEach(function(leaf) {
+      var leafW = catLeafW[leaf.id] || 33;
+      html += '<div style="display:flex;align-items:center;gap:10px;margin-left:20px;margin-bottom:3px">';
+      html += '<span style="font-size:11px;color:var(--muted);width:180px">' + esc(leaf.name) + '</span>';
+      html += '<input type="range" min="5" max="80" value="' + leafW + '" oninput="updateOrgWeight(\'leaf\',\'' + cat.id + '.' + leaf.id + '\',this.value)" style="flex:1">';
+      html += '<span id="owv-leaf-' + cat.id + '-' + leaf.id + '" style="font-family:Menlo,monospace;font-size:11px;width:30px;text-align:right">' + leafW + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('org-weight-sliders').innerHTML = html;
+  updateOrgWeightPreview();
+}
+
+function updateOrgWeight(type, key, value) {
+  if (!G._customWeights) return;
+  var v = parseInt(value) || 1;
+  if (type === 'cat') {
+    G._customWeights.categoryWeights[key] = v;
+    var el = document.getElementById('owv-cat-' + key);
+    if (el) el.textContent = v;
+  } else if (type === 'leaf') {
+    var parts = key.split('.');
+    if (!G._customWeights.leafWeights[parts[0]]) G._customWeights.leafWeights[parts[0]] = {};
+    G._customWeights.leafWeights[parts[0]][parts[1]] = v;
+    var el = document.getElementById('owv-leaf-' + parts[0] + '-' + parts[1]);
+    if (el) el.textContent = v;
+  }
+  updateOrgWeightPreview();
+}
+
+function updateOrgWeightPreview() {
+  var preview = document.getElementById('org-weight-preview');
+  if (!preview || !G._customWeights) return;
+  // Temporarily calculate composite with custom weights + starting scores
+  var jsCfg = GAME_DATA.config.jewishSecurity;
+  var catWeights = G._customWeights.categoryWeights || {};
+  var leafWeights = G._customWeights.leafWeights || {};
+  var totalCatW = 0;
+  var weightedSum = 0;
+  (jsCfg.categories || []).forEach(function(cat) {
+    var cw = catWeights[cat.id] || 1;
+    totalCatW += cw;
+    var totalLeafW = 0;
+    var leafSum = 0;
+    (cat.leaves || []).forEach(function(leaf) {
+      var lw = (leafWeights[cat.id] || {})[leaf.id] || 1;
+      totalLeafW += lw;
+      leafSum += (leaf.startingScore || 50) * lw;
+    });
+    var catScore = totalLeafW > 0 ? leafSum / totalLeafW : 0;
+    weightedSum += catScore * cw;
+  });
+  var composite = totalCatW > 0 ? Math.round(weightedSum / totalCatW) : 0;
+  preview.textContent = composite;
+}
+
+function resetOrgWeights() {
+  var org = (GAME_DATA.organizations || []).find(function(o) { return o.id === G.orgId; });
+  if (org && org.securityWeights) {
+    G._customWeights = JSON.parse(JSON.stringify(org.securityWeights));
+    renderOrgWeightPanel();
+  }
+}
+
+function saveOrgWeights() {
+  // Store custom weights so initJewishSecurity uses them
+  if (G._customWeights) {
+    G._pendingSecurityWeights = JSON.parse(JSON.stringify(G._customWeights));
+  }
+}
 
 // ═══════════════ MISSION ═══════════════
 function initMission(){
@@ -20055,7 +20173,66 @@ function showRoundTransition() {
       '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Clout</span><span style="font-family:Merriweather,serif;font-weight:700;font-size:16px">\u26a1' + Math.round(G.politicalClout) + '</span></div>' +
     '</div>' +
     // Defining moment
-    momentHtml +
+    momentHtml;
+
+  // Jewish Security round summary
+  var secSummaryHtml = '';
+  if (G.security && G._securityStart) {
+    var jsCfg = GAME_DATA.config.jewishSecurity;
+    var prevComposite = (function() {
+      // Calculate what composite was at start of this round using previous leaf values from snapshot
+      var prevSnap = (G._securityRoundSnap || G._securityStart);
+      var saved = JSON.parse(JSON.stringify(G.security.leaves));
+      // Temporarily swap in old values to calculate old composite
+      Object.keys(prevSnap).forEach(function(k) { G.security.leaves[k] = prevSnap[k]; });
+      var old = calcSecurityComposite();
+      // Restore current values
+      Object.keys(saved).forEach(function(k) { G.security.leaves[k] = saved[k]; });
+      return old;
+    })();
+    var curComposite = calcSecurityComposite();
+    var compDelta = curComposite - prevComposite;
+    var compDeltaText = compDelta > 0 ? '+' + compDelta : compDelta < 0 ? '' + compDelta : '\u00b10';
+    var compDeltaClass = compDelta > 0 ? 'color:#4ade80' : compDelta < 0 ? 'color:#f87171' : 'color:var(--muted)';
+
+    // Find leaves that changed significantly (±3 or more)
+    var significantChanges = '';
+    var prevLeaves = G._securityRoundSnap || G._securityStart;
+    var leafNames = {};
+    (jsCfg.categories || []).forEach(function(cat) {
+      (cat.leaves || []).forEach(function(leaf) { leafNames[leaf.id] = { name: leaf.name, color: cat.color }; });
+    });
+    Object.keys(G.security.leaves).forEach(function(leafId) {
+      var cur = G.security.leaves[leafId] || 0;
+      var prev = prevLeaves[leafId] || 0;
+      var d = cur - prev;
+      if (Math.abs(d) >= 3) {
+        var info = leafNames[leafId] || { name: leafId, color: '#888' };
+        var sign = d > 0 ? '+' : '';
+        significantChanges += '<div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0"><span style="color:#ccc">' + esc(info.name) + '</span><span style="font-weight:700;' + (d > 0 ? 'color:#4ade80' : 'color:#f87171') + '">' + sign + d + '</span></div>';
+      }
+    });
+
+    secSummaryHtml =
+      '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Jewish Security</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
+      '<div style="background:var(--white);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:' + (significantChanges ? '12px' : '0') + '">' +
+          '<div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6ba5e7">Composite Score</span></div>' +
+          '<div style="font-family:Merriweather,serif;font-weight:900;font-size:18px">' +
+            '<span style="color:var(--muted)">' + prevComposite + '</span>' +
+            ' <span style="color:var(--gold)">\u2192</span> ' +
+            '<span style="color:var(--ink)">' + curComposite + '</span>' +
+            ' <span style="font-size:13px;font-weight:700;' + compDeltaClass + '">(' + compDeltaText + ')</span>' +
+          '</div>' +
+        '</div>' +
+        (significantChanges ? '<div style="border-top:1px solid var(--border);padding-top:10px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Notable Changes</div>' + significantChanges + '</div>' : '') +
+      '</div>';
+
+    // Save snapshot for next round's delta calculation
+    G._securityRoundSnap = JSON.parse(JSON.stringify(G.security.leaves));
+  }
+
+  html += secSummaryHtml +
     // Gazette
     (headlines.length > 0 ? '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">The Jewish Gazette</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' : '') +
     gazetteHtml +
@@ -20441,6 +20618,69 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
       });
       html += '</div>';
     }
+  }
+
+  // Jewish Security end-of-year assessment
+  if (G.security && G._securityStart) {
+    var jsCfg = GAME_DATA.config.jewishSecurity;
+    var finalComposite = calcSecurityComposite();
+    // Calculate starting composite
+    var savedLeaves = JSON.parse(JSON.stringify(G.security.leaves));
+    Object.keys(G._securityStart).forEach(function(k) { G.security.leaves[k] = G._securityStart[k]; });
+    var startComposite = calcSecurityComposite();
+    Object.keys(savedLeaves).forEach(function(k) { G.security.leaves[k] = savedLeaves[k]; });
+    var compChange = finalComposite - startComposite;
+    var compSign = compChange > 0 ? '+' : '';
+    var compColor = compChange > 0 ? '#4ade80' : compChange < 0 ? '#f87171' : 'var(--muted)';
+
+    html += '<div style="border-top:2px solid #6ba5e7;margin-top:28px;padding-top:20px">';
+    html += '<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6ba5e7;margin-bottom:14px">State of Jewish Security</div>';
+    html += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">';
+    html += '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Final Score</span><span style="font-family:Merriweather,serif;font-weight:900;font-size:28px;color:#6ba5e7">' + finalComposite + '</span></div>';
+    html += '<div style="font-size:13px;color:var(--muted)">' + startComposite + ' \u2192 ' + finalComposite + ' <span style="font-weight:700;color:' + compColor + '">(' + compSign + compChange + ')</span></div>';
+    html += '</div>';
+
+    // Category bars with change
+    (jsCfg.categories || []).forEach(function(cat) {
+      var curCat = calcSecurityCategoryScore(cat.id);
+      // Calculate starting category score
+      Object.keys(G._securityStart).forEach(function(k) { G.security.leaves[k] = G._securityStart[k]; });
+      var startCat = calcSecurityCategoryScore(cat.id);
+      Object.keys(savedLeaves).forEach(function(k) { G.security.leaves[k] = savedLeaves[k]; });
+      var d = curCat - startCat;
+      var ds = d > 0 ? '+' + d : d < 0 ? '' + d : '\u00b10';
+      var dc = d > 0 ? '#4ade80' : d < 0 ? '#f87171' : 'var(--muted)';
+      html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">';
+      html += '<span style="font-size:12px;font-weight:700;width:120px;color:' + cat.color + '">' + esc(cat.name) + '</span>';
+      html += '<div style="flex:1;height:8px;background:#e0ddd5;border-radius:4px;overflow:hidden"><div style="height:100%;border-radius:4px;width:' + curCat + '%;background:' + cat.color + '"></div></div>';
+      html += '<span style="font-family:Merriweather,serif;font-weight:700;font-size:14px;width:30px;text-align:right;color:' + cat.color + '">' + curCat + '</span>';
+      html += '<span style="font-size:11px;font-weight:700;width:36px;text-align:right;color:' + dc + '">' + ds + '</span>';
+      html += '</div>';
+    });
+
+    // Brief narrative
+    var improved = [];
+    var declined = [];
+    (jsCfg.categories || []).forEach(function(cat) {
+      var curCat = calcSecurityCategoryScore(cat.id);
+      Object.keys(G._securityStart).forEach(function(k) { G.security.leaves[k] = G._securityStart[k]; });
+      var startCat = calcSecurityCategoryScore(cat.id);
+      Object.keys(savedLeaves).forEach(function(k) { G.security.leaves[k] = savedLeaves[k]; });
+      if (curCat - startCat >= 3) improved.push(cat.name);
+      else if (curCat - startCat <= -3) declined.push(cat.name);
+    });
+    var narrative = '';
+    if (improved.length > 0 && declined.length > 0) {
+      narrative = 'Under your leadership, <strong>' + improved.join(' and ') + '</strong> improved while <strong>' + declined.join(' and ') + '</strong> declined.';
+    } else if (improved.length > 0) {
+      narrative = 'Under your leadership, <strong>' + improved.join(' and ') + '</strong> improved.';
+    } else if (declined.length > 0) {
+      narrative = 'Under your leadership, <strong>' + declined.join(' and ') + '</strong> declined.';
+    } else {
+      narrative = 'The state of Jewish security remained largely unchanged during your tenure.';
+    }
+    html += '<div style="font-size:12px;line-height:1.6;color:var(--muted);margin-top:12px;font-style:italic">' + narrative + '</div>';
+    html += '</div>';
   }
 
   if (promotion) {
@@ -21119,10 +21359,16 @@ function initJewishSecurity() {
       leaves[leaf.id] = leaf.startingScore || 50;
     });
   });
-  var weights = (org && org.securityWeights) ? JSON.parse(JSON.stringify(org.securityWeights)) : {
-    categoryWeights: { safety: 25, ideology: 25, democracy: 25, vitality: 25 },
-    leafWeights: {}
-  };
+  var weights;
+  if (G._pendingSecurityWeights) {
+    weights = G._pendingSecurityWeights;
+    G._pendingSecurityWeights = null;
+  } else {
+    weights = (org && org.securityWeights) ? JSON.parse(JSON.stringify(org.securityWeights)) : {
+      categoryWeights: { safety: 25, ideology: 25, democracy: 25, vitality: 25 },
+      leafWeights: {}
+    };
+  }
   G.security = { leaves: leaves, weights: weights };
   // Save starting snapshot for end-screen deltas
   G._securityStart = JSON.parse(JSON.stringify(leaves));

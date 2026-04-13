@@ -288,7 +288,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-banner-inner .hud-char-emoji { font-size: 16px; }
 .hud-banner-inner .hud-char-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; }
 .hud-banner-inner .hud-org-label { font-size: 10px; color: #a0aab8; margin-left: 4px; }
-.hud { background: #364663; color: #dde1e8; padding: 10px 20px; position: sticky; top: 0; left: 0; right: 0; z-index: 100; }
+.hud { background: #364663; color: #dde1e8; padding: 10px 20px; position: sticky; top: 44px; left: 0; right: 0; z-index: 100; }
 .hud-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .hud-spacer { display: none; } /* not needed with sticky */
 .meters { display: flex; gap: 12px; flex: 1; justify-content: center; flex-wrap: wrap; }
@@ -755,7 +755,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .coalition-strip-inner::-webkit-scrollbar{display:none}
 .coalition-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
 /* Jewish Security HUD bar */
-.security-bar{background:#1a1a2e;padding:8px 20px;position:relative;z-index:2;border-bottom:1px solid rgba(255,255,255,0.08)}
+.security-bar{background:#1a1a2e;padding:8px 20px;position:sticky;top:0;z-index:110;border-bottom:1px solid rgba(255,255,255,0.08)}
 .security-bar-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:16px}
 /* Composite score — styled like Board Rating (title above, score below in a box) */
 .security-composite{text-align:center;min-width:80px}
@@ -21467,6 +21467,11 @@ function updateSecurityHUD() {
   var inner = document.getElementById('security-bar-inner');
   if (!bar || !inner || !G.security) return;
   bar.style.display = '';
+  // Adjust HUD sticky offset to sit below the security bar
+  var hudEl = document.getElementById('hud-el');
+  if (hudEl) {
+    setTimeout(function() { hudEl.style.top = bar.offsetHeight + 'px'; }, 0);
+  }
   var jsCfg = GAME_DATA.config.jewishSecurity;
   var composite = calcSecurityComposite();
 

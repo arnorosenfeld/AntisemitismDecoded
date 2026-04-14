@@ -289,17 +289,19 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-banner-inner .hud-char-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; }
 .hud-banner-inner .hud-org-label { font-size: 10px; color: #a0aab8; margin-left: 4px; }
 .hud { background: #364663; color: #dde1e8; padding: 10px 48px; position: fixed; bottom: 32px; left: 0; right: 0; z-index: 210; }
-.hud-inner { max-width: 85vw; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 56px; }
+/* align-items: flex-end so every item's BOTTOM edge (where labels sit) lines
+   up on the same baseline — matching where "Board Rating" is currently. */
+.hud-inner { max-width: 85vw; margin: 0 auto; display: flex; align-items: flex-end; justify-content: center; gap: 56px; }
 .hud-spacer { display: none; } /* not needed with sticky */
-.meters { display: flex; gap: 16px; justify-content: center; }
-/* Each meter: bar column on left with label centered beneath the bar, then
-   a small number to the right of the bar (not included in label centering). */
-.meter { display: flex; align-items: center; gap: 8px; }
-.m-bar-col { display: flex; flex-direction: column; width: 90px; }
-.m-bar-wrap { background: rgba(255,255,255,0.12); height: 12px; overflow: hidden; }
+.meters { display: flex; gap: 24px; justify-content: center; align-items: flex-end; }
+/* Each meter: a 90px bar column with its label centered beneath ONLY the bar,
+   and a small number absolutely positioned to the right of the bar so it
+   vertically centers on the bar's midline (not on the bar+label combo). */
+.meter { position: relative; width: 112px; display: flex; flex-direction: column; }
+.m-bar-wrap { width: 90px; background: rgba(255,255,255,0.12); height: 12px; overflow: hidden; }
 .m-bar { height: 100%; transition: width 0.45s ease, background-color 0.45s ease; }
-.m-val { font-size: 11px; font-weight: 700; color: #c8d0dc; min-width: 20px; text-align: right; font-family: 'Merriweather Sans', sans-serif; letter-spacing: 0.5px; }
-.m-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; text-align: center; margin-top: 4px; }
+.m-val { position: absolute; left: 94px; top: 0; height: 12px; line-height: 12px; font-size: 11px; font-weight: 700; color: #c8d0dc; font-family: 'Merriweather Sans', sans-serif; letter-spacing: 0.5px; }
+.m-label { width: 90px; font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; text-align: center; margin-top: 4px; }
 .hud-budget-mission { display: flex; align-items: center; gap: 14px; }
 .hud-budget { text-align: center; min-width: 60px; display: flex; flex-direction: column; }
 .hud-budget-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; display: block; order: 2; margin-top: 3px; }
@@ -22712,11 +22714,9 @@ function updateHUD(){
     const v=Math.round(G.stats[s.id]||0);
     const isTrust = s.id === 'trust' && G.segmentApproval;
     return `<div class="meter${isTrust?' trust-meter':''}">
-      <div class="m-bar-col">
-        <div class="m-bar-wrap"><div class="m-bar" style="width:${v}%;background:${barColor(v)}"></div></div>
-        <span class="m-label">${s.label}</span>
-      </div>
+      <div class="m-bar-wrap"><div class="m-bar" style="width:${v}%;background:${barColor(v)}"></div></div>
       <span class="m-val">${v}</span>
+      <span class="m-label">${s.label}</span>
       ${isTrust ? renderSegmentTooltip() : ''}
     </div>`;
   }).join('');

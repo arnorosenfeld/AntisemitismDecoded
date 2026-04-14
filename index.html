@@ -405,7 +405,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    circle overlaid on a clipboard in the top-left, pinned below the
    status bar pill. The grade is cropped from art/grades.png via
    background-position + background-size (see updateClipboardGrade). */
-.clipboard-bug { position: fixed; top: 0; left: 20px; z-index: 149; width: 110px; cursor: pointer; transition: transform 0.15s; }
+.clipboard-bug { position: fixed; top: 0; left: 20px; z-index: 151; width: 110px; cursor: pointer; transition: transform 0.15s; }
 .clipboard-bug:hover { transform: scale(1.03); }
 .clipboard-bug .clipboard-base { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25)); }
 /* "Board Rating" caption inside the paper area, above the grade, styled
@@ -811,9 +811,12 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-categories{display:flex;gap:14px;flex:1}
 .security-cat{flex:1;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s}
 .security-cat:hover{background:rgba(255,255,255,0.06)}
-.security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
-.security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8}
-.security-cat-val{font-family:Merriweather,serif;font-weight:700;font-size:14px;color:#fff}
+.security-cat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;gap:6px}
+.security-cat-nameblock{display:flex;align-items:center;gap:5px;min-width:0}
+.security-cat-icon{font-size:12px;line-height:1;flex-shrink:0}
+.security-cat-icon img{width:14px;height:14px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.4))}
+.security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.security-cat-val{font-family:Merriweather,serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
 .security-cat-trend{font-size:10px;font-weight:700;margin-left:3px}
 .security-cat-trend.up{color:#4ade80}
 .security-cat-trend.down{color:#f87171}
@@ -25743,6 +25746,17 @@ function calcSecurityCategoryScore(categoryId) {
 }
 
 // Calculate the overall Jewish Security composite score.
+// Emoji icons for each security category (keyed by category id). These are
+// placeholders; swap to <img src="art/..."> in SECURITY_CAT_ICONS below when
+// custom art is available. Icons render inside the security-cat-icon span so
+// either text or an <img> tag works with no other CSS changes.
+var SECURITY_CAT_ICONS = {
+  safety: '\uD83D\uDEE1\uFE0F',     // 🛡️ shield
+  ideology: '\uD83D\uDCAD',          // 💭 thought bubble
+  democracy: '\u2696\uFE0F',         // ⚖️ scales
+  vitality: '\uD83E\uDD1D'           // 🤝 handshake
+};
+
 function calcSecurityComposite() {
   if (!G.security) return 0;
   var jsCfg = GAME_DATA.config.jewishSecurity;
@@ -25858,7 +25872,10 @@ function updateSecurityHUD() {
     else if (trend < 0) trendHtml = '<span class="security-cat-trend down">▼' + Math.abs(trend) + '</span>';
     html += '<div class="security-cat">';
     html += '<div class="security-cat-top">';
+    html += '<span class="security-cat-nameblock">';
+    html += '<span class="security-cat-icon">' + (SECURITY_CAT_ICONS[cat.id] || '') + '</span>';
     html += '<span class="security-cat-name">' + esc(cat.name) + '</span>';
+    html += '</span>';
     html += '<span class="security-cat-val" style="color:' + catColor + '">' + catScore + trendHtml + '</span>';
     html += '</div>';
     html += '<div class="security-cat-bar"><div class="security-cat-fill" style="width:' + catScore + '%;background:' + catColor + '"></div></div>';

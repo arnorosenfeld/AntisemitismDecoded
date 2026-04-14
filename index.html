@@ -388,11 +388,13 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    the HUD chrome. The width below is a fallback for first paint. */
 .desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: min(85vw, 1400px); }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
-/* Bottom status bar — sits above the invest strip (bottom:96, height:~44),
-   so its bottom edge is at 140px to clear the invest strip's top edge. */
-.game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: fixed; bottom: 140px; left: 0; right: 0; z-index: 198; border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; min-height: 32px; box-sizing: border-box; }
-.game-status-bar .step-ind { margin: 0; display: inline; color: #5a5040; line-height: 1; }
-.game-status-bar .btn { margin-left: 12px; padding: 4px 14px; font-size: 11px; }
+/* Status bar — persistent floating "bug" in the top-left of the game scene,
+   below the security bar (and below any coalition/sub-mission strips that
+   appear). The `top` value is computed by positionStatusBar() so the bar
+   stays pinned just under whichever top strips are currently visible. */
+.game-status-bar { position: fixed; top: 0; left: 20px; z-index: 150; background: #e8e0d0; padding: 6px 14px; min-height: 30px; box-sizing: border-box; border: 1px solid rgba(0,0,0,0.15); border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.18); display: inline-flex; align-items: center; gap: 10px; font-size: 12px; max-width: calc(100vw - 40px); }
+.game-status-bar .step-ind { margin: 0; color: #5a5040; line-height: 1.2; white-space: nowrap; }
+.game-status-bar .btn { padding: 4px 12px; font-size: 11px; }
 
 /* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
 .desk-hs { position: absolute; box-sizing: border-box; pointer-events: none; z-index: 5; }
@@ -23649,6 +23651,30 @@ function renderMain(){
   setTimeout(sizeDeskScene, 0);
 }
 
+// Position the floating status-bar "bug" in the top-left of the game scene,
+// just below whichever top strips are currently visible (security bar,
+// coalition strip, sub-mission strip). Re-runs whenever sizeDeskScene runs
+// so it stays pinned as strips appear/disappear.
+function positionStatusBar() {
+  var bar = document.querySelector('.game-status-bar');
+  if (!bar) return;
+  var topStrips = [
+    document.getElementById('security-bar-el'),
+    document.getElementById('coalition-strip'),
+    document.getElementById('submission-strip')
+  ];
+  var lowestBottom = 0;
+  topStrips.forEach(function(el) {
+    if (!el) return;
+    if (getComputedStyle(el).display === 'none') return;
+    var r = el.getBoundingClientRect();
+    if (r.height === 0) return;
+    if (r.bottom > lowestBottom) lowestBottom = r.bottom;
+  });
+  // 10px gap below the last top strip
+  bar.style.top = (lowestBottom + 10) + 'px';
+}
+
 // Size the desk scene + desk layer to fit the available viewport. Exposed as a
 // named function so we can also call it on window resize and whenever the
 // top strips (sub-mission, coalition) or bottom status bar toggle visibility.
@@ -23656,12 +23682,17 @@ function sizeDeskScene() {
   var scene = document.getElementById('desk-scene');
   if (!scene) return;
 
+  // Re-position the floating status bar bug first so its measurements don't
+  // interfere with the desk scene sizing logic below.
+  positionStatusBar();
+
   // Measure the actual TOP of the highest-positioned fixed bottom chrome
   // element. Whichever bottom-chrome element is highest (farthest from the
   // viewport bottom) is the floor the desk scene must stay above. This
   // auto-adapts if chrome heights change and avoids hardcoded pixel stacks.
+  // NOTE: .game-status-bar is no longer bottom chrome — it floats in the
+  // top-left of the game scene instead.
   var chromeCandidates = [
-    document.querySelector('.game-status-bar'),
     document.getElementById('invest-strip'),
     document.getElementById('hud-el'),
     document.querySelector('.news-ticker-wrap.active')

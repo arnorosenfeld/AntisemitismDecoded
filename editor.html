@@ -20338,12 +20338,20 @@ function extractGameData(html) {
   if (match) {
     var jsStr = match[1].replace(/^\s*(?:const|var)\s+GAME_DATA\s*=\s*/, '').replace(/;\s*$/, '').trim();
     try { return JSON.parse(jsStr); } catch(e) {
-      try { return (new Function('return ' + jsStr))(); } catch(e2) {}
+      console.error('[extractGameData] JSON.parse failed:', e.message);
+      try { return (new Function('return ' + jsStr))(); } catch(e2) {
+        console.error('[extractGameData] Function eval fallback also failed:', e2.message);
+        // Re-throw the JSON.parse error so loadFromGithub can surface it to the user.
+        throw new Error('Parse error in GAME_DATA block: ' + e.message);
+      }
     }
   }
   // Fallback: find "var GAME_DATA =" and parse the JSON block
   var varMatch = html.match(/var\s+GAME_DATA\s*=\s*\n/);
-  if (!varMatch) return null;
+  if (!varMatch) {
+    console.error('[extractGameData] Neither /* GAME_DATA_START */ marker nor "var GAME_DATA =" line found. First 200 chars of content:', html.slice(0, 200));
+    return null;
+  }
   var startIdx = html.indexOf(varMatch[0]) + varMatch[0].length;
   var braceStart = html.indexOf('{', startIdx);
   if (braceStart < 0 || braceStart - startIdx > 10) return null;
@@ -20352,7 +20360,10 @@ function extractGameData(html) {
     if (html[i] === '{') depth++;
     else if (html[i] === '}') depth--;
     if (depth === 0) {
-      try { return JSON.parse(html.substring(braceStart, i + 1)); } catch(e) { return null; }
+      try { return JSON.parse(html.substring(braceStart, i + 1)); } catch(e) {
+        console.error('[extractGameData] Fallback JSON.parse failed:', e.message);
+        return null;
+      }
     }
   }
   return null;

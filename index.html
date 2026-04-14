@@ -366,7 +366,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 @keyframes deskDangerPulse { 0%,100% { background-color: rgba(220,38,38,0.05); } 50% { background-color: rgba(220,38,38,0.13); } }
 
 /* GAME MAIN */
-.game-main { padding: 0 20px 175px; }
+.game-main { padding: 0 20px 0; }
 .game-inner { max-width: 820px; margin: 0 auto; }
 
 /* ACTION CARDS - #9: show stat effects */
@@ -939,20 +939,19 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ═══ POLITICAL CLOUT SYSTEM ═══ */
 .hud-politics{cursor:pointer;position:relative}
-.pol-spectrum-row{display:flex;align-items:center;gap:12px}
-.pol-spectrum-col{display:flex;flex-direction:column;align-items:center}
-.pol-spectrum{position:relative;height:8px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:4px;width:120px;overflow:visible;flex-shrink:0}
+/* Politics grid: 2 columns (spectrum | clout), 3 rows (desc | bar+number | labels).
+   Each row is vertically centered; the spectrum bar and clout number+icon share
+   row 2, so they naturally align on the same midline. Row 3 labels align with
+   each other and with other HUD labels (Board Rating baseline). */
+.pol-grid{display:grid;grid-template-columns:120px auto;gap:4px 14px;align-items:center;justify-items:center}
+.pol-spectrum{position:relative;height:8px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:4px;width:120px;overflow:visible}
 .pol-marker{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:#b8860b;transition:left 0.4s ease;z-index:2;box-shadow:0 0 4px rgba(0,0,0,0.3)}
 .pol-marker-glow{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;transition:left 0.4s ease,opacity 0.4s;z-index:1}
-/* Descriptor above the spectrum bar (Center, Center-Left, etc.) — styled to
-   match the status-bar numbers (m-val) for visual consistency. */
-.pol-pos-desc{font-family:'Merriweather Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;color:#c8d0dc;margin-bottom:4px}
-/* "Political Lean" caption below the spectrum — same styling as other HUD
-   section labels (m-label, pol-clout-label) so they all sit on one baseline. */
-.pol-lean-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;margin-top:4px}
-.pol-clout-col{display:flex;flex-direction:column;align-items:center}
-.pol-clout-inline{font-size:14px;color:#d4a843;font-weight:700;white-space:nowrap;font-family:'Merriweather',serif}
-.pol-clout-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;margin-top:2px;display:block}
+.pol-pos-desc{font-family:'Merriweather Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;color:#c8d0dc}
+.pol-lean-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8}
+.pol-clout-inline{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:#d4a843;font-weight:700;white-space:nowrap;font-family:'Merriweather',serif}
+.pol-clout-icon{width:12px;height:auto;display:block}
+.pol-clout-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8}
 /* Political chips — purple for visibility */
 .chip-pol-left{background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px}
 .chip-pol-right{background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px}
@@ -1579,19 +1578,22 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   <div class="hud" id="hud-el" style="display:none">
     <div class="hud-inner">
       <div class="hud-politics" id="hud-politics">
-        <div class="pol-spectrum-row">
-          <div class="pol-spectrum-col">
-            <span class="pol-pos-desc" id="pol-pos-label">Center</span>
-            <div class="pol-spectrum">
-              <div class="pol-marker-glow" id="pol-marker-glow"></div>
-              <div class="pol-marker" id="pol-marker"></div>
-            </div>
-            <span class="pol-lean-label">Political Lean</span>
+        <!-- Grid: col 1 = spectrum column (120px), col 2 = clout column.
+             Row 1 = descriptor text / empty. Row 2 = spectrum bar / lightning+number.
+             Row 3 = "Political Lean" label / "Clout" label. -->
+        <div class="pol-grid">
+          <span class="pol-pos-desc" id="pol-pos-label">Center</span>
+          <span></span>
+          <div class="pol-spectrum">
+            <div class="pol-marker-glow" id="pol-marker-glow"></div>
+            <div class="pol-marker" id="pol-marker"></div>
           </div>
-          <div class="pol-clout-col">
-            <span class="pol-clout-inline" id="pol-clout-val">\u26a1 0</span>
-            <span class="pol-clout-label">Clout</span>
-          </div>
+          <span class="pol-clout-inline">
+            <img class="pol-clout-icon" src="art/lightning.png" alt="">
+            <span id="pol-clout-val">0</span>
+          </span>
+          <span class="pol-lean-label">Political Lean</span>
+          <span class="pol-clout-label">Clout</span>
         </div>
         <div class="pol-detail" id="pol-detail">
           <div class="pol-detail-title">⚖️ Clout</div>
@@ -25508,7 +25510,7 @@ function updatePoliticsHUD() {
   var posLabel = document.getElementById('pol-pos-label');
   if (posLabel) posLabel.textContent = getPositionLabel(pos);
   var cloutVal = document.getElementById('pol-clout-val');
-  if (cloutVal) cloutVal.textContent = '⚡' + Math.round(clout);
+  if (cloutVal) cloutVal.textContent = Math.round(clout);
   
   // Detail panel
   var dClout = document.getElementById('pol-d-clout');
@@ -26766,13 +26768,13 @@ function positionNotification(el) {
     document.getElementById('coalition-strip'),
     document.getElementById('submission-strip')
   ];
-  var topOffset = 16; // fallback if no strips visible
+  var topOffset = 20; // fallback if no strips visible
   topStrips.forEach(function(strip) {
     if (!strip) return;
     if (getComputedStyle(strip).display === 'none') return;
     var r = strip.getBoundingClientRect();
     if (r.height === 0) return;
-    if (r.bottom + 12 > topOffset) topOffset = r.bottom + 12;
+    if (r.bottom + 20 > topOffset) topOffset = r.bottom + 20;
   });
   // Stack below any previously-positioned notification
   var existing = document.querySelectorAll('.game-notification');

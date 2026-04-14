@@ -409,17 +409,19 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .clipboard-bug:hover { transform: scale(1.03); }
 .clipboard-bug .clipboard-base { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25)); }
 /* "Board Rating" caption inside the paper area, above the grade, styled
-   like the old hud-budget-label so the clipboard reads identically. */
-.clipboard-label { position: absolute; left: 13%; top: 26%; width: 74%; text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #5a5040; pointer-events: none; }
+   like the old hud-budget-label. Forced to a single line (white-space:
+   nowrap) and constrained to the paper's inner width so it doesn't
+   overlap the brown clipboard border. */
+.clipboard-label { position: absolute; left: 15%; top: 25%; width: 70%; text-align: center; font-size: 8px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #5a5040; pointer-events: none; white-space: nowrap; overflow: hidden; }
 /* Grade overlay: square container ~25% smaller than the previous 60%×55%
    box, so ~45% of clipboard width. Aspect-preserving crop is handled by
    updateClipboardGrade() which computes background-size and -position to
    fit each grade cell without stretching. */
 .clipboard-grade { position: absolute; left: 50%; top: 38%; width: 45%; aspect-ratio: 1 / 1; transform: translateX(-50%); background-image: url('art/grades.png'); background-repeat: no-repeat; pointer-events: none; }
-/* Hover tooltip — opens to the RIGHT of the clipboard so nothing gets
-   clipped off the bottom of the screen. */
-.clipboard-bug .grade-detail { top: 0; left: 100%; bottom: auto; right: auto; transform: none; margin-top: 0; margin-left: 10px; margin-bottom: 0; }
-.clipboard-bug .grade-detail::before { top: 14px; left: -5px; bottom: auto; transform: rotate(45deg); border: 0; border-left: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(255,255,255,0.15); }
+/* Hover tooltip — opens to the RIGHT of the clipboard, vertically centered
+   on the clipboard's midline so the arrow points at the icon's center. */
+.clipboard-bug .grade-detail { top: 50%; left: 100%; bottom: auto; right: auto; transform: translateY(-50%); margin: 0 0 0 10px; }
+.clipboard-bug .grade-detail::before { top: 50%; left: -5px; bottom: auto; transform: translateY(-50%) rotate(45deg); border: 0; border-left: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(255,255,255,0.15); }
 .clipboard-bug:hover .grade-detail { display: block; }
 
 /* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
@@ -22695,17 +22697,17 @@ function computeLiveGrade() {
 // sprite dimensions. Used to crop the sprite to a single grade via CSS
 // background-position + background-size on the clipboard overlay.
 var GRADE_SPRITE_BBOX = {
-  "A+": {x:2.417,y:9.778,w:15.767,h:28.8},
-  "A":  {x:20.183,y:9.778,w:15.8,h:28.8},
-  "A-": {x:37.967,y:9.778,w:17.617,h:28.8},
-  "B+": {x:57.567,y:9.778,w:14.633,h:28.8},
-  "B":  {x:74.183,y:9.778,w:15.783,h:28.326},
-  "B-": {x:2.4,y:41.778,w:16.367,h:28.356},
-  "C+": {x:20.383,y:42.163,w:15.617,h:28.326},
-  "C":  {x:37.967,y:41.985,w:15.8,h:28.326},
-  "C-": {x:56.017,y:42.133,w:16.183,h:27.97},
-  "D":  {x:74.5,y:41.778,w:15.683,h:27.97},
-  "F":  {x:81.5,y:66.785,w:17.467,h:29.185}
+  "A+": {x:2.5,y:9.926,w:15.6,h:28.504},
+  "A":  {x:20.267,y:9.926,w:15.633,h:28.504},
+  "A-": {x:38.05,y:9.926,w:17.45,h:28.504},
+  "B+": {x:57.65,y:9.926,w:14.467,h:28.504},
+  "B":  {x:74.267,y:9.926,w:15.617,h:28.03},
+  "B-": {x:2.483,y:41.926,w:16.2,h:28.059},
+  "C+": {x:20.467,y:42.311,w:15.45,h:28.03},
+  "C":  {x:38.05,y:42.133,w:15.633,h:28.03},
+  "C-": {x:56.1,y:42.281,w:16.017,h:27.674},
+  "D":  {x:74.583,y:41.926,w:15.517,h:27.674},
+  "F":  {x:81.583,y:66.933,w:17.3,h:28.889}
 };
 
 // Apply the current live grade to the clipboard bug (sets the sprite crop

@@ -380,7 +380,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 85vw; max-width: 1400px; min-width: 700px; }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 /* Bottom status bar (above ticker, full-width, lighter tone) */
-.game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: relative; z-index: 2; border-top: 1px solid rgba(0,0,0,0.1); width: 100vw; margin-left: calc(-50vw + 50%); }
+.game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: relative; z-index: 2; border-top: 1px solid rgba(0,0,0,0.1); width: 100vw; margin-left: calc(-50vw + 50%); margin-bottom: 34px; }
 .game-status-bar .step-ind { margin-bottom: 0; display: inline; color: #5a5040; }
 .game-status-bar .btn { margin-left: 12px; padding: 4px 14px; font-size: 11px; }
 
@@ -19426,7 +19426,12 @@ function initDeskDevPanel() {
   try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
   var p = document.createElement('div');
   p.id = 'desk-dev-panel';
-  p.style.cssText = 'position:fixed;bottom:12px;right:12px;background:rgba(15,15,18,0.95);color:#e8e8ec;padding:10px 12px;border-radius:6px;font:11px -apple-system,sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.5);border:1px solid #333;user-select:none;';
+  p.style.cssText = 'position:fixed;bottom:12px;right:12px;background:rgba(15,15,18,0.95);color:#e8e8ec;padding:10px 12px;border-radius:6px;font:11px -apple-system,sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.5);border:1px solid #333;user-select:none;max-height:85vh;overflow-y:auto;transition:all 0.2s;';
+  // Minimize/move header
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;cursor:move;padding-bottom:6px;border-bottom:1px solid #333;';
+  header.innerHTML = '<span style="font-weight:700;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Dev Tools</span><div style="display:flex;gap:4px;"><button onclick="devMovePanel()" style="background:#2a2a33;border:0;color:#cbd5e1;font-size:10px;padding:2px 6px;border-radius:3px;cursor:pointer;" title="Move to other corner">↔</button><button onclick="devMinimizePanel()" style="background:#2a2a33;border:0;color:#cbd5e1;font-size:10px;padding:2px 6px;border-radius:3px;cursor:pointer;" title="Minimize">─</button></div>';
+  p.insertBefore(header, p.firstChild);
   var btnStyle = 'margin-right:3px;padding:3px 8px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#2a2a33;color:#e8e8ec;font-family:inherit;';
   var quickStartBtnStyle = 'width:100%;padding:6px 10px;border:0;border-radius:3px;cursor:pointer;font-size:11px;background:#14532d;color:#86efac;font-family:inherit;font-weight:700;letter-spacing:0.3px;';
   var resetBtnStyle = 'width:100%;padding:5px 10px;margin-top:5px;border:0;border-radius:3px;cursor:pointer;font-size:10px;background:#2a2a33;color:#cbd5e1;font-family:inherit;';
@@ -19489,6 +19494,29 @@ function initDeskDevPanel() {
     '</div>';
   document.body.appendChild(p);
   updateDeskDevPanel();
+}
+var _devPanelMinimized = false;
+var _devPanelCorner = 'br'; // br, bl, tr, tl
+function devMinimizePanel() {
+  var p = document.getElementById('desk-dev-panel');
+  if (!p) return;
+  _devPanelMinimized = !_devPanelMinimized;
+  Array.from(p.children).forEach(function(ch, i) {
+    if (i === 0) return; // keep header
+    ch.style.display = _devPanelMinimized ? 'none' : '';
+  });
+  p.style.padding = _devPanelMinimized ? '6px 10px' : '10px 12px';
+}
+function devMovePanel() {
+  var p = document.getElementById('desk-dev-panel');
+  if (!p) return;
+  var corners = ['br', 'bl', 'tr', 'tl'];
+  var idx = corners.indexOf(_devPanelCorner);
+  _devPanelCorner = corners[(idx + 1) % 4];
+  p.style.bottom = (_devPanelCorner[0] === 'b') ? '12px' : 'auto';
+  p.style.top = (_devPanelCorner[0] === 't') ? '12px' : 'auto';
+  p.style.right = (_devPanelCorner[1] === 'r') ? '12px' : 'auto';
+  p.style.left = (_devPanelCorner[1] === 'l') ? '12px' : 'auto';
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDeskDevPanel);
 else initDeskDevPanel();

@@ -1856,7 +1856,11 @@ const GAME_DATA = {
     "failureScoreThreshold": 30,
     "promotionThreshold": 75,
     "inboxPerRound": 2,
-    "scoreWeights": {},
+    "scoreWeights": {
+      "trust": 0.25,
+      "morale": 0.25,
+      "donors": 0.25
+    },
     "roundNames": [],
     "editorPassword": "admin1234",
     "missionStarPoints": 3,
@@ -2202,7 +2206,7 @@ const GAME_DATA = {
         "baseStartApproval": 40
       }
     ],
-    "advisorSlots": 5,
+    "advisorSlots": 3,
     "advisorBonusStacking": "best",
     "gamePassword": "playtest2026",
     "startingBudget": 100,
@@ -2472,6 +2476,11 @@ const GAME_DATA = {
           "delta": 1
         }
       ]
+    },
+    "tiltPositions": {
+      "left": 25,
+      "center": 50,
+      "right": 75
     }
   },
   "stats": [

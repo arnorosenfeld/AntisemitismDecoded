@@ -20058,10 +20058,13 @@ function deskHasPostit() {
 
 function getDeskBgPath() {
   var skin = G.deskSkin || 'basic';
-  // Morale state now computed live (not stale from round boundary) so the desk
-  // responds to mid-round morale changes. Round 1 stays 'plain'.
+  // Morale state computed live from G.stats.morale so the desk responds to
+  // mid-round changes. Round 1 stays 'plain'. Dev panel can override via
+  // G._deskDevMorale (set by devSetDesk).
   var morale;
-  if ((G.round || 0) <= 1) {
+  if (typeof G._deskDevMorale === 'string') {
+    morale = G._deskDevMorale;
+  } else if ((G.round || 0) <= 1) {
     morale = 'plain';
   } else {
     var currentMorale = (G.stats && typeof G.stats.morale === 'number') ? G.stats.morale : 50;
@@ -20248,7 +20251,7 @@ document.addEventListener('click', function(ev) {
 // them naturally, and tune the scale factor that equalises both skins.
 function devSetDesk(skin, morale, forcePostit) {
   if (skin) G.deskSkin = skin;
-  if (morale) G.deskMoraleState = morale;
+  if (morale) { G.deskMoraleState = morale; G._deskDevMorale = morale; }
   if (forcePostit === true || forcePostit === false) G._deskDevPostit = forcePostit;
   renderMain();
   updateDeskDevPanel();

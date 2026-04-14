@@ -376,8 +376,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .act-effects { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
 /* ── DESK SCENE (full-width room background + centered desk layer) ── */
-.desk-scene { display: block; position: relative; width: 100vw; margin-left: calc(-50vw + 50%); user-select: none; overflow: hidden; }
-.desk-scene .room-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
+.desk-scene { display: flex; flex-direction: column; justify-content: flex-end; position: relative; width: 100vw; margin-left: calc(-50vw + 50%); user-select: none; overflow: hidden; max-height: 55vh; }
+.desk-scene .room-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; flex-shrink: 0; }
 .desk-layer { position: absolute; bottom: 0; left: 0; right: 0; }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 

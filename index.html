@@ -371,6 +371,12 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    vertical box to center against (instead of the box being
    content-sized and perturbed by pill/label line-box quirks). */
 .invest-strip { background: #283248; padding: 0 20px; position: fixed; bottom: 92px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; height: 34px; display: flex; align-items: center; }
+/* Invest strip only belongs to the desk view. On any non-desk screen
+   (scenarios, inbox, outcome, conversation, round transition, end screen)
+   hide it so the content area has extra vertical room and there's no
+   bottom-chrome clutter competing with the current action. Detects the
+   absence of #desk-scene in the DOM. */
+body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .invest-strip-wrap { max-width: 85vw; margin: 0 auto; position: relative; width: 100%; display: flex; align-items: center; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
@@ -1726,6 +1732,13 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   <!-- Floating "?" help button anchored to the top-right of the viewport,
        above the security bar's right edge. -->
   <button class="floating-help-btn" id="hud-help-btn" onclick="toggleHelpPanel()" style="display:none" title="Help">?</button>
+  <!-- Persistent floating round-indicator pill. Lives outside game-inner so
+       it stays visible across all screens (scenario, inbox, conversation,
+       round transition, end-year). Position tracked by positionStatusBar(). -->
+  <div class="game-status-bar" id="game-status-bar-el" style="display:none">
+    <span class="step-ind" id="status-bar-text"></span>
+    <button class="btn btn-sm btn-primary" id="status-bar-end-btn" onclick="endRound()" style="display:none">End Round →</button>
+  </div>
   <div class="security-bar" id="security-bar-el" style="display:none">
     <div class="security-bar-inner" id="security-bar-inner"></div>
   </div>
@@ -21394,11 +21407,13 @@ function showScreen(id) {
   var strip = document.getElementById('invest-strip');
   var helpBtn = document.getElementById('hud-help-btn');
   var hudEl = document.getElementById('hud-el');
+  var statusBarEl = document.getElementById('game-status-bar-el');
   var inboxStrip = document.getElementById('inbox-strip');
   var lpTicker = document.getElementById('lp-ticker');
   if(strip) strip.style.display = isGame ? '' : 'none';
   if(helpBtn) helpBtn.style.display = isGame ? '' : 'none';
   if(hudEl) hudEl.style.display = isGame ? '' : 'none';
+  if(statusBarEl) statusBarEl.style.display = isGame ? '' : 'none';
   if(inboxStrip) inboxStrip.style.display = 'none';
   if(lpTicker) lpTicker.style.display = isIntro ? '' : 'none';
   if(isGame) setTimeout(function(){ updateHUD(); }, 10);
@@ -24177,20 +24192,13 @@ function renderMain(){
     monitorScreenHtml: monScreenHtml
   });
 
-  // Single-line status: "Round X of Y — N actions remaining".
-  // "Your Desk" h2 removed since the art makes the heading redundant.
+  // Status bar pill (persistent, lives outside game-inner). Text reflects the
+  // desk view context: "Round X of Y — N actions remaining" with End Round
+  // button shown when AP = 0.
   var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
-  var statusLine = roundHeading + ' \u2014 ' + apLabel;
+  updateStatusBar('Round ' + G.round + ' of ' + totalRounds + ' \u2014 ' + apLabel, disabled);
 
-  // Build bottom status bar (round + actions + end-round button)
-  var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
-  var statusLine = 'Round ' + G.round + ' of ' + totalRounds + ' \u2014 ' + apLabel;
-  var statusBar = '<div class="game-status-bar">'
-    + '<span class="step-ind">' + statusLine + '</span>'
-    + (disabled ? ' <button class="btn btn-sm btn-primary" onclick="endRound()">End Round \u2192</button>' : '')
-    + '</div>';
-
-  el.innerHTML = deskSceneHtml + statusBar;
+  el.innerHTML = deskSceneHtml;
 
   // Size the desk scene to fill available viewport between top chrome and bottom chrome,
   // then size the desk-layer to fit within that scene while preserving the 1915:862
@@ -24200,6 +24208,16 @@ function renderMain(){
     // Hook up drag handlers on the freshly-injected monitor windows.
     if (typeof initMonitorWindowDrag === 'function') initMonitorWindowDrag();
   }, 0);
+}
+
+// Update the persistent status-bar pill text and End Round button visibility.
+// Called from renderMain (desk view) and from screen-render functions that
+// take over game-inner (scenario, inbox, outcome, round transition, etc.).
+function updateStatusBar(text, showEndBtn) {
+  var t = document.getElementById('status-bar-text');
+  var b = document.getElementById('status-bar-end-btn');
+  if (t) t.textContent = text || '';
+  if (b) b.style.display = showEndBtn ? '' : 'none';
 }
 
 // Position the floating status-bar "bug" in the top-left of the game scene,
@@ -24657,6 +24675,7 @@ function processQueue(){
 // ═══════════════ SCENARIO ═══════════════
 function renderScenario(s){
   const valid=s.choices; // Show all choices, locked ones rendered as disabled
+  updateStatusBar('Round ' + G.round + ' \u2014 ' + esc(s.tag || 'Decision'), false);
   // Auto-infer political lean for choices
   valid.forEach(function(c){ inferPoliticalLean(c, s); });
   const advisorHtml = renderAdvisorQuotes(s);
@@ -24862,6 +24881,7 @@ function chooseScenario(sid,idx){
 
 // ═══════════════ INBOX ═══════════════
 function renderInbox(s){
+  updateStatusBar('Round ' + G.round + ' \u2014 Reading Message', false);
   // Mark as read in inbox
   var msg = (G.inboxMessages||[]).find(function(m){return m.id===s.id});
   if(msg) msg.unread = false;
@@ -25032,6 +25052,7 @@ function chooseInbox(sid,idx){
 // ═══════════════ OUTCOME ═══════════════
 // #5: Shows chosen choice, #10: Shows context note
 function showOutcome(title, choiceText, outcomeText, chips, contextNote, cb){
+  updateStatusBar('Round ' + G.round + ' \u2014 Outcome', false);
   const id='oc'+Date.now();
   document.getElementById('game-inner').innerHTML=`
     <div class="outcome-panel">
@@ -25100,6 +25121,7 @@ function endRound(){
 function showRoundTransition() {
   var el = document.getElementById('game-inner');
   if (!el) return;
+  updateStatusBar('End of Round ' + (G.round || 1), false);
 
   var totalRounds = GAME_DATA.config.totalRounds || 4;
   var currentRound = G.round;

@@ -801,14 +801,21 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .coalition-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
 /* Jewish Security HUD bar */
 .security-bar{background:#1a1a2e;padding:10px 20px;position:sticky;top:0;z-index:110;border-bottom:1px solid rgba(255,255,255,0.08)}
-.security-bar-inner{max-width:85vw;margin:0 auto;display:flex;align-items:center;gap:20px}
-/* Shield composite — SVG shield that fills based on score */
+.security-bar-inner{max-width:85vw;margin:0 auto;display:flex;align-items:center;gap:14px;justify-content:center}
+/* Shield composite cell: label above (like category labels), shield SVG
+   below. Visually parallel to the category cells so the shield reads as the
+   "summary" in the same grammar as its components. */
+.security-shield-cell{position:relative;cursor:pointer;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px 4px;border-radius:3px;transition:background 0.15s}
+.security-shield-cell:hover{background:rgba(255,255,255,0.06)}
+.security-shield-label{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#d4a843;text-align:center;white-space:nowrap}
 .security-shield{position:relative;width:48px;height:54px;flex-shrink:0}
 .security-shield svg{width:100%;height:100%}
 .security-shield-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Merriweather,serif;font-weight:900;font-size:16px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5)}
-.security-shield-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;text-align:center;margin-top:2px}
+/* Thin vertical divider between the shield (summary) and its categories
+   (components) — 25% opacity so it reads as a grouping cue, not a wall. */
+.security-divider{width:1px;align-self:stretch;background:rgba(255,255,255,0.18);margin:0 6px;flex-shrink:0}
 /* Category scores in a row */
-.security-categories{display:flex;gap:20px;flex:1;justify-content:center}
+.security-categories{display:flex;gap:14px}
 /* Each category: icon on the left at a readable size, content column on the
    right (name+val on top, bar beneath). Icon renders next to the bar, not
    squeezed against the text. Natural-width so bars stay compact and icons
@@ -830,13 +837,17 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-detail{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:12px 16px;min-width:240px;z-index:9000;box-shadow:0 4px 16px rgba(0,0,0,0.3);margin-top:6px}
 .security-detail::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:8px;height:8px;background:#1a1a2e;border-left:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.15)}
 .security-cat:hover .security-detail{display:block}
+.security-shield-cell:hover .security-detail{display:block}
 .security-detail-title{font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:11px;margin-bottom:8px;letter-spacing:0.5px}
-.sec-leaf-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:10px}
+.sec-leaf-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:10px}
 .sec-leaf-row:last-child{margin-bottom:0}
-.sec-leaf-name{width:130px;color:#a0aab8;font-weight:600;letter-spacing:0.5px;flex-shrink:0;font-size:9px}
+.sec-leaf-name{flex:1;color:#a0aab8;font-weight:600;letter-spacing:0.5px;font-size:10px}
+.sec-leaf-weight{color:#7a7a8a;font-size:10px;font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
 .sec-leaf-bar-wrap{flex:1;background:rgba(255,255,255,0.08);height:5px;min-width:50px}
 .sec-leaf-bar{height:100%;transition:width 0.4s ease,background 0.4s ease}
-.sec-leaf-val{width:28px;text-align:right;font-family:Merriweather,serif;font-weight:700;font-size:10px;color:#fff;flex-shrink:0}
+.sec-leaf-val{min-width:28px;text-align:right;font-family:Merriweather,serif;font-weight:700;font-size:11px;color:#fff;flex-shrink:0}
+.sec-leaf-total{margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.15);font-weight:700}
+.sec-leaf-total .sec-leaf-name{color:#fff;font-weight:700}
 /* Security effect chips in outcome display */
 .chip-security{background:rgba(90,160,220,0.15);color:#6ba5e7;border:1px solid rgba(90,160,220,0.3)}
 
@@ -25835,20 +25846,50 @@ function updateSecurityHUD() {
   var fillPct = Math.max(0, Math.min(100, composite));
   var prevSnap = G._securityRoundSnap || G._securityStart;
 
-  // Shield SVG that fills based on composite score
-  var html = '<div class="security-shield">';
+  // Shield cell — labeled "Jewish Security" above the shield, with a
+  // hover tooltip explaining the weighted-average math against components.
+  html += '<div class="security-shield-cell">';
+  html += '<span class="security-shield-label">Jewish Security</span>';
+  html += '<div class="security-shield">';
   html += '<svg viewBox="0 0 40 46" xmlns="http://www.w3.org/2000/svg">';
   html += '<defs><clipPath id="shield-clip"><path d="M20 1 L38 9 L38 24 Q38 38 20 45 Q2 38 2 24 L2 9 Z"/></clipPath></defs>';
-  // Empty shield outline
   html += '<path d="M20 1 L38 9 L38 24 Q38 38 20 45 Q2 38 2 24 L2 9 Z" fill="none" stroke="' + compColor + '" stroke-width="1.5" opacity="0.4"/>';
-  // Filled portion from bottom up
   var fillY = 46 - (fillPct / 100) * 45;
   html += '<rect x="0" y="' + fillY + '" width="40" height="' + (46 - fillY) + '" fill="' + compColor + '" opacity="0.35" clip-path="url(#shield-clip)"/>';
-  // Shield border on top
   html += '<path d="M20 1 L38 9 L38 24 Q38 38 20 45 Q2 38 2 24 L2 9 Z" fill="none" stroke="' + compColor + '" stroke-width="1.5"/>';
   html += '</svg>';
   html += '<span class="security-shield-val" style="color:' + compColor + '">' + composite + '</span>';
   html += '</div>';
+  // Shield hover tooltip — shows weighted composite calculation so the
+  // player understands the shield = weighted avg of the four categories,
+  // with weights set by their chosen organization.
+  var catWeights = (G.security.weights && G.security.weights.categoryWeights) || {};
+  var totalCW = 0; (jsCfg.categories || []).forEach(function(c){ totalCW += (catWeights[c.id] || 0); });
+  if (totalCW === 0) totalCW = 1;
+  html += '<div class="security-detail">';
+  html += '<div class="security-detail-title" style="color:' + compColor + '">Jewish Security \u2014 weighted composite</div>';
+  (jsCfg.categories || []).forEach(function(cat) {
+    var catScore = calcSecurityCategoryScore(cat.id);
+    var leafColor = barColor(catScore);
+    var w = catWeights[cat.id] || 0;
+    var wPct = Math.round(w / totalCW * 100);
+    html += '<div class="sec-leaf-row">';
+    html += '<span class="sec-leaf-name">' + esc(cat.name) + '</span>';
+    html += '<span class="sec-leaf-weight">\u00D7 ' + wPct + '%</span>';
+    html += '<span class="sec-leaf-val" style="color:' + leafColor + '">' + catScore + '</span>';
+    html += '</div>';
+  });
+  html += '<div class="sec-leaf-row sec-leaf-total">';
+  html += '<span class="sec-leaf-name" style="color:#fff">Jewish Security</span>';
+  html += '<span class="sec-leaf-weight"></span>';
+  html += '<span class="sec-leaf-val" style="color:' + compColor + '">' + composite + '</span>';
+  html += '</div>';
+  html += '</div>';  // .security-detail
+  html += '</div>';  // .security-shield-cell
+
+  // Thin divider visually separates the shield (summary) from its four
+  // component categories on the right.
+  html += '<div class="security-divider"></div>';
 
   // Category scores with barColor-based colors and trend indicators
   html += '<div class="security-categories">';
@@ -25881,18 +25922,29 @@ function updateSecurityHUD() {
     html += '</div>';
     html += '<div class="security-cat-bar"><div class="security-cat-fill" style="width:' + catScore + '%;background:' + catColor + '"></div></div>';
     html += '</div>';  // .security-cat-content
-    // Hover detail
+    // Hover detail — leaves with their weights, showing how the category
+    // score is a weighted average (not a simple mean) of its components.
+    var catLeafWeights = ((G.security.weights && G.security.weights.leafWeights) || {})[cat.id] || {};
+    var totalLeafW = 0; (cat.leaves || []).forEach(function(l){ totalLeafW += (catLeafWeights[l.id] || 0); });
+    if (totalLeafW === 0) totalLeafW = 1;
     html += '<div class="security-detail">';
-    html += '<div class="security-detail-title" style="color:' + catColor + '">' + esc(cat.name) + '</div>';
+    html += '<div class="security-detail-title" style="color:' + catColor + '">' + esc(cat.name) + ' \u2014 weighted composite</div>';
     (cat.leaves || []).forEach(function(leaf) {
       var val = G.security.leaves[leaf.id] || 0;
       var leafColor = barColor(val);
+      var lw = catLeafWeights[leaf.id] || 0;
+      var lwPct = Math.round(lw / totalLeafW * 100);
       html += '<div class="sec-leaf-row">';
       html += '<span class="sec-leaf-name">' + esc(leaf.name) + '</span>';
-      html += '<div class="sec-leaf-bar-wrap"><div class="sec-leaf-bar" style="width:' + val + '%;background:' + leafColor + '"></div></div>';
+      html += '<span class="sec-leaf-weight">\u00D7 ' + lwPct + '%</span>';
       html += '<span class="sec-leaf-val" style="color:' + leafColor + '">' + val + '</span>';
       html += '</div>';
     });
+    html += '<div class="sec-leaf-row sec-leaf-total">';
+    html += '<span class="sec-leaf-name" style="color:#fff">' + esc(cat.name) + '</span>';
+    html += '<span class="sec-leaf-weight"></span>';
+    html += '<span class="sec-leaf-val" style="color:' + catColor + '">' + catScore + '</span>';
+    html += '</div>';
     html += '</div>';
     html += '</div>';
   });

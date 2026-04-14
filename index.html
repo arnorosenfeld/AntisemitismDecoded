@@ -26630,9 +26630,25 @@ function shuffle(arr) {
 }
 
 // ═══ NOTIFICATION STACKING ═══
+// Stack notifications below the lowest visible top strip (security bar +
+// coalition/sub-mission strips, if present) so they populate within the
+// office scene and never overlay the top chrome.
 function positionNotification(el) {
+  var topStrips = [
+    document.getElementById('security-bar-el'),
+    document.getElementById('coalition-strip'),
+    document.getElementById('submission-strip')
+  ];
+  var topOffset = 16; // fallback if no strips visible
+  topStrips.forEach(function(strip) {
+    if (!strip) return;
+    if (getComputedStyle(strip).display === 'none') return;
+    var r = strip.getBoundingClientRect();
+    if (r.height === 0) return;
+    if (r.bottom + 12 > topOffset) topOffset = r.bottom + 12;
+  });
+  // Stack below any previously-positioned notification
   var existing = document.querySelectorAll('.game-notification');
-  var topOffset = 80; // below HUD
   existing.forEach(function(n) {
     if (n !== el) {
       topOffset = Math.max(topOffset, n.offsetTop + n.offsetHeight + 8);

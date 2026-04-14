@@ -157,10 +157,10 @@ body {
 .lp-skip-link:hover { border-color: var(--gold); background: var(--cream); }
 
 /* HELP BUTTON & PANEL */
-/* Floating "?" anchored top-right of the viewport, above the security bar's
-   right edge where the bar's content (centered) doesn't reach. */
-.floating-help-btn { position: fixed; top: 12px; right: 16px; z-index: 200; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(26,26,46,0.85); color: #d4a843; font-family: 'Merriweather', serif; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
-.floating-help-btn:hover { border-color: var(--gold); background: #1a1a2e; color: #fff; transform: scale(1.08); }
+/* Floating "?" anchored top-right of the viewport, restoring the original
+   light-outlined blue style that the hud-banner version used. */
+.floating-help-btn { position: fixed; top: 14px; right: 18px; z-index: 200; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.35); background: transparent; color: rgba(255,255,255,0.6); font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+.floating-help-btn:hover { border-color: rgba(255,255,255,0.7); color: rgba(255,255,255,0.95); }
 .help-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 500; }
 .help-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 480px; max-height: 80vh; background: var(--white); border: 2px solid var(--gold); z-index: 501; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .help-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); }
@@ -451,60 +451,71 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Monitor CSS animation overlay (positioned at monitorScreen coords).
    box-shadow extends the dark background 3px outward on all sides to cover
    anti-aliased edges of the tagged green box without needing pixel-perfect calibration. */
-/* Monitor screen overlay. overflow: hidden keeps non-expanded windows
-   clipped to the monitor frame (so they don't visually escape the screen
-   while being dragged). Expanded windows escape via position:fixed.
-   pointer-events: none lets clicks on empty space fall through to the desk
-   hotspot beneath (triggering the monitor scenario); individual windows
-   below set pointer-events: auto so they capture their own clicks. */
-.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; pointer-events: none; z-index: 6; box-shadow: 0 0 0 3px #1e2a3a; }
-/* Monitor desktop = top bar + screen area. */
+/* Monitor screen overlay — restored to the original lighter blue desktop tone
+   so the screen reads as a real monitor (vs. a black void). Frame still uses
+   the dark navy via the box-shadow trick to cover anti-aliased edges. */
+.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #2c5f8a; pointer-events: none; z-index: 6; box-shadow: 0 0 0 3px #1e2a3a; }
 .mon-desktop { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; pointer-events: none; }
-.mon-topbar { background: rgba(20,30,50,0.95); color: #d4d8e0; padding: 4px 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); pointer-events: none; flex-shrink: 0; font-size: 9px; min-height: 22px; }
+.mon-topbar { background: rgba(20,30,50,0.85); color: #d4d8e0; padding: 4px 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); pointer-events: none; flex-shrink: 0; font-size: 9px; min-height: 22px; }
 .mon-topbar .mon-emoji { font-size: 12px; }
 .mon-topbar .mon-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 10px; color: #fff; }
 .mon-topbar .mon-sep { color: rgba(255,255,255,0.3); font-size: 11px; }
 .mon-topbar .mon-org { color: #d4a843; font-size: 9px; font-weight: 600; letter-spacing: 0.3px; }
-.mon-topbar .mon-spacer { flex: 1; }
-.mon-topbar .mon-clock { font-size: 9px; color: #a0a8b5; letter-spacing: 0.5px; }
 .mon-screen-area { flex: 1; position: relative; pointer-events: none; overflow: visible; }
-/* Window: dark macOS-style chrome that fits the monitor aesthetic. */
-.mon-window { position: absolute; background: #1f2937; border: 1px solid #374151; box-shadow: 0 4px 18px rgba(0,0,0,0.6); pointer-events: auto; display: flex; flex-direction: column; min-width: 140px; min-height: 28px; overflow: hidden; border-radius: 4px; transition: box-shadow 0.15s; }
-.mon-window:hover { box-shadow: 0 4px 22px rgba(0,0,0,0.8); }
-.mon-window-header { background: linear-gradient(to bottom, #4b5b78, #2f3a52); color: #fff; padding: 4px 8px; cursor: move; display: flex; align-items: center; gap: 6px; user-select: none; flex-shrink: 0; touch-action: none; }
-.mon-window-title { flex: 1; font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mon-window-btn { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: #e5e7eb; cursor: pointer; padding: 0; font-size: 11px; line-height: 14px; height: 16px; min-width: 18px; border-radius: 2px; font-family: inherit; }
-.mon-window-btn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.5); }
-.mon-window-body { flex: 1; overflow-y: auto; padding: 8px 10px; font-size: 10px; color: #e5e7eb; line-height: 1.4; background: #1f2937; }
+/* Window: clean white-card chrome that pops against the blue desktop. */
+.mon-window { position: absolute; background: #fff; border: 1px solid #bcc8d6; box-shadow: 0 4px 14px rgba(0,0,0,0.35); pointer-events: auto; display: flex; flex-direction: column; min-width: 140px; min-height: 28px; overflow: hidden; border-radius: 6px; transition: box-shadow 0.15s; }
+.mon-window:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.45); }
+.mon-window-header { background: linear-gradient(to bottom, #f3f6fb, #dee5ee); color: #1a2438; padding: 5px 8px; cursor: move; display: flex; align-items: center; gap: 6px; user-select: none; flex-shrink: 0; touch-action: none; border-bottom: 1px solid #c6d0db; }
+.mon-window-title { flex: 1; font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; color: #1a2438; }
+.mon-window-btn { background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.15); color: #1a2438; cursor: pointer; padding: 0; font-size: 12px; font-weight: 700; line-height: 14px; height: 16px; min-width: 18px; border-radius: 3px; font-family: inherit; }
+.mon-window-btn:hover { background: rgba(0,0,0,0.10); border-color: rgba(0,0,0,0.3); }
+.mon-window-body { flex: 1; overflow-y: auto; padding: 10px 12px; font-size: 11px; color: #2a3344; line-height: 1.45; background: #fff; }
 .mon-window-body::-webkit-scrollbar { width: 6px; }
-.mon-window-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+.mon-window-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
 .mon-window.collapsed { height: auto !important; min-height: 0; }
 .mon-window.collapsed .mon-window-body { display: none; }
-/* Expanded: jumps out of the monitor and overlays the game viewport. */
-.mon-window.expanded { position: fixed !important; left: 5vw !important; top: 80px !important; width: 90vw !important; height: calc(100vh - 280px) !important; max-width: 900px; margin: 0 auto; right: auto; z-index: 8500 !important; }
-/* Window content styles */
-.mon-empty { color: #94a3b8; font-style: italic; font-size: 10px; padding: 8px 4px; }
-.mon-social-decay { background: rgba(212,168,67,0.12); border: 1px solid rgba(212,168,67,0.3); padding: 5px 8px; margin-bottom: 8px; font-size: 9px; color: #d4a843; border-radius: 3px; }
-.mon-post { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; gap: 8px; align-items: flex-start; }
-.mon-post:last-child { border-bottom: 0; }
-.mon-post-text { flex: 1; font-size: 10px; color: #e5e7eb; line-height: 1.45; }
-.mon-post-btn { background: #d4a843; color: #1a1a2e; border: 0; padding: 4px 10px; font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; border-radius: 2px; flex-shrink: 0; }
-.mon-post-btn:hover { background: #e0b552; }
-.mon-task { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+/* Expanded: detached to body (see toggleMonWindowExpand), spans the viewport.
+   Centering via translateX so we can pick a sensible max-width. */
+.mon-window.expanded { position: fixed !important; left: 50% !important; top: 90px !important; width: 88vw !important; max-width: 940px !important; height: calc(100vh - 280px) !important; transform: translateX(-50%) !important; right: auto !important; z-index: 9000 !important; }
+/* Empty state */
+.mon-empty { color: #6b7889; font-style: italic; font-size: 11px; padding: 14px 4px; text-align: center; }
+/* Social Media — looks like a feed app */
+.mon-window-title .mon-app-icon { font-size: 13px; }
+.mon-window-title .mon-app-name { font-weight: 800; }
+.mon-window-title .mon-app-handle { font-weight: 500; color: #6b7889; font-size: 9px; margin-left: 2px; }
+.mon-social-meta { background: #f0f4fa; border: 1px solid #d6dfeb; padding: 6px 8px; margin-bottom: 8px; border-radius: 4px; font-size: 10px; color: #3a4a63; }
+.mon-social-stats { display: flex; gap: 12px; align-items: center; }
+.mon-social-stats strong { color: #1a2438; }
+.mon-social-posted { color: #4a8a4a; font-weight: 600; }
+.mon-social-section { font-size: 9px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: #6b7889; margin: 4px 0 6px; }
+.mon-tweet { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+.mon-tweet:last-child { border-bottom: 0; }
+.mon-tweet-avatar { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #4a90e2, #2c6bb5); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Merriweather Sans', sans-serif; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; }
+.mon-tweet-body { flex: 1; min-width: 0; }
+.mon-tweet-meta { display: flex; align-items: baseline; gap: 4px; margin-bottom: 2px; }
+.mon-tweet-name { font-weight: 700; font-size: 11px; color: #1a2438; }
+.mon-tweet-handle { color: #6b7889; font-size: 10px; }
+.mon-tweet-text { font-size: 11px; color: #1a2438; line-height: 1.5; margin-bottom: 6px; }
+.mon-tweet-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mon-tweet-len { font-size: 9px; color: #6b7889; }
+.mon-post-btn { background: #1d9bf0; color: #fff; border: 0; padding: 5px 14px; font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 10px; cursor: pointer; border-radius: 999px; }
+.mon-post-btn:hover { background: #1781cb; }
+/* Briefings & Coalitions */
+.mon-task { padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
 .mon-task:last-child { border-bottom: 0; }
-.mon-task.done { color: #4ade80; padding: 3px 0; border-bottom: 0; }
-.mon-task.failed { color: #f87171; padding: 3px 0; border-bottom: 0; }
-.mon-task-name { font-weight: 700; font-size: 11px; color: #f0d87a; margin-bottom: 2px; }
-.mon-task-meta { font-size: 9px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.3px; }
-.mon-task-checks { display: flex; flex-direction: column; gap: 2px; }
-.mon-task-check { font-size: 10px; color: #cbd5e1; display: flex; gap: 4px; align-items: center; }
-.mon-task-section { margin-top: 8px; font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; padding-bottom: 2px; }
-.mon-coal { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.mon-task.done { color: #2d6a4f; padding: 4px 0; border-bottom: 0; }
+.mon-task.failed { color: #c0392b; padding: 4px 0; border-bottom: 0; }
+.mon-task-name { font-weight: 700; font-size: 11px; color: #1a2438; margin-bottom: 2px; }
+.mon-task-meta { font-size: 10px; color: #6b7889; margin-bottom: 5px; letter-spacing: 0.3px; }
+.mon-task-checks { display: flex; flex-direction: column; gap: 3px; }
+.mon-task-check { font-size: 10px; color: #2a3344; display: flex; gap: 4px; align-items: center; }
+.mon-task-section { margin-top: 10px; font-size: 9px; color: #6b7889; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; padding-bottom: 3px; }
+.mon-coal { padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
 .mon-coal:last-child { border-bottom: 0; }
-.mon-coal-name { font-weight: 700; font-size: 11px; color: #fff; margin-bottom: 2px; }
-.mon-coal-meta { font-size: 9px; color: #94a3b8; margin-bottom: 4px; }
-.mon-coal-benefit { font-size: 10px; color: #4ade80; margin-bottom: 2px; }
-.mon-coal-constraint { font-size: 10px; color: #fbbf24; }
+.mon-coal-name { font-weight: 700; font-size: 11px; color: #1a2438; margin-bottom: 2px; }
+.mon-coal-meta { font-size: 10px; color: #6b7889; margin-bottom: 4px; }
+.mon-coal-benefit { font-size: 10px; color: #2d6a4f; margin-bottom: 2px; }
+.mon-coal-constraint { font-size: 10px; color: #b8860b; }
 .desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
 .desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
 .desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
@@ -881,13 +892,14 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-cat:hover{background:rgba(255,255,255,0.06)}
 .security-cat-icon{flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 .security-cat-icon img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
-/* Per-category visual-size tuning — the four icons have different margins of
-   whitespace baked in, so the rendered art appears at slightly different
-   scales even at the same container size. Scale the img (not the container)
-   so the layout stays aligned and hotspot/gap geometry is unaffected. */
-.security-cat-ideology .security-cat-icon img{transform:scale(1.15)}
-.security-cat-democracy .security-cat-icon img{transform:scale(1.15)}
-.security-cat-vitality .security-cat-icon img{transform:scale(0.95)}
+/* Per-category icon scaling via CSS variables. Defaults set in
+   DEFAULT_SECURITY_ICON_SCALES (JS); applySecurityIconScales() at load reads
+   localStorage and overrides them. The dev tuner (?tunesec) lets you adjust
+   each scale live and save without touching the source. */
+.security-cat-safety .security-cat-icon img    { transform: scale(var(--sec-icon-scale-safety, 1.0)); }
+.security-cat-ideology .security-cat-icon img  { transform: scale(var(--sec-icon-scale-ideology, 1.15)); }
+.security-cat-democracy .security-cat-icon img { transform: scale(var(--sec-icon-scale-democracy, 1.15)); }
+.security-cat-vitality .security-cat-icon img  { transform: scale(var(--sec-icon-scale-vitality, 0.95)); }
 .security-cat-content{flex:1;min-width:0}
 .security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:6px}
 .security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -23699,6 +23711,17 @@ function devMovePanel() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDeskDevPanel);
 else initDeskDevPanel();
 
+// Apply per-icon security scales (defaults + any localStorage override).
+// Open the tuner panel automatically if the URL has ?tunesec.
+function _initSecurityIconTuning() {
+  if (typeof applySecurityIconScales === 'function') applySecurityIconScales();
+  if (location.search.indexOf('tunesec') >= 0 && typeof enableSecurityIconTuner === 'function') {
+    enableSecurityIconTuner();
+  }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _initSecurityIconTuning);
+else _initSecurityIconTuning();
+
 // ═══════════════ DESK / CHANNEL DISTRIBUTION ═══════════════
 function distributeScenarios() {
   // Pre-pick scenarios for this round and split across desk objects.
@@ -23927,11 +23950,11 @@ if (typeof window !== 'undefined' && !window._deskResizeHooked) {
 // ═══════════════ MONITOR DESKTOP (windows, drag, z-index) ═══════════════
 
 // Default window state. x/y are percent of desktop area; w/h are percent.
-// Each window is always present; collapsed/expanded toggled by header buttons.
+// Social is always present; briefings/coalitions only render when populated.
 var DEFAULT_MONITOR_WINDOWS = {
-  social:     { x: 12, y: 14, w: 42, h: 38, collapsed: false, expanded: false, z: 1 },
-  briefings:  { x: 56, y: 14, w: 32, h: 38, collapsed: false, expanded: false, z: 2 },
-  coalitions: { x: 32, y: 56, w: 40, h: 32, collapsed: false, expanded: false, z: 3 }
+  social:     { x: 8,  y: 12, w: 56, h: 70, collapsed: false, expanded: false, z: 1 },
+  briefings:  { x: 60, y: 12, w: 35, h: 50, collapsed: false, expanded: false, z: 2 },
+  coalitions: { x: 60, y: 50, w: 35, h: 38, collapsed: false, expanded: false, z: 3 }
 };
 
 function ensureMonitorWindowState() {
@@ -23956,16 +23979,20 @@ function renderMonitorDesktop() {
   html += '<span class="mon-name">' + esc(G.charName || '') + '</span>';
   html += '<span class="mon-sep">\u00B7</span>';
   html += '<span class="mon-org">' + esc(org.name || '') + '</span>';
-  html += '<span class="mon-spacer"></span>';
-  html += '<span class="mon-clock">Round ' + (G.round || 1) + '</span>';
   html += '</div>';
   // Desktop area — windows position absolutely inside this. pointer-events:none
   // on the area itself so clicks on empty space pass through to the desk
   // hotspot below (which triggers the monitor scenario channel).
   html += '<div class="mon-screen-area" id="mon-screen-area">';
-  html += renderMonitorWindow('social',     '\uD83D\uDCE1 Social Media',  renderMonSocialBody());
-  html += renderMonitorWindow('briefings',  '\uD83D\uDCCB Briefings',     renderMonBriefingsBody());
-  html += renderMonitorWindow('coalitions', '\uD83E\uDD1D Coalitions',    renderMonCoalitionsBody());
+  html += renderMonitorWindow('social', renderMonSocialHeader(), renderMonSocialBody());
+  // Briefings and Coalitions only render when there's something to show, so
+  // they don't clutter the desktop on a fresh game.
+  if ((G.activeSubMissions || []).length || (G.completedSubMissions || []).length || (G.failedSubMissions || []).length) {
+    html += renderMonitorWindow('briefings', '\uD83D\uDCCB Briefings', renderMonBriefingsBody());
+  }
+  if ((G.activeCoalitions || []).length) {
+    html += renderMonitorWindow('coalitions', '\uD83E\uDD1D Coalitions', renderMonCoalitionsBody());
+  }
   html += '</div>';
   html += '</div>';
   return html;
@@ -23981,7 +24008,7 @@ function renderMonitorWindow(id, title, bodyHtml) {
   html += '<div class="mon-window-header">';
   html += '<span class="mon-window-title">' + title + '</span>';
   html += '<button class="mon-window-btn mon-collapse" onclick="event.stopPropagation();toggleMonWindowCollapse(\'' + id + '\')" title="Collapse">\u2013</button>';
-  html += '<button class="mon-window-btn mon-expand" onclick="event.stopPropagation();toggleMonWindowExpand(\'' + id + '\')" title="Expand">\u26F6</button>';
+  html += '<button class="mon-window-btn mon-expand" onclick="event.stopPropagation();toggleMonWindowExpand(\'' + id + '\')" title="Expand">+</button>';
   html += '</div>';
   html += '<div class="mon-window-body">' + bodyHtml + '</div>';
   html += '</div>';
@@ -23991,18 +24018,49 @@ function renderMonitorWindow(id, title, bodyHtml) {
 // Body content renderers. These return inner HTML for each window's body div.
 // The actual social/briefings/coalitions data is read from G/GAME_DATA.
 
+// Header for the Social Media window — mimics a social app's title bar with
+// app name + handle + post counter, instead of just the generic "Social Media"
+// title used for the other windows.
+function renderMonSocialHeader() {
+  var allOrgs = [].concat(GAME_DATA.organizations || [], GAME_DATA.nationalOrganizations || []);
+  var org = (allOrgs.find(function(o) { return o.id === G.orgId; }) || {});
+  var handle = '@' + (org.id ? org.id + '_org' : 'org');
+  return '<span class="mon-app-icon">\uD83D\uDCE1</span><span class="mon-app-name">Posts</span><span class="mon-app-handle">' + esc(handle) + '</span>';
+}
+
 function renderMonSocialBody() {
   if (typeof getAvailablePosts !== 'function') return '<div class="mon-empty">Social media unavailable.</div>';
   var posts = getAvailablePosts();
-  if (!posts.length) return '<div class="mon-empty">No posts available right now.</div>';
   var postsThisRound = G.postsThisRound || 0;
   var decay = Math.pow(0.5, postsThisRound);
   var decayPct = Math.round(decay * 100);
-  var html = '<div class="mon-social-decay">Engagement multiplier: <strong>' + decayPct + '%</strong>' + (postsThisRound > 0 ? ' (you\'ve posted ' + postsThisRound + ' time' + (postsThisRound !== 1 ? 's' : '') + ' this round)' : '') + '</div>';
+  var allOrgs = [].concat(GAME_DATA.organizations || [], GAME_DATA.nationalOrganizations || []);
+  var org = (allOrgs.find(function(o) { return o.id === G.orgId; }) || {});
+  var orgName = org.name || 'Your Org';
+  var handle = '@' + (org.id ? org.id + '_org' : 'org');
+  var initials = orgName.split(' ').map(function(w){ return w[0]; }).join('').slice(0, 2).toUpperCase();
+  var html = '';
+  // App-style header bar inside the window body (compose meta)
+  html += '<div class="mon-social-meta">';
+  html += '<div class="mon-social-stats"><span>Engagement <strong>' + decayPct + '%</strong></span>';
+  if (postsThisRound > 0) html += '<span class="mon-social-posted">\u2713 ' + postsThisRound + ' post' + (postsThisRound !== 1 ? 's' : '') + ' today</span>';
+  html += '</div></div>';
+  if (!posts.length) {
+    html += '<div class="mon-empty">No drafts available right now.</div>';
+    return html;
+  }
+  html += '<div class="mon-social-section">Drafts ready to post</div>';
   posts.forEach(function(p) {
-    html += '<div class="mon-post">';
-    html += '<div class="mon-post-text">' + esc(p.text) + '</div>';
+    html += '<div class="mon-tweet">';
+    html += '<div class="mon-tweet-avatar">' + esc(initials) + '</div>';
+    html += '<div class="mon-tweet-body">';
+    html += '<div class="mon-tweet-meta"><span class="mon-tweet-name">' + esc(orgName) + '</span> <span class="mon-tweet-handle">' + esc(handle) + '</span></div>';
+    html += '<div class="mon-tweet-text">' + esc(p.text) + '</div>';
+    html += '<div class="mon-tweet-actions">';
+    html += '<span class="mon-tweet-len">' + p.text.length + ' chars</span>';
     html += '<button class="mon-post-btn" onclick="executeSocialPost(\'' + p.id + '\');renderMain()">Post</button>';
+    html += '</div>';
+    html += '</div>';
     html += '</div>';
   });
   return html;
@@ -24101,10 +24159,25 @@ function toggleMonWindowCollapse(id) {
 function toggleMonWindowExpand(id) {
   var win = document.getElementById('mon-win-' + id);
   if (!win) return;
-  win.classList.toggle('expanded');
   ensureMonitorWindowState();
-  G.monitorWindows[id].expanded = win.classList.contains('expanded');
-  if (G.monitorWindows[id].expanded) bringMonitorWindowToFront(win);
+  var willExpand = !win.classList.contains('expanded');
+  if (willExpand) {
+    // Move the window OUT of the monitor's stacking/transform context so
+    // position:fixed actually anchors to the viewport. The .desk-monitor-
+    // animation parent has transform:translate(-50%,-50%), which makes any
+    // descendant's position:fixed behave like position:absolute (clipped).
+    win.classList.add('expanded');
+    win._monitorParent = win.parentNode;
+    document.body.appendChild(win);
+    bringMonitorWindowToFront(win);
+  } else {
+    // Restore back into the monitor desktop area where it lived before.
+    win.classList.remove('expanded');
+    var area = win._monitorParent || document.getElementById('mon-screen-area');
+    if (area) area.appendChild(win);
+    win._monitorParent = null;
+  }
+  G.monitorWindows[id].expanded = willExpand;
 }
 
 // Initialize drag handlers on all monitor windows. Re-runs after each
@@ -26043,13 +26116,92 @@ function calcSecurityCategoryScore(categoryId) {
 
 // Calculate the overall Jewish Security composite score.
 // Icon HTML for each security category (keyed by category id). Rendered
-// inside .security-cat-icon which sizes them to 32x32 with object-fit:contain.
+// inside .security-cat-icon which sizes them to 48x48 with object-fit:contain.
 var SECURITY_CAT_ICONS = {
   safety:    '<img src="art/sec-safety.png" alt="">',
   ideology:  '<img src="art/sec-ideology.png" alt="">',
   democracy: '<img src="art/sec-democracy.png" alt="">',
   vitality:  '<img src="art/sec-vitality.png" alt="">'
 };
+
+// Per-category icon scale defaults. Overridable via localStorage (set by the
+// dev tuner panel) so tweaks survive reloads without code edits.
+var DEFAULT_SECURITY_ICON_SCALES = { safety: 1.0, ideology: 1.15, democracy: 1.15, vitality: 0.95 };
+
+function getSecurityIconScales() {
+  var out = Object.assign({}, DEFAULT_SECURITY_ICON_SCALES);
+  try {
+    var saved = localStorage.getItem('securityIconScales');
+    if (saved) {
+      var p = JSON.parse(saved);
+      Object.keys(p).forEach(function(k) { if (typeof p[k] === 'number') out[k] = p[k]; });
+    }
+  } catch (e) {}
+  return out;
+}
+
+function applySecurityIconScales() {
+  var scales = getSecurityIconScales();
+  Object.keys(scales).forEach(function(k) {
+    document.documentElement.style.setProperty('--sec-icon-scale-' + k, scales[k]);
+  });
+}
+
+// Floating dev panel for live-tuning each security icon's scale. Triggered by
+// adding ?tunesec to the URL. Sliders update CSS in real time; "Save & Copy"
+// writes to localStorage and copies the JSON so you can paste it back to me.
+function enableSecurityIconTuner() {
+  if (document.getElementById('sec-icon-tuner')) return;
+  var scales = getSecurityIconScales();
+  var cats = [
+    { id: 'safety',    name: 'Physical Safety' },
+    { id: 'ideology',  name: 'Ideology' },
+    { id: 'democracy', name: 'Democracy' },
+    { id: 'vitality',  name: 'Communal Vitality' }
+  ];
+  var panel = document.createElement('div');
+  panel.id = 'sec-icon-tuner';
+  panel.style.cssText = 'position:fixed;bottom:160px;right:16px;z-index:99999;background:#1a1a2e;border:2px solid #d4a843;border-radius:6px;padding:14px;color:#fff;font-family:-apple-system,sans-serif;font-size:11px;box-shadow:0 8px 30px rgba(0,0,0,0.6);min-width:260px';
+  var html = '<div style="font-weight:700;margin-bottom:10px;color:#d4a843;display:flex;justify-content:space-between;align-items:center"><span>Security Icon Tuner</span><button onclick="document.getElementById(\'sec-icon-tuner\').remove()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;cursor:pointer;padding:1px 6px;font-size:10px;border-radius:3px">\u2715</button></div>';
+  cats.forEach(function(c) {
+    var v = scales[c.id] || 1.0;
+    html += '<div style="margin-bottom:8px"><label style="display:flex;justify-content:space-between;font-size:10px;color:#a0aab8;margin-bottom:3px"><span>' + c.name + '</span><span id="sit-val-' + c.id + '">' + v.toFixed(2) + '\u00D7</span></label>';
+    html += '<input type="range" min="0.5" max="2.0" step="0.01" value="' + v + '" data-cat="' + c.id + '" oninput="onTuneSecIcon(this)" style="width:100%"></div>';
+  });
+  html += '<div style="display:flex;gap:6px;margin-top:8px"><button onclick="saveTunedSecIcons()" style="flex:1;background:#d4a843;color:#1a1a2e;border:0;padding:6px;font-weight:700;cursor:pointer;border-radius:3px;font-size:10px">Save & Copy JSON</button><button onclick="resetTunedSecIcons()" style="background:transparent;border:1px solid #555;color:#aaa;cursor:pointer;padding:6px 10px;font-size:10px;border-radius:3px">Reset</button></div>';
+  html += '<div id="sit-status" style="font-size:9px;color:#7a7a8a;margin-top:6px;min-height:11px"></div>';
+  panel.innerHTML = html;
+  document.body.appendChild(panel);
+}
+
+function onTuneSecIcon(input) {
+  var cat = input.getAttribute('data-cat');
+  var v = parseFloat(input.value);
+  document.documentElement.style.setProperty('--sec-icon-scale-' + cat, v);
+  var lbl = document.getElementById('sit-val-' + cat);
+  if (lbl) lbl.textContent = v.toFixed(2) + '\u00D7';
+}
+
+function saveTunedSecIcons() {
+  var inputs = document.querySelectorAll('#sec-icon-tuner input[type=range]');
+  var out = {};
+  inputs.forEach(function(i) { out[i.getAttribute('data-cat')] = parseFloat(i.value); });
+  localStorage.setItem('securityIconScales', JSON.stringify(out));
+  var status = document.getElementById('sit-status');
+  try {
+    navigator.clipboard.writeText(JSON.stringify(out));
+    if (status) status.textContent = 'Saved + copied to clipboard.';
+  } catch (e) {
+    if (status) status.textContent = 'Saved (clipboard unavailable).';
+  }
+}
+
+function resetTunedSecIcons() {
+  localStorage.removeItem('securityIconScales');
+  applySecurityIconScales();
+  document.getElementById('sec-icon-tuner').remove();
+  enableSecurityIconTuner();
+}
 
 function calcSecurityComposite() {
   if (!G.security) return 0;

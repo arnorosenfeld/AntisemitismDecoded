@@ -408,14 +408,18 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .clipboard-bug { position: fixed; top: 0; left: 20px; z-index: 149; width: 110px; cursor: pointer; transition: transform 0.15s; }
 .clipboard-bug:hover { transform: scale(1.03); }
 .clipboard-bug .clipboard-base { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25)); }
-/* Position the grade overlay within the paper area of the clipboard.
-   The clipboard art's paper (white) region roughly covers 13%-87% horizontally
-   and 22%-95% vertically of the clipboard PNG. The grade is centered within
-   that paper area at ~65% of the paper height so it doesn't crowd the clip. */
-.clipboard-grade { position: absolute; left: 20%; top: 32%; width: 60%; height: 55%; background-image: url('art/grades.png'); background-repeat: no-repeat; pointer-events: none; }
-/* Hover tooltip — reuses grade-detail pattern from the old HUD cell. */
-.clipboard-bug .grade-detail { top: 100%; bottom: auto; margin-top: 6px; margin-bottom: 0; }
-.clipboard-bug .grade-detail::before { top: -5px; bottom: auto; border-top: 1px solid rgba(255,255,255,0.15); border-left: 1px solid rgba(255,255,255,0.15); border-right: 0; border-bottom: 0; }
+/* "Board Rating" caption inside the paper area, above the grade, styled
+   like the old hud-budget-label so the clipboard reads identically. */
+.clipboard-label { position: absolute; left: 13%; top: 26%; width: 74%; text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #5a5040; pointer-events: none; }
+/* Grade overlay: square container ~25% smaller than the previous 60%×55%
+   box, so ~45% of clipboard width. Aspect-preserving crop is handled by
+   updateClipboardGrade() which computes background-size and -position to
+   fit each grade cell without stretching. */
+.clipboard-grade { position: absolute; left: 50%; top: 38%; width: 45%; aspect-ratio: 1 / 1; transform: translateX(-50%); background-image: url('art/grades.png'); background-repeat: no-repeat; pointer-events: none; }
+/* Hover tooltip — opens to the RIGHT of the clipboard so nothing gets
+   clipped off the bottom of the screen. */
+.clipboard-bug .grade-detail { top: 0; left: 100%; bottom: auto; right: auto; transform: none; margin-top: 0; margin-left: 10px; margin-bottom: 0; }
+.clipboard-bug .grade-detail::before { top: 14px; left: -5px; bottom: auto; transform: rotate(45deg); border: 0; border-left: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(255,255,255,0.15); }
 .clipboard-bug:hover .grade-detail { display: block; }
 
 /* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
@@ -1547,9 +1551,10 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   <!-- Floating clipboard bug with live board-rating grade, pinned below the status bar pill -->
   <div class="clipboard-bug" id="clipboard-bug" style="display:none">
     <img class="clipboard-base" src="art/clipboard.png" alt="Board Rating clipboard">
+    <span class="clipboard-label">Board Rating</span>
     <div class="clipboard-grade" id="clipboard-grade"></div>
     <div class="grade-detail" id="clipboard-grade-detail">
-      <div class="grade-detail-title">📊 Board Rating</div>
+      <div class="grade-detail-title">📊 Score Breakdown</div>
       <div id="clipboard-grade-body"></div>
     </div>
   </div>
@@ -22705,21 +22710,40 @@ var GRADE_SPRITE_BBOX = {
 
 // Apply the current live grade to the clipboard bug (sets the sprite crop
 // via background-position/-size). Called from updateHUD().
+// Aspect-preserving crop: the overlay is a square, and we scale the sprite
+// so the GRADE CELL's largest dimension fits the overlay — then center the
+// cell so it sits straight (not stretched by differing cell aspect ratios).
 function updateClipboardGrade() {
   var el = document.getElementById('clipboard-grade');
   if (!el) return;
   var lg = computeLiveGrade();
   var key = lg.fineGrade || lg.grade || 'F';
   var bb = GRADE_SPRITE_BBOX[key] || GRADE_SPRITE_BBOX.F;
-  // We want the overlay to show a cell of aspect bb.w:bb.h cropped from the
-  // sprite. Using background-size: (100/bb.w)% (100/bb.h)% scales the sprite
-  // so the cell fills the overlay; background-position shifts it to the
-  // correct cell. Formula from CSS spec: for background-size X% Y% with
-  // background-position X% Y%, the percentage position is (sprite_offset / (sprite_size - container_size)).
-  var bgSizeX = 100 / bb.w * 100;
-  var bgSizeY = 100 / bb.h * 100;
-  var bgPosX = bb.x / (100 - bb.w) * 100;
-  var bgPosY = bb.y / (100 - bb.h) * 100;
+
+  // Sprite natural dimensions (pixels) — from PIL detection.
+  var SW = 6000, SH = 3375;
+  // Cell dimensions in sprite pixels
+  var cw = bb.w / 100 * SW;
+  var ch = bb.h / 100 * SH;
+  var cx = bb.x / 100 * SW;
+  var cy = bb.y / 100 * SH;
+  // For a "contain" fit inside a square overlay of side O: scale the sprite
+  // so the larger cell dimension equals O. Then:
+  //   bgSizeX = SW * scale / O = SW / cellMax
+  //   bgSizeY = SH * scale / O = SH / cellMax
+  // The cell center in sprite-pixel coords is (cx+cw/2, cy+ch/2); in rendered
+  // coords it's that * scale. We want it at overlay center (O/2), so the
+  // top-left offset is O/2 - (cx+cw/2)*scale. Converting to CSS background-
+  // position percentage:
+  //   bgPosPct = offset / (O - renderedSpriteSize) * 100
+  //            = (0.5 - cellCenter/cellMax) / (1 - SW/cellMax) * 100  [for X]
+  var cellMax = Math.max(cw, ch);
+  var bgSizeX = SW / cellMax * 100;
+  var bgSizeY = SH / cellMax * 100;
+  var cellCenterXFrac = (cx + cw / 2) / cellMax;
+  var cellCenterYFrac = (cy + ch / 2) / cellMax;
+  var bgPosX = (0.5 - cellCenterXFrac) / (1 - SW / cellMax) * 100;
+  var bgPosY = (0.5 - cellCenterYFrac) / (1 - SH / cellMax) * 100;
   el.style.backgroundSize = bgSizeX + '% ' + bgSizeY + '%';
   el.style.backgroundPosition = bgPosX + '% ' + bgPosY + '%';
   el.setAttribute('data-grade', key);

@@ -383,8 +383,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    the HUD chrome. The width below is a fallback for first paint. */
 .desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: min(85vw, 1400px); }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
-/* Bottom status bar (above ticker, full-width, lighter tone) */
-.game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: fixed; bottom: 136px; left: 0; right: 0; z-index: 198; border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; min-height: 32px; box-sizing: border-box; }
+/* Bottom status bar — sits above the invest strip (bottom:96, height:~44),
+   so its bottom edge is at 140px to clear the invest strip's top edge. */
+.game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: fixed; bottom: 140px; left: 0; right: 0; z-index: 198; border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; min-height: 32px; box-sizing: border-box; }
 .game-status-bar .step-ind { margin: 0; display: inline; color: #5a5040; line-height: 1; }
 .game-status-bar .btn { margin-left: 12px; padding: 4px 14px; font-size: 11px; }
 
@@ -22775,6 +22776,14 @@ function updateHUD(){
 
   // Update Jewish Security bar
   updateSecurityHUD();
+
+  // Re-fit the desk scene: the top strips (coalition, sub-mission) may have
+  // toggled visibility, which changes the available vertical space for the
+  // desk. Without this, adding a coalition or sub-mission would push the desk
+  // down under the status bar while keeping it the same size.
+  if (typeof sizeDeskScene === 'function') {
+    setTimeout(sizeDeskScene, 0);
+  }
 }
 
 // ═══════════════ DESK SCENE (unified background + hotspots) ═══════════════
@@ -23630,15 +23639,38 @@ function renderMain(){
 }
 
 // Size the desk scene + desk layer to fit the available viewport. Exposed as a
-// named function so we can also call it on window resize.
+// named function so we can also call it on window resize and whenever the
+// top strips (sub-mission, coalition) or bottom status bar toggle visibility.
 function sizeDeskScene() {
   var scene = document.getElementById('desk-scene');
   if (!scene) return;
-  var rect = scene.getBoundingClientRect();
-  // Fixed bottom chrome: status(32) + invest(42) + HUD(64) + ticker(32) = 170
-  var bottomChrome = 170;
-  var available = window.innerHeight - rect.top - bottomChrome;
-  var sceneHeight = Math.max(250, available);
+
+  // Measure the actual TOP of the highest-positioned fixed bottom chrome
+  // element. Whichever bottom-chrome element is highest (farthest from the
+  // viewport bottom) is the floor the desk scene must stay above. This
+  // auto-adapts if chrome heights change and avoids hardcoded pixel stacks.
+  var chromeCandidates = [
+    document.querySelector('.game-status-bar'),
+    document.getElementById('invest-strip'),
+    document.getElementById('hud-el'),
+    document.querySelector('.news-ticker-wrap.active')
+  ];
+  var chromeTop = window.innerHeight; // fallback if no chrome present
+  chromeCandidates.forEach(function(el) {
+    if (!el) return;
+    // Skip hidden elements (display:none)
+    if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return;
+    if (getComputedStyle(el).display === 'none') return;
+    var r = el.getBoundingClientRect();
+    // Only count fixed-position chrome that's actually on screen
+    if (r.height === 0) return;
+    if (r.top < chromeTop) chromeTop = r.top;
+  });
+
+  var sceneRect = scene.getBoundingClientRect();
+  // Small safety gap so the desk doesn't kiss the status bar
+  var SAFETY_GAP = 6;
+  var sceneHeight = Math.max(220, chromeTop - sceneRect.top - SAFETY_GAP);
   scene.style.height = sceneHeight + 'px';
 
   // Now size the desk-layer so the desk image never exceeds scene bounds.

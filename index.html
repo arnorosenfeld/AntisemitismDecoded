@@ -881,9 +881,10 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* ═══ NEWS TICKER ═══ */
 .news-ticker-wrap{position:fixed;bottom:0;left:0;width:100%;background:#2e3a52;z-index:200;border-top:2px solid var(--gold);overflow:hidden;height:32px;display:none}
 .news-ticker-wrap.active{display:flex;align-items:center}
-.news-ticker-label{background:var(--gold);color:var(--white);font-family:'Merriweather',serif;font-weight:900;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:0 12px;height:100%;display:flex;align-items:center;flex-shrink:0;white-space:nowrap;z-index:1}
+.news-ticker-label{background:var(--gold);color:var(--white);padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0;white-space:nowrap;z-index:1;cursor:pointer;text-decoration:none}
+.news-ticker-label img{height:18px;width:auto;display:block}
 .news-ticker-track{flex:1;overflow:hidden;position:relative;height:100%}
-.news-ticker-content{display:flex;align-items:center;height:100%;white-space:nowrap;animation:tickerScroll var(--ticker-duration, 44s) linear infinite}
+.news-ticker-content{display:flex;align-items:center;height:100%;white-space:nowrap;animation:tickerScroll var(--ticker-duration, 55s) linear infinite}
 .news-ticker-content:hover{animation-play-state:paused}
 @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:inline-block;padding:0 16px;font-family:'Merriweather Sans',sans-serif;font-size:12px;font-weight:600;line-height:32px}
@@ -1639,7 +1640,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
   <!-- NEWS TICKER -->
   <div class="news-ticker-wrap" id="news-ticker">
-    <div class="news-ticker-label">News</div>
+    <a class="news-ticker-label" href="https://forward.com" target="_blank" rel="noopener"><img src="art/forward-logo.png" alt="Forward"></a>
     <div class="news-ticker-track">
       <div class="news-ticker-content" id="ticker-content"></div>
     </div>
@@ -22721,7 +22722,7 @@ function fetchRSSHeadlines() {
   var rssUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://forward.com/feed/');
   fetch(rssUrl).then(function(r){return r.json()}).then(function(data){
     if(data && data.items && data.items.length > 0) {
-      rssHeadlines = data.items.slice(0,12).map(function(item){return {text: item.title, link: item.link || ''};});
+      rssHeadlines = data.items.slice(0,36).map(function(item){return {text: item.title, link: item.link || ''};});
     }
     rssFetched = true;
     buildTickerContent();

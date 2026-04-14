@@ -288,29 +288,29 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-banner-inner .hud-char-emoji { font-size: 16px; }
 .hud-banner-inner .hud-char-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; }
 .hud-banner-inner .hud-org-label { font-size: 10px; color: #a0aab8; margin-left: 4px; }
-.hud { background: #364663; color: #dde1e8; padding: 12px 24px; position: fixed; bottom: 32px; left: 0; right: 0; z-index: 210; }
-.hud-inner { max-width: 85vw; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.hud { background: #364663; color: #dde1e8; padding: 10px 24px; position: fixed; bottom: 32px; left: 0; right: 0; z-index: 210; }
+.hud-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 18px; }
 .hud-spacer { display: none; } /* not needed with sticky */
-.meters { display: flex; gap: 16px; flex: 1; justify-content: center; flex-wrap: wrap; }
-.meter { text-align: center; min-width: 68px; display: flex; flex-direction: column; }
-.m-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; display: block; order: 2; margin-top: 3px; }
-.m-bar-wrap { background: rgba(255,255,255,0.12); height: 6px; margin-bottom: 3px; border-radius: 3px; order: 1; }
+.meters { display: flex; gap: 14px; justify-content: center; }
+.meter { text-align: center; min-width: 60px; display: flex; flex-direction: column; }
+.m-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; display: block; order: 2; margin-top: 3px; }
+.m-bar-wrap { background: rgba(255,255,255,0.12); height: 5px; margin-bottom: 2px; border-radius: 3px; order: 1; }
 .m-bar { height: 100%; transition: width 0.45s ease, background-color 0.45s ease; }
-.m-val { font-family: 'Merriweather', serif; font-weight: 700; font-size: 15px; color: #ffffff; order: 0; }
-.hud-budget-mission { display: flex; align-items: center; gap: 20px; }
-.hud-budget { text-align: center; min-width: 80px; }
-.hud-budget-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; display: block; margin-top: 3px; }
+.m-val { font-family: 'Merriweather', serif; font-weight: 700; font-size: 14px; color: #ffffff; order: 0; }
+.hud-budget-mission { display: flex; align-items: center; gap: 14px; }
+.hud-budget { text-align: center; min-width: 60px; display: flex; flex-direction: column; }
+.hud-budget-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; display: block; order: 2; margin-top: 3px; }
 .hud-budget-bags { display: flex; gap: 2px; justify-content: center; margin-bottom: 2px; height: 24px; align-items: center; }
 .money-bag { position: relative; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
 .money-bag-empty { font-size: 18px; line-height: 1; opacity: 0.45; filter: grayscale(0.6) brightness(1.4); }
 .money-bag-fill { position: absolute; top: 0; left: 0; font-size: 18px; line-height: 1; overflow: hidden; white-space: nowrap; height: 18px; }
-.hud-mission { text-align: center; }
-.hud-stars-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; display: block; margin-top: 3px; }
+.hud-mission { text-align: center; display: flex; flex-direction: column; }
+.hud-stars-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; display: block; order: 2; margin-top: 3px; }
 .hud-stars { font-size: 20px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center; height: 24px; }
 .hud-stars .star { display: inline-block; width: 20px; height: 20px; text-align: center; line-height: 20px; font-size: 18px; vertical-align: middle; }
 .hud-stars .star-empty { opacity: 0.45; }
 /* Board rating in HUD */
-.hud-board-rating { position: relative; cursor: pointer; text-align: center; }
+.hud-board-rating { position: relative; cursor: pointer; text-align: center; display: flex; flex-direction: column; }
 .hud-grade-letter { font-family: 'Merriweather', serif; font-weight: 900; font-size: 22px; padding: 2px 12px; border-radius: 4px; line-height: 1.2; display: inline-block; }
 .hud-grade-letter.grade-a { color: #4ade80; background: transparent; }
 .hud-grade-letter.grade-b { color: #fbbf24; background: transparent; }
@@ -325,7 +325,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Round info removed from HUD - now in AP bar */
 
 /* INVESTMENT STRIP - below HUD */
-.invest-strip { background: #283248; padding: 7px 20px; position: fixed; bottom: 104px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
+.invest-strip { background: #283248; padding: 7px 20px; position: fixed; bottom: 96px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
 .invest-strip-wrap { max-width: 85vw; margin: 0 auto; position: relative; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
@@ -380,7 +380,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 85vw; max-width: 1400px; min-width: 700px; }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 /* Bottom status bar (above ticker, full-width, lighter tone) */
-.game-status-bar { background: #e8e0d0; padding: 10px 20px; text-align: center; position: fixed; bottom: 146px; left: 0; right: 0; z-index: 198; border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
+.game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: fixed; bottom: 138px; left: 0; right: 0; z-index: 198; border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
 .game-status-bar .step-ind { margin-bottom: 0; display: inline; color: #5a5040; }
 .game-status-bar .btn { margin-left: 12px; padding: 4px 14px; font-size: 11px; }
 
@@ -894,13 +894,13 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .ticker-sep{display:inline-block;color:var(--gold);padding:0 6px;opacity:0.4;font-size:10px}
 
 /* ═══ POLITICAL CLOUT SYSTEM ═══ */
-.hud-politics{text-align:center;min-width:180px;cursor:pointer;position:relative;display:flex;flex-direction:column}
-.hud-politics-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;display:block;order:3;margin-top:4px}
-.pol-spectrum{position:relative;height:10px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:5px;margin:0 auto 4px;width:170px;overflow:visible;order:1}
-.pol-marker{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;border:2px solid #fff;background:#b8860b;transition:left 0.4s ease;z-index:2;box-shadow:0 0 6px rgba(0,0,0,0.4)}
-.pol-marker-glow{position:absolute;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;transition:left 0.4s ease,opacity 0.4s;z-index:1}
-.hud-politics-vals{display:flex;justify-content:center;gap:10px;font-size:12px;order:2}
-.pol-pos-label{color:#c0c8d4;font-weight:600}
+.hud-politics{text-align:center;min-width:140px;cursor:pointer;position:relative;display:flex;flex-direction:column}
+.hud-politics-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;display:block;order:3;margin-top:3px}
+.pol-spectrum{position:relative;height:8px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:4px;margin:0 auto 3px;width:130px;overflow:visible;order:1}
+.pol-marker{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:#b8860b;transition:left 0.4s ease;z-index:2;box-shadow:0 0 4px rgba(0,0,0,0.3)}
+.pol-marker-glow{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;transition:left 0.4s ease,opacity 0.4s;z-index:1}
+.hud-politics-vals{display:flex;justify-content:center;gap:8px;font-size:11px;order:2}
+.pol-pos-label{color:#b8c0cc;font-weight:600}
 .pol-clout-label{color:#d4a843;font-weight:700}
 /* Political chips — purple for visibility */
 .chip-pol-left{background:#ede9fe;color:#5b21b6;font-size:10px;font-weight:700;padding:2px 6px}
@@ -19685,8 +19685,8 @@ function renderMain(){
     var scene = document.getElementById('desk-scene');
     if (!scene) return;
     var rect = scene.getBoundingClientRect();
-    // Fixed bottom chrome: status(36) + invest(42) + HUD(72) + ticker(32) = 182
-    var bottomChrome = 182;
+    // Fixed bottom chrome: status(32) + invest(42) + HUD(64) + ticker(32) = 170
+    var bottomChrome = 170;
     var available = window.innerHeight - rect.top - bottomChrome;
     scene.style.height = Math.max(250, available) + 'px';
   }, 0);

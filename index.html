@@ -375,13 +375,14 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .act-cost { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-top: 7px; }
 .act-effects { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
-/* ── DESK SCENE (full-bleed room background + centered desk) ── */
-.desk-scene { position: relative; width: 100vw; margin-left: calc(-50vw + 50%); user-select: none; overflow: hidden; }
-.desk-scene .room-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
-.desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 66%; }
+/* ── DESK SCENE (CSS background-image + centered desk layer) ── */
+.desk-scene { position: relative; width: 100vw; margin-left: calc(-50vw + 50%); user-select: none; overflow: hidden; background: url('art/room-bg.jpg') center bottom / cover no-repeat; background-color: #e8e0cb; }
+.desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 820px; max-width: 90vw; }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
-/* Status line overlays on the background */
-.desk-status-overlay { position: absolute; top: 0; left: 0; right: 0; text-align: center; padding: 10px 20px; z-index: 5; }
+/* Bottom status bar (above ticker, mirrors HUD visually) */
+.game-status-bar { background: #1a1a2e; padding: 8px 20px; text-align: center; position: relative; z-index: 2; border-top: 1px solid rgba(255,255,255,0.08); }
+.game-status-bar .step-ind { margin-bottom: 0; display: inline; }
+.game-status-bar .btn { margin-left: 12px; padding: 4px 14px; font-size: 11px; }
 
 /* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
 .desk-hs { position: absolute; box-sizing: border-box; pointer-events: none; z-index: 5; }
@@ -19128,14 +19129,7 @@ function renderDeskScene(opts) {
   var hasUnread = (opts.activeInbox || []).some(function(m){ return m.unread; });
   var html = '';
   html += '<div class="desk-scene" id="desk-scene">';
-  // Room background — fills the scene; desk layers on top at the bottom
-  html += '<img class="room-bg" src="art/room-bg.jpg" alt="">';
-  // Status line overlaid on the background (between top of scene and ceiling)
-  var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
-  var totalRounds = GAME_DATA.config.totalRounds || 6;
-  var statusLine = 'Round ' + G.round + ' of ' + totalRounds + ' \u2014 ' + apLabel;
-  html += '<div class="desk-status-overlay"><span class="step-ind">' + statusLine + '</span></div>';
-  // Desk layer — absolutely positioned at bottom, centered, contains desk image + all hotspots
+  // Desk layer — absolutely positioned at bottom, centered within the CSS background room
   html += '<div class="desk-layer">';
   html += '<img class="desk-bg" src="' + bgPath + '" alt="">';
 
@@ -19652,9 +19646,26 @@ function renderMain(){
   var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
   var statusLine = roundHeading + ' \u2014 ' + apLabel;
 
-  el.innerHTML = ''
-    + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:0;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue. ' + endRoundHtml + '</div>' : '')
-    + deskSceneHtml;
+  // Build bottom status bar (round + actions + end-round button)
+  var apLabel = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
+  var statusLine = 'Round ' + G.round + ' of ' + totalRounds + ' \u2014 ' + apLabel;
+  var statusBar = '<div class="game-status-bar">'
+    + '<span class="step-ind">' + statusLine + '</span>'
+    + (disabled ? ' <button class="btn btn-sm btn-primary" onclick="endRound()">End Round \u2192</button>' : '')
+    + '</div>';
+
+  el.innerHTML = deskSceneHtml + statusBar;
+
+  // Size the desk scene to fill available viewport between HUD and status bar
+  setTimeout(function() {
+    var scene = document.getElementById('desk-scene');
+    if (!scene) return;
+    var rect = scene.getBoundingClientRect();
+    var tickerH = 32; // fixed ticker height
+    var statusBarH = 40; // approximate status bar height
+    var available = window.innerHeight - rect.top - tickerH - statusBarH;
+    scene.style.height = Math.max(200, available) + 'px';
+  }, 0);
 }
 
 // ═══════════════ DESK ACTION ═══════════════

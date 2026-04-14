@@ -401,6 +401,23 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .game-status-bar .step-ind { margin: 0; color: #5a5040; line-height: 1.2; white-space: nowrap; }
 .game-status-bar .btn { padding: 4px 12px; font-size: 11px; }
 
+/* Clipboard bug — shows the live board rating as a red-marker grade
+   circle overlaid on a clipboard in the top-left, pinned below the
+   status bar pill. The grade is cropped from art/grades.png via
+   background-position + background-size (see updateClipboardGrade). */
+.clipboard-bug { position: fixed; top: 0; left: 20px; z-index: 149; width: 110px; cursor: pointer; transition: transform 0.15s; }
+.clipboard-bug:hover { transform: scale(1.03); }
+.clipboard-bug .clipboard-base { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25)); }
+/* Position the grade overlay within the paper area of the clipboard.
+   The clipboard art's paper (white) region roughly covers 13%-87% horizontally
+   and 22%-95% vertically of the clipboard PNG. The grade is centered within
+   that paper area at ~65% of the paper height so it doesn't crowd the clip. */
+.clipboard-grade { position: absolute; left: 20%; top: 32%; width: 60%; height: 55%; background-image: url('art/grades.png'); background-repeat: no-repeat; pointer-events: none; }
+/* Hover tooltip — reuses grade-detail pattern from the old HUD cell. */
+.clipboard-bug .grade-detail { top: 100%; bottom: auto; margin-top: 6px; margin-bottom: 0; }
+.clipboard-bug .grade-detail::before { top: -5px; bottom: auto; border-top: 1px solid rgba(255,255,255,0.15); border-left: 1px solid rgba(255,255,255,0.15); border-right: 0; border-bottom: 0; }
+.clipboard-bug:hover .grade-detail { display: block; }
+
 /* Hotspots: absolute, rotated via transform. Body takes clicks; badge sits at rotated top-right */
 .desk-hs { position: absolute; box-sizing: border-box; pointer-events: none; z-index: 5; }
 /* Hotspot body is invisible (transparent) and relies on the cursor change for affordance —
@@ -1527,6 +1544,15 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
   <div class="security-bar" id="security-bar-el" style="display:none">
     <div class="security-bar-inner" id="security-bar-inner"></div>
   </div>
+  <!-- Floating clipboard bug with live board-rating grade, pinned below the status bar pill -->
+  <div class="clipboard-bug" id="clipboard-bug" style="display:none">
+    <img class="clipboard-base" src="art/clipboard.png" alt="Board Rating clipboard">
+    <div class="clipboard-grade" id="clipboard-grade"></div>
+    <div class="grade-detail" id="clipboard-grade-detail">
+      <div class="grade-detail-title">📊 Board Rating</div>
+      <div id="clipboard-grade-body"></div>
+    </div>
+  </div>
   <div class="coalition-strip" id="coalition-strip" style="display:none">
     <div class="coalition-strip-inner" id="coalition-strip-inner"></div>
   </div>
@@ -1572,14 +1598,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       </div>
       <div class="meters" id="hud-meters"></div>
       <div class="hud-budget-mission">
-        <div class="hud-board-rating" id="hud-board-rating">
-          <span class="hud-budget-label">Board Rating</span>
-          <div class="hud-grade-letter" id="hud-live-grade">B</div>
-          <div class="grade-detail" id="grade-detail">
-            <div class="grade-detail-title">📊 Score Breakdown</div>
-            <div id="grade-detail-body"></div>
-          </div>
-        </div>
         <div class="hud-budget" id="hud-budget">
           <span class="hud-budget-label">Gelt</span>
           <div class="hud-budget-bags" id="hud-budget-bags"></div>
@@ -22651,7 +22669,90 @@ function computeLiveGrade() {
   for (var i = 0; i < thresholds.length; i++) {
     if (score >= thresholds[i].min) { grade = thresholds[i].grade; break; }
   }
-  return { score: score, grade: grade, starBonus: starBonus, baseScore: Math.round(score - starBonus) };
+  // Fine-grained grade with +/- based on score. Each letter band covers 10
+  // points (A=80-100, B=70-79, C=60-69, D=50-59, F<50). Within each band,
+  // the bottom ~3 points → "-", top ~3 points → "+", middle → plain letter.
+  // F doesn't get +/-. D+/D- folded into D for the 11-grade sprite.
+  var fineGrade = grade;
+  if (grade === 'A') {
+    if (score >= 93) fineGrade = 'A';
+    if (score >= 97) fineGrade = 'A+';
+    else if (score < 93) fineGrade = 'A-';
+  } else if (grade === 'B' || grade === 'C') {
+    var bandMin = (grade === 'B') ? 70 : 60;
+    if (score >= bandMin + 7) fineGrade = grade + '+';
+    else if (score < bandMin + 3) fineGrade = grade + '-';
+  }
+  return { score: score, grade: grade, fineGrade: fineGrade, starBonus: starBonus, baseScore: Math.round(score - starBonus) };
+}
+
+// Bounding boxes of each grade within art/grades.png (6000x3375), as % of
+// sprite dimensions. Used to crop the sprite to a single grade via CSS
+// background-position + background-size on the clipboard overlay.
+var GRADE_SPRITE_BBOX = {
+  "A+": {x:2.417,y:9.778,w:15.767,h:28.8},
+  "A":  {x:20.183,y:9.778,w:15.8,h:28.8},
+  "A-": {x:37.967,y:9.778,w:17.617,h:28.8},
+  "B+": {x:57.567,y:9.778,w:14.633,h:28.8},
+  "B":  {x:74.183,y:9.778,w:15.783,h:28.326},
+  "B-": {x:2.4,y:41.778,w:16.367,h:28.356},
+  "C+": {x:20.383,y:42.163,w:15.617,h:28.326},
+  "C":  {x:37.967,y:41.985,w:15.8,h:28.326},
+  "C-": {x:56.017,y:42.133,w:16.183,h:27.97},
+  "D":  {x:74.5,y:41.778,w:15.683,h:27.97},
+  "F":  {x:81.5,y:66.785,w:17.467,h:29.185}
+};
+
+// Apply the current live grade to the clipboard bug (sets the sprite crop
+// via background-position/-size). Called from updateHUD().
+function updateClipboardGrade() {
+  var el = document.getElementById('clipboard-grade');
+  if (!el) return;
+  var lg = computeLiveGrade();
+  var key = lg.fineGrade || lg.grade || 'F';
+  var bb = GRADE_SPRITE_BBOX[key] || GRADE_SPRITE_BBOX.F;
+  // We want the overlay to show a cell of aspect bb.w:bb.h cropped from the
+  // sprite. Using background-size: (100/bb.w)% (100/bb.h)% scales the sprite
+  // so the cell fills the overlay; background-position shifts it to the
+  // correct cell. Formula from CSS spec: for background-size X% Y% with
+  // background-position X% Y%, the percentage position is (sprite_offset / (sprite_size - container_size)).
+  var bgSizeX = 100 / bb.w * 100;
+  var bgSizeY = 100 / bb.h * 100;
+  var bgPosX = bb.x / (100 - bb.w) * 100;
+  var bgPosY = bb.y / (100 - bb.h) * 100;
+  el.style.backgroundSize = bgSizeX + '% ' + bgSizeY + '%';
+  el.style.backgroundPosition = bgPosX + '% ' + bgPosY + '%';
+  el.setAttribute('data-grade', key);
+}
+
+// Position the clipboard bug directly below the floating status bar bug,
+// which is itself positioned below the top strips. Uses the same tracking
+// logic so it slides down when coalition/sub-mission strips appear.
+function positionClipboardBug() {
+  var clip = document.getElementById('clipboard-bug');
+  var bar = document.querySelector('.game-status-bar');
+  if (!clip) return;
+  var topY;
+  if (bar && bar.getBoundingClientRect().height > 0) {
+    var r = bar.getBoundingClientRect();
+    topY = r.bottom + 10;
+  } else {
+    // Fallback: measure top strips same way the status bar does
+    var topStrips = [
+      document.getElementById('security-bar-el'),
+      document.getElementById('coalition-strip'),
+      document.getElementById('submission-strip')
+    ];
+    topY = 20;
+    topStrips.forEach(function(el) {
+      if (!el) return;
+      if (getComputedStyle(el).display === 'none') return;
+      var r2 = el.getBoundingClientRect();
+      if (r2.height === 0) return;
+      if (r2.bottom + 10 > topY) topY = r2.bottom + 10;
+    });
+  }
+  clip.style.top = topY + 'px';
 }
 
 function recordNotableMoment(scenario, choice, outcome, isBreaking) {
@@ -22688,14 +22789,12 @@ function updateHUD(){
   document.getElementById('hud-char-name').textContent=G.charName;
   document.getElementById('hud-org-name').textContent=org?.name||'';
 
-  // Live grade display
+  // Live grade display — rendered on the clipboard bug in the top-left.
   var liveGrade = computeLiveGrade();
-  var gradeEl = document.getElementById('hud-live-grade');
-  if (gradeEl) {
-    gradeEl.textContent = liveGrade.grade;
-    gradeEl.className = 'hud-grade-letter grade-' + liveGrade.grade.toLowerCase();
-  }
-  var gradeBody = document.getElementById('grade-detail-body');
+  var clip = document.getElementById('clipboard-bug');
+  if (clip) clip.style.display = '';
+  updateClipboardGrade();
+  var gradeBody = document.getElementById('clipboard-grade-body');
   if (gradeBody) {
     var statLines = '';
     GAME_DATA.stats.forEach(function(s) {
@@ -22706,7 +22805,7 @@ function updateHUD(){
     gradeBody.innerHTML = statLines +
       '<div class="grade-detail-row" style="border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Base Score</span><span>' + liveGrade.baseScore + '</span></div>' +
       '<div class="grade-detail-row"><span>Mission Stars (' + (G.missionStars||0) + ' × ' + (GAME_DATA.config.missionStarPoints||1) + ')</span><span>+' + liveGrade.starBonus + '</span></div>' +
-      '<div class="grade-detail-row" style="font-weight:700;border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Total</span><span>' + liveGrade.score + '</span></div>';
+      '<div class="grade-detail-row" style="font-weight:700;border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Total</span><span>' + liveGrade.score + ' (' + (liveGrade.fineGrade || liveGrade.grade) + ')</span></div>';
   }
 
   // Probation unlock check
@@ -23690,6 +23789,8 @@ function sizeDeskScene() {
   // Re-position the floating status bar bug first so its measurements don't
   // interfere with the desk scene sizing logic below.
   positionStatusBar();
+  // Then the clipboard bug, which sits directly beneath the status bar.
+  positionClipboardBug();
 
   // Measure the actual TOP of the highest-positioned fixed bottom chrome
   // element. Whichever bottom-chrome element is highest (farthest from the

@@ -914,7 +914,12 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .pol-spectrum{position:relative;height:8px;background:linear-gradient(to right,#2563eb 0%,#6366f1 25%,#9333ea 50%,#dc2626 75%,#b91c1c 100%);border-radius:4px;width:120px;overflow:visible;flex-shrink:0}
 .pol-marker{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:#b8860b;transition:left 0.4s ease;z-index:2;box-shadow:0 0 4px rgba(0,0,0,0.3)}
 .pol-marker-glow{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;transition:left 0.4s ease,opacity 0.4s;z-index:1}
-.pol-pos-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;margin-top:4px}
+/* Descriptor above the spectrum bar (Center, Center-Left, etc.) — styled to
+   match the status-bar numbers (m-val) for visual consistency. */
+.pol-pos-desc{font-family:'Merriweather Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;color:#c8d0dc;margin-bottom:4px}
+/* "Political Lean" caption below the spectrum — same styling as other HUD
+   section labels (m-label, pol-clout-label) so they all sit on one baseline. */
+.pol-lean-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;margin-top:4px}
 .pol-clout-col{display:flex;flex-direction:column;align-items:center}
 .pol-clout-inline{font-size:14px;color:#d4a843;font-weight:700;white-space:nowrap;font-family:'Merriweather',serif}
 .pol-clout-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;margin-top:2px;display:block}
@@ -1536,11 +1541,12 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       <div class="hud-politics" id="hud-politics">
         <div class="pol-spectrum-row">
           <div class="pol-spectrum-col">
+            <span class="pol-pos-desc" id="pol-pos-label">Center</span>
             <div class="pol-spectrum">
               <div class="pol-marker-glow" id="pol-marker-glow"></div>
               <div class="pol-marker" id="pol-marker"></div>
             </div>
-            <span class="pol-pos-label" id="pol-pos-label">Center</span>
+            <span class="pol-lean-label">Political Lean</span>
           </div>
           <div class="pol-clout-col">
             <span class="pol-clout-inline" id="pol-clout-val">\u26a1 0</span>

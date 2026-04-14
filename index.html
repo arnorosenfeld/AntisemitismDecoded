@@ -387,6 +387,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    clipped by the security bar, and the bottom of the desk stays pinned above
    the HUD chrome. The width below is a fallback for first paint. */
 .desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: min(85vw, 1400px); }
+/* Fancy desk PNGs were baked at 0.95 scale and re-centered within the
+   1915×862 canvas, leaving ~2.5% transparent padding at top AND bottom.
+   Shift the whole layer (desk + hotspots) down by 2.5% of its own height so
+   the desk content meets the scene bottom instead of floating above it. */
+.desk-layer.skin-fancy { transform: translate(-50%, 2.5%); }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 /* Status bar — persistent floating "bug" in the top-left of the game scene,
    below the security bar (and below any coalition/sub-mission strips that
@@ -23097,7 +23102,7 @@ function renderDeskScene(opts) {
   var html = '';
   html += '<div class="desk-scene" id="desk-scene">';
   // Desk layer — absolutely positioned at bottom, centered within the CSS background room
-  html += '<div class="desk-layer">';
+  html += '<div class="desk-layer skin-' + skin + '">';
   html += '<img class="desk-bg" src="' + bgPath + '" alt="">';
 
   // Monitor CSS screen overlay, positioned at monitorScreen coordinates (under the hotspot body)
@@ -23710,9 +23715,8 @@ function sizeDeskScene() {
   });
 
   var sceneRect = scene.getBoundingClientRect();
-  // Small safety gap so the desk doesn't kiss the status bar
-  var SAFETY_GAP = 6;
-  var sceneHeight = Math.max(220, chromeTop - sceneRect.top - SAFETY_GAP);
+  // No gap — the scene should meet the invest strip flush at the bottom.
+  var sceneHeight = Math.max(220, chromeTop - sceneRect.top);
   scene.style.height = sceneHeight + 'px';
 
   // Now size the desk-layer so the desk image never exceeds scene bounds.

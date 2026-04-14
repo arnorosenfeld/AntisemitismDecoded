@@ -20314,10 +20314,22 @@ async function loadFromGithub() {
     const res = await fetch(url, { headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json' } });
     if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
     const data = await res.json();
-    // Decode base64 → UTF-8. Use TextDecoder (reliable) instead of the legacy
-    // decodeURIComponent(escape(atob(...))) trick which breaks in modern
-    // browsers for some characters (em dash, curly quote, etc.).
-    const b64 = data.content.replace(/\s/g, '');
+    // GitHub's Contents API caps file size at 1MB; larger files return
+    // metadata with empty `content`. index.html is now ~1.2MB, so we fall
+    // back to the Git Data (blob) API using the file's SHA, which has no
+    // size limit.
+    let b64 = (data.content || '').replace(/\s/g, '');
+    if (!b64 && data.sha) {
+      console.log('[loadFromGithub] Contents API returned empty content (file >1MB), fetching blob by sha');
+      const blobUrl = `https://api.github.com/repos/${ghConfig.username}/${ghConfig.repo}/git/blobs/${data.sha}`;
+      const blobRes = await fetch(blobUrl, { headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json' } });
+      if (!blobRes.ok) throw new Error(`GitHub Blobs API error: ${blobRes.status}`);
+      const blobData = await blobRes.json();
+      b64 = (blobData.content || '').replace(/\s/g, '');
+    }
+    if (!b64) throw new Error('GitHub API returned no content for ' + ghConfig.filename);
+    // Decode base64 → UTF-8 via TextDecoder (reliable across modern browsers
+    // for the full UTF-8 range, including em dashes, curly quotes, emojis).
     const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     const content = new TextDecoder('utf-8').decode(bytes);
     GD = extractGameData(content);
@@ -20391,8 +20403,17 @@ async function saveToGithub() {
     if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
     const fileData = await getRes.json();
     const sha = fileData.sha;
-    // Decode via TextDecoder for reliable UTF-8 handling.
-    const _b64Get = fileData.content.replace(/\s/g, '');
+    // Same blob-fallback path as loadFromGithub — files >1MB return empty
+    // content from the Contents API and must be fetched via the Blobs API.
+    let _b64Get = (fileData.content || '').replace(/\s/g, '');
+    if (!_b64Get && sha) {
+      const blobUrl = `https://api.github.com/repos/${ghConfig.username}/${ghConfig.repo}/git/blobs/${sha}`;
+      const blobRes = await fetch(blobUrl, { headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json' } });
+      if (!blobRes.ok) throw new Error(`GitHub Blobs API error: ${blobRes.status}`);
+      const blobData = await blobRes.json();
+      _b64Get = (blobData.content || '').replace(/\s/g, '');
+    }
+    if (!_b64Get) throw new Error('GitHub API returned no content for ' + ghConfig.filename);
     const _bytesGet = Uint8Array.from(atob(_b64Get), c => c.charCodeAt(0));
     const currentContent = new TextDecoder('utf-8').decode(_bytesGet);
     var newContent;

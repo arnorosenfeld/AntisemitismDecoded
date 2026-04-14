@@ -377,7 +377,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 /* ── DESK SCENE (CSS background-image + centered desk layer) ── */
 .desk-scene { position: relative; width: 100vw; margin-left: calc(-50vw + 50%); user-select: none; overflow: hidden; background: url('art/room-bg.jpg') center bottom / cover no-repeat; background-color: #e8e0cb; }
-.desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 85vw; max-width: 1400px; min-width: 700px; }
+/* Desk layer width is set by JS after the scene is sized, so the desk always
+   fits inside the available vertical space — the monitor at top never gets
+   clipped by the security bar, and the bottom of the desk stays pinned above
+   the HUD chrome. The width below is a fallback for first paint. */
+.desk-layer { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: min(85vw, 1400px); }
 .desk-layer .desk-bg { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; }
 /* Bottom status bar (above ticker, full-width, lighter tone) */
 .game-status-bar { background: #e8e0d0; padding: 8px 20px; text-align: center; position: fixed; bottom: 136px; left: 0; right: 0; z-index: 198; border-top: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; min-height: 32px; box-sizing: border-box; }
@@ -23619,16 +23623,43 @@ function renderMain(){
 
   el.innerHTML = deskSceneHtml + statusBar;
 
-  // Size the desk scene to fill available viewport between top chrome and bottom chrome
-  setTimeout(function() {
-    var scene = document.getElementById('desk-scene');
-    if (!scene) return;
-    var rect = scene.getBoundingClientRect();
-    // Fixed bottom chrome: status(32) + invest(42) + HUD(64) + ticker(32) = 170
-    var bottomChrome = 170;
-    var available = window.innerHeight - rect.top - bottomChrome;
-    scene.style.height = Math.max(250, available) + 'px';
-  }, 0);
+  // Size the desk scene to fill available viewport between top chrome and bottom chrome,
+  // then size the desk-layer to fit within that scene while preserving the 1915:862
+  // aspect ratio — so the monitor at the top is never clipped.
+  setTimeout(sizeDeskScene, 0);
+}
+
+// Size the desk scene + desk layer to fit the available viewport. Exposed as a
+// named function so we can also call it on window resize.
+function sizeDeskScene() {
+  var scene = document.getElementById('desk-scene');
+  if (!scene) return;
+  var rect = scene.getBoundingClientRect();
+  // Fixed bottom chrome: status(32) + invest(42) + HUD(64) + ticker(32) = 170
+  var bottomChrome = 170;
+  var available = window.innerHeight - rect.top - bottomChrome;
+  var sceneHeight = Math.max(250, available);
+  scene.style.height = sceneHeight + 'px';
+
+  // Now size the desk-layer so the desk image never exceeds scene bounds.
+  // Desk aspect ratio (native PNG canvas): 1915 / 862.
+  var deskLayer = scene.querySelector('.desk-layer');
+  if (!deskLayer) return;
+  var DESK_ASPECT = 1915 / 862;
+  var maxWidthFromViewport = Math.min(window.innerWidth * 0.85, 1400);
+  var maxWidthFromHeight = sceneHeight * DESK_ASPECT;
+  var finalWidth = Math.min(maxWidthFromViewport, maxWidthFromHeight);
+  deskLayer.style.width = finalWidth + 'px';
+}
+
+// Re-size desk scene on window resize (debounced).
+if (typeof window !== 'undefined' && !window._deskResizeHooked) {
+  window._deskResizeHooked = true;
+  var _deskResizeTimer = null;
+  window.addEventListener('resize', function() {
+    if (_deskResizeTimer) clearTimeout(_deskResizeTimer);
+    _deskResizeTimer = setTimeout(sizeDeskScene, 100);
+  });
 }
 
 // ═══════════════ DESK ACTION ═══════════════

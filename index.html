@@ -289,15 +289,17 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-banner-inner .hud-char-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; }
 .hud-banner-inner .hud-org-label { font-size: 10px; color: #a0aab8; margin-left: 4px; }
 .hud { background: #364663; color: #dde1e8; padding: 10px 48px; position: fixed; bottom: 32px; left: 0; right: 0; z-index: 210; }
-.hud-inner { max-width: 85vw; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 48px; }
+.hud-inner { max-width: 85vw; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 56px; }
 .hud-spacer { display: none; } /* not needed with sticky */
-.meters { display: flex; gap: 14px; justify-content: center; }
-.meter { display: flex; flex-direction: column; min-width: 100px; }
-.m-bar-row { display: flex; align-items: center; gap: 8px; order: 1; }
-.m-bar-wrap { flex: 1; background: rgba(255,255,255,0.12); height: 6px; border-radius: 3px; overflow: hidden; }
-.m-bar { height: 100%; border-radius: 3px; transition: width 0.45s ease, background-color 0.45s ease; }
+.meters { display: flex; gap: 16px; justify-content: center; }
+/* Each meter: bar column on left with label centered beneath the bar, then
+   a small number to the right of the bar (not included in label centering). */
+.meter { display: flex; align-items: center; gap: 8px; }
+.m-bar-col { display: flex; flex-direction: column; width: 90px; }
+.m-bar-wrap { background: rgba(255,255,255,0.12); height: 12px; overflow: hidden; }
+.m-bar { height: 100%; transition: width 0.45s ease, background-color 0.45s ease; }
 .m-val { font-size: 11px; font-weight: 700; color: #c8d0dc; min-width: 20px; text-align: right; font-family: 'Merriweather Sans', sans-serif; letter-spacing: 0.5px; }
-.m-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; text-align: center; order: 2; margin-top: 4px; }
+.m-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; text-align: center; margin-top: 4px; }
 .hud-budget-mission { display: flex; align-items: center; gap: 14px; }
 .hud-budget { text-align: center; min-width: 60px; display: flex; flex-direction: column; }
 .hud-budget-label { font-size: 8px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #a0aab8; display: block; order: 2; margin-top: 3px; }
@@ -22710,11 +22712,11 @@ function updateHUD(){
     const v=Math.round(G.stats[s.id]||0);
     const isTrust = s.id === 'trust' && G.segmentApproval;
     return `<div class="meter${isTrust?' trust-meter':''}">
-      <div class="m-bar-row">
+      <div class="m-bar-col">
         <div class="m-bar-wrap"><div class="m-bar" style="width:${v}%;background:${barColor(v)}"></div></div>
-        <span class="m-val">${v}</span>
+        <span class="m-label">${s.label}</span>
       </div>
-      <span class="m-label">${s.label}</span>
+      <span class="m-val">${v}</span>
       ${isTrust ? renderSegmentTooltip() : ''}
     </div>`;
   }).join('');

@@ -333,10 +333,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Round info removed from HUD - now in AP bar */
 
 /* INVESTMENT STRIP - below HUD */
-/* Invest strip sits above the HUD. bottom = HUD bottom (32) + HUD height
-   (~60 after trimming) + 8px gap = 100. padding tightened from 7→5 to
-   shave ~5% off top and bottom. */
-.invest-strip { background: #283248; padding: 5px 20px; position: fixed; bottom: 100px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
+/* Invest strip sits flush above the HUD. bottom = HUD bottom (32) + HUD
+   height (~60 after trimming) = 92. padding tightened to ~5% on top/bottom. */
+.invest-strip { background: #283248; padding: 5px 20px; position: fixed; bottom: 92px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
 .invest-strip-wrap { max-width: 85vw; margin: 0 auto; position: relative; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
@@ -880,7 +879,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .coalition-strip-inner::-webkit-scrollbar{display:none}
 .coalition-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
 /* Jewish Security HUD bar */
-.security-bar{background:#1a1a2e;padding:10px 20px 6px 20px;position:sticky;top:0;z-index:155;border-bottom:1px solid rgba(255,255,255,0.08)}
+.security-bar{background:#1a1a2e;padding:8px 20px;position:sticky;top:0;z-index:155;border-bottom:1px solid rgba(255,255,255,0.08)}
 .security-bar-inner{max-width:85vw;margin:0 auto;display:flex;align-items:center;gap:14px;justify-content:center}
 /* Shield composite cell: label above (like category labels), shield SVG
    below. Visually parallel to the category cells so the shield reads as the

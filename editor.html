@@ -871,6 +871,14 @@ var EDITOR_DATA =
               {
                 "label": "+1 Mission",
                 "cls": "chip-gold"
+              },
+              {
+                "label": "+3 Harassment Response",
+                "cls": "chip-blue"
+              },
+              {
+                "label": "+2 Warm Feelings",
+                "cls": "chip-blue"
               }
             ],
             "polShift": -8,
@@ -924,6 +932,14 @@ var EDITOR_DATA =
               {
                 "label": "+1 Mission",
                 "cls": "chip-gold"
+              },
+              {
+                "label": "+4 Big Tent",
+                "cls": "chip-blue"
+              },
+              {
+                "label": "+2 Warm Feelings",
+                "cls": "chip-blue"
               }
             ],
             "polShift": -2,
@@ -977,6 +993,14 @@ var EDITOR_DATA =
               {
                 "label": "−2 Donors",
                 "cls": "chip-red"
+              },
+              {
+                "label": "+2 Engagement",
+                "cls": "chip-blue"
+              },
+              {
+                "label": "−1 Warm Feelings",
+                "cls": "chip-blue-neg"
               }
             ],
             "polShift": 0,
@@ -1026,22 +1050,37 @@ var EDITOR_DATA =
         "ctaButtonPost": "That was day one. Ready for twelve months? →",
         "ctaTagline": "Choose your organization, build your team, and begin.",
         "bottomText": "Choose your organization, build your advisory team, set your priorities — then face twelve months of decisions that will test every alliance you have.",
-        "depthLabel": "Powered by real data about the Jewish community",
+        "depthLabel": "What you'll do",
         "depthItems": [
           {
-            "icon": "📊",
-            "title": "6 Demographic Segments",
-            "desc": "Orthodox, Conservative, Reform, unaffiliated, young Jews, older Jews — each with distinct political centers and comfort ranges drawn from communal survey data"
+            "icon": "art/warning-sign.png",
+            "title": "Track Jewish Security",
+            "desc": "Watch the Jewish Security Index — a composite of physical safety, ideology, democracy, and communal vitality. Each organization weights these four dimensions differently, so the same world looks different from each leader's chair."
           },
           {
-            "icon": "⚖️",
-            "title": "Political Position Engine",
-            "desc": "Move along a 100-point left-right spectrum while accumulating and spending clout — your position shapes which coalitions you can join and what choices you can make"
+            "icon": "art/monitor.png",
+            "title": "Run a Real Office",
+            "desc": "Work an interactive desk: the monitor is your social-media app, briefings tracker, and coalitions panel; the landline lets you call advisors for free; the phone is your inbox; the calendar holds your scheduled work."
           },
           {
-            "icon": "🎭",
+            "icon": "art/drama.png",
             "title": "Real-World Dilemmas",
-            "desc": "Scenarios drawn from actual crises faced by Jewish communal leaders — from campus antisemitism to donor conflicts to Israel policy, with no easy answers"
+            "desc": "Scenarios drawn from actual crises faced by Jewish communal leaders — campus antisemitism, donor conflicts, Israel policy, internal staff revolts. No easy answers, no clean wins."
+          },
+          {
+            "icon": "art/chart-growth.png",
+            "title": "Six Demographic Segments",
+            "desc": "Orthodox, Conservative, Reform, unaffiliated, young Jews, older Jews — each with distinct political centers and comfort ranges drawn from real communal survey data."
+          },
+          {
+            "icon": "art/lightning.png",
+            "title": "Political Position & Clout",
+            "desc": "Move along a 100-point left-right spectrum while accumulating and spending clout. Your position shapes which coalitions you can join, which politicians take your call, and which choices unlock."
+          },
+          {
+            "icon": "art/clipboard.png",
+            "title": "Tasks & Coalitions",
+            "desc": "Take on multi-round tasks with checkpoints and deadlines that pay off (or backfire) months later. Sign coalition partnerships that grant ongoing benefits — but lock you into constraints you'll have to honor."
           }
         ],
         "headlinesLabel": "Headlines from past playthroughs",
@@ -1211,37 +1250,37 @@ var EDITOR_DATA =
       "onboarding": [
         {
           "mood": "neutral",
-          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching.",
+          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching. Let me show you the office.",
           "label": "What do I need to know?"
         },
         {
           "mood": "neutral",
-          "msg": "You have <strong>3 action points</strong> each round. Click an object on your desk to spend one. Your phone is free — inbox messages don't cost action points.",
-          "label": "Got it. What am I trying to do?"
+          "msg": "You have <strong>3 action points</strong> per round. Each desk object is a different channel of work: the <strong>monitor</strong> is your primary scenario inbox, the <strong>folder</strong> holds memos, the <strong>keys</strong> get you out into the field. Spend an AP by clicking one. The <strong>landline</strong> on the right is free — pick it up to call any of your advisors for guidance, no AP cost.",
+          "label": "And the phone?"
         },
         {
           "mood": "neutral",
-          "msg": "See the bar at the top of your screen? That's the <strong>Jewish Security Index</strong> — it tracks the state of Jewish life in America across four dimensions: Physical Safety, Ideology, Democracy, and Communal Vitality. Your job isn't just to run this organization well — it's to actually make things better for Jews in this country. Every decision you make can affect both your org's health AND the world outside these walls.",
-          "label": "How does that work?"
-        },
-        {
-          "mood": "concerned",
-          "msg": "Watch your three stats up top: <strong>Trust, Morale, and Donors</strong>. If any one of them drops to 20 or below, the board calls an emergency meeting and your tenure ends immediately.",
-          "label": "How do I win?"
+          "msg": "The <strong>cell phone</strong> shows your inbox — emails and texts that arrive throughout the day. Reading and replying to inbox messages is also free. Some have timers, though, so don't sit on them too long.",
+          "label": "What about the monitor screen?"
         },
         {
           "mood": "approving",
-          "msg": "At year's end, the board evaluates your overall performance. Score above <strong>80</strong> and you earn a distinguished-career end to your tenure. Stay above <strong>40</strong> and you keep your job. Below that… well, don't go below that.",
+          "msg": "The monitor isn't just a click target — it's a desktop with three windows. <strong>Social</strong> lets you post to your org's accounts (engagement decays each post you make per round, so use them wisely). <strong>Briefings</strong> appears when you have active <strong>Tasks</strong> — multi-round initiatives with checkpoints and deadlines. <strong>Coalitions</strong> appears when you've signed partnerships. Drag windows around, expand them with the + button, click outside any window to pull a scenario from the monitor channel.",
+          "label": "Got it. What am I tracking?"
+        },
+        {
+          "mood": "concerned",
+          "msg": "Two scoreboards. At the <strong>top</strong> is the <strong>Jewish Security Index</strong> — a composite of four dimensions (Physical Safety, Ideology, Democracy, Communal Vitality), each weighted by your org's priorities. That's the world. At the <strong>bottom</strong> is your <strong>HUD</strong>: Trust, Morale, Donors — your three internal stats. If any drops to <strong>20 or below</strong>, the board calls an emergency meeting and your tenure ends.",
+          "label": "And the clipboard in the corner?"
+        },
+        {
+          "mood": "approving",
+          "msg": "That's your live <strong>Board Rating</strong> — a letter grade from F to A+ based on your stats plus mission-star bonuses. Hover it to see how it's calculated. At year's end the board evaluates the same number: <strong>≥80</strong> earns a distinguished tenure, <strong>≥40</strong> keeps your job, anything lower and your contract isn't renewed.",
           "label": "Any other advice?"
         },
         {
           "mood": "neutral",
-          "msg": "You have a <strong>budget</strong> you can invest in your organization — marketing campaigns, security upgrades, staff development, signature events. Use the investment bar to spend wisely. These don't cost action points but they do cost money.",
-          "label": "One more thing?"
-        },
-        {
-          "mood": "concerned",
-          "msg": "One more thing — every round, your stats <strong>naturally decay</strong> as community attention fades, donors expect fresh results, and staff energy flags. You have to keep running just to stay in place. There are no perfect choices in this job. Every decision has a cost. The best leaders are the ones who know which costs they can afford.",
+          "msg": "Use your <strong>budget (gelt)</strong> wisely — the investment bar above the HUD has options for security upgrades, marketing, training, and more. They don't cost AP, just money. And remember: every round your stats <strong>naturally decay</strong> as attention fades and donors expect fresh results. There are no perfect choices. The best leaders know which costs they can afford.",
           "label": "Let's do this →"
         }
       ],

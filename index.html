@@ -808,13 +808,14 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-shield-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Merriweather,serif;font-weight:900;font-size:16px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5)}
 .security-shield-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;text-align:center;margin-top:2px}
 /* Category scores in a row */
-.security-categories{display:flex;gap:14px;flex:1}
+.security-categories{display:flex;gap:20px;flex:1;justify-content:center}
 /* Each category: icon on the left at a readable size, content column on the
    right (name+val on top, bar beneath). Icon renders next to the bar, not
-   squeezed against the text. */
-.security-cat{flex:1;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s;display:flex;align-items:center;gap:10px}
+   squeezed against the text. Natural-width so bars stay compact and icons
+   read at a proper size. */
+.security-cat{flex:0 0 auto;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s;display:flex;align-items:center;gap:10px;width:180px}
 .security-cat:hover{background:rgba(255,255,255,0.06)}
-.security-cat-icon{flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.security-cat-icon{flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 .security-cat-icon img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
 .security-cat-content{flex:1;min-width:0}
 .security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:6px}

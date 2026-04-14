@@ -339,7 +339,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .invest-strip-wrap { max-width: 85vw; margin: 0 auto; position: relative; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
-.invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding: 12px 16px 12px 0; flex-shrink: 0; }
+/* Label padding now matches the pills' compact vertical footprint so the
+   strip's flex align-items:center actually centers everything on the same
+   midline. The previous 12px top/bottom made the label artificially tall,
+   forcing the pills to sit lower than center. */
+.invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding: 0 16px 0 0; flex-shrink: 0; display: flex; align-items: center; }
 .invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
 .invest-pill:hover:not(.pill-disabled) { background: rgba(184,134,11,0.3); border-color: var(--gold); box-shadow: 0 0 8px rgba(184,134,11,0.3); }
 .invest-pill .pill-icon { font-size: 13px; }

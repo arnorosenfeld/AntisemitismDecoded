@@ -20314,7 +20314,12 @@ async function loadFromGithub() {
     const res = await fetch(url, { headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json' } });
     if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
     const data = await res.json();
-    const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+    // Decode base64 → UTF-8. Use TextDecoder (reliable) instead of the legacy
+    // decodeURIComponent(escape(atob(...))) trick which breaks in modern
+    // browsers for some characters (em dash, curly quote, etc.).
+    const b64 = data.content.replace(/\s/g, '');
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const content = new TextDecoder('utf-8').decode(bytes);
     GD = extractGameData(content);
     if (!GD) throw new Error('Could not find GAME_DATA block in file.');
     sessionPassword = GD.config.editorPassword || sessionPassword;
@@ -20375,7 +20380,10 @@ async function saveToGithub() {
     if (!getRes.ok) throw new Error(`GitHub API error: ${getRes.status}`);
     const fileData = await getRes.json();
     const sha = fileData.sha;
-    const currentContent = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));
+    // Decode via TextDecoder for reliable UTF-8 handling.
+    const _b64Get = fileData.content.replace(/\s/g, '');
+    const _bytesGet = Uint8Array.from(atob(_b64Get), c => c.charCodeAt(0));
+    const currentContent = new TextDecoder('utf-8').decode(_bytesGet);
     var newContent;
     // Try marked format first
     if (currentContent.indexOf('/* GAME_DATA_START */') >= 0) {
@@ -20399,7 +20407,7 @@ async function saveToGithub() {
     const putRes = await fetch(url, {
       method: 'PUT',
       headers: { Authorization: `token ${ghConfig.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Update game data via editor', content: btoa(unescape(encodeURIComponent(newContent))), sha, branch: ghConfig.branch })
+      body: JSON.stringify({ message: 'Update game data via editor', content: (function(){ var e = new TextEncoder(); var bytes = e.encode(newContent); var bin = ''; for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]); return btoa(bin); })(), sha, branch: ghConfig.branch })
     });
     if (!putRes.ok) { const e = await putRes.json(); throw new Error(`Push error: ${putRes.status} — ${e.message}`); }
     localStorage.setItem('gd_cache', JSON.stringify(GD));

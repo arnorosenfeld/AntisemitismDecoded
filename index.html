@@ -21968,10 +21968,14 @@ function renderOrgWeightPanel() {
   var org = (GAME_DATA.organizations || []).find(function(o) { return o.id === G.orgId; });
   if (!org || !org.securityWeights) return;
   section.style.display = '';
-  var cw = org.securityWeights.categoryWeights || {};
-  var lw = org.securityWeights.leafWeights || {};
-  // Store working copy
+  // Store a normalized working copy so each level (categories, and leaves
+  // within each category) sums to exactly 100. Org defaults usually already
+  // do, but normalize defensively in case GAME_DATA was edited.
   G._customWeights = JSON.parse(JSON.stringify(org.securityWeights));
+  _normalizeWeights(G._customWeights.categoryWeights);
+  Object.keys(G._customWeights.leafWeights || {}).forEach(function(catId) {
+    _normalizeWeights(G._customWeights.leafWeights[catId]);
+  });
 
   var html = '';
   (jsCfg.categories || []).forEach(function(cat) {
@@ -21979,39 +21983,104 @@ function renderOrgWeightPanel() {
     html += '<div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">';
     html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">';
     html += '<span style="font-weight:700;font-size:12px;color:' + cat.color + ';width:140px">' + esc(cat.name) + '</span>';
-    html += '<input type="range" min="5" max="60" value="' + catW + '" oninput="updateOrgWeight(\'cat\',\'' + cat.id + '\',this.value)" style="flex:1">';
-    html += '<span id="owv-cat-' + cat.id + '" style="font-family:Menlo,monospace;font-size:12px;width:35px;text-align:right;font-weight:700">' + catW + '</span>';
+    html += '<input type="range" min="0" max="100" value="' + catW + '" oninput="updateOrgWeight(\'cat\',\'' + cat.id + '\',this.value)" style="flex:1" id="ows-cat-' + cat.id + '">';
+    html += '<span id="owv-cat-' + cat.id + '" style="font-family:Menlo,monospace;font-size:12px;width:42px;text-align:right;font-weight:700">' + catW + '%</span>';
     html += '</div>';
-    // Leaf weights within this category
     var catLeafW = (G._customWeights.leafWeights || {})[cat.id] || {};
     (cat.leaves || []).forEach(function(leaf) {
       var leafW = catLeafW[leaf.id] || 33;
       html += '<div style="display:flex;align-items:center;gap:10px;margin-left:20px;margin-bottom:3px">';
       html += '<span style="font-size:11px;color:var(--muted);width:180px">' + esc(leaf.name) + '</span>';
-      html += '<input type="range" min="5" max="80" value="' + leafW + '" oninput="updateOrgWeight(\'leaf\',\'' + cat.id + '.' + leaf.id + '\',this.value)" style="flex:1">';
-      html += '<span id="owv-leaf-' + cat.id + '-' + leaf.id + '" style="font-family:Menlo,monospace;font-size:11px;width:30px;text-align:right">' + leafW + '</span>';
+      html += '<input type="range" min="0" max="100" value="' + leafW + '" oninput="updateOrgWeight(\'leaf\',\'' + cat.id + '.' + leaf.id + '\',this.value)" style="flex:1" id="ows-leaf-' + cat.id + '-' + leaf.id + '">';
+      html += '<span id="owv-leaf-' + cat.id + '-' + leaf.id + '" style="font-family:Menlo,monospace;font-size:11px;width:38px;text-align:right">' + leafW + '%</span>';
       html += '</div>';
     });
     html += '</div>';
   });
+  // "Sum = 100%" indicator (informational; the redistribute logic enforces
+  // it automatically — this just reassures the player it's locked).
+  html += '<div style="font-size:10px;color:var(--muted);font-style:italic;margin-top:4px;text-align:right">Each level always sums to 100% &mdash; sliders rebalance proportionally.</div>';
   document.getElementById('org-weight-sliders').innerHTML = html;
   updateOrgWeightPreview();
 }
 
+// Normalize a {key:number} object so its values sum to exactly 100 (rounded).
+function _normalizeWeights(obj) {
+  if (!obj) return;
+  var keys = Object.keys(obj);
+  var total = 0;
+  keys.forEach(function(k) { total += (+obj[k] || 0); });
+  if (total === 0) {
+    var per = Math.floor(100 / keys.length);
+    keys.forEach(function(k) { obj[k] = per; });
+  } else {
+    keys.forEach(function(k) { obj[k] = Math.round((+obj[k] || 0) / total * 100); });
+  }
+  // Fix any rounding error so sum == 100 exactly.
+  var sum = 0; keys.forEach(function(k) { sum += obj[k]; });
+  if (sum !== 100 && keys.length) obj[keys[0]] += (100 - sum);
+}
+
+// Redistribute proportionally so changedKey gets newVal and the rest absorb
+// the remainder, preserving their existing ratios. Result always sums to 100.
+function _redistributeWeights(obj, changedKey, newVal) {
+  newVal = Math.max(0, Math.min(100, +newVal));
+  var keys = Object.keys(obj);
+  var others = keys.filter(function(k) { return k !== changedKey; });
+  obj[changedKey] = newVal;
+  var target = 100 - newVal;
+  var oldOthersSum = 0;
+  others.forEach(function(k) { oldOthersSum += (+obj[k] || 0); });
+  if (others.length === 0) return;
+  if (oldOthersSum <= 0) {
+    var per = Math.floor(target / others.length);
+    others.forEach(function(k) { obj[k] = per; });
+  } else {
+    others.forEach(function(k) { obj[k] = Math.round((+obj[k] || 0) / oldOthersSum * target); });
+  }
+  // Fix rounding so total = 100. Push the diff onto the first non-changed key.
+  var sum = 0; keys.forEach(function(k) { sum += obj[k]; });
+  if (sum !== 100) {
+    var fixKey = others[0] || changedKey;
+    obj[fixKey] += (100 - sum);
+    // If pushing made the fix key go negative, snap to 0 and try the next.
+    if (obj[fixKey] < 0) obj[fixKey] = 0;
+  }
+}
+
+// Apply the visible value of every slider in the panel from G._customWeights.
+function _refreshOrgWeightSliders() {
+  if (!G._customWeights) return;
+  Object.keys(G._customWeights.categoryWeights || {}).forEach(function(catId) {
+    var v = G._customWeights.categoryWeights[catId];
+    var sl = document.getElementById('ows-cat-' + catId);
+    var lbl = document.getElementById('owv-cat-' + catId);
+    if (sl) sl.value = v;
+    if (lbl) lbl.textContent = v + '%';
+  });
+  Object.keys(G._customWeights.leafWeights || {}).forEach(function(catId) {
+    Object.keys(G._customWeights.leafWeights[catId] || {}).forEach(function(leafId) {
+      var v = G._customWeights.leafWeights[catId][leafId];
+      var sl = document.getElementById('ows-leaf-' + catId + '-' + leafId);
+      var lbl = document.getElementById('owv-leaf-' + catId + '-' + leafId);
+      if (sl) sl.value = v;
+      if (lbl) lbl.textContent = v + '%';
+    });
+  });
+}
+
 function updateOrgWeight(type, key, value) {
   if (!G._customWeights) return;
-  var v = parseInt(value) || 1;
+  var v = parseInt(value);
+  if (isNaN(v)) v = 0;
   if (type === 'cat') {
-    G._customWeights.categoryWeights[key] = v;
-    var el = document.getElementById('owv-cat-' + key);
-    if (el) el.textContent = v;
+    _redistributeWeights(G._customWeights.categoryWeights, key, v);
   } else if (type === 'leaf') {
     var parts = key.split('.');
     if (!G._customWeights.leafWeights[parts[0]]) G._customWeights.leafWeights[parts[0]] = {};
-    G._customWeights.leafWeights[parts[0]][parts[1]] = v;
-    var el = document.getElementById('owv-leaf-' + parts[0] + '-' + parts[1]);
-    if (el) el.textContent = v;
+    _redistributeWeights(G._customWeights.leafWeights[parts[0]], parts[1], v);
   }
+  _refreshOrgWeightSliders();
   updateOrgWeightPreview();
 }
 
@@ -24845,8 +24914,10 @@ function checkFailure(){
     showScreen('end-screen');
     return true;
   }
-  // Fire coaching warnings after each action (Year 1 only, non-fatal)
-  checkCoachingWarnings();
+  // Fire coaching warnings after each action (round 2+ only). Round 1 is a
+  // learning round — only Avi's tutorial fires on launch, so stat warnings
+  // don't pile on top of the onboarding messages.
+  if ((G.round || 1) > 1) checkCoachingWarnings();
   return false;
 }
 

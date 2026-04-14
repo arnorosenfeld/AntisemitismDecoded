@@ -829,10 +829,21 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-cat:hover{background:rgba(255,255,255,0.06)}
 .security-cat-icon{flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 .security-cat-icon img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
+/* Per-category visual-size tuning — the four icons have different margins of
+   whitespace baked in, so the rendered art appears at slightly different
+   scales even at the same container size. Scale the img (not the container)
+   so the layout stays aligned and hotspot/gap geometry is unaffected. */
+.security-cat-ideology .security-cat-icon img{transform:scale(1.15)}
+.security-cat-democracy .security-cat-icon img{transform:scale(1.15)}
+.security-cat-vitality .security-cat-icon img{transform:scale(0.95)}
 .security-cat-content{flex:1;min-width:0}
 .security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:6px}
 .security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.security-cat-val{font-family:Merriweather,serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+/* Category number matches the label typography (9px uppercase, 0.8px
+   letter-spacing) so both rows read at the same visual weight. Per-category
+   color is still applied inline (barColor of the current score) for at-a-glance
+   status. */
+.security-cat-val{font-size:9px;font-weight:700;letter-spacing:0.8px;color:#fff;flex-shrink:0;font-family:inherit}
 .security-cat-trend{font-size:10px;font-weight:700;margin-left:3px}
 .security-cat-trend.up{color:#4ade80}
 .security-cat-trend.down{color:#f87171}
@@ -25920,7 +25931,7 @@ function updateSecurityHUD() {
     var trendHtml = '';
     if (trend > 0) trendHtml = '<span class="security-cat-trend up">▲' + trend + '</span>';
     else if (trend < 0) trendHtml = '<span class="security-cat-trend down">▼' + Math.abs(trend) + '</span>';
-    html += '<div class="security-cat">';
+    html += '<div class="security-cat security-cat-' + cat.id + '">';
     html += '<span class="security-cat-icon">' + (SECURITY_CAT_ICONS[cat.id] || '') + '</span>';
     html += '<div class="security-cat-content">';
     html += '<div class="security-cat-top">';

@@ -157,8 +157,10 @@ body {
 .lp-skip-link:hover { border-color: var(--gold); background: var(--cream); }
 
 /* HELP BUTTON & PANEL */
-.hud-help-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25); background: transparent; color: rgba(255,255,255,0.5); font-family: 'Merriweather', serif; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
-.hud-help-btn:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.8); }
+/* Floating "?" anchored top-right of the viewport, above the security bar's
+   right edge where the bar's content (centered) doesn't reach. */
+.floating-help-btn { position: fixed; top: 12px; right: 16px; z-index: 200; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(26,26,46,0.85); color: #d4a843; font-family: 'Merriweather', serif; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+.floating-help-btn:hover { border-color: var(--gold); background: #1a1a2e; color: #fff; transform: scale(1.08); }
 .help-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 500; }
 .help-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 480px; max-height: 80vh; background: var(--white); border: 2px solid var(--gold); z-index: 501; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .help-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); }
@@ -283,11 +285,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 
 
 /* HUD */
-.hud-banner { background: #2e3a52; color: #eef0f4; padding: 6px 20px; position: relative; z-index: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.hud-banner-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; gap: 8px; font-size: 12px; position: relative; }
-.hud-banner-inner .hud-char-emoji { font-size: 16px; }
-.hud-banner-inner .hud-char-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; }
-.hud-banner-inner .hud-org-label { font-size: 10px; color: #a0aab8; margin-left: 4px; }
+/* hud-banner removed — player/org info moved to the monitor top bar,
+   help button moved to floating-help-btn anchored top-right. */
 .hud { background: #364663; color: #dde1e8; padding: 10px 48px; position: fixed; bottom: 32px; left: 0; right: 0; z-index: 210; }
 /* align-items: flex-end so every item's BOTTOM edge (where labels sit) lines
    up on the same baseline — matching where "Board Rating" is currently. */
@@ -452,7 +451,60 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* Monitor CSS animation overlay (positioned at monitorScreen coords).
    box-shadow extends the dark background 3px outward on all sides to cover
    anti-aliased edges of the tagged green box without needing pixel-perfect calibration. */
-.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; pointer-events: none; z-index: 4; box-shadow: 0 0 0 3px #1e2a3a; }
+/* Monitor screen overlay. overflow: hidden keeps non-expanded windows
+   clipped to the monitor frame (so they don't visually escape the screen
+   while being dragged). Expanded windows escape via position:fixed.
+   pointer-events: none lets clicks on empty space fall through to the desk
+   hotspot beneath (triggering the monitor scenario); individual windows
+   below set pointer-events: auto so they capture their own clicks. */
+.desk-monitor-animation { position: absolute; overflow: hidden; display: flex; flex-direction: column; background: #1e2a3a; pointer-events: none; z-index: 6; box-shadow: 0 0 0 3px #1e2a3a; }
+/* Monitor desktop = top bar + screen area. */
+.mon-desktop { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; pointer-events: none; }
+.mon-topbar { background: rgba(20,30,50,0.95); color: #d4d8e0; padding: 4px 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); pointer-events: none; flex-shrink: 0; font-size: 9px; min-height: 22px; }
+.mon-topbar .mon-emoji { font-size: 12px; }
+.mon-topbar .mon-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 10px; color: #fff; }
+.mon-topbar .mon-sep { color: rgba(255,255,255,0.3); font-size: 11px; }
+.mon-topbar .mon-org { color: #d4a843; font-size: 9px; font-weight: 600; letter-spacing: 0.3px; }
+.mon-topbar .mon-spacer { flex: 1; }
+.mon-topbar .mon-clock { font-size: 9px; color: #a0a8b5; letter-spacing: 0.5px; }
+.mon-screen-area { flex: 1; position: relative; pointer-events: none; overflow: visible; }
+/* Window: dark macOS-style chrome that fits the monitor aesthetic. */
+.mon-window { position: absolute; background: #1f2937; border: 1px solid #374151; box-shadow: 0 4px 18px rgba(0,0,0,0.6); pointer-events: auto; display: flex; flex-direction: column; min-width: 140px; min-height: 28px; overflow: hidden; border-radius: 4px; transition: box-shadow 0.15s; }
+.mon-window:hover { box-shadow: 0 4px 22px rgba(0,0,0,0.8); }
+.mon-window-header { background: linear-gradient(to bottom, #4b5b78, #2f3a52); color: #fff; padding: 4px 8px; cursor: move; display: flex; align-items: center; gap: 6px; user-select: none; flex-shrink: 0; touch-action: none; }
+.mon-window-title { flex: 1; font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mon-window-btn { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: #e5e7eb; cursor: pointer; padding: 0; font-size: 11px; line-height: 14px; height: 16px; min-width: 18px; border-radius: 2px; font-family: inherit; }
+.mon-window-btn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.5); }
+.mon-window-body { flex: 1; overflow-y: auto; padding: 8px 10px; font-size: 10px; color: #e5e7eb; line-height: 1.4; background: #1f2937; }
+.mon-window-body::-webkit-scrollbar { width: 6px; }
+.mon-window-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+.mon-window.collapsed { height: auto !important; min-height: 0; }
+.mon-window.collapsed .mon-window-body { display: none; }
+/* Expanded: jumps out of the monitor and overlays the game viewport. */
+.mon-window.expanded { position: fixed !important; left: 5vw !important; top: 80px !important; width: 90vw !important; height: calc(100vh - 280px) !important; max-width: 900px; margin: 0 auto; right: auto; z-index: 8500 !important; }
+/* Window content styles */
+.mon-empty { color: #94a3b8; font-style: italic; font-size: 10px; padding: 8px 4px; }
+.mon-social-decay { background: rgba(212,168,67,0.12); border: 1px solid rgba(212,168,67,0.3); padding: 5px 8px; margin-bottom: 8px; font-size: 9px; color: #d4a843; border-radius: 3px; }
+.mon-post { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; gap: 8px; align-items: flex-start; }
+.mon-post:last-child { border-bottom: 0; }
+.mon-post-text { flex: 1; font-size: 10px; color: #e5e7eb; line-height: 1.45; }
+.mon-post-btn { background: #d4a843; color: #1a1a2e; border: 0; padding: 4px 10px; font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; border-radius: 2px; flex-shrink: 0; }
+.mon-post-btn:hover { background: #e0b552; }
+.mon-task { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.mon-task:last-child { border-bottom: 0; }
+.mon-task.done { color: #4ade80; padding: 3px 0; border-bottom: 0; }
+.mon-task.failed { color: #f87171; padding: 3px 0; border-bottom: 0; }
+.mon-task-name { font-weight: 700; font-size: 11px; color: #f0d87a; margin-bottom: 2px; }
+.mon-task-meta { font-size: 9px; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.3px; }
+.mon-task-checks { display: flex; flex-direction: column; gap: 2px; }
+.mon-task-check { font-size: 10px; color: #cbd5e1; display: flex; gap: 4px; align-items: center; }
+.mon-task-section { margin-top: 8px; font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; padding-bottom: 2px; }
+.mon-coal { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.mon-coal:last-child { border-bottom: 0; }
+.mon-coal-name { font-weight: 700; font-size: 11px; color: #fff; margin-bottom: 2px; }
+.mon-coal-meta { font-size: 9px; color: #94a3b8; margin-bottom: 4px; }
+.mon-coal-benefit { font-size: 10px; color: #4ade80; margin-bottom: 2px; }
+.mon-coal-constraint { font-size: 10px; color: #fbbf24; }
 .desk-mon-desktop { flex: 1; background: #2c5f8a; position: relative; overflow: hidden; }
 .desk-mon-win { position: absolute; background: var(--white); border-radius: 2px; box-shadow: 1px 2px 6px rgba(0,0,0,0.2); overflow: hidden; }
 .desk-mon-win-bar { display: flex; align-items: center; gap: 2px; padding: 2px 4px; }
@@ -1571,15 +1623,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
        so the pulse covers the whole game screen uniformly. -->
   <div class="stat-danger-overlay" id="stat-danger-overlay"></div>
   <!-- TOP: Name banner + Jewish Security + conditional strips (coalitions, sub-missions) -->
-  <div class="hud-banner" id="hud-banner-el" style="display:none">
-    <div class="hud-banner-inner">
-      <span class="hud-char-emoji" id="hud-char-emoji"></span>
-      <span class="hud-char-name" id="hud-char-name"></span>
-      <span class="hud-org-label">—</span>
-      <span class="hud-org-label" id="hud-org-name" style="color:#d4a843"></span>
-      <button class="hud-help-btn" id="hud-help-btn" onclick="toggleHelpPanel()">?</button>
-    </div>
-  </div>
+  <!-- Floating "?" help button anchored to the top-right of the viewport,
+       above the security bar's right edge. -->
+  <button class="floating-help-btn" id="hud-help-btn" onclick="toggleHelpPanel()" style="display:none" title="Help">?</button>
   <div class="security-bar" id="security-bar-el" style="display:none">
     <div class="security-bar-inner" id="security-bar-inner"></div>
   </div>
@@ -11058,7 +11104,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_campus_faculty",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Faculty Letter on Campus Antisemitism",
       "body": "Three professors at the university have agreed to draft a letter supporting the anti-hate policy — but they want your help with the language. The letter needs to address antisemitism without appearing to suppress criticism of Israel.",
       "subMissionId": "sub_campus_coalition",
@@ -11173,7 +11219,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_campus_bds",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "BDS Activists Demand Changes to the Anti-Hate Policy",
       "body": "A coalition of progressive student groups — your natural allies on most issues — has published an open letter demanding that the anti-hate policy explicitly exclude 'criticism of Israel, Zionism, or Israeli state policy' from its definition of antisemitism. They're threatening to withdraw their endorsement if the policy could be used to 'silence Palestinian solidarity.' Your campus coalition is fracturing.",
       "subMissionId": "sub_campus_coalition",
@@ -11306,7 +11352,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_campus_president",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Meeting with the University President",
       "body": "The university president has agreed to a private meeting about the anti-hate policy. She's sympathetic but cautious — she doesn't want the university to become a national flashpoint. She tells you: 'I'll sign this, but only if I'm confident it won't blow up in my face. Convince me.'",
       "subMissionId": "sub_campus_coalition",
@@ -11427,7 +11473,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_bds_sponsor",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Finding a Bill Sponsor",
       "body": "Your legislative contacts have identified two possible sponsors for the anti-BDS bill. State Senator Martinez (R) is a reliable pro-Israel vote but carries baggage from a recent ethics investigation. Assemblymember Chen (D) is a moderate Democrat who'd give the bill bipartisan credibility but wants significant concessions on the bill's scope.",
       "subMissionId": "sub_anti_bds_bill",
@@ -11551,7 +11597,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_bds_committee",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Committee Hearing",
       "body": "The anti-BDS bill has its committee hearing tomorrow. The ACLU has submitted written testimony opposing it as a free-speech violation. Three committee members are undecided. You've been invited to testify. Your donors expect you to be forceful; your legal team warns you to be careful.",
       "subMissionId": "sub_anti_bds_bill",
@@ -11670,7 +11716,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_bds_floor",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Floor Vote",
       "body": "The anti-BDS bill is headed to the full legislature for a floor vote. You have a slim majority, but a last-minute amendment has been proposed that would add a 'sunset clause' — the bill expires in two years unless renewed. Supporters see it as a compromise; opponents see it as a way to kill the bill slowly. Three swing votes are watching your reaction.",
       "subMissionId": "sub_anti_bds_bill",
@@ -11796,7 +11842,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_tf_governor",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Pitching the Governor",
       "body": "You've secured a fifteen-minute meeting with the governor to pitch the bipartisan antisemitism task force. Her chief of staff has warned you: the governor is interested but worried about getting dragged into 'the Israel thing.' She wants to fight antisemitism without touching the third rail of Middle East politics.",
       "subMissionId": "sub_task_force",
@@ -11913,7 +11959,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_tf_membership",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Negotiating the Task Force Membership",
       "body": "The governor's office has sent you a draft membership list for the task force. It includes three slots you can influence. The Republican caucus wants a prominent pro-Israel advocate. The Democratic caucus wants a progressive civil-rights leader who has been critical of Israel. Both are threatening to pull support if the other side 'dominates.'",
       "subMissionId": "sub_task_force",
@@ -12045,7 +12091,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_tf_announcement",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Task Force Announcement",
       "body": "The governor is ready to announce the antisemitism task force at a press conference next week. But a leaked draft of the announcement has already hit social media. Progressive groups are calling it 'a tool to criminalize criticism of Israel.' Conservative media is calling it 'performative wokeness.' Both narratives are gaining traction. The governor's office is getting nervous.",
       "subMissionId": "sub_task_force",
@@ -12160,7 +12206,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_media_subjects",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Finding Families Willing to Share Their Stories",
       "body": "Your media campaign needs real families willing to go on camera about their experiences with antisemitism. Your producer has identified four potential subjects, but each comes with complications. One family’s story intersects with the Israel debate in ways that could derail the project.",
       "subMissionId": "sub_media_campaign",
@@ -12302,7 +12348,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_media_edit",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Edit Room Battle",
       "body": "Your producer shows you a rough cut of the first episode. It’s powerful — but the ending includes footage of a pro-Palestinian rally where antisemitic signs were visible. Your producer says it’s essential context. Your coalition partners say including it will be read as equating Palestinian activism with antisemitism. The edit deadline is tomorrow.",
       "subMissionId": "sub_media_campaign",
@@ -12429,7 +12475,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_media_distribution",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Distribution Decision",
       "body": "The series is finished and it’s strong. Now you need a distribution platform. You have three offers: a major streaming service with 50 million subscribers but they want editorial control; a Jewish media platform with deep community reach but limited mainstream visibility; and self-distribution on social media — total control, uncertain reach.",
       "subMissionId": "sub_media_campaign",
@@ -12562,7 +12608,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_security_rabbis",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Getting the Rabbis to Agree",
       "body": "You’ve called a meeting of rabbis from 15 synagogues across the region to discuss the shared security network. The Orthodox rabbi insists on armed guards; the Reform rabbi considers that militarizing sacred space. The Conservative rabbis want someone else to pay for it. You have 90 minutes to get them aligned.",
       "subMissionId": "sub_security_network",
@@ -12700,7 +12746,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_security_funding",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Funding the Security Network",
       "body": "The security network needs $200,000. You have three potential sources: a DHS Nonprofit Security Grant ($80K, competitive), a major family foundation ($100K but they want naming rights and Israel programming), and a community-wide fundraising campaign (flexible goal but slow and uncertain).",
       "subMissionId": "sub_security_network",
@@ -12838,7 +12884,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_security_launch",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Tabletop Exercise",
       "body": "The security network is funded and the protocols are written. You’ve organized a tabletop exercise simulating an active-threat scenario across three synagogues simultaneously. Local police, the FBI, and a reporter from the Jewish Telegraphic Agency will be observing.",
       "subMissionId": "sub_security_network",
@@ -12974,7 +13020,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_summit_speakers",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Keynote Problem",
       "body": "Your summit needs two co-keynotes: one progressive Jewish leader, one conservative. Your top choices each have conditions. The progressive will only speak if the summit addresses the occupation. The conservative will only speak if it does not. You need both.",
       "subMissionId": "sub_healing_summit",
@@ -13100,7 +13146,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_summit_agenda",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "The Agenda War",
       "body": "Your planning committee is deadlocked. The progressive faction wants a session on antisemitism from the right. The conservative faction wants a session on antisemitism on campus and in progressive spaces. Both are valid. But putting both on the agenda means the summit is 80% about blaming the other side.",
       "subMissionId": "sub_healing_summit",
@@ -13231,7 +13277,7 @@ const GAME_DATA = {
     },
     {
       "id": "sub_summit_day",
-      "tag": "Sub-Mission",
+      "tag": "Task",
       "title": "Summit Day: The Walkout Threat",
       "body": "It’s summit day. 400 attendees, national media, and your board chair in the front row. Halfway through the afternoon session, a group of 30 young progressive Jews stands up and unfurls a banner reading No Healing Without Justice for Palestinians. The room freezes. The moderator looks at you. Security looks at you. The cameras are rolling.",
       "subMissionId": "sub_healing_summit",
@@ -21163,12 +21209,12 @@ function showScreen(id) {
   var isGame = (id === 'game-screen');
   var isIntro = (id === 'intro-screen');
   var strip = document.getElementById('invest-strip');
-  var bannerEl = document.getElementById('hud-banner-el');
+  var helpBtn = document.getElementById('hud-help-btn');
   var hudEl = document.getElementById('hud-el');
   var inboxStrip = document.getElementById('inbox-strip');
   var lpTicker = document.getElementById('lp-ticker');
   if(strip) strip.style.display = isGame ? '' : 'none';
-  if(bannerEl) bannerEl.style.display = isGame ? '' : 'none';
+  if(helpBtn) helpBtn.style.display = isGame ? '' : 'none';
   if(hudEl) hudEl.style.display = isGame ? '' : 'none';
   if(inboxStrip) inboxStrip.style.display = 'none';
   if(lpTicker) lpTicker.style.display = isIntro ? '' : 'none';
@@ -22663,7 +22709,7 @@ function acceptSmTransition(smId) {
 function declineSmTransition(smId) {
   declineSubMissionOffer(smId);
   var smDiv = document.getElementById('rt-submission');
-  if (smDiv) smDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-style:italic">Sub-mission declined.</div>';
+  if (smDiv) smDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-style:italic">Task declined.</div>';
   enableTransitionContinue();
 }
 // Enable the "Begin Round" button if no pending offers remain.
@@ -22848,9 +22894,13 @@ function getTopMoments(count) {
 function updateHUD(){
   const allOrgs=[...GAME_DATA.organizations,...GAME_DATA.nationalOrganizations];
   const org=allOrgs.find(o=>o.id===G.orgId);
-  document.getElementById('hud-char-emoji').textContent=G.charEmoji;
-  document.getElementById('hud-char-name').textContent=G.charName;
-  document.getElementById('hud-org-name').textContent=org?.name||'';
+  // Player/org info now lives in the monitor top bar (see updateMonitorTopBar).
+  // Old hud-char-emoji / hud-char-name / hud-org-name elements were removed
+  // along with the hud-banner; left here as null-guards if any lingering
+  // markup ever exists.
+  var _ce = document.getElementById('hud-char-emoji'); if (_ce) _ce.textContent = G.charEmoji;
+  var _cn = document.getElementById('hud-char-name'); if (_cn) _cn.textContent = G.charName;
+  var _on = document.getElementById('hud-org-name'); if (_on) _on.textContent = org?.name || '';
 
   // Live grade display — rendered on the clipboard bug in the top-left.
   var liveGrade = computeLiveGrade();
@@ -22936,7 +22986,9 @@ function updateHUD(){
   if (smStrip && smInner) {
     if ((G.activeSubMissions || []).length > 0) {
       smStrip.style.display = '';
-      smInner.innerHTML = '<span class="sm-strip-label">Sub-Missions</span>' + renderSubMissionBadges() + '<button class="sm-strip-btn" onclick="showBriefingDocument()">\ud83d\udccb Briefings</button>';
+      // Briefings button removed — that view now lives in the monitor's
+      // Briefings window. Strip is just a glanceable summary of active tasks.
+      smInner.innerHTML = '<span class="sm-strip-label">Tasks</span>' + renderSubMissionBadges();
     } else {
       smStrip.style.display = 'none';
     }
@@ -23443,14 +23495,14 @@ function devActivateSubMission() {
     // Create a dummy test sub-mission
     var testSm = {
       id: 'test_sm_' + Date.now(),
-      name: 'Test Sub-Mission',
-      description: 'A dev-panel test sub-mission with 3 checkpoints.',
+      name: 'Test Task',
+      description: 'A dev-panel test task with 3 checkpoints.',
       applicableOrgs: ['left', 'right', 'center'],
       trigger: { type: 'manual' },
       maxProgress: 3,
       deadlineRounds: 4,
-      rewards: { effects: { trust: 5, morale: 5 }, text: 'Test sub-mission completed!' },
-      penalties: { effects: { trust: -3 }, text: 'Test sub-mission failed.' },
+      rewards: { effects: { trust: 5, morale: 5 }, text: 'Test task completed!' },
+      penalties: { effects: { trust: -3 }, text: 'Test task failed.' },
       checkpoints: [
         { id: 'cp1', name: 'Checkpoint 1', description: 'First step' },
         { id: 'cp2', name: 'Checkpoint 2', description: 'Second step' },
@@ -23467,12 +23519,12 @@ function devActivateSubMission() {
     if ((G.failedSubMissions || []).includes(sm.id)) return false;
     return true;
   });
-  if (!candidate) { alert('No available sub-missions to activate'); return; }
+  if (!candidate) { alert('No available tasks to activate'); return; }
   activateSubMission(candidate.id);
 }
 function devProgressSubMission() {
   var entry = (G.activeSubMissions || [])[0];
-  if (!entry) { alert('No active sub-missions'); return; }
+  if (!entry) { alert('No active tasks'); return; }
   var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === entry.id; });
   if (!sm) return;
   // Find first pending checkpoint and advance it
@@ -23591,7 +23643,7 @@ function initDeskDevPanel() {
       '<button data-field="postit-natural" onclick="G._deskDevPostit=undefined;renderMain();updateDeskDevPanel();" style="' + btnStyle + '">natural</button>' +
     '</div>' +
     '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #333;">' +
-      '<div style="font-weight:700;margin-bottom:6px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Sub-Missions</div>' +
+      '<div style="font-weight:700;margin-bottom:6px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Tasks</div>' +
       '<div style="display:flex;gap:5px;margin-bottom:10px;">' +
         '<button onclick="devActivateSubMission()" style="' + halfBtnStyle + '">+ Activate</button>' +
         '<button onclick="devProgressSubMission()" style="' + halfBtnStyle + '">⬆ Progress</button>' +
@@ -23724,19 +23776,12 @@ function renderMain(){
   var folQ = G.channelQueues.folder || [];
   var keyQ = G.channelQueues.keys || [];
 
-  // Build phone popup HTML with tabs: Inbox | Compose (social media)
-  var availPosts = getAvailablePosts();
+  // Phone now shows the inbox only — social media compose was moved to the
+  // monitor's Social Media window. Tabs are gone since there's only one view.
   var inboxScreenHtml = '';
-
-  // Tab bar
-  inboxScreenHtml += '<div class="desk-phone-tabs">';
-  inboxScreenHtml += '<div class="desk-phone-tab active" onclick="event.stopPropagation();switchPhoneTab(\'inbox\')">Inbox' + (activeInbox.length > 0 ? ' (' + activeInbox.length + ')' : '') + '</div>';
-  inboxScreenHtml += '<div class="desk-phone-tab" onclick="event.stopPropagation();switchPhoneTab(\'compose\')">Post' + (availPosts.length > 0 ? ' (' + availPosts.length + ')' : '') + '</div>';
-  inboxScreenHtml += '</div>';
-
-  // Inbox content
   inboxScreenHtml += '<div id="phone-tab-inbox" style="flex:1;display:flex;flex-direction:column;overflow:hidden">';
   if (activeInbox.length > 0) {
+    inboxScreenHtml += '<div class="desk-phone-header">Inbox' + (activeInbox.length > 0 ? ' (' + activeInbox.length + ')' : '') + '</div>';
     inboxScreenHtml += '<div class="desk-phone-messages">';
     activeInbox.forEach(function(m) {
       var sc = m.scenario || {};
@@ -23753,39 +23798,10 @@ function renderMain(){
   }
   inboxScreenHtml += '</div>';
 
-  // Compose content (hidden by default)
-  inboxScreenHtml += '<div id="phone-tab-compose" style="flex:1;display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:none">';
-  if (availPosts.length > 0) {
-    availPosts.forEach(function(post) {
-      // Show full post text, no effect preview — let the player post and see what happens
-      inboxScreenHtml += '<div class="social-post-card" onclick="event.stopPropagation();executeSocialPost(\'' + post.id + '\')">';
-      inboxScreenHtml += '<div class="post-text">' + esc(post.text) + '</div>';
-      inboxScreenHtml += '</div>';
-    });
-  } else {
-    inboxScreenHtml += '<div class="desk-phone-empty">No posts available</div>';
-  }
-  inboxScreenHtml += '</div>';
-
-  // Build monitor-screen animation HTML (same content, now rendered inside the green-box overlay)
-  var monScreenHtml = '<div class="desk-mon-desktop">'
-    + '<div class="desk-mon-win" style="top:8%;left:5%;width:55%;height:50%">'
-    + '<div class="desk-mon-win-bar desk-mon-win-bar-green"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Gelt — Q' + G.round + '</span></div>'
-    + '<div class="desk-mon-win-body"><div class="desk-mon-chart">'
-    + '<div class="desk-mon-chart-bar" style="height:40%;background:#6aa84f"></div>'
-    + '<div class="desk-mon-chart-bar" style="height:65%;background:#6aa84f"></div>'
-    + '<div class="desk-mon-chart-bar" style="height:50%;background:#e69138"></div>'
-    + '<div class="desk-mon-chart-bar" style="height:80%;background:#6aa84f"></div>'
-    + '<div class="desk-mon-chart-bar" style="height:35%;background:#e69138"></div>'
-    + '</div></div></div>'
-    + '<div class="desk-mon-win" style="top:15%;left:35%;width:58%;height:45%">'
-    + '<div class="desk-mon-win-bar desk-mon-win-bar-purple"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">The Forward</span></div>'
-    + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:80%;background:#999"></div><div class="desk-mon-win-line" style="width:60%;background:#bbb"></div><div class="desk-mon-win-line" style="width:70%;background:#bbb"></div></div></div>'
-    + '<div class="desk-mon-win" style="top:50%;left:10%;width:50%;height:35%">'
-    + '<div class="desk-mon-win-bar desk-mon-win-bar-gray"><span class="desk-mon-dot desk-mon-dot-r"></span><span class="desk-mon-dot desk-mon-dot-y"></span><span class="desk-mon-dot desk-mon-dot-g"></span><span class="desk-mon-win-title">Email Draft</span></div>'
-    + '<div class="desk-mon-win-body"><div class="desk-mon-win-line" style="width:90%;background:#ccc"></div><div class="desk-mon-win-line" style="width:45%;background:#ccc"></div></div></div>'
-    + '</div>'
-    + '<div class="desk-mon-taskbar"><div class="desk-mon-taskbar-item active">Gelt</div><div class="desk-mon-taskbar-item">News</div><div class="desk-mon-taskbar-item">Mail</div></div>';
+  // Interactive monitor desktop: top bar with player/org info + draggable
+  // app windows (Social, Briefings, Coalitions). Empty areas of the desktop
+  // remain click-through so the monitor scenario channel still triggers.
+  var monScreenHtml = renderMonitorDesktop();
 
   var deskSceneHtml = renderDeskScene({
     disabled: disabled,
@@ -23815,7 +23831,11 @@ function renderMain(){
   // Size the desk scene to fill available viewport between top chrome and bottom chrome,
   // then size the desk-layer to fit within that scene while preserving the 1915:862
   // aspect ratio — so the monitor at the top is never clipped.
-  setTimeout(sizeDeskScene, 0);
+  setTimeout(function() {
+    sizeDeskScene();
+    // Hook up drag handlers on the freshly-injected monitor windows.
+    if (typeof initMonitorWindowDrag === 'function') initMonitorWindowDrag();
+  }, 0);
 }
 
 // Position the floating status-bar "bug" in the top-left of the game scene,
@@ -23904,6 +23924,250 @@ if (typeof window !== 'undefined' && !window._deskResizeHooked) {
   });
 }
 
+// ═══════════════ MONITOR DESKTOP (windows, drag, z-index) ═══════════════
+
+// Default window state. x/y are percent of desktop area; w/h are percent.
+// Each window is always present; collapsed/expanded toggled by header buttons.
+var DEFAULT_MONITOR_WINDOWS = {
+  social:     { x: 12, y: 14, w: 42, h: 38, collapsed: false, expanded: false, z: 1 },
+  briefings:  { x: 56, y: 14, w: 32, h: 38, collapsed: false, expanded: false, z: 2 },
+  coalitions: { x: 32, y: 56, w: 40, h: 32, collapsed: false, expanded: false, z: 3 }
+};
+
+function ensureMonitorWindowState() {
+  if (!G.monitorWindows) {
+    G.monitorWindows = JSON.parse(JSON.stringify(DEFAULT_MONITOR_WINDOWS));
+  }
+  // Heal: add any newly-defined windows that don't exist in saved state.
+  Object.keys(DEFAULT_MONITOR_WINDOWS).forEach(function(k) {
+    if (!G.monitorWindows[k]) G.monitorWindows[k] = JSON.parse(JSON.stringify(DEFAULT_MONITOR_WINDOWS[k]));
+  });
+}
+
+// Render the entire monitor desktop: top bar + windows.
+function renderMonitorDesktop() {
+  ensureMonitorWindowState();
+  var allOrgs = [].concat(GAME_DATA.organizations || [], GAME_DATA.nationalOrganizations || []);
+  var org = allOrgs.find(function(o) { return o.id === G.orgId; }) || {};
+  var html = '<div class="mon-desktop">';
+  // Menu-bar style top strip with player + org info
+  html += '<div class="mon-topbar">';
+  html += '<span class="mon-emoji">' + esc(G.charEmoji || '\uD83D\uDC64') + '</span>';
+  html += '<span class="mon-name">' + esc(G.charName || '') + '</span>';
+  html += '<span class="mon-sep">\u00B7</span>';
+  html += '<span class="mon-org">' + esc(org.name || '') + '</span>';
+  html += '<span class="mon-spacer"></span>';
+  html += '<span class="mon-clock">Round ' + (G.round || 1) + '</span>';
+  html += '</div>';
+  // Desktop area — windows position absolutely inside this. pointer-events:none
+  // on the area itself so clicks on empty space pass through to the desk
+  // hotspot below (which triggers the monitor scenario channel).
+  html += '<div class="mon-screen-area" id="mon-screen-area">';
+  html += renderMonitorWindow('social',     '\uD83D\uDCE1 Social Media',  renderMonSocialBody());
+  html += renderMonitorWindow('briefings',  '\uD83D\uDCCB Briefings',     renderMonBriefingsBody());
+  html += renderMonitorWindow('coalitions', '\uD83E\uDD1D Coalitions',    renderMonCoalitionsBody());
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function renderMonitorWindow(id, title, bodyHtml) {
+  var s = G.monitorWindows[id] || DEFAULT_MONITOR_WINDOWS[id] || { x: 10, y: 10, w: 30, h: 30, collapsed: false, expanded: false, z: 1 };
+  var classes = 'mon-window';
+  if (s.collapsed) classes += ' collapsed';
+  if (s.expanded) classes += ' expanded';
+  var style = 'left:' + s.x + '%;top:' + s.y + '%;width:' + s.w + '%;height:' + s.h + '%;z-index:' + (100 + (s.z || 1));
+  var html = '<div class="' + classes + '" id="mon-win-' + id + '" data-window="' + id + '" style="' + style + '" onclick="bringMonitorWindowToFront(this)">';
+  html += '<div class="mon-window-header">';
+  html += '<span class="mon-window-title">' + title + '</span>';
+  html += '<button class="mon-window-btn mon-collapse" onclick="event.stopPropagation();toggleMonWindowCollapse(\'' + id + '\')" title="Collapse">\u2013</button>';
+  html += '<button class="mon-window-btn mon-expand" onclick="event.stopPropagation();toggleMonWindowExpand(\'' + id + '\')" title="Expand">\u26F6</button>';
+  html += '</div>';
+  html += '<div class="mon-window-body">' + bodyHtml + '</div>';
+  html += '</div>';
+  return html;
+}
+
+// Body content renderers. These return inner HTML for each window's body div.
+// The actual social/briefings/coalitions data is read from G/GAME_DATA.
+
+function renderMonSocialBody() {
+  if (typeof getAvailablePosts !== 'function') return '<div class="mon-empty">Social media unavailable.</div>';
+  var posts = getAvailablePosts();
+  if (!posts.length) return '<div class="mon-empty">No posts available right now.</div>';
+  var postsThisRound = G.postsThisRound || 0;
+  var decay = Math.pow(0.5, postsThisRound);
+  var decayPct = Math.round(decay * 100);
+  var html = '<div class="mon-social-decay">Engagement multiplier: <strong>' + decayPct + '%</strong>' + (postsThisRound > 0 ? ' (you\'ve posted ' + postsThisRound + ' time' + (postsThisRound !== 1 ? 's' : '') + ' this round)' : '') + '</div>';
+  posts.forEach(function(p) {
+    html += '<div class="mon-post">';
+    html += '<div class="mon-post-text">' + esc(p.text) + '</div>';
+    html += '<button class="mon-post-btn" onclick="executeSocialPost(\'' + p.id + '\');renderMain()">Post</button>';
+    html += '</div>';
+  });
+  return html;
+}
+
+function renderMonBriefingsBody() {
+  var active = G.activeSubMissions || [];
+  var completed = G.completedSubMissions || [];
+  var failed = G.failedSubMissions || [];
+  if (!active.length && !completed.length && !failed.length) {
+    return '<div class="mon-empty">No active tasks. New tasks appear at the end of each round.</div>';
+  }
+  var html = '';
+  active.forEach(function(entry) {
+    var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === entry.id; });
+    if (!sm) return;
+    var roundsLeft = (sm.deadlineRounds || 99) - (G.round - entry.activatedRound);
+    html += '<div class="mon-task">';
+    html += '<div class="mon-task-name">' + esc(sm.name) + '</div>';
+    html += '<div class="mon-task-meta">' + entry.progress + '/' + (sm.maxProgress || 3) + ' \u2022 ' + (roundsLeft > 90 ? 'no deadline' : roundsLeft + ' rd left') + '</div>';
+    html += '<div class="mon-task-checks">';
+    (sm.checkpoints || []).forEach(function(cp) {
+      var status = (entry.checkpointStatus || {})[cp.id] || 'pending';
+      var icon = status === 'complete' ? '\u2705' : (status === 'failed' ? '\u274C' : '\u2B1C');
+      html += '<div class="mon-task-check"><span>' + icon + '</span> ' + esc(cp.name) + '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+  });
+  if (completed.length) {
+    html += '<div class="mon-task-section">Completed</div>';
+    completed.forEach(function(c) {
+      var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === c.id; });
+      if (sm) html += '<div class="mon-task done">\u2705 ' + esc(sm.name) + '</div>';
+    });
+  }
+  if (failed.length) {
+    html += '<div class="mon-task-section">Failed</div>';
+    failed.forEach(function(f) {
+      var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === f.id; });
+      if (sm) html += '<div class="mon-task failed">\u274C ' + esc(sm.name) + '</div>';
+    });
+  }
+  return html;
+}
+
+function renderMonCoalitionsBody() {
+  var coals = G.activeCoalitions || [];
+  if (!coals.length) {
+    return '<div class="mon-empty">No active coalitions. New partnerships appear after key decisions.</div>';
+  }
+  var html = '';
+  coals.forEach(function(c) {
+    var strikes = c.strikes || 0;
+    var pips = '';
+    for (var i = 0; i < (c.strikeMax || 3); i++) pips += (i < strikes ? '\u25CF' : '\u25CB');
+    html += '<div class="mon-coal">';
+    html += '<div class="mon-coal-name">\uD83E\uDD1D ' + esc(c.name) + '</div>';
+    html += '<div class="mon-coal-meta">' + (c.remaining || 0) + ' rd left \u2022 strikes: ' + pips + '</div>';
+    if (c.benefits && c.benefits.perRound) {
+      var bits = [];
+      Object.keys(c.benefits.perRound).forEach(function(k) {
+        var v = c.benefits.perRound[k];
+        bits.push((v > 0 ? '+' : '') + v + ' ' + k);
+      });
+      if (bits.length) html += '<div class="mon-coal-benefit">+ ' + bits.join(', ') + ' /rd</div>';
+    }
+    if (c.constraints && c.constraints.length) {
+      html += '<div class="mon-coal-constraint">\u26A0 ' + esc(c.constraints[0].description || '') + '</div>';
+    }
+    html += '</div>';
+  });
+  return html;
+}
+
+// Drag + z-index management. _monZCounter is the live z-index ceiling so each
+// click-to-front gets a fresh top stack position.
+var _monZCounter = 100;
+function bringMonitorWindowToFront(winOrEl) {
+  var win = (typeof winOrEl === 'string') ? document.getElementById('mon-win-' + winOrEl) : winOrEl;
+  if (!win) return;
+  _monZCounter += 1;
+  win.style.zIndex = _monZCounter;
+  var id = win.getAttribute('data-window');
+  if (id && G.monitorWindows && G.monitorWindows[id]) G.monitorWindows[id].z = _monZCounter - 100;
+}
+
+function toggleMonWindowCollapse(id) {
+  var win = document.getElementById('mon-win-' + id);
+  if (!win) return;
+  win.classList.toggle('collapsed');
+  ensureMonitorWindowState();
+  G.monitorWindows[id].collapsed = win.classList.contains('collapsed');
+}
+
+function toggleMonWindowExpand(id) {
+  var win = document.getElementById('mon-win-' + id);
+  if (!win) return;
+  win.classList.toggle('expanded');
+  ensureMonitorWindowState();
+  G.monitorWindows[id].expanded = win.classList.contains('expanded');
+  if (G.monitorWindows[id].expanded) bringMonitorWindowToFront(win);
+}
+
+// Initialize drag handlers on all monitor windows. Re-runs after each
+// renderDeskScene since the windows are re-injected with fresh DOM nodes.
+function initMonitorWindowDrag() {
+  var area = document.getElementById('mon-screen-area');
+  if (!area) return;
+  var wins = area.querySelectorAll('.mon-window');
+  wins.forEach(function(win) {
+    var header = win.querySelector('.mon-window-header');
+    if (!header || header._dragHooked) return;
+    header._dragHooked = true;
+    var dragging = false, sx = 0, sy = 0, sLeft = 0, sTop = 0, parentRect = null;
+    header.addEventListener('pointerdown', function(e) {
+      // Don't start drag from header buttons (collapse/expand)
+      if (e.target.closest('.mon-window-btn')) return;
+      // Don't drag while expanded — expanded windows are full-screen overlays
+      if (win.classList.contains('expanded')) return;
+      dragging = true;
+      bringMonitorWindowToFront(win);
+      parentRect = win.parentElement.getBoundingClientRect();
+      var rect = win.getBoundingClientRect();
+      sx = e.clientX; sy = e.clientY;
+      sLeft = rect.left - parentRect.left;
+      sTop = rect.top - parentRect.top;
+      try { header.setPointerCapture(e.pointerId); } catch(_) {}
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    header.addEventListener('pointermove', function(e) {
+      if (!dragging) return;
+      var dx = e.clientX - sx;
+      var dy = e.clientY - sy;
+      var newLeft = (sLeft + dx) / parentRect.width * 100;
+      var newTop = (sTop + dy) / parentRect.height * 100;
+      win.style.left = newLeft + '%';
+      win.style.top = newTop + '%';
+      var id = win.getAttribute('data-window');
+      if (id && G.monitorWindows && G.monitorWindows[id]) {
+        G.monitorWindows[id].x = newLeft;
+        G.monitorWindows[id].y = newTop;
+      }
+    });
+    header.addEventListener('pointerup', function(e) {
+      dragging = false;
+      try { header.releasePointerCapture(e.pointerId); } catch(_) {}
+    });
+    header.addEventListener('pointercancel', function() { dragging = false; });
+  });
+}
+
+// Re-render the contents of each window without touching its position/state.
+// Called whenever data changes (e.g., new task activated, coalition struck)
+// without re-rendering the desk scene.
+function refreshMonitorWindows() {
+  var s = document.querySelector('#mon-win-social .mon-window-body');
+  if (s) s.innerHTML = renderMonSocialBody();
+  var b = document.querySelector('#mon-win-briefings .mon-window-body');
+  if (b) b.innerHTML = renderMonBriefingsBody();
+  var c = document.querySelector('#mon-win-coalitions .mon-window-body');
+  if (c) c.innerHTML = renderMonCoalitionsBody();
+}
+
 // ═══════════════ DESK ACTION ═══════════════
 function deskAction(channel) {
   if (G.apRemaining <= 0) return;
@@ -23984,7 +24248,7 @@ function renderScenario(s){
     if (smDef) {
       var smEntry = (G.activeSubMissions || []).find(function(a) { return a.id === s.subMissionId; });
       var prog = smEntry ? smEntry.progress + '/' + (smDef.maxProgress || 3) : '';
-      smBanner = '<div style="background:#fffbeb;border:1px solid #f5c542;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#92400e"><strong>\ud83d\udccb Sub-Mission:</strong> ' + esc(smDef.name) + (prog ? ' <span style="color:#b8860b">(' + prog + ')</span>' : '') + '</div>';
+      smBanner = '<div style="background:#fffbeb;border:1px solid #f5c542;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#92400e"><strong>\ud83d\udccb Task:</strong> ' + esc(smDef.name) + (prog ? ' <span style="color:#b8860b">(' + prog + ')</span>' : '') + '</div>';
     }
   }
   document.getElementById('game-inner').innerHTML=`
@@ -24653,7 +24917,7 @@ function showRoundTransition() {
       return '\u2b1c <strong>' + esc(cp.name) + '</strong>';
     }).join('<br>');
 
-    smOfferHtml = '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Sub-Mission Opportunity</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
+    smOfferHtml = '<div style="display:flex;align-items:center;gap:16px;margin:24px 0"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Task Opportunity</span><div style="flex:1;height:1px;background:var(--border)"></div></div>' +
       '<div id="rt-submission" style="background:var(--white);border:2px solid #b8860b;padding:20px 24px;margin-bottom:24px">' +
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
           '<span style="font-size:24px">\ud83d\udccb</span>' +
@@ -24670,7 +24934,7 @@ function showRoundTransition() {
           '<div style="background:#fce4ec;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">If you fail</div><div style="font-size:12px;color:#c0392b">' + (penaltyParts.join(', ') || 'Reputation damage') + '</div></div>' +
         '</div>' +
         '<div style="display:flex;gap:12px;justify-content:center">' +
-          '<button class="btn btn-gold" onclick="acceptSmTransition(\'' + esc(sm.id) + '\')">Accept Sub-Mission \u2192</button>' +
+          '<button class="btn btn-gold" onclick="acceptSmTransition(\'' + esc(sm.id) + '\')">Accept Task \u2192</button>' +
           '<button class="btn btn-secondary" onclick="declineSmTransition(\'' + esc(sm.id) + '\')">Decline</button>' +
         '</div>' +
       '</div>';
@@ -26236,7 +26500,7 @@ function showBriefingDocument() {
   var overlay = document.getElementById('briefing-overlay');
   if (!doc || !overlay) return;
 
-  var html = '<div class="briefing-header"><div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#b8860b;margin-bottom:4px">Briefing Document</div><h2>Active Sub-Missions</h2></div><button class="briefing-close" onclick="closeBriefingDocument()">\u2715</button></div>';
+  var html = '<div class="briefing-header"><div><div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#b8860b;margin-bottom:4px">Briefing Document</div><h2>Active Tasks</h2></div><button class="briefing-close" onclick="closeBriefingDocument()">\u2715</button></div>';
 
   var active = G.activeSubMissions || [];
   if (active.length === 0 && (G.completedSubMissions || []).length === 0 && (G.failedSubMissions || []).length === 0) {
@@ -26332,7 +26596,7 @@ function activateSubMission(subMissionId) {
     checkpointStatus: cpStatus
   });
   // Notification
-  showCoachingWarning('<strong>New Sub-Mission:</strong> ' + esc(sm.name) + ' — ' + esc(sm.description), 'info');
+  showCoachingWarning('<strong>New Task:</strong> ' + esc(sm.name) + ' — ' + esc(sm.description), 'info');
   updateHUD();
   return true;
 }
@@ -26394,7 +26658,7 @@ function completeSubMission(subMissionId) {
   G.completedSubMissions.push(subMissionId);
   // Notification
   var msg = rewards.text || ('Sub-mission complete: ' + sm.name);
-  showCoachingWarning('<strong>Sub-Mission Complete!</strong> ' + esc(msg), 'info');
+  showCoachingWarning('<strong>Task Complete!</strong> ' + esc(msg), 'info');
   updateHUD();
 }
 
@@ -26422,7 +26686,7 @@ function failSubMission(subMissionId) {
   G.failedSubMissions.push(subMissionId);
   // Notification
   var msg = penalties.text || ('Sub-mission failed: ' + sm.name);
-  showCoachingWarning('<strong>Sub-Mission Failed.</strong> ' + esc(msg), 'red');
+  showCoachingWarning('<strong>Task Failed.</strong> ' + esc(msg), 'red');
   updateHUD();
 }
 

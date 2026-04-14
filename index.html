@@ -361,7 +361,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 @keyframes deskDangerPulse { 0%,100% { background-color: rgba(220,38,38,0.05); } 50% { background-color: rgba(220,38,38,0.13); } }
 
 /* GAME MAIN */
-.game-main { padding: 26px 20px 80px; }
+.game-main { padding: 26px 20px 36px; }
 .game-inner { max-width: 820px; margin: 0 auto; }
 
 /* ACTION CARDS - #9: show stat effects */
@@ -19647,7 +19647,7 @@ function renderMain(){
 
   el.innerHTML = ''
     + (disabled ? '<div style="padding:13px 17px;background:#fffdf5;border:1.5px solid var(--gold);margin-bottom:18px;font-size:13px;color:var(--muted);"><strong style="color:var(--ink)">No actions remaining.</strong> Click "End Round" below to continue.</div>' : '')
-    + '<div style="margin-bottom:28px">'
+    + '<div>'
     + '<div class="section-header">'
     + '<span class="step-ind">' + statusLine + '</span>'
     + endRoundHtml

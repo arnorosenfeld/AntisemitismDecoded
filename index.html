@@ -809,12 +809,15 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .security-shield-label{font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#9090a8;text-align:center;margin-top:2px}
 /* Category scores in a row */
 .security-categories{display:flex;gap:14px;flex:1}
-.security-cat{flex:1;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s}
+/* Each category: icon on the left at a readable size, content column on the
+   right (name+val on top, bar beneath). Icon renders next to the bar, not
+   squeezed against the text. */
+.security-cat{flex:1;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s;display:flex;align-items:center;gap:10px}
 .security-cat:hover{background:rgba(255,255,255,0.06)}
-.security-cat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;gap:6px}
-.security-cat-nameblock{display:flex;align-items:center;gap:5px;min-width:0}
-.security-cat-icon{font-size:12px;line-height:1;flex-shrink:0}
-.security-cat-icon img{width:14px;height:14px;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.4))}
+.security-cat-icon{flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.security-cat-icon img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
+.security-cat-content{flex:1;min-width:0}
+.security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:6px}
 .security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .security-cat-val{font-family:Merriweather,serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
 .security-cat-trend{font-size:10px;font-weight:700;margin-left:3px}
@@ -25746,15 +25749,13 @@ function calcSecurityCategoryScore(categoryId) {
 }
 
 // Calculate the overall Jewish Security composite score.
-// Emoji icons for each security category (keyed by category id). These are
-// placeholders; swap to <img src="art/..."> in SECURITY_CAT_ICONS below when
-// custom art is available. Icons render inside the security-cat-icon span so
-// either text or an <img> tag works with no other CSS changes.
+// Icon HTML for each security category (keyed by category id). Rendered
+// inside .security-cat-icon which sizes them to 32x32 with object-fit:contain.
 var SECURITY_CAT_ICONS = {
-  safety: '\uD83D\uDEE1\uFE0F',     // 🛡️ shield
-  ideology: '\uD83D\uDCAD',          // 💭 thought bubble
-  democracy: '\u2696\uFE0F',         // ⚖️ scales
-  vitality: '\uD83E\uDD1D'           // 🤝 handshake
+  safety:    '<img src="art/sec-safety.png" alt="">',
+  ideology:  '<img src="art/sec-ideology.png" alt="">',
+  democracy: '<img src="art/sec-democracy.png" alt="">',
+  vitality:  '<img src="art/sec-vitality.png" alt="">'
 };
 
 function calcSecurityComposite() {
@@ -25871,14 +25872,14 @@ function updateSecurityHUD() {
     if (trend > 0) trendHtml = '<span class="security-cat-trend up">▲' + trend + '</span>';
     else if (trend < 0) trendHtml = '<span class="security-cat-trend down">▼' + Math.abs(trend) + '</span>';
     html += '<div class="security-cat">';
-    html += '<div class="security-cat-top">';
-    html += '<span class="security-cat-nameblock">';
     html += '<span class="security-cat-icon">' + (SECURITY_CAT_ICONS[cat.id] || '') + '</span>';
+    html += '<div class="security-cat-content">';
+    html += '<div class="security-cat-top">';
     html += '<span class="security-cat-name">' + esc(cat.name) + '</span>';
-    html += '</span>';
     html += '<span class="security-cat-val" style="color:' + catColor + '">' + catScore + trendHtml + '</span>';
     html += '</div>';
     html += '<div class="security-cat-bar"><div class="security-cat-fill" style="width:' + catScore + '%;background:' + catColor + '"></div></div>';
+    html += '</div>';  // .security-cat-content
     // Hover detail
     html += '<div class="security-detail">';
     html += '<div class="security-detail-title" style="color:' + catColor + '">' + esc(cat.name) + '</div>';

@@ -262,6 +262,16 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-star-up { background: #fef3d0; color: #7a5800; }
 .chip-star-dn { background: #ead4d4; color: #4a1a1a; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+/* Impact sections: parallel panels for Internal Impact (trust/morale/etc.)
+   and World Impact (Jewish Security leaves). Shared label typography and
+   chip spacing so they read as sibling groupings. */
+.impact-section { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 12px; background: #f4f0e8; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px; }
+.impact-section + .impact-section { margin-top: 4px; }
+.impact-label { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-right: 6px; flex-shrink: 0; }
+.impact-internal .impact-label { color: #5a5040; }
+.impact-world { background: #eef5fc; border-color: #c3d7ea; }
+.impact-world .impact-label { color: #1a5a8a; }
+.impact-section .chip { flex-shrink: 0; }
 /* Hoverable trust chip with segment tooltip */
 .chip-hover-wrap { position: relative; display: inline-flex; align-items: center; }
 .chip-hover-wrap .chip { cursor: pointer; animation: chipPulse 2s ease-in-out infinite; }
@@ -357,8 +367,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 /* INVESTMENT STRIP - below HUD */
 /* Invest strip sits flush above the HUD. bottom = HUD bottom (32) + HUD
    height (~60 after trimming) = 92. padding tightened to ~5% on top/bottom. */
-.invest-strip { background: #283248; padding: 5px 20px; position: fixed; bottom: 92px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
-.invest-strip-wrap { max-width: 85vw; margin: 0 auto; position: relative; }
+/* Fixed strip height so the flex align-items: center inside has a clear
+   vertical box to center against (instead of the box being
+   content-sized and perturbed by pill/label line-box quirks). */
+.invest-strip { background: #283248; padding: 0 20px; position: fixed; bottom: 92px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; height: 34px; display: flex; align-items: center; }
+.invest-strip-wrap { max-width: 85vw; margin: 0 auto; position: relative; width: 100%; display: flex; align-items: center; }
 .invest-strip-inner { display: flex; align-items: center; gap: 8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
 .invest-strip-inner::-webkit-scrollbar { display: none; }
 /* Label padding now matches the pills' compact vertical footprint so the
@@ -366,7 +379,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    midline. The previous 12px top/bottom made the label artificially tall,
    forcing the pills to sit lower than center. */
 .invest-strip-label { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a0aab8; white-space: nowrap; margin-right: 0; position: sticky; left: 0; z-index: 3; background: #283248; padding: 0 16px 0 0; flex-shrink: 0; display: flex; align-items: center; }
-.invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+.invest-pill { display: inline-flex; align-items: center; gap: 5px; padding: 0 10px; background: rgba(184,134,11,0.1); border: 1px solid rgba(184,134,11,0.25); cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; height: 24px; line-height: 1; }
 .invest-pill:hover:not(.pill-disabled) { background: rgba(184,134,11,0.3); border-color: var(--gold); box-shadow: 0 0 8px rgba(184,134,11,0.3); }
 .invest-pill .pill-icon { font-size: 13px; }
 .invest-pill .pill-name { font-family: 'Merriweather Sans', sans-serif; font-size: 10px; font-weight: 700; color: #d4a843; }
@@ -751,7 +764,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .act-budget-cost.unaffordable{color:#c0392b;opacity:0.7}
 .choice-budget-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--gold);background:rgba(184,134,11,0.08);padding:2px 7px;border-radius:3px;margin-left:6px}
 .choice-budget-tag.unaffordable{color:#c0392b;background:rgba(192,57,43,0.08)}
-.ev-choice.budget-locked{opacity:0.5;cursor:not-allowed}
+/* Locked choice: use color/bg instead of opacity so the lock banner inside
+   the button stays crisp and readable against the muted background. */
+.ev-choice.budget-locked { opacity: 1; cursor: not-allowed; background: #e8dede; color: #8a7878; border-color: #cfc0c0; }
+.ev-choice.budget-locked .chip, .ev-choice.budget-locked .choice-budget-tag, .ev-choice.budget-locked .choice-clout-tag, .ev-choice.budget-locked .choice-pol-tag, .ev-choice.budget-locked .mission-aligned-badge, .ev-choice.budget-locked .advisor-rec-badge { opacity: 0.55; }
+.ev-choice.budget-locked .choice-lock-banner { background: #8b2020; color: #fff; opacity: 1; position: relative; z-index: 2; padding: 6px 12px; font-size: 12px; letter-spacing: 0.3px; }
 .budget-summary{background:rgba(245,240,225,0.5);border:1px solid var(--gold-light,#d4b872);padding:12px 16px;margin:12px 0;font-size:12px;line-height:1.6}
 .budget-summary strong{color:var(--ink)}
 
@@ -21259,7 +21276,12 @@ function advPortrait(adv, mood, size, shape) {
   if (adv.portrait) {
     var radius = shape === 'circle' ? '50%' : '6px';
     var h = shape === 'square' ? Math.round(size * 1.15) : size;
-    return '<img src="' + adv.portrait + '/' + mood + '.png" style="width:' + size + 'px;height:' + h + 'px;object-fit:cover;object-position:top;border-radius:' + radius + ';vertical-align:middle" alt="' + esc(adv.name) + '">';
+    // Wrap in a clipped container with the image slightly scaled up and
+    // anchored to the top, so the subject's HEAD fills the frame instead
+    // of head-plus-shoulders shrunk into a small circle with body dominant.
+    return '<span style="display:inline-block;width:' + size + 'px;height:' + h + 'px;border-radius:' + radius + ';overflow:hidden;vertical-align:middle;background:#e8e0d0;flex-shrink:0">' +
+      '<img src="' + adv.portrait + '/' + mood + '.png" style="width:100%;height:100%;object-fit:cover;object-position:center 18%;transform:scale(1.25);transform-origin:center top;display:block" alt="' + esc(adv.name) + '">' +
+      '</span>';
   }
   return '<span style="font-size:' + size + 'px;line-height:1;vertical-align:middle">' + (adv.emoji || '') + '</span>';
 }
@@ -22790,7 +22812,10 @@ function startGame(){
   G.orgOperatingCost = orgBudgetOverrides.operatingCost || bc.operatingCostPerRound || 8;
   G.orgBaseIncome = orgBudgetOverrides.baseIncome || bc.baseIncomePerRound || 5;
   var totalRounds = GAME_DATA.config.totalRounds || 6;
-  G.investmentPool = totalRounds * (bc.investmentsPerYear || 1);
+  // Floor the pool to an integer so the UI shows a whole number and the
+  // remaining-check (remaining <= 0) doesn't let a fractional 0.5 allow
+  // one extra investment beyond the intended cap.
+  G.investmentPool = Math.floor(totalRounds * (bc.investmentsPerYear || 1));
   G.investmentsUsed = 0;
   G.pendingReserves = [];
   // Initialize political position based on org
@@ -24802,9 +24827,12 @@ function chooseScenario(sid,idx){
   }
   var contextWithPol = contextParts.join('<br>');
   recordNotableMoment(s, c, outcome, false);
-  // Build security effects section if any were applied
-  var securitySection = securityChips ? '<div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(107,165,231,0.2)"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6ba5e7;margin-right:6px">World Impact</span>' + securityChips + '</div>' : '';
-  showOutcome(s.title, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips+smChip+securitySection, contextWithPol, function(){
+  // Split outcome chips into two labeled sections so internal vs world
+  // impact read as parallel sibling panels, both with uppercase captions.
+  var internalChipsAll = chips + sc + budgetChip + polChips + advisorChips + smChip;
+  var internalSection = internalChipsAll ? '<div class="impact-section impact-internal"><span class="impact-label">Internal Impact</span>' + internalChipsAll + '</div>' : '';
+  var securitySection = securityChips ? '<div class="impact-section impact-world"><span class="impact-label">World Impact</span>' + securityChips + '</div>' : '';
+  showOutcome(s.title, c.text, outcome.text, internalSection + securitySection, contextWithPol, function(){
     if (afterConv) {
       showConversation(afterConv.id, function(){ processQueue(); });
     } else {
@@ -24975,9 +25003,11 @@ function chooseInbox(sid,idx){
     G._lastPoliticalContext = null;
   }
   var contextWithPol = contextParts.join('<br>');
-  var securitySection = securityChips ? '<div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(107,165,231,0.2)"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6ba5e7;margin-right:6px">World Impact</span>' + securityChips + '</div>' : '';
+  var internalChipsAll = chips + sc + budgetChip + polChips + advisorChips;
+  var internalSection = internalChipsAll ? '<div class="impact-section impact-internal"><span class="impact-label">Internal Impact</span>' + internalChipsAll + '</div>' : '';
+  var securitySection = securityChips ? '<div class="impact-section impact-world"><span class="impact-label">World Impact</span>' + securityChips + '</div>' : '';
   recordNotableMoment(s, c, outcome, false);
-  showOutcome(s.subject, c.text, outcome.text, chips+sc+budgetChip+polChips+advisorChips+securitySection, contextWithPol, ()=>processQueue());
+  showOutcome(s.subject, c.text, outcome.text, internalSection + securitySection, contextWithPol, ()=>processQueue());
 }
 
 // ═══════════════ OUTCOME ═══════════════
@@ -25152,7 +25182,7 @@ function showRoundTransition() {
     var breakClout = co.breakCloutPenalty || 0;
     var breakFx = (co.violationPenalty||{}).effects || {};
     var breakBudget = (co.violationPenalty||{}).budgetEffect || 0;
-    if (breakClout) breakParts.push('-' + breakClout + ' Clout');
+    if (breakClout) breakParts.push(breakClout + ' Clout');
     Object.entries(breakFx).forEach(function(e) { var lbl = (GAME_DATA.stats.find(function(s){return s.id===e[0]})||{}).label || e[0]; if(e[1] < 0) breakParts.push(e[1] + ' ' + lbl); });
     if (breakBudget < 0) breakParts.push(breakBudget + ' Gelt');
     var breakText = breakParts.length ? breakParts.join(', ') : '';
@@ -25730,7 +25760,7 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
-    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=totalRounds*(bc.investmentsPerYear||1);G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
+    b.onclick=()=>{if(score>=30&&score<45){G.investmentsFrozen=true;G._probationLifted=false;}if(grade==='B'){G.budget+=20;}G.round=0;G.usedInboxIds=[];G.budgetIncomeThisYear=0;G.budgetSpentThisYear=0;G.investmentsUsed=0;G.investmentUses={};var bc=GAME_DATA.config.budgetConfig||{};var totalRounds=GAME_DATA.config.totalRounds||6;G.investmentPool=Math.floor(totalRounds*(bc.investmentsPerYear||1));G._coachWarningsThisRound={};showScreen('game-screen');beginRound();};
     actEl.appendChild(b);
     const b2=document.createElement('button');
     b2.className='btn btn-secondary'; b2.textContent='Restart (Same Character)'; b2.onclick=restartSameCharacter;
@@ -26140,13 +26170,13 @@ function isChoicePoliticallyLocked(choice) {
 function getPoliticalLockReason(choice) {
   if (!choice.politicalRequirement) return '';
   var req = choice.politicalRequirement;
-  if (req.maxPosition !== undefined && G.politicalPosition > req.maxPosition) 
-    return 'Your organization is too far right for this option';
-  if (req.minPosition !== undefined && G.politicalPosition < req.minPosition) 
-    return 'Your organization is too far left for this option';
-  if (req.minClout !== undefined && G.politicalClout < req.minClout) 
-    return 'Not enough clout';
-  return '';
+  if (req.maxPosition !== undefined && G.politicalPosition > req.maxPosition)
+    return 'Your political lean is too far right \u2014 this would cost you too much base support';
+  if (req.minPosition !== undefined && G.politicalPosition < req.minPosition)
+    return 'Your political lean is too far left \u2014 this would cost you too much base support';
+  if (req.minClout !== undefined && G.politicalClout < req.minClout)
+    return 'Needs \u26A1 ' + req.minClout + ' clout (you have \u26A1 ' + Math.round(G.politicalClout) + ')';
+  return 'Unavailable at your current political standing';
 }
 
 // Render political lean tag on a choice
@@ -26539,7 +26569,11 @@ function applySecurityEffects(effects) {
     G.security.leaves[leafId] = Math.max(0, Math.min(100, G.security.leaves[leafId] + delta));
     var name = leafNames[leafId] || leafId;
     var sign = delta > 0 ? '+' : '';
-    chips += '<span class="chip chip-security">' + sign + delta + ' ' + esc(name) + '</span>';
+    // Color-code world-impact chips the same way as internal-stat chips
+    // (chip-pos green / chip-neg red) so the + or - direction reads
+    // at a glance instead of every security chip being generic blue.
+    var cls = delta > 0 ? 'chip-pos' : 'chip-neg';
+    chips += '<span class="chip ' + cls + '">' + sign + delta + ' ' + esc(name) + '</span>';
   });
   updateSecurityHUD();
   return chips;

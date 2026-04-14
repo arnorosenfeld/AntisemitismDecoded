@@ -81,6 +81,24 @@ body {
 .pol-shift-center { color: var(--muted); }
 .cold-outcome-seg { border-top: 1px solid var(--border); padding-top: 10px; }
 .cold-outcome-seg-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+/* Jewish Security block — mirrors the segments layout but in blue, with a
+   composite score + shift indicator at the top right. */
+.cold-outcome-jsi { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+.cold-outcome-jsi-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.cold-outcome-jsi-composite { display: flex; align-items: baseline; gap: 6px; }
+.cold-outcome-jsi-comp-num { font-family: 'Merriweather', serif; font-weight: 900; font-size: 18px; color: #1a3a5e; transition: color 0.5s; }
+.cold-outcome-jsi-comp-shift { font-size: 11px; font-weight: 700; }
+.cold-outcome-jsi-comp-shift.positive { color: #16a34a; }
+.cold-outcome-jsi-comp-shift.negative { color: #dc2626; }
+.jsi-row-lp { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
+.jsi-name-lp { width: 110px; font-weight: 600; color: var(--muted); font-size: 10px; flex-shrink: 0; }
+.jsi-bar-bg-lp { flex: 1; height: 8px; background: rgba(0,0,0,0.06); border: 1px solid var(--border); position: relative; overflow: hidden; }
+.jsi-bar-fill-lp { height: 100%; transition: width 1s ease; position: absolute; left: 0; top: 0; background: #6ba5e7; }
+.jsi-bar-shift-lp { position: absolute; top: 0; height: 100%; transition: width 1s ease; }
+.jsi-bar-shift-lp.positive { background: rgba(74,222,128,0.55); }
+.jsi-bar-shift-lp.negative { background: rgba(248,113,113,0.55); }
+.jsi-val-lp { width: 50px; text-align: right; font-family: 'Merriweather', serif; font-weight: 700; font-size: 11px; flex-shrink: 0; color: #1a3a5e; }
+.jsi-shift-lp { font-size: 10px; font-weight: 700; margin-left: 3px; }
 .seg-row-lp { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
 .seg-name-lp { width: 85px; font-weight: 600; color: var(--muted); font-size: 10px; flex-shrink: 0; }
 .seg-bar-bg-lp { flex: 1; height: 8px; background: rgba(0,0,0,0.06); border: 1px solid var(--border); position: relative; overflow: hidden; }
@@ -1511,6 +1529,16 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
           <div class="cold-outcome-seg-label">Community Response</div>
           <div id="lp-seg-bars"></div>
         </div>
+        <div class="cold-outcome-jsi">
+          <div class="cold-outcome-jsi-header">
+            <div class="cold-outcome-seg-label">Jewish Security</div>
+            <div class="cold-outcome-jsi-composite">
+              <span class="cold-outcome-jsi-comp-num" id="lp-jsi-comp">--</span>
+              <span class="cold-outcome-jsi-comp-shift" id="lp-jsi-comp-shift"></span>
+            </div>
+          </div>
+          <div id="lp-jsi-bars"></div>
+        </div>
       </div>
     </div>
     <div class="cold-transition" id="lp-transition"><p id="lp-transition-text"></p></div>
@@ -1939,7 +1967,17 @@ const GAME_DATA = {
                 "val": -2,
                 "pct": 46
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 48,
+              "categories": [
+                { "name": "Physical Safety", "start": 42, "end": 48, "shift": 6 },
+                { "name": "Ideology", "start": 45, "end": 50, "shift": 5 },
+                { "name": "Democracy", "start": 30, "end": 32, "shift": 2 },
+                { "name": "Communal Vitality", "start": 50, "end": 52, "shift": 2 }
+              ]
+            }
           },
           {
             "text": "Coordinate a joint response with the Interfaith Council and campus civil rights groups first",
@@ -2000,7 +2038,17 @@ const GAME_DATA = {
                 "val": 3,
                 "pct": 60
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 50,
+              "categories": [
+                { "name": "Physical Safety", "start": 42, "end": 45, "shift": 3 },
+                { "name": "Ideology", "start": 45, "end": 50, "shift": 5 },
+                { "name": "Democracy", "start": 30, "end": 33, "shift": 3 },
+                { "name": "Communal Vitality", "start": 50, "end": 56, "shift": 6 }
+              ]
+            }
           },
           {
             "text": "Focus inward — organize support for affected students and staff before making any public statement",
@@ -2061,7 +2109,17 @@ const GAME_DATA = {
                 "val": 4,
                 "pct": 62
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 41,
+              "categories": [
+                { "name": "Physical Safety", "start": 42, "end": 41, "shift": -1 },
+                { "name": "Ideology", "start": 45, "end": 43, "shift": -2 },
+                { "name": "Democracy", "start": 30, "end": 30, "shift": 0 },
+                { "name": "Communal Vitality", "start": 50, "end": 53, "shift": 3 }
+              ]
+            }
           }
         ],
         "transitionText": "That was day one. You have twelve months to go.",
@@ -21716,9 +21774,71 @@ function lpPickChoice(idx) {
     var valStr = (s.val > 0 ? '+' : '') + s.val;
     return '<div class="seg-row-lp"><span class="seg-name-lp">' + esc(s.name) + '</span><div class="seg-bar-bg-lp"><div class="seg-bar-fill-lp ' + barCls + '" style="width:0%" data-target="' + s.pct + '"></div></div><span class="seg-val-lp ' + valCls + '">' + valStr + '</span></div>';
   }).join('');
+  // Jewish Security composite + per-category bars. Each row animates from
+  // its baseline ("start") to its post-choice value ("end") with a colored
+  // overlay showing the delta (green = positive, red = negative).
+  if (choice.jsi) {
+    var compNum = document.getElementById('lp-jsi-comp');
+    var compShift = document.getElementById('lp-jsi-comp-shift');
+    if (compNum) compNum.textContent = choice.jsi.compositeStart;
+    if (compShift) {
+      var d = (choice.jsi.compositeEnd - choice.jsi.compositeStart);
+      var ds = (d > 0 ? '+' : '') + d;
+      compShift.textContent = ds;
+      compShift.className = 'cold-outcome-jsi-comp-shift ' + (d > 0 ? 'positive' : (d < 0 ? 'negative' : ''));
+    }
+    document.getElementById('lp-jsi-bars').innerHTML = (choice.jsi.categories || []).map(function(c, i) {
+      var startPct = Math.max(0, Math.min(100, c.start));
+      var endPct = Math.max(0, Math.min(100, c.end));
+      var shiftCls = c.shift > 0 ? 'positive' : (c.shift < 0 ? 'negative' : '');
+      var shiftLeft = Math.min(startPct, endPct);
+      var shiftWidth = Math.abs(endPct - startPct);
+      var shiftStr = c.shift === 0 ? '' : ' <span class="jsi-shift-lp ' + (c.shift > 0 ? 'seg-val-pos' : 'seg-val-neg') + '">' + (c.shift > 0 ? '+' : '') + c.shift + '</span>';
+      return '<div class="jsi-row-lp">' +
+        '<span class="jsi-name-lp">' + esc(c.name) + '</span>' +
+        '<div class="jsi-bar-bg-lp">' +
+          '<div class="jsi-bar-fill-lp" data-baseline="' + startPct + '" data-target="' + endPct + '" style="width:' + startPct + '%"></div>' +
+          (c.shift !== 0 ? '<div class="jsi-bar-shift-lp ' + shiftCls + '" data-left="' + shiftLeft + '" data-width="0" style="left:' + shiftLeft + '%;width:0%"></div>' : '') +
+        '</div>' +
+        '<span class="jsi-val-lp" data-baseline="' + startPct + '" data-target="' + endPct + '">' + startPct + shiftStr + '</span>' +
+        '</div>';
+    }).join('');
+  }
   document.getElementById('lp-outcome').classList.add('visible');
   setTimeout(function() {
     document.querySelectorAll('.seg-bar-fill-lp').forEach(function(b) { b.style.width = b.getAttribute('data-target') + '%'; });
+    // Animate JSI bars from start to end and tick the composite to its new value.
+    document.querySelectorAll('.jsi-bar-fill-lp').forEach(function(b) {
+      var target = parseFloat(b.getAttribute('data-target'));
+      b.style.width = target + '%';
+    });
+    document.querySelectorAll('.jsi-bar-shift-lp').forEach(function(b) {
+      // Recompute width from data attributes set on the underlying bar
+      var row = b.closest('.jsi-row-lp');
+      var fill = row && row.querySelector('.jsi-bar-fill-lp');
+      var s = fill ? parseFloat(fill.getAttribute('data-baseline')) : 0;
+      var t = fill ? parseFloat(fill.getAttribute('data-target')) : 0;
+      b.style.width = Math.abs(t - s) + '%';
+    });
+    document.querySelectorAll('.jsi-val-lp').forEach(function(v) {
+      var t = parseFloat(v.getAttribute('data-target'));
+      var current = v.firstChild;
+      if (current && current.nodeType === 3) current.textContent = t;
+    });
+    if (choice.jsi) {
+      var compNum = document.getElementById('lp-jsi-comp');
+      if (compNum) {
+        // Tween the composite number for visual interest
+        var s = choice.jsi.compositeStart, t = choice.jsi.compositeEnd;
+        var steps = 18, stepi = 0;
+        var iv = setInterval(function() {
+          stepi++;
+          var v = Math.round(s + (t - s) * (stepi / steps));
+          compNum.textContent = v;
+          if (stepi >= steps) clearInterval(iv);
+        }, 56);
+      }
+    }
   }, 250);
   setTimeout(function() { document.getElementById('lp-transition').classList.add('visible'); }, 1200);
   ['lp-reveal','lp-depth','lp-advisors','lp-headlines','lp-bottom'].forEach(function(id,i) {

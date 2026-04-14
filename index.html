@@ -288,7 +288,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-banner-inner .hud-char-emoji { font-size: 16px; }
 .hud-banner-inner .hud-char-name { font-family: 'Merriweather', serif; font-weight: 700; font-size: 12px; }
 .hud-banner-inner .hud-org-label { font-size: 10px; color: #a0aab8; margin-left: 4px; }
-.hud { background: #364663; color: #dde1e8; padding: 10px 20px; position: sticky; top: 44px; left: 0; right: 0; z-index: 100; }
+.hud { background: #364663; color: #dde1e8; padding: 10px 20px; position: relative; left: 0; right: 0; z-index: 100; }
 .hud-inner { max-width: 820px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .hud-spacer { display: none; } /* not needed with sticky */
 .meters { display: flex; gap: 12px; flex: 1; justify-content: center; flex-wrap: wrap; }
@@ -318,8 +318,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .hud-grade-letter.grade-d { color: #f87171; background: transparent; }
 .hud-grade-letter.grade-f { color: #ef4444; background: transparent; }
 .hud-board-rating:hover .grade-detail { display: block; }
-.grade-detail { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px; min-width: 240px; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; margin-top: 6px; }
-.grade-detail::before { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #1a1a2e; border-left: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15); }
+.grade-detail { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px; min-width: 240px; z-index: 300; box-shadow: 0 -4px 16px rgba(0,0,0,0.3); font-size: 12px; color: #e0e0e0; text-align: left; margin-bottom: 6px; }
+.grade-detail::before { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: #1a1a2e; border-right: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(255,255,255,0.15); }
 .grade-detail-title { font-family: 'Merriweather Sans', sans-serif; font-weight: 700; font-size: 11px; color: #f0d87a; margin-bottom: 8px; letter-spacing: 0.5px; }
 .grade-detail-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px; }
 /* Round info removed from HUD - now in AP bar */
@@ -907,9 +907,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .chip-pol-center{background:#f3e8ff;color:#6b21a8;font-size:10px;font-weight:700;padding:2px 6px}
 .chip-pol-clout{background:#f3e8ff;color:#6b21a8;font-size:10px;font-weight:700;padding:2px 6px}
 /* Political detail panel (tooltip) */
-.pol-detail{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:300;background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:12px 16px;min-width:240px;box-shadow:0 4px 16px rgba(0,0,0,0.3);text-align:left;margin-top:6px}
+.pol-detail{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);z-index:300;background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);padding:12px 16px;min-width:240px;box-shadow:0 -4px 16px rgba(0,0,0,0.3);text-align:left;margin-bottom:6px}
 .hud-politics:hover .pol-detail{display:block}
-.pol-detail::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:8px;height:8px;background:#1a1a2e;border-left:1px solid rgba(255,255,255,0.15);border-top:1px solid rgba(255,255,255,0.15)}
+.pol-detail::before{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:8px;height:8px;background:#1a1a2e;border-right:1px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.15)}
 .pol-detail-title{font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:11px;color:#f0d87a;margin-bottom:8px;letter-spacing:0.5px}
 .pol-detail-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#b0b0c0}
 .pol-detail-row span:last-child{font-weight:700;color:#fff}
@@ -943,13 +943,13 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
 .trust-meter { position: relative; cursor: pointer; }
 .trust-meter:hover .seg-tooltip { display: block; }
 .seg-tooltip {
-  display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
   background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px;
-  min-width: 240px; z-index: 300; margin-top: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  min-width: 240px; z-index: 300; margin-bottom: 6px; box-shadow: 0 -4px 16px rgba(0,0,0,0.3);
 }
 .seg-tooltip::before {
-  content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg);
-  width: 8px; height: 8px; background: #1a1a2e; border-left: 1px solid rgba(255,255,255,0.15); border-top: 1px solid rgba(255,255,255,0.15);
+  content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg);
+  width: 8px; height: 8px; background: #1a1a2e; border-right: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(255,255,255,0.15);
 }
 .seg-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; font-size: 10px; }
 .seg-row:last-child { margin-bottom: 0; }
@@ -1485,6 +1485,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
        (≤25) or danger (≤20) range. Sits behind interactive UI but over body bg
        so the pulse covers the whole game screen uniformly. -->
   <div class="stat-danger-overlay" id="stat-danger-overlay"></div>
+  <!-- TOP: Name banner + Jewish Security + conditional strips (coalitions, sub-missions) -->
   <div class="hud-banner" id="hud-banner-el" style="display:none">
     <div class="hud-banner-inner">
       <span class="hud-char-emoji" id="hud-char-emoji"></span>
@@ -1494,10 +1495,20 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
       <button class="hud-help-btn" id="hud-help-btn" onclick="toggleHelpPanel()">?</button>
     </div>
   </div>
-  <!-- Jewish Security bar — sits between name banner and org-stats HUD -->
   <div class="security-bar" id="security-bar-el" style="display:none">
     <div class="security-bar-inner" id="security-bar-inner"></div>
   </div>
+  <div class="coalition-strip" id="coalition-strip" style="display:none">
+    <div class="coalition-strip-inner" id="coalition-strip-inner"></div>
+  </div>
+  <div class="submission-strip" id="submission-strip" style="display:none">
+    <div class="submission-strip-inner" id="submission-strip-inner"></div>
+  </div>
+  <!-- MIDDLE: Game scene -->
+  <div class="game-main">
+    <div class="game-inner" id="game-inner"></div>
+  </div>
+  <!-- BOTTOM: Org stats HUD + investments (above the status bar + ticker) -->
   <div class="hud" id="hud-el" style="display:none">
     <div class="hud-inner">
       <div class="hud-politics" id="hud-politics">
@@ -1547,15 +1558,6 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
     <div class="invest-strip-wrap">
       <div class="invest-strip-inner" id="invest-strip-inner"></div>
     </div>
-  </div>
-  <div class="coalition-strip" id="coalition-strip" style="display:none">
-    <div class="coalition-strip-inner" id="coalition-strip-inner"></div>
-  </div>
-  <div class="submission-strip" id="submission-strip" style="display:none">
-    <div class="submission-strip-inner" id="submission-strip-inner"></div>
-  </div>
-  <div class="game-main">
-    <div class="game-inner" id="game-inner"></div>
   </div>
   <!-- CONVERSATION OVERLAY -->
   <div class="conv-overlay" id="conv-overlay" style="display:none">
@@ -19656,15 +19658,15 @@ function renderMain(){
 
   el.innerHTML = deskSceneHtml + statusBar;
 
-  // Size the desk scene to fill available viewport between HUD and status bar
+  // Size the desk scene to fill available viewport between top chrome and bottom chrome
   setTimeout(function() {
     var scene = document.getElementById('desk-scene');
     if (!scene) return;
     var rect = scene.getBoundingClientRect();
-    var tickerH = 32; // fixed ticker height
-    var statusBarH = 40; // approximate status bar height
-    var available = window.innerHeight - rect.top - tickerH - statusBarH;
-    scene.style.height = Math.max(200, available) + 'px';
+    // Bottom chrome: HUD (~60px) + invest strip (~40px) + status bar (~36px) + ticker (32px)
+    var bottomChrome = 170;
+    var available = window.innerHeight - rect.top - bottomChrome;
+    scene.style.height = Math.max(250, available) + 'px';
   }, 0);
 }
 
@@ -21612,11 +21614,6 @@ function updateSecurityHUD() {
   var inner = document.getElementById('security-bar-inner');
   if (!bar || !inner || !G.security) return;
   bar.style.display = '';
-  // Adjust HUD sticky offset to sit below the security bar
-  var hudEl = document.getElementById('hud-el');
-  if (hudEl) {
-    setTimeout(function() { hudEl.style.top = bar.offsetHeight + 'px'; }, 0);
-  }
   var jsCfg = GAME_DATA.config.jewishSecurity;
   var composite = calcSecurityComposite();
 

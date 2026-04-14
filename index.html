@@ -890,16 +890,19 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    read at a proper size. */
 .security-cat{flex:0 0 auto;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s;display:flex;align-items:center;gap:10px;width:180px}
 .security-cat:hover{background:rgba(255,255,255,0.06)}
-.security-cat-icon{flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
+/* Icon container — base size is 48px, but each category scales its OWN
+   container width/height via CSS variables. Sizing the container (instead of
+   scaling the img with transform) ensures the visible icon edge matches the
+   container edge, which means the gap between icon and bar is uniform across
+   all four categories regardless of per-category scale. Defaults in CSS
+   match DEFAULT_SECURITY_ICON_SCALES (JS); localStorage overrides applied at
+   load via applySecurityIconScales(). */
+.security-cat-icon{flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .security-cat-icon img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
-/* Per-category icon scaling via CSS variables. Defaults set in
-   DEFAULT_SECURITY_ICON_SCALES (JS); applySecurityIconScales() at load reads
-   localStorage and overrides them. The dev tuner (?tunesec) lets you adjust
-   each scale live and save without touching the source. */
-.security-cat-safety .security-cat-icon img    { transform: scale(var(--sec-icon-scale-safety, 1.0)); }
-.security-cat-ideology .security-cat-icon img  { transform: scale(var(--sec-icon-scale-ideology, 1.15)); }
-.security-cat-democracy .security-cat-icon img { transform: scale(var(--sec-icon-scale-democracy, 1.15)); }
-.security-cat-vitality .security-cat-icon img  { transform: scale(var(--sec-icon-scale-vitality, 0.95)); }
+.security-cat-safety .security-cat-icon    { width: calc(48px * var(--sec-icon-scale-safety, 1.25));    height: calc(48px * var(--sec-icon-scale-safety, 1.25)); }
+.security-cat-ideology .security-cat-icon  { width: calc(48px * var(--sec-icon-scale-ideology, 1.45));  height: calc(48px * var(--sec-icon-scale-ideology, 1.45)); }
+.security-cat-democracy .security-cat-icon { width: calc(48px * var(--sec-icon-scale-democracy, 1.25)); height: calc(48px * var(--sec-icon-scale-democracy, 1.25)); }
+.security-cat-vitality .security-cat-icon  { width: calc(48px * var(--sec-icon-scale-vitality, 1.1));   height: calc(48px * var(--sec-icon-scale-vitality, 1.1)); }
 .security-cat-content{flex:1;min-width:0}
 .security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:6px}
 .security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -26126,7 +26129,7 @@ var SECURITY_CAT_ICONS = {
 
 // Per-category icon scale defaults. Overridable via localStorage (set by the
 // dev tuner panel) so tweaks survive reloads without code edits.
-var DEFAULT_SECURITY_ICON_SCALES = { safety: 1.0, ideology: 1.15, democracy: 1.15, vitality: 0.95 };
+var DEFAULT_SECURITY_ICON_SCALES = { safety: 1.25, ideology: 1.45, democracy: 1.25, vitality: 1.1 };
 
 function getSecurityIconScales() {
   var out = Object.assign({}, DEFAULT_SECURITY_ICON_SCALES);

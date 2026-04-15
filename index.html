@@ -2452,45 +2452,50 @@ const GAME_DATA = {
       "centristCloutRate": 0.6
     },
     "outgoingED": {
-      "name": "Avi Rosen",
+      "name": "Andy Rose",
       "role": "Outgoing Executive Director",
       "portrait": "art/advisors/avi_rosen"
     },
     "popupMessages": {
       "onboarding": [
         {
-          "mood": "neutral",
-          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching. Let me show you the office.",
-          "label": "What do I need to know?"
+          "mood": "approving",
+          "msg": "Welcome! You've got your work cut out for you. The goal is to <strong>increase the level of Jewish security,</strong> but doing so requires you to juggle priorities and maintain the strength of your organization.",
+          "label": "What am I doing?"
         },
         {
           "mood": "neutral",
-          "msg": "You have <strong>3 action points</strong> per round. Each desk object is a different channel of work: the <strong>monitor</strong> is your primary scenario inbox, the <strong>folder</strong> holds memos, the <strong>keys</strong> get you out into the field. Spend an AP by clicking one. The <strong>landline</strong> on the right is free — pick it up to call any of your advisors for guidance, no AP cost.",
-          "label": "And the phone?"
+          "msg": "You have <strong>3 action points</strong> per round that you can spend responding to scenarios. The <strong>monitor</strong> is your main scenario repository, the <strong>sticky note</strong> handles internal issues at your organization and  the <strong>keys</strong> deal with items away from your desk. Click on any of them to respond.",
+          "label": "And the phones?"
         },
         {
           "mood": "neutral",
-          "msg": "The <strong>cell phone</strong> shows your inbox — emails and texts that arrive throughout the day. Reading and replying to inbox messages is also free. Some have timers, though, so don't sit on them too long.",
+          "msg": "The <strong>cell phone</strong> shows your inbox — emails and texts that arrive throughout the day. Responding to messages is free, but some will expire — and dock you points — if you wait too long. The <strong>landline</strong> lets you call your advisors and other characters you meet in the game and is also free to use.",
           "label": "What about the monitor screen?"
         },
         {
-          "mood": "approving",
-          "msg": "The monitor isn't just a click target — it's a desktop with three windows. <strong>Social</strong> lets you post to your org's accounts (engagement decays each post you make per round, so use them wisely). <strong>Briefings</strong> appears when you have active <strong>Tasks</strong> — multi-round initiatives with checkpoints and deadlines. <strong>Coalitions</strong> appears when you've signed partnerships. Drag windows around, expand them with the + button, click outside any window to pull a scenario from the monitor channel.",
+          "mood": "neutral",
+          "msg": "You can click on the monitor to respond to scenarios. But the screen also has interactive windows. <strong>Social media,</strong> lets you post messages for free — but the public's reaction degrades the more you post in a single round. As you accept game <strong>tasks</strong> or join coalitions, you'll also see new windows pop up. Drag them around and click the + sign to expand any window.",
           "label": "Got it. What am I tracking?"
         },
         {
-          "mood": "concerned",
-          "msg": "Two scoreboards. At the <strong>top</strong> is the <strong>Jewish Security Index</strong> — a composite of four dimensions (Physical Safety, Ideology, Democracy, Communal Vitality), each weighted by your org's priorities. That's the world. At the <strong>bottom</strong> is your <strong>HUD</strong>: Trust, Morale, Donors — your three internal stats. If any drops to <strong>20 or below</strong>, the board calls an emergency meeting and your tenure ends.",
-          "label": "And the clipboard in the corner?"
-        },
-        {
-          "mood": "approving",
-          "msg": "That's your live <strong>Board Rating</strong> — a letter grade from F to A+ based on your stats plus mission-star bonuses. Hover it to see how it's calculated. At year's end the board evaluates the same number: <strong>≥80</strong> earns a distinguished tenure, <strong>≥40</strong> keeps your job, anything lower and your contract isn't renewed.",
-          "label": "Any other advice?"
+          "mood": "neutral",
+          "msg": "You're tracking the <strong>Jewish Security Index</strong> — a composite score that gauges the level of antisemitism — located in a shield inside the <strong>top bar</strong>. If that falls to 15 or below you lose. If it rises to 80 or above you win. But you also have to keep your job. If finish a round with your <strong>Board Rating</strong> below 40, or without any <strong>Mission Stars,</strong> your tenure will end. And if any of your internal stats (trust, morale, donors) falls to 15 you'll be fired immediately.",
+          "label": "How do I keep my scores up?"
         },
         {
           "mood": "neutral",
-          "msg": "Use your <strong>budget (gelt)</strong> wisely — the investment bar above the HUD has options for security upgrades, marketing, training, and more. They don't cost AP, just money. And remember: every round your stats <strong>naturally decay</strong> as attention fades and donors expect fresh results. There are no perfect choices. The best leaders know which costs they can afford.",
+          "msg": "Every game action — scenarios, conversations and even social media posts — has consequences. The choices you select result in an outcome that will boost or damage the meters that make up the <strong>Jewish Security Index</strong> and your <strong>Board Rating</strong>. Sometimes they'll do both. \n\nEncouraging synagogues to eliminate their DEI programs in exchange for federal security grants will boost <strong>institutional security</strong> but damage <strong>minority rights</strong>, both of which contribute to the Jewish Security composite. And firing a staffer who criticized your organization on social media will make <strong>Donors</strong> happy but could hurt <strong>Morale</strong>. The Board will notice both.",
+          "label": "What about the other items?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "Mission-aligned choices earn a <strong>Mission Star,</strong> regardless of outcome. Others lose you a star. Stars boost your board rating — and you'll be fired if you finish a round with zero stars. You can earn <strong>Gelt</strong> throughout the game, and spend it on <strong>Investments</strong> or on certain choices, like giving your staff raises. Same with <strong>Clout</strong>, which allows you to exert political influence. Your organization's <strong>Political Lean</strong>shift based on your choices and helps determine the scenarios you receive what choices you have available.",
+          "label": "This sounds like a lot..."
+        },
+        {
+          "mood": "approving",
+          "msg": "The main thing is to make sure that the <strong>Jewish Security Index</strong> doesn't fall too sharply, and that your internal stats — <strong>Trust, Morale and Donors</strong> stay at a reasonable level. Everything else will fall into place as you play the game. And remember, when it comes to countering antisemitism, there are no perfect choices.",
           "label": "Let's do this →"
         }
       ],
@@ -16605,7 +16610,7 @@ const GAME_DATA = {
       "id": "conv_donor_harold",
       "type": "character",
       "character": {
-        "name": "Harold Weinstein",
+        "name": "Harold Weinberg",
         "emoji": "🧑‍💼",
         "role": "Major Donor · 15 Years",
         "context": "Called to discuss your decision on his restricted gift"
@@ -17238,7 +17243,7 @@ const GAME_DATA = {
       "id": "conv_vice_chair_rival",
       "type": "character",
       "character": {
-        "name": "David Chen",
+        "name": "Nathan Saxe",
         "emoji": "👔",
         "role": "Board Vice Chair · 8 Years",
         "context": "Called after the rival organization published their attack"
@@ -17591,7 +17596,7 @@ const GAME_DATA = {
       "id": "conv_donor_meghan_evangelical",
       "type": "character",
       "character": {
-        "name": "Meghan Torres-Klein",
+        "name": "Muriel Goodman",
         "emoji": "👩‍🦰",
         "role": "Board Member · Interfaith Committee Chair",
         "context": "Called after learning about the evangelical alliance proposal"
@@ -17947,7 +17952,7 @@ const GAME_DATA = {
       "id": "conv_parent_jcc_bomb_threat",
       "type": "character",
       "character": {
-        "name": "Nadia Kalman",
+        "name": "Sofia Tabachnikoff",
         "emoji": "👩",
         "role": "JCC Preschool Parent · PTA President",
         "context": "Arrived at the JCC during the bomb threat lockdown"

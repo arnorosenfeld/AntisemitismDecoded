@@ -1039,6 +1039,17 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .briefing-card .bc-cp-icon{font-size:14px;width:18px;text-align:center}
 .briefing-card .bc-rewards{margin-top:12px;padding-top:10px;border-top:1px solid #f0ede4;font-size:11px;color:#888}
 .briefing-section-header{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#b8860b;margin:20px 0 10px}
+/* Compact variant when a briefing-card lives inside the monitor Briefings
+   window — same content as the full modal, just tighter sizing so it
+   reads well in the smaller chrome. */
+.mon-window-body .briefing-card, .mon-briefing-card { padding: 12px; margin-bottom: 10px; }
+.mon-window-body .briefing-card h3 { font-size: 13px; margin-bottom: 4px; }
+.mon-window-body .briefing-card .bc-desc { font-size: 11px; margin-bottom: 8px; }
+.mon-window-body .briefing-card .bc-meta { font-size: 10px; gap: 10px; margin-bottom: 8px; }
+.mon-window-body .briefing-card .bc-progress-bar { height: 6px; margin-bottom: 8px; }
+.mon-window-body .briefing-card .bc-checkpoints li { font-size: 11px; padding: 3px 0; }
+.mon-window-body .briefing-card .bc-rewards { font-size: 10px; padding-top: 6px; margin-top: 8px; }
+.mon-window-body .briefing-section-header { margin: 12px 0 6px; }
 .briefing-empty{font-size:13px;color:#888;text-align:center;padding:30px 0}
 .coal-badge{font-size:10px;background:var(--gold,#b08d3e);color:white;padding:2px 8px;border-radius:8px;font-weight:700;position:relative;cursor:pointer;transition:opacity 0.15s}
 .coal-badge:hover{opacity:0.85}
@@ -24564,6 +24575,11 @@ function renderMonSocialBody() {
 }
 
 function renderMonBriefingsBody() {
+  // Content mirrors the old "Briefings" modal (showBriefingDocument) exactly
+  // so the monitor Briefings window is a full task dossier, not a summary.
+  // Includes full description, progress bar, checkpoint details, and
+  // success/failure reward chips for each active task, then sections for
+  // completed / failed tasks with their outcome text.
   var active = G.activeSubMissions || [];
   var completed = G.completedSubMissions || [];
   var failed = G.failedSubMissions || [];
@@ -24575,30 +24591,52 @@ function renderMonBriefingsBody() {
     var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === entry.id; });
     if (!sm) return;
     var roundsLeft = (sm.deadlineRounds || 99) - (G.round - entry.activatedRound);
-    html += '<div class="mon-task">';
-    html += '<div class="mon-task-name">' + esc(sm.name) + '</div>';
-    html += '<div class="mon-task-meta">' + entry.progress + '/' + (sm.maxProgress || 3) + ' \u2022 ' + (roundsLeft > 90 ? 'no deadline' : roundsLeft + ' rd left') + '</div>';
-    html += '<div class="mon-task-checks">';
+    var progressPct = Math.round((entry.progress / (sm.maxProgress || 3)) * 100);
+    html += '<div class="briefing-card mon-briefing-card">';
+    html += '<h3>' + esc(sm.name) + '</h3>';
+    html += '<div class="bc-desc">' + esc(sm.description || '') + '</div>';
+    html += '<div class="bc-meta"><span>Progress: ' + entry.progress + '/' + (sm.maxProgress || 3) + '</span><span>Deadline: ' + (roundsLeft > 90 ? 'No limit' : roundsLeft + ' round' + (roundsLeft !== 1 ? 's' : '') + ' remaining') + '</span></div>';
+    html += '<div class="bc-progress-bar"><div class="bc-progress-fill" style="width:' + progressPct + '%"></div></div>';
+    html += '<ul class="bc-checkpoints">';
     (sm.checkpoints || []).forEach(function(cp) {
       var status = (entry.checkpointStatus || {})[cp.id] || 'pending';
-      var icon = status === 'complete' ? '\u2705' : (status === 'failed' ? '\u274C' : '\u2B1C');
-      html += '<div class="mon-task-check"><span>' + icon + '</span> ' + esc(cp.name) + '</div>';
+      var icon = status === 'complete' ? '\u2705' : status === 'failed' ? '\u274C' : '\u2B1C';
+      html += '<li><span class="bc-cp-icon">' + icon + '</span><strong>' + esc(cp.name) + '</strong> \u2014 ' + esc(cp.description || '') + '</li>';
     });
-    html += '</div>';
+    html += '</ul>';
+    var rewardChips = '';
+    if (sm.rewards && sm.rewards.effects) {
+      Object.entries(sm.rewards.effects).forEach(function(e) {
+        rewardChips += '<span class="chip chip-pos">+' + e[1] + ' ' + e[0] + '</span> ';
+      });
+    }
+    var penaltyChips = '';
+    if (sm.penalties && sm.penalties.effects) {
+      Object.entries(sm.penalties.effects).forEach(function(e) {
+        penaltyChips += '<span class="chip chip-neg">' + e[1] + ' ' + e[0] + '</span> ';
+      });
+    }
+    if (rewardChips || penaltyChips) {
+      html += '<div class="bc-rewards">Success: ' + (rewardChips || 'none') + ' \u00A0 Failure: ' + (penaltyChips || 'none') + '</div>';
+    }
     html += '</div>';
   });
+  // Completed/failed are stored as ID strings (not objects). Iterate
+  // accordingly and render a short dossier with the success/failure text.
   if (completed.length) {
-    html += '<div class="mon-task-section">Completed</div>';
-    completed.forEach(function(c) {
-      var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === c.id; });
-      if (sm) html += '<div class="mon-task done">\u2705 ' + esc(sm.name) + '</div>';
+    html += '<div class="briefing-section-header">Completed</div>';
+    completed.forEach(function(smId) {
+      var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === smId; });
+      if (!sm) return;
+      html += '<div class="briefing-card mon-briefing-card" style="opacity:0.75;border-left:3px solid #22c55e"><h3>\u2705 ' + esc(sm.name) + '</h3><div class="bc-desc" style="font-size:12px">' + esc((sm.rewards && sm.rewards.text) || 'Completed successfully.') + '</div></div>';
     });
   }
   if (failed.length) {
-    html += '<div class="mon-task-section">Failed</div>';
-    failed.forEach(function(f) {
-      var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === f.id; });
-      if (sm) html += '<div class="mon-task failed">\u274C ' + esc(sm.name) + '</div>';
+    html += '<div class="briefing-section-header">Failed</div>';
+    failed.forEach(function(smId) {
+      var sm = (GAME_DATA.subMissions || []).find(function(s) { return s.id === smId; });
+      if (!sm) return;
+      html += '<div class="briefing-card mon-briefing-card" style="opacity:0.75;border-left:3px solid #ef4444"><h3>\u274C ' + esc(sm.name) + '</h3><div class="bc-desc" style="font-size:12px">' + esc((sm.penalties && sm.penalties.text) || 'Failed to complete.') + '</div></div>';
     });
   }
   return html;

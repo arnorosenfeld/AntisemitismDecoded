@@ -22334,12 +22334,34 @@ function getOrgStartingBudget(orgId) {
 function renderAdvisorSelection() {
   var pool = GAME_DATA.advisorPool || [];
   var slots = GAME_DATA.config.advisorSlots || 3;
-  G.selectedAdvisors = [];
+  // "Extra advisor" mode: player was promoted and is adding ONE new advisor
+  // to their existing team. Don't wipe selectedAdvisors; filter the pool to
+  // only show advisors they don't already have; show different copy and
+  // button behavior.
+  var extraMode = !!G._extraAdvisorMode;
+  if (extraMode) {
+    var existing = G.selectedAdvisors || [];
+    pool = pool.filter(function(a) { return !existing.includes(a.id); });
+    slots = 1;
+    G._extraAdvisorPick = null;
+    var stepLabel = document.getElementById('advisor-step-label');
+    if (stepLabel) stepLabel.textContent = 'Promotion Bonus \u2014 Expanded Team';
+    var heading = document.getElementById('advisor-heading');
+    if (heading) heading.textContent = 'Add a New Advisor';
+    var desc = document.getElementById('advisor-desc');
+    if (desc) desc.textContent = 'Your promotion comes with an expanded team. Pick one new advisor to join you for Year 2.';
+    var backBtn = document.querySelector('#advisor-screen .btn-secondary');
+    if (backBtn) backBtn.style.display = 'none';
+    var contBtn = document.querySelector('#advisor-screen .btn-primary');
+    if (contBtn) { contBtn.textContent = 'Confirm Advisor \u2192 Begin Year 2'; contBtn.setAttribute('onclick', 'confirmExtraAdvisor()'); }
+  } else {
+    G.selectedAdvisors = [];
+  }
   var grid = document.getElementById('advisor-grid');
   if (!grid) return;
   var errEl = document.getElementById('advisor-err');
   if (errEl) {
-    errEl.textContent = 'Please select ' + slots + ' advisor' + (slots !== 1 ? 's' : '');
+    errEl.textContent = extraMode ? 'Please select one advisor' : ('Please select ' + slots + ' advisor' + (slots !== 1 ? 's' : ''));
     errEl.classList.remove('show');
   }
   grid.innerHTML = pool.map(function(adv) {
@@ -22377,6 +22399,32 @@ function renderAdvisorSelection() {
 }
 
 function toggleAdvisorSelection(advId) {
+  // Extra-advisor mode (post-promotion): single-pick, doesn't mutate the
+  // existing selectedAdvisors list until confirmExtraAdvisor runs.
+  if (G._extraAdvisorMode) {
+    if (G._extraAdvisorPick === advId) {
+      G._extraAdvisorPick = null;
+    } else {
+      G._extraAdvisorPick = advId;
+    }
+    var picked = G._extraAdvisorPick;
+    document.querySelectorAll('.advisor-card').forEach(function(card) {
+      var id = card.getAttribute('data-advisor-id');
+      card.classList.toggle('selected', id === picked);
+      card.classList.toggle('disabled', false);
+    });
+    var hintEl = document.getElementById('advisor-hint');
+    if (hintEl) {
+      if (picked) {
+        hintEl.innerHTML = '\u2713 Advisor selected \u2014 click <strong>Confirm Advisor</strong> to begin Year 2';
+        hintEl.style.borderColor = '#27ae60';
+      } else {
+        hintEl.innerHTML = 'Pick <strong>one</strong> new advisor to round out your team';
+        hintEl.style.borderColor = 'rgba(184,134,11,0.25)';
+      }
+    }
+    return;
+  }
   var slots = GAME_DATA.config.advisorSlots || 3;
   var idx = G.selectedAdvisors.indexOf(advId);
   if (idx >= 0) {
@@ -22413,6 +22461,48 @@ function toggleAdvisorSelection(advId) {
   if (errEl) {
     errEl.classList.remove('show');
   }
+}
+
+// Confirm the post-promotion extra advisor: add them to selectedAdvisors,
+// clear the extra-mode flags, reset the advisor-screen copy/buttons so
+// future sessions render normally, then kick off Year 2.
+function confirmExtraAdvisor() {
+  if (!G._extraAdvisorMode) return;
+  var pick = G._extraAdvisorPick;
+  if (!pick) {
+    var errEl = document.getElementById('advisor-err');
+    if (errEl) { errEl.textContent = 'Please select one advisor.'; errEl.classList.add('show'); }
+    return;
+  }
+  if (!G.selectedAdvisors) G.selectedAdvisors = [];
+  if (!G.selectedAdvisors.includes(pick)) G.selectedAdvisors.push(pick);
+  G._extraAdvisorMode = false;
+  G._extraAdvisorPick = null;
+  G.pendingExtraAdvisorSelection = false;
+  // Restore the screen's default copy + buttons for any future normal use.
+  var stepLabel = document.getElementById('advisor-step-label');
+  if (stepLabel) stepLabel.textContent = 'Step 4 of 4 \u2014 Advisory Team';
+  var heading = document.getElementById('advisor-heading');
+  if (heading) heading.textContent = 'Build Your Advisory Team';
+  var desc = document.getElementById('advisor-desc');
+  if (desc) desc.textContent = 'Choose the people who will counsel you through the hardest decisions. Your advisors shape your starting position and influence outcomes throughout the game.';
+  var backBtn = document.querySelector('#advisor-screen .btn-secondary');
+  if (backBtn) backBtn.style.display = '';
+  var contBtn = document.querySelector('#advisor-screen .btn-primary');
+  if (contBtn) { contBtn.textContent = 'Begin Your Tenure \u2192'; contBtn.setAttribute('onclick', 'goToBudget()'); }
+  // Start Year 2. Mirrors the "Begin Year 2" flow from the end-screen.
+  G.round = 0;
+  G.usedInboxIds = [];
+  G.budgetIncomeThisYear = 0;
+  G.budgetSpentThisYear = 0;
+  G.investmentsUsed = 0;
+  G.investmentUses = {};
+  var bc = GAME_DATA.config.budgetConfig || {};
+  var totalRounds = GAME_DATA.config.totalRounds || 6;
+  G.investmentPool = Math.floor(totalRounds * (bc.investmentsPerYear || 1));
+  G._coachWarningsThisRound = {};
+  showScreen('game-screen');
+  beginRound();
 }
 
 function validateAdvisorSelection() {
@@ -25913,8 +26003,13 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
       '\u2022 Office upgrade: your desk has been refreshed (fancy trim)<br>' +
       '</div>';
     var pb = document.createElement('button');
-    pb.className = 'btn btn-primary'; pb.textContent = 'Begin Year 2 \u2192';
-    pb.onclick = function() { G.round = 0; G.usedInboxIds = []; G.budgetIncomeThisYear = 0; G.budgetSpentThisYear = 0; G.investmentsUsed = 0; G.investmentUses = {}; var bc = GAME_DATA.config.budgetConfig || {}; var totalRounds = GAME_DATA.config.totalRounds || 6; G.investmentPool = Math.floor(totalRounds * (bc.investmentsPerYear || 1)); G._coachWarningsThisRound = {}; showScreen('game-screen'); beginRound(); };
+    pb.className = 'btn btn-primary'; pb.textContent = 'Choose Your New Advisor \u2192';
+    pb.onclick = function() {
+      G._extraAdvisorMode = true;
+      G._extraAdvisorPick = null;
+      showScreen('advisor-screen');
+      renderAdvisorSelection();
+    };
     actEl.appendChild(pb);
     var pb2 = document.createElement('button');
     pb2.className = 'btn btn-secondary'; pb2.textContent = 'Restart (Same Character)'; pb2.onclick = restartSameCharacter;

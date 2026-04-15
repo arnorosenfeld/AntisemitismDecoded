@@ -537,6 +537,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
               <option value="centrist">Centrist</option>
               <option value="conservative">Conservative</option>
             </select>
+            <select id="sc-filter-org" onchange="filterScenarios()" style="font-size:11px;padding:5px" title="Filter scenarios that apply to a specific organization (includes universal 'all' scenarios)">
+              <option value="">All Orgs (Applies To)</option>
+            </select>
             <select id="sc-filter-sm" onchange="filterScenarios()" style="font-size:11px;padding:5px">
               <option value="">All Sub-Missions</option>
               <option value="_none">No Sub-Mission</option>
@@ -21190,6 +21193,7 @@ function addSubMission() {
 // ═══ SCENARIOS ═══ (#2,6,7: categories, 3-tier alignment, multi-outcomes, complexity)
 function populateScenarios() {
   refreshSubMissionFilters();
+  refreshScenarioOrgFilter();
   var scenarios = GD.scenarios || [];
   var grouped = document.getElementById('sc-view-grouped')?.checked;
   var html = '';
@@ -21247,7 +21251,36 @@ function scenarioMatchesFilters(s) {
   var groupFilter = document.getElementById('sc-filter-group')?.value||'';
   if(groupFilter === 'grouped' && !s.groupId) return false;
   if(groupFilter === 'standalone' && s.groupId) return false;
+  // "Applies To" org filter: includes scenarios whose categories contains
+  // 'all' (universal) OR intersects with the chosen org's scenarioCategories.
+  // Mirrors the engine's scenarioApplies() logic from index.html.
+  var orgFilter = document.getElementById('sc-filter-org')?.value||'';
+  if(orgFilter && !scenarioAppliesToOrg(s, orgFilter)) return false;
   return true;
+}
+
+// Returns true if this scenario would be eligible for the given org id,
+// matching the runtime rule: categories includes 'all' OR intersects the
+// org's scenarioCategories.
+function scenarioAppliesToOrg(scenario, orgId) {
+  var cats = scenario.categories || ['all'];
+  if (cats.includes('all')) return true;
+  var allOrgs = [].concat(GD.organizations||[], GD.nationalOrganizations||[]);
+  var org = allOrgs.find(function(o){ return o.id === orgId; });
+  if (!org) return false;
+  var orgCats = org.scenarioCategories || org.politicalTilt || [];
+  return cats.some(function(c){ return orgCats.includes(c); });
+}
+
+// Populate the org filter dropdown from the currently-loaded organizations.
+function refreshScenarioOrgFilter() {
+  var sel = document.getElementById('sc-filter-org');
+  if (!sel) return;
+  var val = sel.value;
+  var allOrgs = [].concat(GD.organizations||[], GD.nationalOrganizations||[]);
+  sel.innerHTML = '<option value="">All Orgs (Applies To)</option>' +
+    allOrgs.map(function(o){ return '<option value="'+esc(o.id)+'">Applies to: '+esc(o.name||o.id)+'</option>'; }).join('');
+  sel.value = val;
 }
 
 // Populate the sub-mission filter dropdown dynamically from GD.subMissions

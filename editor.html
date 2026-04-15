@@ -521,7 +521,13 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
         <!-- SUB-MISSIONS PANEL -->
         <div id="panel-submissions" class="panel">
-          <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Sub-missions are active campaigns the player pursues alongside the main scenario loop — each with checkpoints, a deadline, and success/failure outcomes. Tagged scenarios, inbox messages, social posts, and call topics only appear when the sub-mission is active.</p>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:12px">Sub-missions are active campaigns the player pursues alongside the main scenario loop — each with checkpoints, a deadline, and success/failure outcomes. Tagged scenarios, inbox messages, social posts, and call topics only appear when the sub-mission is active.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px;background:#f5f4f0;border:1px solid var(--border)">
+            <input type="text" id="sm-search" placeholder="Search by name or ID..." oninput="filterSubMissions()" style="flex:1;min-width:160px;padding:6px 10px;font-size:12px;border:1px solid var(--border)" />
+            <select id="sm-filter-org" onchange="filterSubMissions()" style="font-size:11px;padding:5px" title="Filter sub-missions that apply to a specific organization">
+              <option value="">All Orgs (Applies To)</option>
+            </select>
+          </div>
           <div class="item-list" id="submissions-list"></div>
           <button class="add-btn" onclick="addSubMission()">+ Add Sub-Mission</button>
         </div>
@@ -569,6 +575,9 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
               <option value="progressive">Progressive</option>
               <option value="centrist">Centrist</option>
               <option value="conservative">Conservative</option>
+            </select>
+            <select id="ib-filter-org" onchange="filterInbox()" style="font-size:11px;padding:5px" title="Filter inbox messages that apply to a specific organization (includes universal 'all' scenarios)">
+              <option value="">All Orgs (Applies To)</option>
             </select>
             <select id="ib-filter-cplx" onchange="filterInbox()" style="font-size:11px;padding:5px">
               <option value="">All Complexity</option>
@@ -21017,11 +21026,25 @@ function saveSecurityConfig() {
 }
 
 // ═══ SUB-MISSIONS ═══
+function filterSubMissions() { populateSubMissions(); }
+
+function subMissionMatchesFilters(sm) {
+  var search = (document.getElementById('sm-search')?.value || '').toLowerCase();
+  if (search && !(sm.name || '').toLowerCase().includes(search) && !(sm.id || '').toLowerCase().includes(search)) return false;
+  var orgFilter = document.getElementById('sm-filter-org')?.value || '';
+  if (orgFilter && !scenarioAppliesToOrg(sm, orgFilter)) return false;
+  return true;
+}
+
 function populateSubMissions() {
   if (!GD.subMissions) GD.subMissions = [];
+  refreshOrgFilter('sm-filter-org');
   var list = document.getElementById('submissions-list');
   if (!list) return;
-  list.innerHTML = GD.subMissions.map(function(sm, i) {
+  list.innerHTML = GD.subMissions.filter(subMissionMatchesFilters).map(function(sm, iAll) {
+    // iAll is the post-filter index; we need the ORIGINAL index into GD.subMissions
+    // for edit/delete operations to point at the right entry. Resolve it here.
+    var i = GD.subMissions.indexOf(sm);
     var taggedScenarios = (GD.scenarios || []).filter(function(s) { return s.subMissionId === sm.id; });
     var taggedInbox = (GD.inboxScenarios || []).filter(function(s) { return s.subMissionId === sm.id; });
     var taggedPosts = (GD.socialMediaPosts || []).filter(function(p) { return p.subMissionId === sm.id; });
@@ -21259,10 +21282,17 @@ function scenarioMatchesFilters(s) {
   return true;
 }
 
-// Returns true if this scenario would be eligible for the given org id,
-// matching the runtime rule: categories includes 'all' OR intersects the
-// org's scenarioCategories.
+// Returns true if this scenario/inbox/sub-mission would apply to the given
+// org id. Two authoring conventions are honored:
+// 1) Explicit applicableOrgs list — if set and non-empty, require orgId to
+//    be in it (this is how inbox items and sub-missions express org gating).
+// 2) Otherwise fall back to the engine's scenarioApplies rule — categories
+//    includes 'all' OR intersects the org's scenarioCategories.
 function scenarioAppliesToOrg(scenario, orgId) {
+  var ao = scenario.applicableOrgs;
+  if (Array.isArray(ao) && ao.length > 0) {
+    return ao.includes(orgId);
+  }
   var cats = scenario.categories || ['all'];
   if (cats.includes('all')) return true;
   var allOrgs = [].concat(GD.organizations||[], GD.nationalOrganizations||[]);
@@ -21613,6 +21643,7 @@ function addScenario() {
 
 // ═══ INBOX ═══
 function populateInbox() {
+  refreshOrgFilter('ib-filter-org');
   var scenarios = GD.inboxScenarios || [];
   var grouped = document.getElementById('ib-view-grouped')?.checked;
   var html = '';
@@ -21657,10 +21688,24 @@ function inboxMatchesFilters(s) {
   var groupFilter = document.getElementById('ib-filter-group')?.value||'';
   if(groupFilter === 'grouped' && !s.groupId) return false;
   if(groupFilter === 'standalone' && s.groupId) return false;
+  var orgFilter = document.getElementById('ib-filter-org')?.value||'';
+  if(orgFilter && !scenarioAppliesToOrg(s, orgFilter)) return false;
   return true;
 }
 
 function filterInbox() { populateInbox(); }
+
+// Populate the "Applies To" org dropdown for any panel (inbox, scenarios,
+// sub-missions) using the shared refreshOrgFilter pattern.
+function refreshOrgFilter(selectId) {
+  var sel = document.getElementById(selectId);
+  if (!sel) return;
+  var val = sel.value;
+  var allOrgs = [].concat(GD.organizations||[], GD.nationalOrganizations||[]);
+  sel.innerHTML = '<option value="">All Orgs (Applies To)</option>' +
+    allOrgs.map(function(o){ return '<option value="'+esc(o.id)+'">Applies to: '+esc(o.name||o.id)+'</option>'; }).join('');
+  sel.value = val;
+}
 
 function duplicateInboxAsVariant(i) {
   var list = GD.inboxScenarios;

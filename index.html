@@ -1933,9 +1933,9 @@ const GAME_DATA = {
     "traitsToSelect": 2,
     "missionStartStars": 3,
     "missionMaxStars": 5,
-    "failureBarThreshold": 30,
-    "failureScoreThreshold": 30,
-    "promotionThreshold": 75,
+    "failureBarThreshold": 15,
+    "failureScoreThreshold": 40,
+    "promotionThreshold": 80,
     "inboxPerRound": 2,
     "scoreWeights": {
       "trust": 0.25,
@@ -2360,7 +2360,7 @@ const GAME_DATA = {
     "advisorBonusStacking": "best",
     "gamePassword": "playtest2026",
     "startingBudget": 100,
-    "dangerOrangeThreshold": 75,
+    "dangerOrangeThreshold": 25,
     "dangerRedThreshold": 20,
     "investmentsPerYear": 2,
     "nationalInvestmentsPerYear": 4,
@@ -22766,9 +22766,11 @@ function checkCoachingWarnings() {
     var yellowKey = 'yellow_' + s.id;
     var penultKey = 'penult_' + s.id;
     
-    if (val <= 25 && !G._coachWarningsLifetime[redKey] && !G._coachWarningsThisRound[redKey]) {
+    // Red danger: stat has dropped to 20 or below (5 points above auto-fire).
+    // Yellow warning: 25 or below — first signal to pay attention.
+    if (val <= 20 && !G._coachWarningsLifetime[redKey] && !G._coachWarningsThisRound[redKey]) {
       warnings.push({ msg: pickCoachMsg('stat_red').replace('{stat}', s.label), level: 'red', priority: 1, key: redKey });
-    } else if (val <= 30 && !G._coachWarningsLifetime[yellowKey] && !G._coachWarningsThisRound[yellowKey]) {
+    } else if (val <= 25 && !G._coachWarningsLifetime[yellowKey] && !G._coachWarningsThisRound[yellowKey]) {
       warnings.push({ msg: pickCoachMsg('stat_yellow').replace('{stat}', s.label), level: 'yellow', priority: 2, key: yellowKey });
     } else if (isPenultimate && !isFinalRound && val < 35 && !G._coachWarningsLifetime[penultKey] && !G._coachWarningsThisRound[penultKey]) {
       warnings.push({ msg: pickCoachMsg('penultimate_warning').replace('{stat}', s.label), level: 'yellow', priority: 3, key: penultKey });
@@ -24220,6 +24222,24 @@ function updateStatusBar(text, showEndBtn) {
   if (b) b.style.display = showEndBtn ? '' : 'none';
 }
 
+// Pin the invest strip's bottom edge to sit exactly above the HUD's top
+// edge plus a small gap. Hard-coded bottom values drift whenever HUD
+// padding or content changes, so we measure the HUD and compute the
+// offset on every sizeDeskScene tick.
+function positionInvestStrip() {
+  var hud = document.getElementById('hud-el');
+  var invest = document.getElementById('invest-strip');
+  if (!hud || !invest) return;
+  if (getComputedStyle(hud).display === 'none') return;
+  var r = hud.getBoundingClientRect();
+  if (r.height === 0) return;
+  // HUD is position:fixed at bottom:32 with dynamic content height.
+  // The invest strip's bottom (distance from viewport bottom) should equal
+  // (viewport bottom - HUD top) + 4px gap.
+  var desiredBottom = (window.innerHeight - r.top) + 4;
+  invest.style.bottom = desiredBottom + 'px';
+}
+
 // Position the floating status-bar "bug" in the top-left of the game scene,
 // just below whichever top strips are currently visible (security bar,
 // coalition strip, sub-mission strip). Re-runs whenever sizeDeskScene runs
@@ -24256,6 +24276,8 @@ function sizeDeskScene() {
   positionStatusBar();
   // Then the clipboard bug, which sits directly beneath the status bar.
   positionClipboardBug();
+  // And re-pin the invest strip to the HUD's actual top edge.
+  positionInvestStrip();
 
   // Measure the actual TOP of the highest-positioned fixed bottom chrome
   // element. Whichever bottom-chrome element is highest (farthest from the

@@ -3000,22 +3000,23 @@ const GAME_DATA = {
   "missions": [
     {
       "id": "antisemitism_all",
-      "name": "Combat Antisemitism Across the Political Spectrum",
-      "description": "Your organization fights antisemitism wherever it comes from — far right, far left, and everywhere in between.",
+      "name": "Combat Antisemitism Across the Spectrum",
+      "description": "You take a \"swivel-headed\" approach to antisemitism, fighting it on the right, left or wherever else it emerges without focusing on one of these threats over another.",
       "availableTo": [
         "left",
         "right",
         "center"
       ],
       "statBonus": {
-        "trust": 5,
-        "morale": 2
+        "trust": 3,
+        "morale": 2,
+        "donors": 3
       }
     },
     {
       "id": "antisemitism_left",
       "name": "Counter Antisemitism and Anti-Zioinsm from the Left",
-      "description": "You focus on left-wing antisemitism — in progressive movements, on campuses, and in political discourse.",
+      "description": "Your organization believes that antisemitism related to Israel — which you believe includes anti-Zionism — is the greatest threat to the Jewish people.",
       "availableTo": [
         "right",
         "center"
@@ -3027,8 +3028,8 @@ const GAME_DATA = {
     },
     {
       "id": "antisemitism_right",
-      "name": "Counter Far-Right Antisemitism and White Supremacy",
-      "description": "You focus on right-wing and white nationalist antisemitism — the most statistically deadly threat to Jewish Americans.",
+      "name": "Fight Far-Right Antisemitism and White Supremacy",
+      "description": "Your greatest priority is tanding up to the far-right because of the threat you think white supremacy and Christian nationalism pose and existential threat to Jews and other vulnerable groups.",
       "availableTo": [
         "left",
         "center"
@@ -3042,20 +3043,20 @@ const GAME_DATA = {
     {
       "id": "israel_security",
       "name": "Defend Israel",
-      "description": "Your primary mission is securing American political and financial support for Israel.",
+      "description": "Your top concern is eroding support for Israel among Americans and the U.S. government, and your organization is focused on stopping this shift.",
       "availableTo": [
         "right",
         "center"
       ],
       "statBonus": {
-        "trust": -5,
+        "trust": -3,
         "donors": 15
       }
     },
     {
       "id": "israel_peace",
       "name": "Advocate for Palestinian Rights",
-      "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
+      "description": "You believe American Jews have a moral obligation to oppose Israeli human rights abuses, and your organization pushes for an end to the occupation and limiting U.S. support for Israel.",
       "availableTo": [
         "left",
         "center"
@@ -3067,23 +3068,9 @@ const GAME_DATA = {
       }
     },
     {
-      "id": "social_justice",
-      "name": "Jewish Social Justice Advocacy",
-      "description": "You ground your work in Jewish values — tikkun olam and tzedakah — applied to racial justice, immigrant rights, and economic equality.",
-      "availableTo": [
-        "left",
-        "center"
-      ],
-      "statBonus": {
-        "trust": 2,
-        "morale": 8,
-        "donors": -3
-      }
-    },
-    {
       "id": "diaspora_unity",
-      "name": "Unite the Jewish Diaspora",
-      "description": "You work to build bridges across denominations, politics, and geographies.",
+      "name": "Keep the Community Together",
+      "description": "The center must hold. That's your organization's guiding principle and you'll do everything possible to make sure political divisions — over Israel or domestic politics — don't break the Jewish community apart.",
       "availableTo": [
         "center"
       ],

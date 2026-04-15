@@ -369,8 +369,10 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
    height (~60 after trimming) = 92. padding tightened to ~5% on top/bottom. */
 /* Fixed strip height so the flex align-items: center inside has a clear
    vertical box to center against (instead of the box being
-   content-sized and perturbed by pill/label line-box quirks). */
-.invest-strip { background: #283248; padding: 0 20px; position: fixed; bottom: 92px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); overflow: hidden; height: 34px; display: flex; align-items: center; }
+   content-sized and perturbed by pill/label line-box quirks). Faint
+   border-bottom matches the security-bar / strips divider pattern so the
+   boundary with the HUD reads as an intentional seam, not a gap. */
+.invest-strip { background: #283248; padding: 0 20px; position: fixed; bottom: 92px; left: 0; right: 0; z-index: 199; border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.08); overflow: hidden; height: 34px; display: flex; align-items: center; }
 /* Invest strip only belongs to the desk view. On any non-desk screen
    (scenarios, inbox, outcome, conversation, round transition, end screen)
    hide it so the content area has extra vertical room and there's no
@@ -782,11 +784,13 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .act-budget-cost.unaffordable{color:#c0392b;opacity:0.7}
 .choice-budget-tag{display:inline-block;font-size:10px;font-weight:700;color:var(--gold);background:rgba(184,134,11,0.08);padding:2px 7px;border-radius:3px;margin-left:6px}
 .choice-budget-tag.unaffordable{color:#c0392b;background:rgba(192,57,43,0.08)}
-/* Locked choice: use color/bg instead of opacity so the lock banner inside
-   the button stays crisp and readable against the muted background. */
-.ev-choice.budget-locked { opacity: 1; cursor: not-allowed; background: #e8dede; color: #8a7878; border-color: #cfc0c0; }
-.ev-choice.budget-locked .chip, .ev-choice.budget-locked .choice-budget-tag, .ev-choice.budget-locked .choice-clout-tag, .ev-choice.budget-locked .choice-pol-tag, .ev-choice.budget-locked .mission-aligned-badge, .ev-choice.budget-locked .advisor-rec-badge { opacity: 0.55; }
-.ev-choice.budget-locked .choice-lock-banner { background: #8b2020; color: #fff; opacity: 1; position: relative; z-index: 2; padding: 6px 12px; font-size: 12px; letter-spacing: 0.3px; }
+/* Locked choice: button appears disabled (grayscale + muted text) while the
+   absolutely-positioned lock banner at its top stays crisp. The button has
+   position: relative so the banner's position: absolute anchors correctly.
+   padding-top reserves room for the banner so it doesn't cover the text. */
+.ev-choice { position: relative; }
+.ev-choice.budget-locked { cursor: not-allowed; background: #ece8e2; color: #9a948b; border-color: #d5d0c8; padding-top: 34px; filter: grayscale(0.6); }
+.ev-choice.budget-locked .ev-key, .ev-choice.budget-locked .chip, .ev-choice.budget-locked .choice-budget-tag, .ev-choice.budget-locked .choice-clout-tag, .ev-choice.budget-locked .choice-pol-tag, .ev-choice.budget-locked .mission-aligned-badge, .ev-choice.budget-locked .advisor-rec-badge { opacity: 0.55; }
 .budget-summary{background:rgba(245,240,225,0.5);border:1px solid var(--gold-light,#d4b872);padding:12px 16px;margin:12px 0;font-size:12px;line-height:1.6}
 .budget-summary strong{color:var(--ink)}
 
@@ -1164,7 +1168,11 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .choice-trait-tag { display: inline-block; font-size: 10px; font-weight: 600; margin-top: 4px; }
 .choice-trait-tag.locked { color: #999; }
 .choice-trait-tag.unlocked { color: #2d6a4f; }
-.choice-lock-banner { display: block; background: #ead4d4; color: #4a1a1a; font-size: 11px; font-weight: 700; padding: 4px 10px; margin: -8px -14px 8px -14px; border-radius: 6px 6px 0 0; text-align: center; }
+/* Lock banner: rides the top edge of a locked choice as a crisp, full-width
+   dark-red strip. Because the button itself uses a light grayscale filter
+   to signal "disabled", the banner sits at a higher stacking context with
+   its own filter: none so its color stays saturated and readable. */
+.choice-lock-banner { display: block; background: #8b2020; color: #fff; font-size: 11px; font-weight: 700; padding: 6px 12px; text-align: center; letter-spacing: 0.3px; position: absolute; top: 0; left: 0; right: 0; z-index: 2; border-radius: 0; filter: none; margin: 0; }
 
 /* ═══ STAT MOMENTUM ═══ */
 .stat-trend{font-size:10px;margin-left:4px;font-weight:700}
@@ -24349,10 +24357,9 @@ function updateStatusBar(text, showEndBtn) {
   if (b) b.style.display = showEndBtn ? '' : 'none';
 }
 
-// Pin the invest strip's bottom edge to sit exactly above the HUD's top
-// edge plus a small gap. Hard-coded bottom values drift whenever HUD
-// padding or content changes, so we measure the HUD and compute the
-// offset on every sizeDeskScene tick.
+// Pin the invest strip's bottom edge flush to the HUD's top edge (no gap) —
+// a 1px border-bottom on the strip provides a faint dividing line that
+// matches the other bar separators (security-bar border-bottom etc.).
 function positionInvestStrip() {
   var hud = document.getElementById('hud-el');
   var invest = document.getElementById('invest-strip');
@@ -24360,10 +24367,7 @@ function positionInvestStrip() {
   if (getComputedStyle(hud).display === 'none') return;
   var r = hud.getBoundingClientRect();
   if (r.height === 0) return;
-  // HUD is position:fixed at bottom:32 with dynamic content height.
-  // The invest strip's bottom (distance from viewport bottom) should equal
-  // (viewport bottom - HUD top) + 4px gap.
-  var desiredBottom = (window.innerHeight - r.top) + 4;
+  var desiredBottom = window.innerHeight - r.top;
   invest.style.bottom = desiredBottom + 'px';
 }
 
@@ -24887,7 +24891,7 @@ function renderScenario(s){
           if (traitLocked) {
             var traitObj = (GAME_DATA.characterTraits||[]).find(function(t){return t.id===c.requiresUnlock});
             var traitName = traitObj ? traitObj.name : (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
-            traitTag = '<div class="choice-lock-banner">\uD83D\uDD12 Requires ' + traitName + '</div>';
+            traitTag = '<div class="choice-lock-banner">\uD83D\uDD12 Requires the ' + traitName + ' background</div>';
           } else if (c.requiresUnlock) {
             var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
             traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';
@@ -25094,7 +25098,7 @@ function renderInbox(s){
           if (traitLocked) {
             var traitObj = (GAME_DATA.characterTraits||[]).find(function(t){return t.id===c.requiresUnlock});
             var traitName = traitObj ? traitObj.name : (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
-            traitTag = '<div class="choice-lock-banner">\uD83D\uDD12 Requires ' + traitName + '</div>';
+            traitTag = '<div class="choice-lock-banner">\uD83D\uDD12 Requires the ' + traitName + ' background</div>';
           } else if (c.requiresUnlock) {
             var traitName = (c.requiresUnlock || '').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
             traitTag = '<span class="choice-trait-tag unlocked">\u2713 ' + traitName + '</span>';

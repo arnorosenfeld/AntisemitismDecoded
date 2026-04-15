@@ -21472,6 +21472,10 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
   </div>`;
 }
 function addOutcome(si, ci, prefix) {
+  // Harvest all currently-open form inputs into GD first so unsaved edits
+  // (choice text, other outcome text/effects, body, etc.) survive the
+  // repopulate that follows the mutation.
+  try { saveScenario(si, prefix); } catch (e) { /* best-effort */ }
   const list = getListForPrefix(prefix);
   const c = list[si].choices[ci];
   if(!c.outcomes) c.outcomes=[{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
@@ -21482,6 +21486,8 @@ function addOutcome(si, ci, prefix) {
   setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
 }
 function deleteOutcome(si,ci,oi,prefix) {
+  // Same protective harvest before the destructive mutation.
+  try { saveScenario(si, prefix); } catch (e) { /* best-effort */ }
   const list = getListForPrefix(prefix);
   if((list[si].choices[ci].outcomes||[]).length<=1) return;
   list[si].choices[ci].outcomes.splice(oi,1);
@@ -21614,6 +21620,8 @@ function repopulateForPrefix(prefix){
   else if(prefix==='bn') populateBreaking();
 }
 function addChoice(si, prefix) {
+  // Preserve unsaved form values before repopulate wipes them.
+  try { saveScenario(si, prefix); } catch (e) {}
   const list = getListForPrefix(prefix);
   list[si].choices.push({id:'c'+list[si].choices.length,text:'',requiresUnlock:null,missionAligned:[],missionOpposed:[],outcomes:[{text:'',effects:{},weight:100,conditions:[],contextNote:''}]});
   localStorage.setItem('gd_cache',JSON.stringify(GD));
@@ -21622,6 +21630,7 @@ function addChoice(si, prefix) {
   setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
 }
 function deleteChoice(si,ci,prefix) {
+  try { saveScenario(si, prefix); } catch (e) {}
   const list = getListForPrefix(prefix);
   list[si].choices.splice(ci,1);
   localStorage.setItem('gd_cache',JSON.stringify(GD));

@@ -23113,13 +23113,28 @@ function weightedPickMultiple(scenarios, count) {
 
 function computeLiveGrade() {
   var w = GAME_DATA.config.scoreWeights || GAME_DATA.scoring.weights || {};
+  var jsiWeight = typeof GAME_DATA.config.jewishSecurityWeight === 'number' ? GAME_DATA.config.jewishSecurityWeight : 0.25;
   var score = 0, tw = 0;
   GAME_DATA.stats.forEach(function(s) {
     var wt = w[s.id] || 0.25;
     score += (G.stats[s.id] || 0) * wt;
     tw += wt;
   });
+  // Jewish Security component — 25% of the board grade by default. Measured
+  // as the DELTA from the game's starting composite, mapped around a 50
+  // baseline: unchanged = 50 (neutral), +1 point of JSI = +1 score point
+  // on the component, -1 = -1, clamped to [0,100]. So improving Jewish
+  // Security during your tenure earns credit; degrading it costs points.
+  var jsiScore = 50;
+  if (G.security && G._securityStart) {
+    var startComp = calcSecurityCompositeFromLeaves(G._securityStart, G.security.weights);
+    var currentComp = calcSecurityComposite();
+    jsiScore = Math.max(0, Math.min(100, 50 + (currentComp - startComp)));
+  }
+  score += jsiScore * jsiWeight;
+  tw += jsiWeight;
   if (tw > 0) score = score / tw;
+  var baseScore = score; // pre-star-bonus for the hover breakdown
   // Add mission star bonus
   var starBonus = (G.missionStars || 0) * (GAME_DATA.config.missionStarPoints || 1);
   score = Math.min(100, Math.round(score + starBonus));
@@ -23143,7 +23158,7 @@ function computeLiveGrade() {
     if (score >= bandMin + 7) fineGrade = grade + '+';
     else if (score < bandMin + 3) fineGrade = grade + '-';
   }
-  return { score: score, grade: grade, fineGrade: fineGrade, starBonus: starBonus, baseScore: Math.round(score - starBonus) };
+  return { score: score, grade: grade, fineGrade: fineGrade, starBonus: starBonus, baseScore: Math.round(score - starBonus), jsiScore: Math.round(jsiScore), jsiWeight: jsiWeight };
 }
 
 // Bounding boxes of each grade within art/grades.png (6000x3375), as % of
@@ -23285,7 +23300,13 @@ function updateHUD(){
       var wt = (GAME_DATA.config.scoreWeights || GAME_DATA.scoring.weights || {})[s.id] || 0.25;
       statLines += '<div class="grade-detail-row"><span>' + s.label + '</span><span>' + v + ' × ' + Math.round(wt * 100) + '%</span></div>';
     });
-    gradeBody.innerHTML = statLines +
+    // Jewish Security component — shows as a separate row with its weight.
+    var jsiRow = '';
+    if (typeof liveGrade.jsiScore === 'number') {
+      var jsiW = Math.round((liveGrade.jsiWeight || 0.25) * 100);
+      jsiRow = '<div class="grade-detail-row"><span>Jewish Security Δ</span><span>' + liveGrade.jsiScore + ' × ' + jsiW + '%</span></div>';
+    }
+    gradeBody.innerHTML = statLines + jsiRow +
       '<div class="grade-detail-row" style="border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Base Score</span><span>' + liveGrade.baseScore + '</span></div>' +
       '<div class="grade-detail-row"><span>Mission Stars (' + (G.missionStars||0) + ' × ' + (GAME_DATA.config.missionStarPoints||1) + ')</span><span>+' + liveGrade.starBonus + '</span></div>' +
       '<div class="grade-detail-row" style="font-weight:700;border-top:1px solid rgba(255,255,255,0.15);padding-top:4px;margin-top:4px"><span>Total</span><span>' + liveGrade.score + ' (' + (liveGrade.fineGrade || liveGrade.grade) + ')</span></div>';
@@ -23592,10 +23613,15 @@ function getDeskMoraleKey(morale) {
 function updateDeskSkinAndMorale() {
   var donors = (G.stats && typeof G.stats.donors === 'number') ? G.stats.donors : 0;
   var currentSkin = G.deskSkin || 'basic';
-  // Donor hysteresis: basic -> fancy at >=75, fancy -> basic at <35
-  if (currentSkin === 'basic' && donors >= 75) G.deskSkin = 'fancy';
-  else if (currentSkin === 'fancy' && donors < 35) G.deskSkin = 'basic';
-  else G.deskSkin = currentSkin;
+  // Promotion-locked desks keep their upgrade regardless of donor swings.
+  if (G._deskSkinLocked) {
+    G.deskSkin = currentSkin;
+  } else {
+    // Donor hysteresis: basic -> fancy at >=75, fancy -> basic at <35
+    if (currentSkin === 'basic' && donors >= 75) G.deskSkin = 'fancy';
+    else if (currentSkin === 'fancy' && donors < 35) G.deskSkin = 'basic';
+    else G.deskSkin = currentSkin;
+  }
   // Morale: plain only in round 1, morale-driven from round 2+
   if ((G.round || 0) >= 2) {
     var morale = (G.stats && typeof G.stats.morale === 'number') ? G.stats.morale : 50;
@@ -25119,17 +25145,55 @@ function applyEffects(fx, choice, scenario){
 
 // ═══════════════ FAILURE ═══════════════
 function checkFailure(){
-  const thr=GAME_DATA.config.failureBarThreshold||20;
+  const thr=GAME_DATA.config.failureBarThreshold||15;
   const bad=GAME_DATA.stats.find(s=>(G.stats[s.id]||0)<=thr);
   if(bad){
     renderEndScreen(0,true,`Your ${bad.label} stat fell to a critical level. The board has called an emergency meeting.`);
     showScreen('end-screen');
     return true;
   }
+  // Jewish Security category-collapse failure: any individual category score
+  // (not leaf — the weighted category composite) falling to 15 or below
+  // triggers a mid-year loss. The player let a whole dimension of Jewish
+  // life in America collapse on their watch.
+  var jsCatThr = GAME_DATA.config.jsCategoryFailureThreshold || 15;
+  if (G.security) {
+    var jsCfg = GAME_DATA.config.jewishSecurity || {};
+    var fallen = null;
+    (jsCfg.categories || []).forEach(function(cat) {
+      if (fallen) return;
+      var catScore = calcSecurityCategoryScore(cat.id);
+      if (catScore <= jsCatThr) fallen = cat;
+    });
+    if (fallen) {
+      renderEndScreen(0, true, 'Jewish ' + (fallen.name || fallen.id) + ' in America has collapsed on your watch. The board has called an emergency meeting.');
+      showScreen('end-screen');
+      return true;
+    }
+  }
   // Fire coaching warnings after each action (round 2+ only). Round 1 is a
   // learning round — only Avi's tutorial fires on launch, so stat warnings
   // don't pile on top of the onboarding messages.
   if ((G.round || 1) > 1) checkCoachingWarnings();
+  return false;
+}
+
+// Round-end only: if the overall Jewish Security composite has dropped by
+// more than 25% from the game's starting value, the player has failed
+// their core mandate even if their internal stats look fine. Fires from
+// the round-transition flow, not after every action.
+function checkJsiRoundEndFailure() {
+  if (!G.security || !G._securityStart) return false;
+  var startComp = calcSecurityCompositeFromLeaves(G._securityStart, G.security.weights);
+  var currentComp = calcSecurityComposite();
+  if (startComp <= 0) return false;
+  var maxDropPct = GAME_DATA.config.jsiMaxDropPercent || 25;
+  var dropPct = (startComp - currentComp) / startComp * 100;
+  if (dropPct > maxDropPct) {
+    renderEndScreen(0, true, 'Jewish Security in America has deteriorated more than ' + maxDropPct + '% under your leadership (from ' + startComp + ' to ' + currentComp + '). The board has lost confidence and ended your tenure.');
+    showScreen('end-screen');
+    return true;
+  }
   return false;
 }
 
@@ -25143,6 +25207,9 @@ function endRound(){
 function showRoundTransition() {
   var el = document.getElementById('game-inner');
   if (!el) return;
+  // Round-end-only Jewish Security failure check: overall composite must
+  // not have dropped more than 25% from the game's start.
+  if (checkJsiRoundEndFailure()) return;
   updateStatusBar('End of Round ' + (G.round || 1), false);
 
   var totalRounds = GAME_DATA.config.totalRounds || 4;
@@ -25508,41 +25575,55 @@ function continueFromTransition() {
 
 // ═══════════════ YEAR END ═══════════════
 function endYear(){
-  const w=GAME_DATA.config.scoreWeights;
-  let score=0,tw=0;
-  GAME_DATA.stats.forEach(s=>{const wt=w[s.id]||0.25;score+=(G.stats[s.id]||0)*wt;tw+=wt;});
-  score=Math.round(score/tw);
-  
-  // Budget health bonus/penalty (capped at +/- 5 points)
+  // Use the same scoring as the live Board Rating — includes stat
+  // weights + Jewish Security delta + mission star bonus.
+  var lg = computeLiveGrade();
+  var score = lg.score;
+
+  // Budget health bonus/penalty (capped at +/- 5 points) — applied on top
+  // of the live-grade score since budget is a year-end-only modifier.
   var budgetMod = G.budget >= 60 ? 5 : G.budget >= 40 ? 2 : G.budget >= 20 ? 0 : G.budget >= 10 ? -3 : -5;
-  score += budgetMod;
+  score = Math.max(0, Math.min(100, score + budgetMod));
 
-
-  // #3: Mission star scoring
-  const starPoints = GAME_DATA.config.missionStarPoints || 1;
-  const starBonus = G.missionStars * starPoints;
-  score += starBonus;
-  score = Math.min(100, score); // cap at 100
-  
-  // #3: 0 mission stars = automatic loss
+  // 0 mission stars = automatic loss (you wandered from your stated mission)
   if(G.missionStars <= 0){
     renderEndScreen(score, true, 'You lost all mission stars. Without a clear mission, your board has lost confidence in your leadership.');
     showScreen('end-screen');
     return;
   }
-  
-  const fail=GAME_DATA.config.failureScoreThreshold||40;
-  const promo=GAME_DATA.config.promotionThreshold||80;
-  if(score<fail){renderEndScreen(score,false,null,false,false,false);showScreen('end-screen');return;}
-  // Promotion system removed in the 3-org reduction — a high score now
-  // shows the retirement / distinguished-career end screen instead of
-  // offering a promotion to a national org.
-  if(score>=promo){
-    renderEndScreen(score,false,null,true,false,false);
-    showScreen('end-screen');return;
+
+  const fail = GAME_DATA.config.failureScoreThreshold || 40;
+  const promo = GAME_DATA.config.promotionThreshold || 80;
+  if (score < fail) {
+    renderEndScreen(score, false, null, false, false, false);
+    showScreen('end-screen');
+    return;
   }
-  renderEndScreen(score,false,null,false,false,true);
+  if (score >= promo) {
+    // Promotion: expanded resources for Year 2.
+    applyPromotionRewards();
+    renderEndScreen(score, false, null, false, true, false);
+    showScreen('end-screen');
+    return;
+  }
+  // Contract renewed — continue to another year at the same org with no bonuses.
+  renderEndScreen(score, false, null, false, false, true);
   showScreen('end-screen');
+}
+
+// Apply the one-time bonuses granted on promotion (year-end score >= 80):
+// expanded resources + upgraded office.
+function applyPromotionRewards() {
+  // +100 gelt bonus
+  G.budget = (G.budget || 0) + 100;
+  G.budgetIncomeThisYear = (G.budgetIncomeThisYear || 0) + 100;
+  // +1 advisor slot so the player can add a new advisor at the start of Year 2
+  G.advisorSlotBonus = (G.advisorSlotBonus || 0) + 1;
+  G.pendingExtraAdvisorSelection = true;
+  // Upgrade the office: promote to the fancy desk skin (overriding donor
+  // hysteresis so the player keeps it regardless of donor fluctuation).
+  G.deskSkin = 'fancy';
+  G._deskSkinLocked = true;
 }
 
 function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=false,anotherYear=false){
@@ -25819,9 +25900,28 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
   const actEl=document.getElementById('end-actions');
   actEl.innerHTML='';
-  // Promotion branch removed — 'promotion' flag is vestigial and never true.
   if(retirement){
     actEl.innerHTML='<button class="btn btn-gold" onclick="restartSameCharacter()">Play Again (Same Character) \u2192</button><button class="btn btn-secondary" onclick="resetGame()">New Character</button>';
+  } else if(promotion){
+    // Promotion: continue to Year 2 with the already-applied bonuses
+    // (advisorSlotBonus, +100 gelt, fancy desk). Same flow as anotherYear
+    // except the messaging emphasizes the upgrade.
+    actEl.innerHTML = '<div style="background:#fef3d0;border:1px solid #d4a843;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.5;color:#7a5800;text-align:left;border-radius:4px">' +
+      '<strong>Your expanded resources:</strong><br>' +
+      '\u2022 +100 Gelt bonus to your budget<br>' +
+      '\u2022 +1 advisor slot \u2014 add a new advisor to your team at the start of Year 2<br>' +
+      '\u2022 Office upgrade: your desk has been refreshed (fancy trim)<br>' +
+      '</div>';
+    var pb = document.createElement('button');
+    pb.className = 'btn btn-primary'; pb.textContent = 'Begin Year 2 \u2192';
+    pb.onclick = function() { G.round = 0; G.usedInboxIds = []; G.budgetIncomeThisYear = 0; G.budgetSpentThisYear = 0; G.investmentsUsed = 0; G.investmentUses = {}; var bc = GAME_DATA.config.budgetConfig || {}; var totalRounds = GAME_DATA.config.totalRounds || 6; G.investmentPool = Math.floor(totalRounds * (bc.investmentsPerYear || 1)); G._coachWarningsThisRound = {}; showScreen('game-screen'); beginRound(); };
+    actEl.appendChild(pb);
+    var pb2 = document.createElement('button');
+    pb2.className = 'btn btn-secondary'; pb2.textContent = 'Restart (Same Character)'; pb2.onclick = restartSameCharacter;
+    actEl.appendChild(pb2);
+    var pb3 = document.createElement('button');
+    pb3.className = 'btn btn-secondary'; pb3.textContent = 'New Character'; pb3.onclick = resetGame;
+    actEl.appendChild(pb3);
   } else if(anotherYear){
     const b=document.createElement('button');
     b.className='btn btn-primary'; b.textContent='Begin Another Year \u2192';
@@ -26606,14 +26706,31 @@ function resetTunedSecIcons() {
 
 function calcSecurityComposite() {
   if (!G.security) return 0;
+  return calcSecurityCompositeFromLeaves(G.security.leaves, G.security.weights);
+}
+
+// Composite from an arbitrary leaves snapshot + weights object. Used to
+// compute the starting-game composite (for board-score delta comparison)
+// without mutating G.security.leaves.
+function calcSecurityCompositeFromLeaves(leaves, weights) {
+  if (!leaves) return 0;
   var jsCfg = GAME_DATA.config.jewishSecurity;
-  var catWeights = G.security.weights.categoryWeights || {};
+  var catWeights = (weights && weights.categoryWeights) || (G.security && G.security.weights && G.security.weights.categoryWeights) || {};
+  var leafWeights = (weights && weights.leafWeights) || (G.security && G.security.weights && G.security.weights.leafWeights) || {};
   var totalWeight = 0;
   var weightedSum = 0;
   (jsCfg.categories || []).forEach(function(cat) {
     var w = catWeights[cat.id] || 1;
+    var catLW = leafWeights[cat.id] || {};
+    var lwTotal = 0, lwSum = 0;
+    (cat.leaves || []).forEach(function(leaf) {
+      var lw = catLW[leaf.id] || 1;
+      lwTotal += lw;
+      lwSum += (leaves[leaf.id] || 0) * lw;
+    });
+    var catScore = lwTotal > 0 ? lwSum / lwTotal : 0;
     totalWeight += w;
-    weightedSum += calcSecurityCategoryScore(cat.id) * w;
+    weightedSum += catScore * w;
   });
   return totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 0;
 }

@@ -418,8 +418,20 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 @keyframes deskDangerPulse { 0%,100% { background-color: rgba(220,38,38,0.05); } 50% { background-color: rgba(220,38,38,0.13); } }
 
 /* GAME MAIN */
-.game-main { padding: 0 20px 0; }
-.game-inner { max-width: 820px; margin: 0 auto; }
+/* game-main is the primary scrollable viewport for all game content —
+   its height is set by positionGameMain() to fill the space between the
+   lowest top strip (security/coalition/submission) and the highest bottom
+   chrome (invest on desk, HUD on non-desk). overflow-y: auto gives the
+   whole region a single scroll, so individual cards no longer need their
+   own max-height hacks. */
+.game-main { padding: 0 20px; overflow-y: auto; box-sizing: border-box; scrollbar-width: thin; }
+.game-main::-webkit-scrollbar { width: 8px; }
+.game-main::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
+.game-main::-webkit-scrollbar-track { background: transparent; }
+/* Top padding so content doesn't touch the security bar bottom edge.
+   Bottom padding so the last element (Continue button, choice, etc.)
+   has room before the scroll region's bottom edge. */
+.game-inner { max-width: 820px; margin: 0 auto; padding-top: 12px; padding-bottom: 48px; }
 
 /* ACTION CARDS - #9: show stat effects */
 .action-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 11px; }
@@ -629,10 +641,7 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
    HUD top edge ~92px + invest strip ~34px + ticker 32px + small buffer.
    The card itself adds 40px padding-bottom so the last choice has visual
    breathing room above the scroll edge before the invest bar visually starts. */
-.event-card { border: 2px solid var(--ink); background: var(--white); padding: 26px 22px 40px; margin-top: 28px; margin-bottom: 22px; position: relative; max-height: calc(100vh - 230px); overflow-y: auto; }
-.event-card::-webkit-scrollbar { width: 8px; }
-.event-card::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 4px; }
-.event-card::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+.event-card { border: 2px solid var(--ink); background: var(--white); padding: 26px 22px 40px; margin-top: 28px; margin-bottom: 22px; position: relative; }
 .event-card::before { content: '⚠ EVENT'; position: absolute; top: -1px; left: 20px; background: var(--ink); color: var(--white); font-size: 9px; font-weight: 700; letter-spacing: 2px; padding: 3px 8px; transform: translateY(-100%); }
 .event-tag { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 9px; display: block; }
 .event-title { font-family: 'Merriweather', serif; font-weight: 900; font-size: 19px; color: var(--ink); margin-bottom: 12px; line-height: 1.3; }
@@ -646,9 +655,7 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .m-badge.opposed { background: #ead4d4; color: #4a1a1a; }
 
 /* INBOX - #4: Better visual differentiation */
-.inbox-card { border: 2px solid #6b7280; background: #f8f6f1; margin-top: 28px; margin-bottom: 22px; position: relative; animation: slideIn 0.22s ease; border-radius: 6px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-height: calc(100vh - 230px); overflow-y: auto; padding-bottom: 40px; }
-.inbox-card::-webkit-scrollbar { width: 8px; }
-.inbox-card::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 4px; }
+.inbox-card { border: 2px solid #6b7280; background: #f8f6f1; margin-top: 28px; margin-bottom: 22px; position: relative; animation: slideIn 0.22s ease; border-radius: 6px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding-bottom: 40px; }
 .inbox-card::before { content: '📬 INCOMING MESSAGE'; position: absolute; top: -1px; left: 20px; background: #6b7280; color: white; font-size: 9px; font-weight: 700; letter-spacing: 2px; padding: 3px 10px; transform: translateY(-100%); border-radius: 4px 4px 0 0; }
 .inbox-head { background: #e8e4db; padding: 14px 17px; border-bottom: 1px solid #c4bfb4; border-radius: 4px 4px 0 0; }
 .inbox-from { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6b7280; }
@@ -657,9 +664,7 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .inbox-choices { padding: 13px 17px; display: flex; flex-direction: column; gap: 7px; }
 
 /* OUTCOME - #5: show chosen choice, #10: context note */
-.outcome-panel { border: 1.5px solid var(--border); background: var(--white); padding: 20px 22px 40px; margin-top: 28px; margin-bottom: 22px; max-height: calc(100vh - 230px); overflow-y: auto; }
-.outcome-panel::-webkit-scrollbar { width: 8px; }
-.outcome-panel::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 4px; }
+.outcome-panel { border: 1.5px solid var(--border); background: var(--white); padding: 20px 22px 40px; margin-top: 28px; margin-bottom: 22px; }
 .outcome-panel h3 { margin-bottom: 9px; }
 .outcome-panel p { font-size: 14px; margin-bottom: 13px; }
 .outcome-your-choice { background: var(--cream); border-left: 3px solid var(--gold); padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: var(--ink); line-height: 1.6; }
@@ -673,15 +678,11 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .hist-log.open { display: block; }
 
 /* END */
-.end-card { border: 2px solid var(--ink); padding: 40px 32px 48px; text-align: center; background: var(--white); margin-top: 28px; max-height: calc(100vh - 230px); overflow-y: auto; }
-.end-card::-webkit-scrollbar { width: 8px; }
-.end-card::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 4px; }
+.end-card { border: 2px solid var(--ink); padding: 40px 32px 48px; text-align: center; background: var(--white); margin-top: 28px; }
 /* Round-transition card — scrollable so the Begin Round button stays
    reachable even when the summary + coalition offer + task offers
    stretch beyond the viewport. */
-.round-transition-card { max-width: 640px; margin: 28px auto 0; padding-bottom: 48px; max-height: calc(100vh - 230px); overflow-y: auto; padding-left: 12px; padding-right: 12px; }
-.round-transition-card::-webkit-scrollbar { width: 8px; }
-.round-transition-card::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 4px; }
+.round-transition-card { max-width: 640px; margin: 28px auto 0; padding-bottom: 48px; padding-left: 12px; padding-right: 12px; }
 .end-score-lbl { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; display: block; }
 .end-score { font-family: 'Merriweather', serif; font-size: 72px; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 4px; }
 .end-grade { font-family: 'Merriweather', serif; font-size: 64px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
@@ -939,7 +940,7 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .coalition-decline:hover{background:var(--cream)}
 .active-coalitions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 /* Coalition strip - below investments */
-.coalition-strip{background:#1a1a30;padding:7px 20px;position:relative;left:0;right:0;z-index:1;border-top:1px solid rgba(255,255,255,0.05)}
+.coalition-strip{background:#1a1a30;padding:7px 20px;position:relative;left:0;right:0;border-top:1px solid rgba(255,255,255,0.05)}
 .coalition-strip-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
 .coalition-strip-inner::-webkit-scrollbar{display:none}
 .coalition-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
@@ -1012,7 +1013,7 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .chip-security{background:rgba(90,160,220,0.15);color:#6ba5e7;border:1px solid rgba(90,160,220,0.3)}
 
 /* Sub-mission strip */
-.submission-strip{background:#1a1a30;padding:7px 20px;position:relative;left:0;right:0;z-index:1;border-top:1px solid rgba(255,255,255,0.05)}
+.submission-strip{background:#1a1a30;padding:7px 20px;position:relative;left:0;right:0;border-top:1px solid rgba(255,255,255,0.05)}
 .submission-strip-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
 .submission-strip-inner::-webkit-scrollbar{display:none}
 .sm-strip-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090a8;white-space:nowrap;margin-right:4px}
@@ -1278,8 +1279,6 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
   overflow-y: auto;
   padding-bottom: 40px;
 }
-.conv-card::-webkit-scrollbar { width: 8px; }
-.conv-card::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 4px; }
 .conv-card::before {
   content: '💬 CONVERSATION';
   position: absolute; top: -1px; left: 20px;
@@ -21475,6 +21474,9 @@ function showScreen(id) {
   if(lpTicker) lpTicker.style.display = isIntro ? '' : 'none';
   if(isGame) setTimeout(function(){ updateHUD(); }, 10);
   if (id === 'advisor-screen') renderAdvisorSelection();
+  // Ensure the game viewport scrollable area is properly sized for the
+  // current chrome configuration (with or without invest strip, etc.).
+  if (isGame) setTimeout(function() { if (typeof positionGameMain === 'function') positionGameMain(); }, 20);
   window.scrollTo(0,0);
 }
 function shuffle(arr) {
@@ -24433,6 +24435,45 @@ function positionStatusBar() {
   bar.style.top = (lowestBottom + 10) + 'px';
 }
 
+// Set .game-main's height to fill the space between the lowest visible top
+// strip and the highest visible bottom chrome. With overflow-y: auto on
+// .game-main, all content inside scrolls naturally — no per-card max-height
+// hacks needed. Runs on every sizeDeskScene tick.
+function positionGameMain() {
+  var gm = document.querySelector('.game-main');
+  if (!gm) return;
+  // Find the bottom edge of the lowest visible top strip.
+  var topStrips = [
+    document.getElementById('security-bar-el'),
+    document.getElementById('coalition-strip'),
+    document.getElementById('submission-strip')
+  ];
+  var topEnd = 0;
+  topStrips.forEach(function(el) {
+    if (!el) return;
+    if (getComputedStyle(el).display === 'none') return;
+    var r = el.getBoundingClientRect();
+    if (r.height > 0 && r.bottom > topEnd) topEnd = r.bottom;
+  });
+  // Find the top edge of the highest visible bottom chrome. On desk views
+  // the invest strip is the highest; on non-desk views it hides, so fall
+  // back to the HUD, then the ticker.
+  var botCandidates = [
+    document.getElementById('invest-strip'),
+    document.getElementById('hud-el'),
+    document.querySelector('.news-ticker-wrap.active')
+  ];
+  var botStart = window.innerHeight;
+  botCandidates.forEach(function(el) {
+    if (!el) return;
+    if (getComputedStyle(el).display === 'none') return;
+    var r = el.getBoundingClientRect();
+    if (r.height > 0 && r.top < botStart) botStart = r.top;
+  });
+  var avail = Math.max(150, botStart - topEnd);
+  gm.style.height = avail + 'px';
+}
+
 // Size the desk scene + desk layer to fit the available viewport. Exposed as a
 // named function so we can also call it on window resize and whenever the
 // top strips (sub-mission, coalition) or bottom status bar toggle visibility.
@@ -24447,33 +24488,14 @@ function sizeDeskScene() {
   positionClipboardBug();
   // And re-pin the invest strip to the HUD's actual top edge.
   positionInvestStrip();
+  // Set .game-main's height to fill the available viewport.
+  positionGameMain();
 
-  // Measure the actual TOP of the highest-positioned fixed bottom chrome
-  // element. Whichever bottom-chrome element is highest (farthest from the
-  // viewport bottom) is the floor the desk scene must stay above. This
-  // auto-adapts if chrome heights change and avoids hardcoded pixel stacks.
-  // NOTE: .game-status-bar is no longer bottom chrome — it floats in the
-  // top-left of the game scene instead.
-  var chromeCandidates = [
-    document.getElementById('invest-strip'),
-    document.getElementById('hud-el'),
-    document.querySelector('.news-ticker-wrap.active')
-  ];
-  var chromeTop = window.innerHeight; // fallback if no chrome present
-  chromeCandidates.forEach(function(el) {
-    if (!el) return;
-    // Skip hidden elements (display:none)
-    if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return;
-    if (getComputedStyle(el).display === 'none') return;
-    var r = el.getBoundingClientRect();
-    // Only count fixed-position chrome that's actually on screen
-    if (r.height === 0) return;
-    if (r.top < chromeTop) chromeTop = r.top;
-  });
-
-  var sceneRect = scene.getBoundingClientRect();
-  // No gap — the scene should meet the invest strip flush at the bottom.
-  var sceneHeight = Math.max(220, chromeTop - sceneRect.top);
+  // Desk scene fills game-main, whose height was already set by
+  // positionGameMain above. Much simpler than the old approach of
+  // measuring each chrome element independently.
+  var gm = document.querySelector('.game-main');
+  var sceneHeight = gm ? gm.clientHeight : 300;
   scene.style.height = sceneHeight + 'px';
 
   // Now size the desk-layer so the desk image never exceeds scene bounds.
@@ -24893,7 +24915,10 @@ function processQueue(){
 // ═══════════════ SCENARIO ═══════════════
 function renderScenario(s){
   const valid=s.choices; // Show all choices, locked ones rendered as disabled
-  updateStatusBar('Round ' + G.round + ' \u2014 ' + esc(s.tag || 'Decision'), false);
+  // Status bar always shows round + actions remaining (not per-screen context).
+  var _totalR = GAME_DATA.config.totalRounds || 5;
+  var _apL = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
+  updateStatusBar('Round ' + G.round + ' of ' + _totalR + ' \u2014 ' + _apL, false);
   // Auto-infer political lean for choices
   valid.forEach(function(c){ inferPoliticalLean(c, s); });
   const advisorHtml = renderAdvisorQuotes(s);
@@ -25099,7 +25124,9 @@ function chooseScenario(sid,idx){
 
 // ═══════════════ INBOX ═══════════════
 function renderInbox(s){
-  updateStatusBar('Round ' + G.round + ' \u2014 Reading Message', false);
+  var _totalR = GAME_DATA.config.totalRounds || 5;
+  var _apL = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
+  updateStatusBar('Round ' + G.round + ' of ' + _totalR + ' \u2014 ' + _apL, false);
   // Mark as read in inbox
   var msg = (G.inboxMessages||[]).find(function(m){return m.id===s.id});
   if(msg) msg.unread = false;
@@ -25270,7 +25297,9 @@ function chooseInbox(sid,idx){
 // ═══════════════ OUTCOME ═══════════════
 // #5: Shows chosen choice, #10: Shows context note
 function showOutcome(title, choiceText, outcomeText, chips, contextNote, cb){
-  updateStatusBar('Round ' + G.round + ' \u2014 Outcome', false);
+  var _totalR = GAME_DATA.config.totalRounds || 5;
+  var _apL = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
+  updateStatusBar('Round ' + G.round + ' of ' + _totalR + ' \u2014 ' + _apL, false);
   const id='oc'+Date.now();
   document.getElementById('game-inner').innerHTML=`
     <div class="outcome-panel">

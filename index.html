@@ -3091,7 +3091,7 @@ const GAME_DATA = {
       "id": "antisemitism_incident",
       "tag": "Crisis",
       "title": "Swastikas on campus",
-      "body": "Swastikas were spray-painted on a number of trash cans at the local university, including one across the street from the  Hillel building. Your board chair's daughter goes to school there and is calling you panicked, while local reporters have reached out asking for comment.",
+      "body": "Swastikas were spray-painted on a number of trash cans at the local university, including one across the street from the  Hillel building. Your board chair's daughter goes to school there and is calling you panicked, local reporters have reached out asking for comment and you see rumors flying wild on social media.",
       "applicableOrgs": [
         "left",
         "right",
@@ -3100,52 +3100,58 @@ const GAME_DATA = {
       "choices": [
         {
           "id": "c0",
-          "text": "Issue a strong, unequivocal public statement condemning the attack and calling on university leadership to act.",
+          "text": "Issue a strong, unequivocal public statement condemning the attack and calling on university leadership to act — this is what happens when school officials don't take antisemitism seriously.",
           "missionAligned": [
-            "antisemitism_all",
-            "antisemitism_left",
-            "antisemitism_right"
+            "antisemitism_all"
           ],
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "Your statement is widely shared. Community members feel seen. Several new donors reach out.",
+              "text": "Your organization was one of the first to speak out. The board is happy, the statement is shared widely on social media and some new donations pour in.",
               "effects": {
                 "trust": 4,
                 "morale": 3,
                 "donors": 3
               },
-              "weight": 70,
+              "weight": 50,
               "contextNote": "",
               "conditions": [],
+              "cloutEffect": 5,
+              "budgetEffect": 2,
+              "headline": "[org] condemns swastikas in forceful statement",
               "securityEffects": {
                 "harassment": 3,
                 "warmFeelings": 2
               }
             },
             {
-              "text": "Your comprehensive response is praised by many, but the aggressive stance alienates potential progressive allies. Some donors question whether the confrontational approach is sustainable.",
+              "text": "The statement does well on social media, but the university president gets in touch to explain that it was the work of an off-campus hooligan who was quickly apprehended by security — she wants to know why you didn't reach out before slamming the school publicly.",
               "effects": {
-                "trust": 4,
-                "morale": 1,
+                "trust": -5,
                 "donors": -2
               },
-              "weight": 30,
+              "weight": 50,
               "contextNote": "",
-              "conditions": []
+              "conditions": [],
+              "cloutEffect": -5,
+              "headline": "School hits back at [org] over swastika incident"
             }
           ],
           "budgetCost": 0,
-          "politicalLean": 0,
+          "politicalLean": 3,
+          "politicalRequirement": {
+            "minClout": 2
+          },
           "segmentOverrides": {
             "orthodox": 3,
             "youngAdults": -2,
             "olderAdults": 2
-          }
+          },
+          "cloutCost": 2
         },
         {
           "id": "c1",
-          "text": "Coordinate a coalition response with other civil rights organizations before speaking publicly.",
+          "text": "Reach out to the Hillel director about coordinating a joint response.",
           "missionAligned": [
             "antisemitism_all",
             "diaspora_unity"
@@ -3153,28 +3159,31 @@ const GAME_DATA = {
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The coalition statement takes three days. Some community members feel you were too slow. The statement itself is broadly praised.",
+              "text": "The director is slammed. He appreciates you reaching out, but takes a few days to make a decision by which point the moment has passed. It looks like you failed to speak up.",
               "effects": {
-                "trust": 3,
-                "morale": 2
+                "trust": -2,
+                "morale": -3
               },
               "weight": 70,
               "contextNote": "",
               "conditions": [],
+              "cloutEffect": -3,
               "securityEffects": {
                 "harassment": 1,
                 "warmFeelings": -1
               }
             },
             {
-              "text": "The intersectional approach builds bridges with other communities, but some in your base feel the Jewish-specific pain was minimized. An op-ed accuses you of 'universalizing antisemitism away.'",
+              "text": "The joint statement comes together quickly and includes context that other organizations missed. You look connected and sensitive to the needs of the students most impacted.",
               "effects": {
-                "trust": -1,
-                "morale": 2
+                "trust": 5,
+                "morale": 5,
+                "donors": 2
               },
               "weight": 30,
               "contextNote": "",
-              "conditions": []
+              "conditions": [],
+              "cloutEffect": 5
             }
           ],
           "budgetCost": 0,
@@ -3188,21 +3197,22 @@ const GAME_DATA = {
         },
         {
           "id": "c2",
-          "text": "Organize a campus solidarity vigil and connect affected students to resources.",
+          "text": "Rush to campus and start organizing a vigil with different campus groups.",
           "missionAligned": [
-            "antisemitism_all"
+            "antisemitism_all",
+            "diaspora_unity"
           ],
           "missionOpposed": [],
           "outcomes": [
             {
-              "text": "Attendance is strong. You receive heartfelt appreciation from students. Less visible nationally but deeply meaningful locally.",
+              "text": "A few people show up, but it turns out the swastikas that went viral on social media weren't noticed by many students. Some say they were almost immediately painted over and don't see the need for a big event.",
               "effects": {
-                "trust": 4,
-                "morale": 4
+                "morale": 2
               },
-              "weight": 70,
+              "weight": 50,
               "contextNote": "",
               "conditions": [],
+              "budgetEffect": 3,
               "securityEffects": {
                 "harassment": 4,
                 "warmFeelings": 3,
@@ -3210,15 +3220,16 @@ const GAME_DATA = {
               }
             },
             {
-              "text": "The internal community-building approach is warmly received by some, but critics say you're turning inward instead of confronting the real threat. A prominent columnist calls it 'retreat disguised as resilience.'",
+              "text": "The event isn't huge, but the students who come clearly needed it — and some are interested in joining your organization. The board president is thrilled.",
               "effects": {
                 "trust": 2,
                 "morale": 3,
-                "donors": -2
+                "donors": 2
               },
-              "weight": 30,
+              "weight": 50,
               "contextNote": "",
-              "conditions": []
+              "conditions": [],
+              "cloutEffect": 1
             }
           ],
           "budgetCost": 0,
@@ -3226,37 +3237,32 @@ const GAME_DATA = {
         },
         {
           "id": "c3",
-          "text": "Wait for more information before acting. Issue a brief holding statement.",
+          "text": "Hold off until you have more information about what actually happened: Was this a one-off or part of a problematic pattern?",
           "missionAligned": [],
-          "missionOpposed": [
-            "antisemitism_all",
-            "antisemitism_left",
-            "antisemitism_right"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
-              "text": "The perpetrator turns out to be a current student. Your caution was partly wise, but community members noticed the silence.",
+              "text": "It turns out there was only one swastika and, while it was technically \"across the street\" from the Hillel building it was much closer to the Black Student Union and accompanied by racial slurs. Ugly. But it doesn't look like targeted antisemitism. You're glad you waited.",
               "effects": {
-                "trust": -3,
-                "morale": -2,
-                "donors": -3
+                "trust": 3
               },
-              "weight": 50,
+              "weight": 70,
               "contextNote": "",
               "conditions": [],
+              "cloutEffect": 1,
               "securityEffects": {
                 "harassment": 2,
                 "institutional": 2
               }
             },
             {
-              "text": "A few days later, someone throws a rock through the building's window and police arrest a student who had been leading protests outside the building for months — the news confirms what many feared from the start, and people notice your reluctance to speak out forcefully from the start.",
+              "text": "It was part of a pattern. The Hillel director is shocked you hadn't been following the antisemitic vandalism on campus, and your supporters wonder why you didn't speak out sooner.",
               "effects": {
                 "trust": -5,
                 "morale": -2,
                 "donors": -3
               },
-              "weight": 50,
+              "weight": 30,
               "contextNote": "",
               "conditions": []
             }
@@ -3267,7 +3273,10 @@ const GAME_DATA = {
             "orthodox": -4,
             "youngAdults": -2,
             "olderAdults": -3
-          }
+          },
+          "endangersCoalition": [
+            "coal_campus"
+          ]
         }
       ],
       "categories": [
@@ -3278,7 +3287,7 @@ const GAME_DATA = {
       "advisorQuotes": [
         {
           "advisorId": "board_chair",
-          "text": "We need to be visible but careful. A wrong word now could define us for years.",
+          "text": "Let's not jump to conclusions. Swastikas are scary, but a few photos on social media doesn't give us enough to respond.",
           "mood": "concerned",
           "recommendsChoice": 3,
           "effectModifier": {
@@ -3288,7 +3297,7 @@ const GAME_DATA = {
         },
         {
           "advisorId": "program_dir",
-          "text": "The students need to hear from us TODAY. Not tomorrow, not after a committee meeting. Today.",
+          "text": "Seconds matter here. The students need to know we care, and if we wait nobody will pay attention to what we say.",
           "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {
@@ -3298,7 +3307,7 @@ const GAME_DATA = {
         },
         {
           "advisorId": "dev_director",
-          "text": "Three donors have already called. They want to see leadership, not hesitation.",
+          "text": "I'm hearing from several donors with kids on campus. They're freaked out and want us to respond now.",
           "mood": "neutral",
           "recommendsChoice": 0,
           "effectModifier": {

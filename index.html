@@ -2515,7 +2515,7 @@ const GAME_DATA = {
         "Your {stat} is getting into uncomfortable territory. The board notices these trends."
       ],
       "stat_red": [
-        "🚨 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "🚨 {stat} is critically low. If it falls to {threshold}, the board will call an emergency meeting and your tenure ends.",
         "🚨 {stat} is in the danger zone. One more bad outcome and you could be out.",
         "🚨 Crisis warning: {stat} is near the point of no return."
       ],
@@ -2714,7 +2714,8 @@ const GAME_DATA = {
       "left": 25,
       "center": 50,
       "right": 75
-    }
+    },
+    "statDecayPerRound": 1
   },
   "stats": [
     {
@@ -3148,7 +3149,6 @@ const GAME_DATA = {
           "text": "Coordinate a coalition response with other civil rights organizations before speaking publicly.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3455,7 +3455,7 @@ const GAME_DATA = {
           "budgetCost": 0,
           "politicalLean": 0,
           "cloutEffect": 0,
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ],
       "categories": [
@@ -3518,7 +3518,6 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -3558,8 +3557,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -3633,7 +3631,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3730,8 +3727,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Offer meaningful raises funded by drawing down reserves, and hire a part-time events coordinator.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -3795,9 +3791,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Recruit community volunteers aggressively to fill the capacity gap.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -3824,9 +3818,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
           "missionAligned": [],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Some donors are disappointed. But your team enters the year rested and turnover hits zero.",
@@ -4074,8 +4066,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Sign the letter. Your values are your values, and your donors should understand that.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security",
@@ -4182,8 +4173,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -4448,9 +4438,7 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Issue a supportive public statement alongside the JCC's reopening, emphasizing community resilience and coordinated security — calm leadership, no fearmongering.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -4486,9 +4474,7 @@ const GAME_DATA = {
           "text": "Use your political relationships to fast-track federal security grants for the JCC and every Jewish site in the region. Make the effort public.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The closure costs revenue but you reopen with meaningful security improvements that become a model for other JCCs.",
@@ -4521,8 +4507,7 @@ const GAME_DATA = {
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_all",
-            "community_hub"
+            "antisemitism_all"
           ],
           "outcomes": [
             {
@@ -4550,7 +4535,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Co-host an emergency community meeting that evening alongside the JCC, inviting law enforcement, elected officials, and community leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -4805,8 +4789,6 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -4856,7 +4838,6 @@ const GAME_DATA = {
           "text": "Support Jewish students across the political spectrum in testifying about how the resolution affects campus climate, without taking an organizational position on divestment itself.",
           "missionAligned": [
             "antisemitism_all",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -4901,14 +4882,13 @@ const GAME_DATA = {
             "reform": 2,
             "youngAdults": 3
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "israelLean": -2
         },
         {
           "id": "c2",
           "text": "Organize counter-programming: a campus dialogue on antisemitism, Islamophobia, and how divestment debates affect real students on both sides.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -5023,8 +5003,6 @@ const GAME_DATA = {
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "jewish_identity",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -5090,7 +5068,6 @@ const GAME_DATA = {
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -5133,7 +5110,7 @@ const GAME_DATA = {
             "unaffiliated": 2,
             "youngAdults": 2
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "cloutCost": 6
         },
         {
@@ -5142,8 +5119,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -5190,9 +5166,7 @@ const GAME_DATA = {
           "missionOpposed": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "social_justice",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "outcomes": [
             {
@@ -5265,9 +5239,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Accept the partnership. Security is non-negotiable and the threats are real. Address staff concerns with a town hall.",
           "missionAligned": [],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The partnership is implemented. Security improves immediately. Three progressive staff members resign, and a local racial justice group issues a statement of disappointment.",
@@ -5296,9 +5268,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Accept the partnership while launching a community safety initiative with local civil rights organizations.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5320,14 +5290,12 @@ const GAME_DATA = {
           ],
           "budgetCost": 7,
           "politicalLean": -2,
-          "requiresUnlock": "grassroots_organizer"
+          "requiresUnlock": "organizer"
         },
         {
           "id": "c2",
           "text": "Decline the police partnership. Invest in private security and community-based safety alternatives instead.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5361,7 +5329,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Delay the decision pending a community-wide listening session that includes staff, congregants, and neighborhood leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -5502,8 +5469,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Host a follow-up event: ‘The Exodus Story Through Many Eyes’ — turning the controversy into a moderated public dialogue about shared narratives.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -5541,8 +5507,7 @@ const GAME_DATA = {
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "outcomes": [
             {
@@ -5698,8 +5663,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Let her go. Her public persona has become inseparable from the organization’s brand, and the controversy is a distraction you can’t afford.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -5842,9 +5806,7 @@ const GAME_DATA = {
             "antisemitism_left",
             "antisemitism_right"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The press conference is praised for honesty. Activists on the left and right quote the data that suits them. Your organization emerges as a credible source.",
@@ -5881,8 +5843,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Emphasize the far-right increase in the press release, since it represents the larger share of the threat.",
           "missionAligned": [
-            "antisemitism_right",
-            "social_justice"
+            "antisemitism_right"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -5925,8 +5886,7 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -6202,7 +6162,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Go beyond condemnation: organize a community support event with mental health resources for people processing the trauma of seeing this hatred go mainstream.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -6348,9 +6307,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 5,
           "cloutEffect": 4,
           "politicalRequirement": {
@@ -6565,9 +6522,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Support the victim’s family publicly but leave the charging decision to the DA without taking a position on hate crime enhancement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -6593,7 +6548,6 @@ const GAME_DATA = {
           "text": "Support hate crime charges while simultaneously partnering with Black community leaders to frame this as a shared fight against all hate — not a Black vs. Jewish issue.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6636,9 +6590,7 @@ const GAME_DATA = {
         {
           "id": "c3",
           "text": "Stay out of the legal process entirely. Focus on the victim’s recovery and offer community healing programs.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -6699,10 +6651,7 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Launch a major ‘Save Our School’ campaign with your organization as the lead. Commit significant resources and fundraising capacity.",
-          "missionAligned": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "segmentOverrides": {
@@ -6736,7 +6685,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Help the school modernize: broker partnerships with public schools, create a part-time Hebrew enrichment track, and help them appeal to unaffiliated families.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6779,13 +6727,9 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Offer to absorb the school’s key programs into your JCC/community center programming rather than saving the school as an independent institution.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "You save the educational content but the school closes. Orthodox families are devastated. Your programming grows but the community feels a real loss.",
@@ -6810,10 +6754,7 @@ const GAME_DATA = {
           "text": "Express sympathy but explain this isn’t your organization’s role. The school’s board needs to solve this themselves.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The school closes at the end of the year. The community mourns. Your name comes up repeatedly in conversations about ‘who could have helped but didn’t.’",
@@ -6869,8 +6810,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Accept the county’s invitation and develop the module, even if it strains your progressive alliances. This is a once-in-a-generation opportunity.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6917,7 +6857,6 @@ const GAME_DATA = {
           "text": "Accept but collaborate with other minority groups on a broader module that includes antisemitism alongside other forms of hatred — shared authorship, shared ownership.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6985,13 +6924,10 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Decline and publicly challenge the premise that DEI should exclude antisemitism — write an op-ed making the case that any equity framework that excludes Jewish experiences is incomplete.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 3,
           "outcomes": [
             {
@@ -7057,9 +6993,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 6,
           "segmentOverrides": {
             "orthodox": 8,
@@ -7150,9 +7084,7 @@ const GAME_DATA = {
         {
           "id": "c3",
           "text": "Decline entirely and issue a statement explaining that your organization’s commitment to LGBTQ+ inclusion and pluralism is incompatible with this partnership.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -7388,9 +7320,7 @@ const GAME_DATA = {
             "antisemitism_left"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -7490,8 +7420,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use the moment to host a community conversation about political divisions within the Jewish community — inviting the rabbi and her progressive critics to the same stage.",
           "missionAligned": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -7579,9 +7508,7 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Sign the statement. Your coalition relationships are your most important asset, and you can work to soften the language from inside.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security",
@@ -7680,7 +7607,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Negotiate privately — ask for amended language that distinguishes between the Israeli government and Jewish self-determination. Offer to sign a revised version.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -7725,10 +7651,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use your grassroots network to organize a counter-letter from progressive Jews of color, LGBTQ Jews, and Mizrachi Jews arguing the coalition's framing erases diverse Jewish experiences.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -7796,8 +7721,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Approve the joint commemoration. This is exactly the kind of brave, values-driven programming your organization should be doing.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "requiresUnlock": null,
           "missionOpposed": [
@@ -7885,8 +7809,7 @@ const GAME_DATA = {
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -7918,10 +7841,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use your donor relationships to privately secure bridge funding that would replace any lost pledges, then greenlight the event with financial cover in place.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -3,
           "outcomes": [
@@ -7994,8 +7916,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Publish a direct rebuttal centering the voices of Jews of color in your organization — making the case that antisemitism IS a racial justice issue.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -8042,8 +7963,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Request a private meeting with the consultant to discuss her claims. Bring your Jews-of-color staff members who want to participate.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -8084,10 +8004,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Don't engage with the article directly. Instead, invest in programming that demonstrates — rather than argues — why antisemitism is a racial justice issue.",
-          "missionAligned": [
-            "social_justice",
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -8119,10 +8036,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Place an op-ed in a major outlet through your media contacts — not a rebuttal, but a proactive piece on why progressive movements need to take antisemitism seriously.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8238,8 +8154,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Meet with her privately. Demand a genuine public apology and commitment to antisemitism education — but don't rescind the endorsement yet.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -8284,7 +8199,6 @@ const GAME_DATA = {
           "text": "Turn this into a teaching moment — host a public forum on antisemitism in progressive spaces, inviting the council member to participate (not as the accused, but as a learner).",
           "missionAligned": [
             "antisemitism_left",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -8323,7 +8237,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_left"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8515,10 +8429,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Address the room as a Jewish educator — draw on texts about machloket and the tradition of holding multiple truths. Reframe this as a strength, not a crisis.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8718,7 +8631,7 @@ const GAME_DATA = {
             "antisemitism_all",
             "antisemitism_right"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "politicalLean": -2,
           "outcomes": [
@@ -8791,9 +8704,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -8883,7 +8794,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Decline the partnership entirely and publish a position paper on why Jewish organizations should not partner with groups that seek Jewish conversion, regardless of shared political goals.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -8922,10 +8832,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Counter-propose: you'll work with the church only if they publicly remove conversion language from their website and commit to a 'no proselytizing' covenant, using your halachic expertise to draft the covenant terms.",
           "missionAligned": [
-            "jewish_identity",
             "israel_security"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9118,7 +9027,7 @@ const GAME_DATA = {
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -9314,7 +9223,7 @@ const GAME_DATA = {
             "antisemitism_right",
             "israel_security"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9503,7 +9412,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9655,7 +9564,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Sidestep the political debate entirely. Show up on campus with programming: a teach-in, free food, mental health support for stressed Jewish students regardless of their views.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -9693,7 +9601,7 @@ const GAME_DATA = {
             "diaspora_unity",
             "antisemitism_all"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9774,7 +9682,6 @@ const GAME_DATA = {
           "missionOpposed": [
             "antisemitism_right",
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -9867,8 +9774,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -9907,7 +9813,6 @@ const GAME_DATA = {
           "text": "Invoke Jewish textual tradition to draft a new, original framework that draws on IHRA, Nexus, and Jerusalem Declaration — positioning it as emerging from Jewish scholarly consensus rather than political camps.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9938,7 +9843,7 @@ const GAME_DATA = {
             "youngAdults": 2,
             "olderAdults": 2
           },
-          "requiresUnlock": "jewish_scholar"
+          "requiresUnlock": "scholar"
         }
       ]
     },
@@ -10116,7 +10021,7 @@ const GAME_DATA = {
             "youngAdults": 2,
             "olderAdults": 1
           },
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ]
     },
@@ -10163,8 +10068,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -10221,8 +10125,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -10384,7 +10287,6 @@ const GAME_DATA = {
           "text": "Write a forceful statement defending your attempt to stay out of political debates as a philosophy of conviction, not cowardice — with specific examples of what your approach has actually accomplished.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10575,8 +10477,7 @@ const GAME_DATA = {
           "text": "Publicly support removing the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, your organization should say so clearly.",
           "missionAligned": [],
           "missionOpposed": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "outcomes": [
             {
@@ -10620,7 +10521,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Propose a compromise: a new 'identity wall' in the JCC lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10666,8 +10566,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Publicly back keeping the flag. It's been there since 1987 and represents a connection to Israel that is part of the JCC's identity. Your organization won't support caving to pressure.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -10774,7 +10673,6 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Tell the JCC board to approve the rental. Their policy is clear, and a Jewish community space that decides which Jews are 'Jewish enough' for the building has lost its way.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -10823,12 +10721,8 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Tell the JCC board to deny this specific event but help them revise their rental policy to require that all events align with 'building Jewish community' — creating a principled framework for future decisions.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionAligned": [],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "JVP calls it 'a political litmus test dressed up as policy.' Your legal counsel says the new policy is defensible. Most members accept the framework. But the question of who defines 'building Jewish community' now haunts every rental application.",
@@ -10862,7 +10756,6 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -10897,7 +10790,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Propose a creative compromise to the JCC: approve the rental but have the JCC co-host, adding a second panel with a range of Jewish perspectives on Israel. Turn a one-sided event into a community dialogue — your organization's grassroots network can help ensure diverse attendance.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10983,8 +10875,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -11019,9 +10910,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Advise the JCC to meet with the teacher privately. Explain the situation, ask her to make her social media private, and separate her personal views from her professional role.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left",
             "israel_security"
@@ -11100,7 +10989,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Publicly defend the teacher's right to share her views on her own time, but work quietly with the JCC to reassure the parents that the issue is being handled internally. Ask the teacher to delete the most inflammatory posts and be more careful going forward.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -11162,7 +11050,6 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -11199,8 +11086,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -11270,7 +11156,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -11479,8 +11364,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Meet with the student coalition privately. Acknowledge their concerns, propose adding a free-speech protection clause, and ask them to stay in the coalition.",
           "missionAligned": [
-            "antisemitism_all",
-            "social_justice"
+            "antisemitism_all"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -11510,9 +11394,7 @@ const GAME_DATA = {
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your firmness earns praise from pro-Israel groups and some faculty. But six progressive student organizations withdraw from the coalition, and the campus newspaper runs a story about 'Jewish org silencing Palestinian voices.'",
@@ -11538,7 +11420,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Agree to their exclusion language. Keeping the coalition together is more important than winning the definitional fight.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -11817,9 +11698,7 @@ const GAME_DATA = {
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The donor pressure works. Martinez files the bill and Chen agrees to co-sponsor. But the progressive press writes about 'dark money behind anti-BDS legislation' and your methods become part of the story.",
@@ -12250,9 +12129,7 @@ const GAME_DATA = {
             "israel_security",
             "antisemitism_left"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The pro-Israel advocate is appointed. Democrats are furious — 'This isn't bipartisan, it's a pro-Israel talking shop.' Two Democratic members threaten to resign before the first meeting.",
@@ -12279,7 +12156,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Lean toward the Democratic pick. Including a progressive critic of Israel signals that the task force won't be used to silence dissent — and that's worth the discomfort.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -12501,7 +12377,6 @@ const GAME_DATA = {
           "text": "Feature the Khoury-Levins — a Jewish-Palestinian couple whose children face antisemitism AND Islamophobia. Complicated but it challenges every assumption.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -12536,9 +12411,7 @@ const GAME_DATA = {
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The student’s story ignites a fierce debate. Conservative media loves it. Progressive allies accuse you of conflating anti-Zionism with antisemitism. The episode gets views but costs you coalition relationships.",
@@ -12641,9 +12514,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Cut the rally footage entirely. The episode is strong enough without it, and including it risks torpedoing the entire series.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left"
           ],
@@ -12673,8 +12544,7 @@ const GAME_DATA = {
           "text": "Keep the footage AND add an interview with a Palestinian-American activist who condemns the antisemitic signs. Let a human voice make the distinction.",
           "missionAligned": [
             "antisemitism_all",
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -13043,9 +12913,7 @@ const GAME_DATA = {
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The grant fast-tracks funding. But three Reform synagogues threaten to leave over the Israel programming requirement. You have the money but the coalition is fracturing.",
@@ -13543,8 +13411,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Walk to the microphone and invite the group’s leader to speak for two minutes. This summit is about hearing every Jewish voice — including ones that make us uncomfortable.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [
             "israel_security"
@@ -13608,7 +13475,6 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -13831,9 +13697,7 @@ const GAME_DATA = {
           "text": "Terminate the internship immediately and issue a statement distancing the org.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The decision is defensible but generates a secondary story about workplace culture. She becomes a minor cause célèbre.",
@@ -13878,9 +13742,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Defend her publicly as a private individual exercising free expression, while clarifying your org's position.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -14082,9 +13944,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "He attends, the event gets press coverage. Two coalition partners quietly pull back from joint programming.",
@@ -14107,9 +13967,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Decline and explain that the Voting Rights vote makes it impossible to host him at this time.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -14154,7 +14012,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Counter-propose a private meeting instead of a public appearance — build the relationship without the optics.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14252,7 +14110,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use your political relationships to identify who is driving this and quietly address their specific concerns.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14597,8 +14455,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Grant full access. This is a chance to show the world the complexity and humanity of Jewish communal life.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -14743,8 +14600,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Respond firmly: Zionism — Jewish self-determination — is not something we will disavow. Period. Publish the response before they publish theirs.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -14772,8 +14628,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Respond thoughtfully: explain the diversity of Zionist thought, reject the binary framing, and invite the students to a dialogue about what a just future looks like.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -14825,7 +14680,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Reach out directly to the student leaders before Friday. Meet with them in person. Have an honest, off-the-record conversation.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -14928,9 +14782,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Don’t issue a public statement, but quietly connect David’s daughter with a mentor from your young leadership program. Turn crisis into engagement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -15697,7 +15549,6 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Drop everything. Drive to the hospital. Organize a community vigil for tonight.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -15752,9 +15603,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Focus inward — secure your own buildings, notify your community, cancel events for the week.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -15821,9 +15670,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Connect the student with legal resources and organize a campus support network before going public.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -15939,7 +15786,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Use the moment for education — publish a thread about Holocaust history and why the omission matters.",
           "missionAligned": [
-            "jewish_identity",
             "antisemitism_all"
           ],
           "missionOpposed": [],
@@ -16024,7 +15870,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Focus on community care: organize emergency gatherings, provide talking points for parents, and set up a hotline for people experiencing antisemitic harassment.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -16108,8 +15953,6 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Organize a massive community restoration day. Mobilize volunteers, bring in stone restoration experts, and turn the cleanup into a public act of defiance.",
           "missionAligned": [
-            "community_hub",
-            "jewish_identity",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -16137,9 +15980,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Launch a targeted fundraising campaign to restore the cemetery and establish a permanent security fund.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -16812,7 +16653,7 @@ const GAME_DATA = {
           "characterLine": "Before you decide anything — I need you to hear something. Three of my people are in crisis. Real crisis. One is seeing a therapist for the first time because of this job. I don't say that lightly.",
           "responses": [
             {
-              "text": "Avi, I hear you. Tell me specifically what your team needs to get through the High Holidays.",
+              "text": "Adam, I hear you. Tell me specifically what your team needs to get through the High Holidays.",
               "approach": "Listen",
               "dispositionDelta": 5,
               "next": "n1_open"
@@ -16863,7 +16704,7 @@ const GAME_DATA = {
           "characterLine": "OK. I trust you to do right by us. Just... please don't let this be another conversation that leads to a committee that leads to nothing.",
           "responses": [
             {
-              "text": "It won't be. And Avi — thank you for being the person who says the uncomfortable thing. That's why you're invaluable.",
+              "text": "It won't be. And Adam — thank you for being the person who says the uncomfortable thing. That's why you're invaluable.",
               "approach": "Affirm",
               "dispositionDelta": 3,
               "next": "end"
@@ -16881,7 +16722,7 @@ const GAME_DATA = {
         {
           "minDisposition": 75,
           "heading": "",
-          "text": "Avi leaves feeling genuinely heard. He'll go to bat for whatever you decide — and his team will feel it.",
+          "text": "Adam leaves feeling genuinely heard. He'll go to bat for whatever you decide — and his team will feel it.",
           "effects": {
             "trust": 7,
             "morale": 5
@@ -16892,7 +16733,7 @@ const GAME_DATA = {
         {
           "minDisposition": 60,
           "heading": "",
-          "text": "Avi accepts your direction but is watching closely. His support for your decision is conditional.",
+          "text": "Adam accepts your direction but is watching closely. His support for your decision is conditional.",
           "effects": {
             "trust": -7
           },
@@ -16902,7 +16743,7 @@ const GAME_DATA = {
         {
           "minDisposition": 55,
           "heading": "",
-          "text": "Avi is visibly frustrated. He'll comply but won't advocate for your approach with his team.",
+          "text": "Adam is visibly frustrated. He'll comply but won't advocate for your approach with his team.",
           "effects": {
             "trust": -7,
             "morale": -7
@@ -16913,7 +16754,7 @@ const GAME_DATA = {
         {
           "minDisposition": 45,
           "heading": "",
-          "text": "Avi leaves the meeting angry. Two staff members will hear about this conversation within the hour.",
+          "text": "Adam leaves the meeting angry. Two staff members will hear about this conversation within the hour.",
           "effects": {
             "trust": -9,
             "morale": -12

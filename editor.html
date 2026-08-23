@@ -850,11 +850,15 @@ var EDITOR_DATA =
     "traitsToSelect": 2,
     "missionStartStars": 3,
     "missionMaxStars": 5,
-    "failureBarThreshold": 30,
-    "failureScoreThreshold": 30,
-    "promotionThreshold": 75,
+    "failureBarThreshold": 15,
+    "failureScoreThreshold": 40,
+    "promotionThreshold": 80,
     "inboxPerRound": 2,
-    "scoreWeights": {},
+    "scoreWeights": {
+      "trust": 0.33,
+      "morale": 0.33,
+      "donors": 0.33
+    },
     "roundNames": [],
     "editorPassword": "admin1234",
     "missionStarPoints": 3,
@@ -929,7 +933,37 @@ var EDITOR_DATA =
                 "val": -2,
                 "pct": 46
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 48,
+              "categories": [
+                {
+                  "name": "Physical Safety",
+                  "start": 42,
+                  "end": 48,
+                  "shift": 6
+                },
+                {
+                  "name": "Ideology",
+                  "start": 45,
+                  "end": 50,
+                  "shift": 5
+                },
+                {
+                  "name": "Democracy",
+                  "start": 30,
+                  "end": 32,
+                  "shift": 2
+                },
+                {
+                  "name": "Communal Vitality",
+                  "start": 50,
+                  "end": 52,
+                  "shift": 2
+                }
+              ]
+            }
           },
           {
             "text": "Coordinate a joint response with the Interfaith Council and campus civil rights groups first",
@@ -990,7 +1024,37 @@ var EDITOR_DATA =
                 "val": 3,
                 "pct": 60
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 50,
+              "categories": [
+                {
+                  "name": "Physical Safety",
+                  "start": 42,
+                  "end": 45,
+                  "shift": 3
+                },
+                {
+                  "name": "Ideology",
+                  "start": 45,
+                  "end": 50,
+                  "shift": 5
+                },
+                {
+                  "name": "Democracy",
+                  "start": 30,
+                  "end": 33,
+                  "shift": 3
+                },
+                {
+                  "name": "Communal Vitality",
+                  "start": 50,
+                  "end": 56,
+                  "shift": 6
+                }
+              ]
+            }
           },
           {
             "text": "Focus inward — organize support for affected students and staff before making any public statement",
@@ -1051,7 +1115,37 @@ var EDITOR_DATA =
                 "val": 4,
                 "pct": 62
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 41,
+              "categories": [
+                {
+                  "name": "Physical Safety",
+                  "start": 42,
+                  "end": 41,
+                  "shift": -1
+                },
+                {
+                  "name": "Ideology",
+                  "start": 45,
+                  "end": 43,
+                  "shift": -2
+                },
+                {
+                  "name": "Democracy",
+                  "start": 30,
+                  "end": 30,
+                  "shift": 0
+                },
+                {
+                  "name": "Communal Vitality",
+                  "start": 50,
+                  "end": 53,
+                  "shift": 3
+                }
+              ]
+            }
           }
         ],
         "transitionText": "That was day one. You have twelve months to go.",
@@ -1239,11 +1333,11 @@ var EDITOR_DATA =
         "baseStartApproval": 40
       }
     ],
-    "advisorSlots": 5,
+    "advisorSlots": 3,
     "advisorBonusStacking": "best",
     "gamePassword": "playtest2026",
     "startingBudget": 100,
-    "dangerOrangeThreshold": 75,
+    "dangerOrangeThreshold": 25,
     "dangerRedThreshold": 20,
     "investmentsPerYear": 2,
     "nationalInvestmentsPerYear": 4,
@@ -1256,57 +1350,62 @@ var EDITOR_DATA =
       "centristCloutRate": 0.6
     },
     "outgoingED": {
-      "name": "Avi Rosen",
+      "name": "Andy Rose",
       "role": "Outgoing Executive Director",
       "portrait": "art/advisors/avi_rosen"
     },
     "popupMessages": {
       "onboarding": [
         {
-          "mood": "neutral",
-          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching. Let me show you the office.",
-          "label": "What do I need to know?"
+          "mood": "approving",
+          "msg": "Welcome!  I had this job before you and want to help with a smooth transition. Your goal is to increase <strong>Jewish security</strong>. But that involves building a strong organization.",
+          "label": "How do I play?"
         },
         {
           "mood": "neutral",
-          "msg": "You have <strong>3 action points</strong> per round. Each desk object is a different channel of work: the <strong>monitor</strong> is your primary scenario inbox, the <strong>folder</strong> holds memos, the <strong>keys</strong> get you out into the field. Spend an AP by clicking one. The <strong>landline</strong> on the right is free — pick it up to call any of your advisors for guidance, no AP cost.",
-          "label": "And the phone?"
+          "msg": "You have <strong>3 action points</strong> per round that you can spend by clicking on the <strong>monitor, sticky note or keys</strong> to respond to a scenario. Sometimes a breaking news event will pop-up. That doesn't cost action points to engage with.",
+          "label": "And the phones?"
         },
         {
           "mood": "neutral",
-          "msg": "The <strong>cell phone</strong> shows your inbox — emails and texts that arrive throughout the day. Reading and replying to inbox messages is also free. Some have timers, though, so don't sit on them too long.",
+          "msg": "Emails and texts are sent to your <strong>cell phone</strong> — responding to messages is free, but some will expire and dock points if you wait too long. The <strong>landline</strong> lets you call your advisors and other characters you meet in the game and is also free to use.",
           "label": "What about the monitor screen?"
         },
         {
-          "mood": "approving",
-          "msg": "The monitor isn't just a click target — it's a desktop with three windows. <strong>Social</strong> lets you post to your org's accounts (engagement decays each post you make per round, so use them wisely). <strong>Briefings</strong> appears when you have active <strong>Tasks</strong> — multi-round initiatives with checkpoints and deadlines. <strong>Coalitions</strong> appears when you've signed partnerships. Drag windows around, expand them with the + button, click outside any window to pull a scenario from the monitor channel.",
-          "label": "Got it. What am I tracking?"
-        },
-        {
-          "mood": "concerned",
-          "msg": "Two scoreboards. At the <strong>top</strong> is the <strong>Jewish Security Index</strong> — a composite of four dimensions (Physical Safety, Ideology, Democracy, Communal Vitality), each weighted by your org's priorities. That's the world. At the <strong>bottom</strong> is your <strong>HUD</strong>: Trust, Morale, Donors — your three internal stats. If any drops to <strong>20 or below</strong>, the board calls an emergency meeting and your tenure ends.",
-          "label": "And the clipboard in the corner?"
-        },
-        {
-          "mood": "approving",
-          "msg": "That's your live <strong>Board Rating</strong> — a letter grade from F to A+ based on your stats plus mission-star bonuses. Hover it to see how it's calculated. At year's end the board evaluates the same number: <strong>≥80</strong> earns a distinguished tenure, <strong>≥40</strong> keeps your job, anything lower and your contract isn't renewed.",
-          "label": "Any other advice?"
+          "mood": "neutral",
+          "msg": "Click on the monitor to respond to scenarios. But the screen also has interactive windows. <strong>Social media</strong> lets you post messages for free — but the public's reaction degrades the more you post in a single round. As you accept <strong>Tasks</strong> or join <strong>Coalitions</strong> you'll see new windows pop up. Drag them around and click the + sign to expand any window.",
+          "label": "Got it. And what am I tracking?"
         },
         {
           "mood": "neutral",
-          "msg": "Use your <strong>budget (gelt)</strong> wisely — the investment bar above the HUD has options for security upgrades, marketing, training, and more. They don't cost AP, just money. And remember: every round your stats <strong>naturally decay</strong> as attention fades and donors expect fresh results. There are no perfect choices. The best leaders know which costs they can afford.",
+          "msg": "You're tracking the <strong>Jewish Security Index</strong> — a composite score located in a shield inside the <strong>top bar</strong>. If that falls to <strong>15</strong> or below you lose. If it rises to <strong>80</strong> or above you win. \n<br><br>\nBut you also have to keep your job. Finish a round with your <strong>Board Rating</strong> below <strong>40</strong>, or without any <strong>Mission Stars</strong> and your tenure will end. If any of your internal stats (trust, morale, donors) fall to <strong>15</strong> or below you'll be fired immediately.",
+          "label": "How do I keep my scores up?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "Every game action — scenarios, conversations and even social media posts — has consequences. The choices you select will boost or damage the meters that make up the <strong>Jewish Security Index</strong> and your <strong>Board Rating</strong>. Sometimes they'll do both. \n<br><br>\nEncouraging synagogues to eliminate their DEI programs in exchange for federal security grants will boost <strong>institutional security</strong> but damage <strong>minority rights</strong>, both of which contribute to the Jewish Security composite. And firing a staffer who criticized your organization on social media will make <strong>Donors</strong> happy but could hurt <strong>Morale</strong>. The Board will notice both.",
+          "label": "What about the other items?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "Mission-aligned choices earn a <strong>Mission Star,</strong> regardless of outcome, while others can lose you a star. Earn <strong>Gelt</strong> throughout the game and spend it on <strong>Investments</strong> or expensive choices, like giving your staff raises. Same with <strong>Clout</strong>, which allows you to exert political influence. Your organization's <strong>Political Lean</strong> shifts based on your choices and helps determine the scenarios you receive what choices you have available.",
+          "label": "This sounds like a lot..."
+        },
+        {
+          "mood": "approving",
+          "msg": "The main thing is to make sure that the <strong>Jewish Security Index</strong> doesn't fall too sharply, and that your internal stats — <strong>Trust, Morale and Donors</strong> — stay at a reasonable level. Everything else will fall into place as you play. And remember: When it comes to countering antisemitism, there are no perfect choices.",
           "label": "Let's do this →"
         }
       ],
-      "statDangerRed": "🚨 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
-      "statDangerOrange": "Heads up — your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
-      "investmentSuggestion": "Your <strong>{stat}</strong> is in trouble. Consider using investments to help — check the investment bar for options that boost {stat}.",
-      "missionStarLow": "Your mission stars are dangerously low. The board expects you to stay true to your stated priorities — losing all your stars means losing their confidence.",
-      "missionStarMax": "You've earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.",
-      "communityCloutBonus": "⚡ +{amount} Clout from your position near the community's political center.",
-      "communityCloutBonusCentrist": "⚡ +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
-      "geltCrisis": "Your gelt is critically low. Some choices may be unavailable until finances improve.",
-      "centristClout": "Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly."
+      "statDangerRed": "🚨 The Board just called an emergency meeting. <strong>{stat}</strong> is critically low. If it drops to {threshold}, they'll fire you immediately.",
+      "statDangerOrange": "Hey! Your <strong>{stat}</strong> has fallen below {value}. Make sure it doesn't go any lower or your job could be in jeopardy.",
+      "investmentSuggestion": "Check your investment options (located below the desk) for something that could help raise your <strong>{stat}</strong>.",
+      "missionStarLow": "You need at least one <strong>Mission Star</strong> before the round ends. It doesn't matter how <strong>Jewish Security</strong> is doing if you stray from your organization's mission and lose the board's confidence.",
+      "missionStarMax": "You've earned maximum <strong>Mission Star</strong>. The board sees you delivering, and this will help your year-end evaluation — even if <strong>Jewish Security</strong> is middling.",
+      "communityCloutBonus": "⚡ +{amount} Clout bonus from your organization's position near the Jewish community's political heart.",
+      "communityCloutBonusCentrist": "⚡ +{amount} Clout from your position near the community's political heart. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
+      "geltCrisis": "Your low <strong>Gelt</strong> may get you into trouble. Try to boost it over the next few rounds.",
+      "centristClout": "Your decision would have earned +{full} clout, but the <strong>Centrist Penalty</strong> reduced it to +{reduced}. Sitting in the middle of the political spectrum keeps your options open — but your lack of a committed base mean it's harder to build influence."
     },
     "coachingMessages": {
       "stat_yellow": [
@@ -1315,7 +1414,7 @@ var EDITOR_DATA =
         "Your {stat} is getting into uncomfortable territory. The board notices these trends."
       ],
       "stat_red": [
-        "🚨 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "🚨 {stat} is critically low. If it falls to {threshold}, the board will call an emergency meeting and your tenure ends.",
         "🚨 {stat} is in the danger zone. One more bad outcome and you could be out.",
         "🚨 Crisis warning: {stat} is near the point of no return."
       ],
@@ -1509,7 +1608,13 @@ var EDITOR_DATA =
           "delta": 1
         }
       ]
-    }
+    },
+    "tiltPositions": {
+      "left": 25,
+      "center": 50,
+      "right": 75
+    },
+    "statDecayPerRound": 1
   },
   "stats": [
     {
@@ -1528,34 +1633,27 @@ var EDITOR_DATA =
   "avatarEmojis": [
     "👩",
     "👨",
-    "👩‍💼",
-    "👨‍💼",
-    "👩‍🏫",
-    "👨‍🏫",
-    "👩‍⚖️",
-    "👨‍⚖️",
-    "🧕",
-    "👲",
-    "🧔",
     "👩‍🦱",
-    "👨‍🦱",
-    "👩‍🦳",
-    "👨‍🦳",
+    "🧑‍🦱",
+    "🧔‍♂️",
+    "👴",
     "👵",
     "🦁",
-    "🦊",
-    "🐺",
-    "🦉",
-    "🐻",
-    "🐼",
     "🦅",
+    "🥯",
+    "🍉",
+    "🇺🇸",
+    "🇮🇱",
+    "🇵🇸",
+    "🕍",
+    "🕎",
     "✡️"
   ],
   "characterTraits": [
     {
       "id": "community_insider",
-      "name": "Community Insider",
-      "description": "You've been in Jewish communal life for decades. People know you — and you know where the bodies are buried.",
+      "name": "The Macher",
+      "description": "You've spent decades at leading Jewish nonprofits. You have the relationships — and you know how to get things done.",
       "statModifiers": {
         "trust": 6,
         "donors": 3
@@ -1563,16 +1661,16 @@ var EDITOR_DATA =
     },
     {
       "id": "outsider_voice",
-      "name": "Outsider Voice",
-      "description": "You came from outside the Jewish communal bubble. You see things others miss — and don't owe anyone favors.",
+      "name": "The Outsider",
+      "description": "You spent your career outside the Jewish community. You may not know everyone, but you have fresh ideas and no baggage.",
       "statModifiers": {
         "morale": 6
       }
     },
     {
       "id": "fundraiser",
-      "name": "Master Fundraiser",
-      "description": "You have a gift for the ask. Donors take your calls and write bigger checks than they planned.",
+      "name": "The Fundraiser",
+      "description": "You know all the foundations and philanthropists. When you make the hard ask, people give — and give more than they had planned.",
       "statModifiers": {
         "donors": 7
       },
@@ -1580,8 +1678,8 @@ var EDITOR_DATA =
     },
     {
       "id": "organizer",
-      "name": "Grassroots Organizer",
-      "description": "You built power from the ground up. You know how to mobilize people who've never shown up before.",
+      "name": "The Organizer",
+      "description": "You know how to build grassroots movements, and bring in people who don't normally show up.",
       "statModifiers": {
         "trust": 4,
         "morale": 6
@@ -1589,17 +1687,17 @@ var EDITOR_DATA =
     },
     {
       "id": "scholar",
-      "name": "Jewish Scholar",
-      "description": "Your depth of Jewish learning gives you moral authority. When you cite Torah, people listen.",
+      "name": "The Scholar",
+      "description": "You seamlessly weave Jewish texts and knowledge into conversations. People believe this is more than a job for you.",
       "statModifiers": {
-        "trust": 4,
-        "morale": 3
+        "trust": 3,
+        "morale": 5
       }
     },
     {
       "id": "political_operator",
-      "name": "Political Operator",
-      "description": "You understand power. You know who to call, what to trade, and when to hold your fire.",
+      "name": "The Operator",
+      "description": "You know how to move legislation — and politicians. It may not always be pretty, but you get results.",
       "statModifiers": {
         "donors": 6
       },
@@ -1607,18 +1705,10 @@ var EDITOR_DATA =
     },
     {
       "id": "media_savvy",
-      "name": "Media Savvy",
-      "description": "You know how to work a story. Journalists take your calls and you rarely come off badly in print.",
+      "name": "The Visionary",
+      "description": "You charm the room, whether it's a board meeting, an all-hands or a TV interview. People come away impressed and convinced.",
       "statModifiers": {
         "trust": 7
-      }
-    },
-    {
-      "id": "burnout_survivor",
-      "name": "Burnout Survivor",
-      "description": "You've been through the fire before. You protect your staff because you know what it costs when no one does.",
-      "statModifiers": {
-        "morale": 8
       }
     }
   ],
@@ -1626,13 +1716,14 @@ var EDITOR_DATA =
     {
       "id": "left",
       "name": "Jews for Justice",
-      "badge": "Progressive",
+      "badge": "Left",
       "badgeClass": "badge-left",
-      "description": "A national progressive Jewish advocacy organization working on social justice, voting rights, and Israeli-Palestinian peace at the federal level.",
+      "description": "Founded in the 1990s to promote the liberal policies supported by many American Jews but overlooked by the establishment — abortion rights, gun control, racial justice — Jews for Justice has since expanded to work on Israel-Palestine. A Jewish voice on the progressive left.",
       "traits": [
-        "National media: every statement is amplified",
-        "Large progressive donor base across 30+ cities",
-        "Coalition work with major civil rights organizations"
+        "Prioritize building a \"multiracial democracy\"",
+        "Strong relationships with national civil rights orgs",
+        "Navigating hard questions over Israel and antisemitism",
+        "Counts on a loose network of small donors"
       ],
       "statModifiers": {
         "morale": 5,
@@ -1688,13 +1779,13 @@ var EDITOR_DATA =
     {
       "id": "right",
       "name": "Israel Action Committee",
-      "badge": "Conservative",
+      "badge": "Right",
       "badgeClass": "badge-right",
-      "description": "A right-wing pro-Israel advocacy org focused on combating left-wing antisemitism and supporting strong US-Israel ties.",
+      "description": "An upstart organization created by donors who felt legacy organizations were too timid, the Israel Action Committee is a fierce defender of the Jewish state. It seeks to limit the influence of progressives activists promoting anti-Zionism, while trying to keep the most antisemitic voices on the right in check. ",
       "traits": [
-        "Major donor driven: consistency expected",
-        "Strong Israel focus: deviations are costly",
-        "Credibility at risk on right-wing antisemitism"
+        "Focused on a strong U.S.-Israel relationship",
+        "Works inside the conservative movement",
+        "Relies on a small number of major donors"
       ],
       "statModifiers": {
         "trust": -2,
@@ -1715,7 +1806,7 @@ var EDITOR_DATA =
         "olderAdults": 30
       },
       "allocationPoints": 75,
-      "startingBudget": 70,
+      "startingBudget": 90,
       "securityWeights": {
         "categoryWeights": {
           "safety": 30,
@@ -1750,17 +1841,17 @@ var EDITOR_DATA =
     {
       "id": "center",
       "name": "Association of American Jews",
-      "badge": "Centrist",
+      "badge": "Center",
       "badgeClass": "badge-center",
-      "description": "The umbrella body for mainstream American Jewish advocacy, representing hundreds of local organizations and speaking for the communal consensus.",
+      "description": "One of the nation's oldest and most established Jewish organizations, the Association of American Jews seeks to represent the Jewish community domestically and abroad. It's supported by a network of local affiliates and the country's wealthiest Jewish donors, but faces mounting challenges to its credibility from both the right and left.",
       "traits": [
-        "Represents diverse constituency: every decision is contested",
-        "Largest platform in Jewish America",
-        "Bipartisan credibility is your greatest asset"
+        "Strongest brand and largest platform",
+        "Seeks to maintain bipartisan consensus on Israel and antisemitism",
+        "Huge donor base but defections are starting"
       ],
       "statModifiers": {
-        "trust": 5,
-        "donors": 3
+        "trust": 6,
+        "donors": 4
       },
       "politicalTilt": [
         "center"
@@ -1777,7 +1868,7 @@ var EDITOR_DATA =
         "olderAdults": 23
       },
       "allocationPoints": 90,
-      "startingBudget": 120,
+      "startingBudget": 125,
       "securityWeights": {
         "categoryWeights": {
           "safety": 25,
@@ -1814,22 +1905,23 @@ var EDITOR_DATA =
   "missions": [
     {
       "id": "antisemitism_all",
-      "name": "Combat Antisemitism Across the Political Spectrum",
-      "description": "Your organization fights antisemitism wherever it comes from — far right, far left, and everywhere in between.",
+      "name": "Combat Antisemitism Across the Spectrum",
+      "description": "You take a \"swivel-headed\" approach to antisemitism, fighting it on the right, left or wherever else it emerges without focusing on one of these threats over another.",
       "availableTo": [
         "left",
         "right",
         "center"
       ],
       "statBonus": {
-        "trust": 5,
-        "morale": 2
+        "trust": 3,
+        "morale": 2,
+        "donors": 3
       }
     },
     {
       "id": "antisemitism_left",
       "name": "Counter Antisemitism and Anti-Zioinsm from the Left",
-      "description": "You focus on left-wing antisemitism — in progressive movements, on campuses, and in political discourse.",
+      "description": "Your organization believes that antisemitism related to Israel — which you believe includes anti-Zionism — is the greatest threat to the Jewish people.",
       "availableTo": [
         "right",
         "center"
@@ -1841,8 +1933,8 @@ var EDITOR_DATA =
     },
     {
       "id": "antisemitism_right",
-      "name": "Counter Far-Right Antisemitism and White Supremacy",
-      "description": "You focus on right-wing and white nationalist antisemitism — the most statistically deadly threat to Jewish Americans.",
+      "name": "Fight Far-Right Antisemitism and White Supremacy",
+      "description": "Your greatest priority is tanding up to the far-right because of the threat you think white supremacy and Christian nationalism pose and existential threat to Jews and other vulnerable groups.",
       "availableTo": [
         "left",
         "center"
@@ -1856,20 +1948,20 @@ var EDITOR_DATA =
     {
       "id": "israel_security",
       "name": "Defend Israel",
-      "description": "Your primary mission is securing American political and financial support for Israel.",
+      "description": "Your top concern is eroding support for Israel among Americans and the U.S. government, and your organization is focused on stopping this shift.",
       "availableTo": [
         "right",
         "center"
       ],
       "statBonus": {
-        "trust": -5,
+        "trust": -3,
         "donors": 15
       }
     },
     {
       "id": "israel_peace",
       "name": "Advocate for Palestinian Rights",
-      "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
+      "description": "You believe American Jews have a moral obligation to oppose Israeli human rights abuses, and your organization pushes for an end to the occupation and limiting U.S. support for Israel.",
       "availableTo": [
         "left",
         "center"
@@ -1881,23 +1973,9 @@ var EDITOR_DATA =
       }
     },
     {
-      "id": "social_justice",
-      "name": "Jewish Social Justice Advocacy",
-      "description": "You ground your work in Jewish values — tikkun olam and tzedakah — applied to racial justice, immigrant rights, and economic equality.",
-      "availableTo": [
-        "left",
-        "center"
-      ],
-      "statBonus": {
-        "trust": 2,
-        "morale": 8,
-        "donors": -3
-      }
-    },
-    {
       "id": "diaspora_unity",
-      "name": "Unite the Jewish Diaspora",
-      "description": "You work to build bridges across denominations, politics, and geographies.",
+      "name": "Keep the Community Together",
+      "description": "The center must hold. That's your organization's guiding principle and you'll do everything possible to make sure political divisions — over Israel or domestic politics — don't break the Jewish community apart.",
       "availableTo": [
         "center"
       ],
@@ -1970,7 +2048,6 @@ var EDITOR_DATA =
           "text": "Coordinate a coalition response with other civil rights organizations before speaking publicly.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -2277,7 +2354,7 @@ var EDITOR_DATA =
           "budgetCost": 0,
           "politicalLean": 0,
           "cloutEffect": 0,
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ],
       "categories": [
@@ -2340,7 +2417,6 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -2380,8 +2456,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -2455,7 +2530,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -2552,8 +2626,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Offer meaningful raises funded by drawing down reserves, and hire a part-time events coordinator.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -2617,9 +2690,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Recruit community volunteers aggressively to fill the capacity gap.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -2646,9 +2717,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
           "missionAligned": [],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Some donors are disappointed. But your team enters the year rested and turnover hits zero.",
@@ -2896,8 +2965,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Sign the letter. Your values are your values, and your donors should understand that.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security",
@@ -3004,8 +3072,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -3270,9 +3337,7 @@ var EDITOR_DATA =
         {
           "id": "c0",
           "text": "Issue a supportive public statement alongside the JCC's reopening, emphasizing community resilience and coordinated security — calm leadership, no fearmongering.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -3308,9 +3373,7 @@ var EDITOR_DATA =
           "text": "Use your political relationships to fast-track federal security grants for the JCC and every Jewish site in the region. Make the effort public.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The closure costs revenue but you reopen with meaningful security improvements that become a model for other JCCs.",
@@ -3343,8 +3406,7 @@ var EDITOR_DATA =
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_all",
-            "community_hub"
+            "antisemitism_all"
           ],
           "outcomes": [
             {
@@ -3372,7 +3434,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Co-host an emergency community meeting that evening alongside the JCC, inviting law enforcement, elected officials, and community leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -3627,8 +3688,6 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -3678,7 +3737,6 @@ var EDITOR_DATA =
           "text": "Support Jewish students across the political spectrum in testifying about how the resolution affects campus climate, without taking an organizational position on divestment itself.",
           "missionAligned": [
             "antisemitism_all",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -3723,14 +3781,13 @@ var EDITOR_DATA =
             "reform": 2,
             "youngAdults": 3
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "israelLean": -2
         },
         {
           "id": "c2",
           "text": "Organize counter-programming: a campus dialogue on antisemitism, Islamophobia, and how divestment debates affect real students on both sides.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -3845,8 +3902,6 @@ var EDITOR_DATA =
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "jewish_identity",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3912,7 +3967,6 @@ var EDITOR_DATA =
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3955,7 +4009,7 @@ var EDITOR_DATA =
             "unaffiliated": 2,
             "youngAdults": 2
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "cloutCost": 6
         },
         {
@@ -3964,8 +4018,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -4012,9 +4065,7 @@ var EDITOR_DATA =
           "missionOpposed": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "social_justice",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "outcomes": [
             {
@@ -4087,9 +4138,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Accept the partnership. Security is non-negotiable and the threats are real. Address staff concerns with a town hall.",
           "missionAligned": [],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The partnership is implemented. Security improves immediately. Three progressive staff members resign, and a local racial justice group issues a statement of disappointment.",
@@ -4118,9 +4167,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Accept the partnership while launching a community safety initiative with local civil rights organizations.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4142,14 +4189,12 @@ var EDITOR_DATA =
           ],
           "budgetCost": 7,
           "politicalLean": -2,
-          "requiresUnlock": "grassroots_organizer"
+          "requiresUnlock": "organizer"
         },
         {
           "id": "c2",
           "text": "Decline the police partnership. Invest in private security and community-based safety alternatives instead.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4183,7 +4228,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Delay the decision pending a community-wide listening session that includes staff, congregants, and neighborhood leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -4324,8 +4368,7 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Host a follow-up event: ‘The Exodus Story Through Many Eyes’ — turning the controversy into a moderated public dialogue about shared narratives.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -4363,8 +4406,7 @@ var EDITOR_DATA =
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "outcomes": [
             {
@@ -4520,8 +4562,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Let her go. Her public persona has become inseparable from the organization’s brand, and the controversy is a distraction you can’t afford.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -4664,9 +4705,7 @@ var EDITOR_DATA =
             "antisemitism_left",
             "antisemitism_right"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The press conference is praised for honesty. Activists on the left and right quote the data that suits them. Your organization emerges as a credible source.",
@@ -4703,8 +4742,7 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Emphasize the far-right increase in the press release, since it represents the larger share of the threat.",
           "missionAligned": [
-            "antisemitism_right",
-            "social_justice"
+            "antisemitism_right"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -4747,8 +4785,7 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -5024,7 +5061,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Go beyond condemnation: organize a community support event with mental health resources for people processing the trauma of seeing this hatred go mainstream.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -5170,9 +5206,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 5,
           "cloutEffect": 4,
           "politicalRequirement": {
@@ -5387,9 +5421,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Support the victim’s family publicly but leave the charging decision to the DA without taking a position on hate crime enhancement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -5415,7 +5447,6 @@ var EDITOR_DATA =
           "text": "Support hate crime charges while simultaneously partnering with Black community leaders to frame this as a shared fight against all hate — not a Black vs. Jewish issue.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -5458,9 +5489,7 @@ var EDITOR_DATA =
         {
           "id": "c3",
           "text": "Stay out of the legal process entirely. Focus on the victim’s recovery and offer community healing programs.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -5521,10 +5550,7 @@ var EDITOR_DATA =
         {
           "id": "c0",
           "text": "Launch a major ‘Save Our School’ campaign with your organization as the lead. Commit significant resources and fundraising capacity.",
-          "missionAligned": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "segmentOverrides": {
@@ -5558,7 +5584,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Help the school modernize: broker partnerships with public schools, create a part-time Hebrew enrichment track, and help them appeal to unaffiliated families.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -5601,13 +5626,9 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Offer to absorb the school’s key programs into your JCC/community center programming rather than saving the school as an independent institution.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "You save the educational content but the school closes. Orthodox families are devastated. Your programming grows but the community feels a real loss.",
@@ -5632,10 +5653,7 @@ var EDITOR_DATA =
           "text": "Express sympathy but explain this isn’t your organization’s role. The school’s board needs to solve this themselves.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The school closes at the end of the year. The community mourns. Your name comes up repeatedly in conversations about ‘who could have helped but didn’t.’",
@@ -5691,8 +5709,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Accept the county’s invitation and develop the module, even if it strains your progressive alliances. This is a once-in-a-generation opportunity.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -5739,7 +5756,6 @@ var EDITOR_DATA =
           "text": "Accept but collaborate with other minority groups on a broader module that includes antisemitism alongside other forms of hatred — shared authorship, shared ownership.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -5807,13 +5823,10 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Decline and publicly challenge the premise that DEI should exclude antisemitism — write an op-ed making the case that any equity framework that excludes Jewish experiences is incomplete.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 3,
           "outcomes": [
             {
@@ -5879,9 +5892,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 6,
           "segmentOverrides": {
             "orthodox": 8,
@@ -5972,9 +5983,7 @@ var EDITOR_DATA =
         {
           "id": "c3",
           "text": "Decline entirely and issue a statement explaining that your organization’s commitment to LGBTQ+ inclusion and pluralism is incompatible with this partnership.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -6210,9 +6219,7 @@ var EDITOR_DATA =
             "antisemitism_left"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -6312,8 +6319,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use the moment to host a community conversation about political divisions within the Jewish community — inviting the rabbi and her progressive critics to the same stage.",
           "missionAligned": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6401,9 +6407,7 @@ var EDITOR_DATA =
         {
           "id": "c0",
           "text": "Sign the statement. Your coalition relationships are your most important asset, and you can work to soften the language from inside.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security",
@@ -6502,7 +6506,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Negotiate privately — ask for amended language that distinguishes between the Israeli government and Jewish self-determination. Offer to sign a revised version.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6547,10 +6550,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use your grassroots network to organize a counter-letter from progressive Jews of color, LGBTQ Jews, and Mizrachi Jews arguing the coalition's framing erases diverse Jewish experiences.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -6618,8 +6620,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Approve the joint commemoration. This is exactly the kind of brave, values-driven programming your organization should be doing.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "requiresUnlock": null,
           "missionOpposed": [
@@ -6707,8 +6708,7 @@ var EDITOR_DATA =
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -6740,10 +6740,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use your donor relationships to privately secure bridge funding that would replace any lost pledges, then greenlight the event with financial cover in place.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -3,
           "outcomes": [
@@ -6816,8 +6815,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Publish a direct rebuttal centering the voices of Jews of color in your organization — making the case that antisemitism IS a racial justice issue.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6864,8 +6862,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Request a private meeting with the consultant to discuss her claims. Bring your Jews-of-color staff members who want to participate.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6906,10 +6903,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Don't engage with the article directly. Instead, invest in programming that demonstrates — rather than argues — why antisemitism is a racial justice issue.",
-          "missionAligned": [
-            "social_justice",
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -6941,10 +6935,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Place an op-ed in a major outlet through your media contacts — not a rebuttal, but a proactive piece on why progressive movements need to take antisemitism seriously.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7060,8 +7053,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Meet with her privately. Demand a genuine public apology and commitment to antisemitism education — but don't rescind the endorsement yet.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -7106,7 +7098,6 @@ var EDITOR_DATA =
           "text": "Turn this into a teaching moment — host a public forum on antisemitism in progressive spaces, inviting the council member to participate (not as the accused, but as a learner).",
           "missionAligned": [
             "antisemitism_left",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -7145,7 +7136,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_left"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7337,10 +7328,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Address the room as a Jewish educator — draw on texts about machloket and the tradition of holding multiple truths. Reframe this as a strength, not a crisis.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7540,7 +7530,7 @@ var EDITOR_DATA =
             "antisemitism_all",
             "antisemitism_right"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "politicalLean": -2,
           "outcomes": [
@@ -7613,9 +7603,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -7705,7 +7693,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Decline the partnership entirely and publish a position paper on why Jewish organizations should not partner with groups that seek Jewish conversion, regardless of shared political goals.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -7744,10 +7731,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Counter-propose: you'll work with the church only if they publicly remove conversion language from their website and commit to a 'no proselytizing' covenant, using your halachic expertise to draft the covenant terms.",
           "missionAligned": [
-            "jewish_identity",
             "israel_security"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7940,7 +7926,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -8136,7 +8122,7 @@ var EDITOR_DATA =
             "antisemitism_right",
             "israel_security"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8325,7 +8311,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8477,7 +8463,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Sidestep the political debate entirely. Show up on campus with programming: a teach-in, free food, mental health support for stressed Jewish students regardless of their views.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -8515,7 +8500,7 @@ var EDITOR_DATA =
             "diaspora_unity",
             "antisemitism_all"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8596,7 +8581,6 @@ var EDITOR_DATA =
           "missionOpposed": [
             "antisemitism_right",
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -8689,8 +8673,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -8729,7 +8712,6 @@ var EDITOR_DATA =
           "text": "Invoke Jewish textual tradition to draft a new, original framework that draws on IHRA, Nexus, and Jerusalem Declaration — positioning it as emerging from Jewish scholarly consensus rather than political camps.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -8760,7 +8742,7 @@ var EDITOR_DATA =
             "youngAdults": 2,
             "olderAdults": 2
           },
-          "requiresUnlock": "jewish_scholar"
+          "requiresUnlock": "scholar"
         }
       ]
     },
@@ -8938,7 +8920,7 @@ var EDITOR_DATA =
             "youngAdults": 2,
             "olderAdults": 1
           },
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ]
     },
@@ -8985,8 +8967,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -9043,8 +9024,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -9206,7 +9186,6 @@ var EDITOR_DATA =
           "text": "Write a forceful statement defending your attempt to stay out of political debates as a philosophy of conviction, not cowardice — with specific examples of what your approach has actually accomplished.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9397,8 +9376,7 @@ var EDITOR_DATA =
           "text": "Publicly support removing the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, your organization should say so clearly.",
           "missionAligned": [],
           "missionOpposed": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "outcomes": [
             {
@@ -9442,7 +9420,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Propose a compromise: a new 'identity wall' in the JCC lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9488,8 +9465,7 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Publicly back keeping the flag. It's been there since 1987 and represents a connection to Israel that is part of the JCC's identity. Your organization won't support caving to pressure.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -9596,7 +9572,6 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Tell the JCC board to approve the rental. Their policy is clear, and a Jewish community space that decides which Jews are 'Jewish enough' for the building has lost its way.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -9645,12 +9620,8 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Tell the JCC board to deny this specific event but help them revise their rental policy to require that all events align with 'building Jewish community' — creating a principled framework for future decisions.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionAligned": [],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "JVP calls it 'a political litmus test dressed up as policy.' Your legal counsel says the new policy is defensible. Most members accept the framework. But the question of who defines 'building Jewish community' now haunts every rental application.",
@@ -9684,7 +9655,6 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -9719,7 +9689,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Propose a creative compromise to the JCC: approve the rental but have the JCC co-host, adding a second panel with a range of Jewish perspectives on Israel. Turn a one-sided event into a community dialogue — your organization's grassroots network can help ensure diverse attendance.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9805,8 +9774,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -9841,9 +9809,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Advise the JCC to meet with the teacher privately. Explain the situation, ask her to make her social media private, and separate her personal views from her professional role.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left",
             "israel_security"
@@ -9922,7 +9888,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Publicly defend the teacher's right to share her views on her own time, but work quietly with the JCC to reassure the parents that the issue is being handled internally. Ask the teacher to delete the most inflammatory posts and be more careful going forward.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9984,7 +9949,6 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -10021,8 +9985,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -10092,7 +10055,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10301,8 +10263,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Meet with the student coalition privately. Acknowledge their concerns, propose adding a free-speech protection clause, and ask them to stay in the coalition.",
           "missionAligned": [
-            "antisemitism_all",
-            "social_justice"
+            "antisemitism_all"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -10332,9 +10293,7 @@ var EDITOR_DATA =
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your firmness earns praise from pro-Israel groups and some faculty. But six progressive student organizations withdraw from the coalition, and the campus newspaper runs a story about 'Jewish org silencing Palestinian voices.'",
@@ -10360,7 +10319,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Agree to their exclusion language. Keeping the coalition together is more important than winning the definitional fight.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -10639,9 +10597,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The donor pressure works. Martinez files the bill and Chen agrees to co-sponsor. But the progressive press writes about 'dark money behind anti-BDS legislation' and your methods become part of the story.",
@@ -11072,9 +11028,7 @@ var EDITOR_DATA =
             "israel_security",
             "antisemitism_left"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The pro-Israel advocate is appointed. Democrats are furious — 'This isn't bipartisan, it's a pro-Israel talking shop.' Two Democratic members threaten to resign before the first meeting.",
@@ -11101,7 +11055,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Lean toward the Democratic pick. Including a progressive critic of Israel signals that the task force won't be used to silence dissent — and that's worth the discomfort.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -11323,7 +11276,6 @@ var EDITOR_DATA =
           "text": "Feature the Khoury-Levins — a Jewish-Palestinian couple whose children face antisemitism AND Islamophobia. Complicated but it challenges every assumption.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -11358,9 +11310,7 @@ var EDITOR_DATA =
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The student’s story ignites a fierce debate. Conservative media loves it. Progressive allies accuse you of conflating anti-Zionism with antisemitism. The episode gets views but costs you coalition relationships.",
@@ -11463,9 +11413,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Cut the rally footage entirely. The episode is strong enough without it, and including it risks torpedoing the entire series.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left"
           ],
@@ -11495,8 +11443,7 @@ var EDITOR_DATA =
           "text": "Keep the footage AND add an interview with a Palestinian-American activist who condemns the antisemitic signs. Let a human voice make the distinction.",
           "missionAligned": [
             "antisemitism_all",
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -11865,9 +11812,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The grant fast-tracks funding. But three Reform synagogues threaten to leave over the Israel programming requirement. You have the money but the coalition is fracturing.",
@@ -12365,8 +12310,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Walk to the microphone and invite the group’s leader to speak for two minutes. This summit is about hearing every Jewish voice — including ones that make us uncomfortable.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [
             "israel_security"
@@ -12430,7 +12374,6 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -12653,9 +12596,7 @@ var EDITOR_DATA =
           "text": "Terminate the internship immediately and issue a statement distancing the org.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The decision is defensible but generates a secondary story about workplace culture. She becomes a minor cause célèbre.",
@@ -12700,9 +12641,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Defend her publicly as a private individual exercising free expression, while clarifying your org's position.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -12904,9 +12843,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "He attends, the event gets press coverage. Two coalition partners quietly pull back from joint programming.",
@@ -12929,9 +12866,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Decline and explain that the Voting Rights vote makes it impossible to host him at this time.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -12976,7 +12911,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Counter-propose a private meeting instead of a public appearance — build the relationship without the optics.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -13074,7 +13009,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use your political relationships to identify who is driving this and quietly address their specific concerns.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -13419,8 +13354,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Grant full access. This is a chance to show the world the complexity and humanity of Jewish communal life.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -13565,8 +13499,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Respond firmly: Zionism — Jewish self-determination — is not something we will disavow. Period. Publish the response before they publish theirs.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -13594,8 +13527,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Respond thoughtfully: explain the diversity of Zionist thought, reject the binary framing, and invite the students to a dialogue about what a just future looks like.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -13647,7 +13579,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Reach out directly to the student leaders before Friday. Meet with them in person. Have an honest, off-the-record conversation.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -13750,9 +13681,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Don’t issue a public statement, but quietly connect David’s daughter with a mentor from your young leadership program. Turn crisis into engagement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -14519,7 +14448,6 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Drop everything. Drive to the hospital. Organize a community vigil for tonight.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -14574,9 +14502,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Focus inward — secure your own buildings, notify your community, cancel events for the week.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14643,9 +14569,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Connect the student with legal resources and organize a campus support network before going public.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14761,7 +14685,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Use the moment for education — publish a thread about Holocaust history and why the omission matters.",
           "missionAligned": [
-            "jewish_identity",
             "antisemitism_all"
           ],
           "missionOpposed": [],
@@ -14846,7 +14769,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Focus on community care: organize emergency gatherings, provide talking points for parents, and set up a hotline for people experiencing antisemitic harassment.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -14930,8 +14852,6 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Organize a massive community restoration day. Mobilize volunteers, bring in stone restoration experts, and turn the cleanup into a public act of defiance.",
           "missionAligned": [
-            "community_hub",
-            "jewish_identity",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -14959,9 +14879,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Launch a targeted fundraising campaign to restore the cemetery and establish a permanent security fund.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -15314,7 +15232,7 @@ var EDITOR_DATA =
   "advisorPool": [
     {
       "id": "board_chair",
-      "name": "Rachel Steinberg",
+      "name": "Laura Gelman",
       "role": "Board Chair",
       "portrait": "art/advisors/rachel_steinberg",
       "bio": "20 years in Jewish communal governance. Thinks in terms of risk, reputation, and fiduciary duty.",
@@ -15328,7 +15246,7 @@ var EDITOR_DATA =
     },
     {
       "id": "program_dir",
-      "name": "Avi Kessler",
+      "name": "Adam Kaufman",
       "role": "Program Director",
       "portrait": "art/advisors/avi_kessler",
       "bio": "Former campus Hillel director. Believes the mission comes first, always. Staff love him.",
@@ -15342,7 +15260,7 @@ var EDITOR_DATA =
     },
     {
       "id": "dev_director",
-      "name": "Miriam Gold",
+      "name": "Shira Gold",
       "role": "Development Director",
       "portrait": "art/advisors/miriam_gold",
       "bio": "Raised $40M across three organizations. Knows every major donor by name and preference.",
@@ -15356,7 +15274,7 @@ var EDITOR_DATA =
     },
     {
       "id": "rabbi_scholar",
-      "name": "Rabbi David Friedman",
+      "name": "Arthur Hirsch",
       "role": "Senior Rabbi, Congregation Beth Israel",
       "portrait": "art/advisors/rabbi_friedman",
       "type": "external",
@@ -15370,7 +15288,7 @@ var EDITOR_DATA =
     },
     {
       "id": "political_consultant",
-      "name": "Sarah Feld",
+      "name": "Shani Levitt",
       "role": "Political Consultant",
       "portrait": "art/advisors/sarah_feld",
       "type": "external",
@@ -15384,7 +15302,7 @@ var EDITOR_DATA =
     },
     {
       "id": "community_organizer",
-      "name": "Tali Navarro",
+      "name": "Gabby Zimmerman",
       "role": "Community Organizer",
       "portrait": "art/advisors/tali_navarro",
       "type": "external",
@@ -15399,7 +15317,7 @@ var EDITOR_DATA =
     },
     {
       "id": "major_donor_rep",
-      "name": "Leonard Katz",
+      "name": "Leonard Cohen",
       "role": "Philanthropic Advisor",
       "portrait": "art/advisors/leonard_katz",
       "type": "external",
@@ -15413,7 +15331,7 @@ var EDITOR_DATA =
     },
     {
       "id": "media_strategist",
-      "name": "Noa Landover",
+      "name": "Maya Landau",
       "role": "Media Strategist",
       "portrait": "art/advisors/noa_berman",
       "type": "external",
@@ -15431,7 +15349,7 @@ var EDITOR_DATA =
       "id": "conv_donor_harold",
       "type": "character",
       "character": {
-        "name": "Harold Weinstein",
+        "name": "Harold Weinberg",
         "emoji": "🧑‍💼",
         "role": "Major Donor · 15 Years",
         "context": "Called to discuss your decision on his restricted gift"
@@ -16064,7 +15982,7 @@ var EDITOR_DATA =
       "id": "conv_vice_chair_rival",
       "type": "character",
       "character": {
-        "name": "David Chen",
+        "name": "Nathan Saxe",
         "emoji": "👔",
         "role": "Board Vice Chair · 8 Years",
         "context": "Called after the rival organization published their attack"
@@ -16417,7 +16335,7 @@ var EDITOR_DATA =
       "id": "conv_donor_meghan_evangelical",
       "type": "character",
       "character": {
-        "name": "Meghan Torres-Klein",
+        "name": "Muriel Goodman",
         "emoji": "👩‍🦰",
         "role": "Board Member · Interfaith Committee Chair",
         "context": "Called after learning about the evangelical alliance proposal"
@@ -16773,7 +16691,7 @@ var EDITOR_DATA =
       "id": "conv_parent_jcc_bomb_threat",
       "type": "character",
       "character": {
-        "name": "Nadia Kalman",
+        "name": "Sofia Tabachnikoff",
         "emoji": "👩",
         "role": "JCC Preschool Parent · PTA President",
         "context": "Arrived at the JCC during the bomb threat lockdown"
@@ -20460,6 +20378,42 @@ function collectDataProblems() {
   return P;
 }
 
+// Human-readable summary of what changed since the last pull/publish, so the
+// author can see what they are about to ship instead of publishing blind.
+function summarizePendingChanges() {
+  var cleanRaw = localStorage.getItem('gd_clean');
+  if (!cleanRaw || !GD) return null;
+  var clean;
+  try { clean = JSON.parse(cleanRaw); } catch(e) { return null; }
+  var LABELS = {
+    scenarios:'scenario', inboxScenarios:'inbox scenario', breakingNews:'breaking news item',
+    conversations:'conversation', organizations:'organization', missions:'mission',
+    characterTraits:'trait', advisorPool:'character', coalitionOffers:'coalition',
+    investments:'investment', subMissions:'sub-mission', socialMediaPosts:'social post',
+    gazetteTemplates:'gazette template'
+  };
+  var parts = [];
+  Object.keys(LABELS).forEach(function(key) {
+    var before = clean[key] || [], after = GD[key] || [];
+    var bById = {}; before.forEach(function(x){ bById[x.id] = JSON.stringify(x); });
+    var aById = {}; after.forEach(function(x){ aById[x.id] = JSON.stringify(x); });
+    var added = after.filter(function(x){ return !(x.id in bById); }).length;
+    var removed = before.filter(function(x){ return !(x.id in aById); }).length;
+    var edited = after.filter(function(x){ return (x.id in bById) && bById[x.id] !== aById[x.id]; }).length;
+    var bits = [];
+    if (added)   bits.push(added + ' added');
+    if (edited)  bits.push(edited + ' edited');
+    if (removed) bits.push(removed + ' removed');
+    if (bits.length) {
+      var noun = LABELS[key] + ((added+edited+removed) === 1 ? '' : 's');
+      parts.push(noun + ': ' + bits.join(', '));
+    }
+  });
+  if (JSON.stringify(clean.config||{}) !== JSON.stringify(GD.config||{})) parts.push('configuration changed');
+  if (JSON.stringify(clean.scoring||{}) !== JSON.stringify(GD.scoring||{})) parts.push('scoring changed');
+  return parts;
+}
+
 function runDataValidation() {
   var box = document.getElementById('validation-results');
   if (!box) return;
@@ -20615,6 +20569,21 @@ async function saveToGithub() {
       return;
     }
   }
+  // Show what is actually about to ship, and surface broken references before
+  // they go live rather than after a playtester finds them.
+  var _changes = summarizePendingChanges();
+  var _problems = collectDataProblems().filter(function(p){ return p.sev === 'critical'; });
+  var _lines = [];
+  if (_changes === null) _lines.push('About to publish your current game data.');
+  else if (_changes.length) _lines.push('About to publish:\n  • ' + _changes.join('\n  • '));
+  else _lines.push('No content changes detected since your last pull.');
+  if (_problems.length) {
+    _lines.push('\n⚠ ' + _problems.length + ' broken reference' + (_problems.length === 1 ? '' : 's') +
+      ' in this data. They fail silently in the game — run "Check for broken references" on the Dashboard to see them.');
+  }
+  _lines.push('\nPublish to GitHub?');
+  if (!confirm(_lines.join('\n'))) { setStatus('Publish cancelled.', 'error'); return; }
+
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }

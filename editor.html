@@ -357,8 +357,10 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-ghost" onclick="loadFromGithub()">Pull from GitHub</button>
               <button class="btn btn-gold" onclick="saveToGithub()">Publish to GitHub</button>
+              <button class="btn btn-ghost" onclick="runDataValidation()">Check for broken references</button>
               <button class="btn btn-ghost" onclick="resetToDefaults()">Reset to Defaults</button>
             </div>
+            <div id="validation-results" style="margin-top:16px"></div>
           </div>
 
           <!-- GitHub Connection -->
@@ -20289,7 +20291,7 @@ function exportCodeOnly() {
   a.click();
 }
 function resetToDefaults() {
-  if (!confirm('Reset all game data to built-in defaults? This cannot be undone.')) return;
+  if (!confirm('Reset all game data to the defaults built into this editor file?\n\nWarning: those defaults are a snapshot from when this editor was last updated, and are probably OLDER than what is live on GitHub. Publishing after a reset would roll the live game back.\n\nTo get the current live content instead, cancel and use "Pull from GitHub".\n\nThis cannot be undone.')) return;
   GD = JSON.parse(JSON.stringify(DEFAULT_GD));
   localStorage.setItem('gd_cache', JSON.stringify(GD));
   populateAllPanels();
@@ -20334,6 +20336,157 @@ function updateDashboardStats() {
     '<strong>' + (GD.advisorPool||[]).length + '</strong> advisors';
 }
 
+// ═══ DATA VALIDATION ═══
+// Scans all content for references to IDs that no longer exist. Deleting a
+// mission/trait/advisor/coalition leaves dangling references behind that fail
+// silently at runtime (a trait lock nothing can open, an alignment that never
+// awards a star), so this reports them before they ship.
+function collectDataProblems() {
+  if (!GD) return [];
+  var P = [];
+  var add = function(sev, where, msg) { P.push({sev:sev, where:where, msg:msg}); };
+  var ids = function(arr) { return (arr||[]).map(function(x){return x.id}); };
+
+  var traits    = ids(GD.characterTraits);
+  var missions  = ids(GD.missions);
+  var advisors  = ids(GD.advisorPool || GD.advisors);
+  var coalitions= ids(GD.coalitionOffers);
+  var stats     = ids(GD.stats);
+  var subs      = ids(GD.subMissions);
+  var orgs      = ids(GD.organizations).concat(ids(GD.nationalOrganizations));
+  var segments  = ids((GD.config||{}).segments);
+  var scenIds   = ids(GD.scenarios);
+  var leaves    = [];
+  (((GD.config||{}).jewishSecurity||{}).categories||[]).forEach(function(cat){
+    (cat.leaves||[]).forEach(function(l){ leaves.push(l.id); });
+  });
+
+  // Duplicate IDs anywhere
+  [['scenarios',scenIds],['inbox scenarios',ids(GD.inboxScenarios)],['breaking news',ids(GD.breakingNews)],
+   ['advisors',advisors],['missions',missions],['traits',traits],['coalitions',coalitions],
+   ['sub-missions',subs],['conversations',ids(GD.conversations)]].forEach(function(pair){
+    var seen = {}, dupes = [];
+    pair[1].forEach(function(id){ if(seen[id] && dupes.indexOf(id)<0) dupes.push(id); seen[id]=1; });
+    if (dupes.length) add('critical', pair[0], 'Duplicate ID' + (dupes.length>1?'s':'') + ': ' + dupes.join(', '));
+  });
+
+  // Choice-bearing content: scenarios, inbox, breaking news
+  [['Scenario', GD.scenarios], ['Inbox', GD.inboxScenarios], ['Breaking news', GD.breakingNews]].forEach(function(grp){
+    var label = grp[0];
+    (grp[1]||[]).forEach(function(s){
+      var at = label + ' "' + (s.id||'?') + '"';
+      if (s.subMissionId && subs.indexOf(s.subMissionId) < 0)
+        add('critical', at, 'Tagged to sub-mission "' + s.subMissionId + '" which does not exist — it can never enter the scenario pool.');
+      (s.choices||[]).forEach(function(c, ci){
+        var cAt = at + ' choice ' + String.fromCharCode(65+ci);
+        if (c.requiresUnlock && traits.indexOf(c.requiresUnlock) < 0)
+          add('critical', cAt, 'Requires trait "' + c.requiresUnlock + '" which does not exist — no player can ever unlock this choice.');
+        (c.missionAligned||[]).concat(c.missionOpposed||[]).forEach(function(m){
+          if (missions.indexOf(m) < 0)
+            add('critical', cAt, 'Mission alignment "' + m + '" does not exist — awards no mission star and shows no badge.');
+        });
+        (c.endangersCoalition||[]).forEach(function(id){
+          if (coalitions.indexOf(id) < 0) add('warning', cAt, 'Endangers coalition "' + id + '" which does not exist.');
+        });
+        Object.keys(c.segmentOverrides||{}).forEach(function(sg){
+          if (segments.indexOf(sg) < 0) add('warning', cAt, 'Segment override for unknown segment "' + sg + '".');
+        });
+        Object.keys(c.securityEffects||{}).forEach(function(lf){
+          if (leaves.indexOf(lf) < 0) add('warning', cAt, 'Security effect on unknown component "' + lf + '".');
+        });
+        (c.outcomes||[]).forEach(function(o, oi){
+          var oAt = cAt + ' outcome ' + (oi+1);
+          Object.keys(o.effects||{}).forEach(function(k){
+            if (stats.indexOf(k) < 0) add('warning', oAt, 'Effect on unknown stat "' + k + '".');
+          });
+          Object.keys(o.securityEffects||{}).forEach(function(lf){
+            if (leaves.indexOf(lf) < 0) add('warning', oAt, 'Security effect on unknown component "' + lf + '".');
+          });
+          if (o.subMissionCheckpoint && subs.indexOf(o.subMissionCheckpoint.subMissionId) < 0)
+            add('warning', oAt, 'Checkpoint on unknown sub-mission "' + o.subMissionCheckpoint.subMissionId + '".');
+        });
+      });
+      (s.advisorQuotes||[]).forEach(function(q){
+        if (advisors.indexOf(q.advisorId) < 0)
+          add('warning', at, 'Advisor quote from "' + q.advisorId + '" who is not in the character pool — the quote never appears.');
+        var rc = q.recommendsChoice;
+        if (rc !== null && rc !== undefined && (rc < 0 || rc >= (s.choices||[]).length))
+          add('warning', at, 'Advisor quote recommends choice ' + rc + ', but this only has ' + (s.choices||[]).length + ' choices.');
+      });
+    });
+  });
+
+  // Missions
+  (GD.missions||[]).forEach(function(m){
+    (m.availableTo||[]).forEach(function(o){
+      if (orgs.indexOf(o) < 0) add('warning', 'Mission "' + m.id + '"', 'Available to unknown organization "' + o + '".');
+    });
+  });
+
+  // Sub-missions
+  (GD.subMissions||[]).forEach(function(sm){
+    (sm.applicableOrgs||[]).forEach(function(o){
+      if (orgs.indexOf(o) < 0) add('warning', 'Sub-mission "' + sm.id + '"', 'Applies to unknown organization "' + o + '".');
+    });
+    var tr = sm.trigger||{};
+    if (tr.type === 'scenarioChoice' && scenIds.indexOf(tr.scenarioId) < 0)
+      add('critical', 'Sub-mission "' + sm.id + '"', 'Triggered by scenario "' + tr.scenarioId + '" which does not exist — it can never activate.');
+  });
+
+  // Conversations
+  (GD.conversations||[]).forEach(function(cv){
+    var at = 'Conversation "' + cv.id + '"';
+    var tr = cv.trigger||{};
+    if ((tr.type === 'afterScenario' || tr.type === 'beforeScenario') && scenIds.indexOf(tr.scenarioId) < 0)
+      add('critical', at, 'Triggered by scenario "' + tr.scenarioId + '" which does not exist — it can never fire.');
+    if (cv.type === 'advisor' && advisors.indexOf(cv.advisorId) < 0)
+      add('critical', at, 'Belongs to character "' + cv.advisorId + '" who is not in the pool — it can never fire.');
+    var nodes = cv.nodes||{};
+    if (!nodes.n0) add('critical', at, 'Has no starting node "n0".');
+    Object.keys(nodes).forEach(function(nid){
+      (nodes[nid].responses||[]).forEach(function(r, ri){
+        if (r.next && r.next !== 'end' && !nodes[r.next])
+          add('critical', at, 'Node ' + nid + ' response ' + (ri+1) + ' jumps to missing node "' + r.next + '" — the conversation dead-ends.');
+      });
+    });
+  });
+
+  // Social posts
+  (GD.socialMediaPosts||[]).forEach(function(p){
+    if (p.subMissionId && subs.indexOf(p.subMissionId) < 0)
+      add('warning', 'Social post "' + p.id + '"', 'Gated on unknown sub-mission "' + p.subMissionId + '".');
+  });
+
+  return P;
+}
+
+function runDataValidation() {
+  var box = document.getElementById('validation-results');
+  if (!box) return;
+  var P = collectDataProblems();
+  if (!P.length) {
+    box.innerHTML = '<div style="border:1.5px solid var(--good,#2d6a4f);background:rgba(45,106,79,.07);padding:14px 16px">' +
+      '<strong style="color:var(--good,#2d6a4f)">No broken references found.</strong>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:4px">Every trait, mission, advisor, coalition, scenario and sub-mission reference in your content points at something that exists.</div></div>';
+    return;
+  }
+  var crit = P.filter(function(p){return p.sev==='critical'});
+  var warn = P.filter(function(p){return p.sev==='warning'});
+  var row = function(p){
+    var color = p.sev === 'critical' ? '#b3362b' : '#8a6d0e';
+    return '<div style="padding:7px 0;border-bottom:1px solid var(--border)">' +
+      '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:.5px">' + esc(p.where) + '</div>' +
+      '<div style="font-size:12.5px;color:var(--ink);line-height:1.5">' + esc(p.msg) + '</div></div>';
+  };
+  box.innerHTML =
+    '<div style="border:1.5px solid #b3362b;background:rgba(179,54,43,.06);padding:14px 16px">' +
+      '<div style="font-weight:700;margin-bottom:2px">' + crit.length + ' broken reference' + (crit.length===1?'':'s') +
+        (warn.length ? ' · ' + warn.length + ' warning' + (warn.length===1?'':'s') : '') + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">These point at IDs that no longer exist. They fail silently in the game rather than erroring.</div>' +
+      '<div style="max-height:420px;overflow-y:auto">' + crit.map(row).join('') + warn.map(row).join('') + '</div>' +
+    '</div>';
+}
+
 // ═══ AUTO-PULL ON LOGIN ═══
 async function tryAutoPull() {
   if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) {
@@ -20342,12 +20495,17 @@ async function tryAutoPull() {
     updateDashboardStats();
     return;
   }
+  // Guard against silently discarding unpublished work. "Clean" is the exact
+  // content of the last successful pull or publish; if the cache has drifted
+  // from it, this browser holds edits that exist nowhere else, and pulling
+  // would destroy them. The old check only looked at whether a pull had ever
+  // happened, which let the common pull → edit → close → reopen cycle through.
   var cached = localStorage.getItem('gd_cache');
-  var lastPull = localStorage.getItem('gd_last_pull');
-  if (cached && !lastPull) {
-    // Has local edits but never pulled — ask user
-    if (!confirm('You have local edits that have not been published.\n\nOK = Pull latest from GitHub (overwrites local)\nCancel = Continue with local edits')) {
-      setStatus('Using local edits. Remember to publish when done.', 'saving');
+  var clean  = localStorage.getItem('gd_clean');
+  var hasUnpublishedEdits = cached && (clean === null ? !localStorage.getItem('gd_last_pull') : cached !== clean);
+  if (hasUnpublishedEdits) {
+    if (!confirm('This browser has edits that have not been published to GitHub.\n\nOK = Discard them and pull the latest from GitHub\nCancel = Keep editing locally (publish when you are done)')) {
+      setStatus('Keeping your unpublished edits. Publish when you are done.', 'saving');
       updateDashboardStats();
       return;
     }
@@ -20387,7 +20545,9 @@ async function loadFromGithub() {
     if (!GD) throw new Error('Could not find GAME_DATA block in file.');
     sessionPassword = GD.config.editorPassword || sessionPassword;
     if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
-    localStorage.setItem('gd_cache', JSON.stringify(GD));
+    var _pulled = JSON.stringify(GD);
+    localStorage.setItem('gd_cache', _pulled);
+    localStorage.setItem('gd_clean', _pulled); // baseline for unpublished-edit detection
     localStorage.setItem('gd_last_pull', new Date().toLocaleString());
     populateAllPanels();
     updateDashboardStats();
@@ -20444,6 +20604,17 @@ async function saveToGithub() {
   // Tooltips panel was rendered: flush any in-DOM edits to GD so
   // users don't lose unsaved changes when they click Publish directly.
   try { var _tl = document.getElementById('tooltips-list'); if (_tl && _tl.innerHTML.trim()) saveTooltips(); } catch(e) {}
+  // Per-item edit forms (scenarios, inbox, breaking news, advisors, coalitions,
+  // conversations) are not auto-flushed above — their fields only reach GD when
+  // the author clicks that form's own Save. Warn rather than publishing edits
+  // the author believes are included.
+  var _openForms = [].slice.call(document.querySelectorAll('.open')).filter(function(el){ return /-card-\d+$/.test(el.id || ''); });
+  if (_openForms.length) {
+    if (!confirm(_openForms.length + ' edit form' + (_openForms.length===1?' is':'s are') + ' still open.\n\nAnything you typed there is not included unless you clicked Save on that form.\n\nOK = Publish without those changes\nCancel = Go back and save them first')) {
+      setStatus('Publish cancelled — save your open edit forms first.', 'error');
+      return;
+    }
+  }
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }
@@ -20467,6 +20638,20 @@ async function saveToGithub() {
     if (!_b64Get) throw new Error('GitHub API returned no content for ' + ghConfig.filename);
     const _bytesGet = Uint8Array.from(atob(_b64Get), c => c.charCodeAt(0));
     const currentContent = new TextDecoder('utf-8').decode(_bytesGet);
+    // Conflict detection. Publishing splices the local GD over whatever is on
+    // GitHub, so if the remote data changed since this browser last pulled,
+    // another session's work is about to be overwritten without a trace.
+    var _clean = localStorage.getItem('gd_clean');
+    if (_clean) {
+      var _remote = null;
+      try { _remote = extractGameData(currentContent); } catch(e) {}
+      if (_remote && JSON.stringify(_remote) !== _clean) {
+        if (!confirm('The game data on GitHub has changed since you last pulled it.\n\nSomeone else may have published edits. Publishing now replaces their version with yours.\n\nOK = Publish anyway\nCancel = Stop, so you can pull and review their changes first')) {
+          setStatus('Publish cancelled. Pull from GitHub to review the newer version first.', 'error');
+          return;
+        }
+      }
+    }
     var newContent;
     // Try marked format first
     if (currentContent.indexOf('/* GAME_DATA_START */') >= 0) {
@@ -20493,7 +20678,9 @@ async function saveToGithub() {
       body: JSON.stringify({ message: 'Update game data via editor', content: (function(){ var e = new TextEncoder(); var bytes = e.encode(newContent); var bin = ''; for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]); return btoa(bin); })(), sha, branch: ghConfig.branch })
     });
     if (!putRes.ok) { const e = await putRes.json(); throw new Error(`Push error: ${putRes.status} — ${e.message}`); }
-    localStorage.setItem('gd_cache', JSON.stringify(GD));
+    var _published = JSON.stringify(GD);
+    localStorage.setItem('gd_cache', _published);
+    localStorage.setItem('gd_clean', _published); // published state is now the clean baseline
     localStorage.setItem('gd_last_pull', new Date().toLocaleString());
     setStatus('✓ Published! Live in ~60s.', 'success');
     updateDashboardStats();
@@ -21415,7 +21602,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
       <button class="btn btn-danger btn-sm" onclick="deleteChoice(${si},${ci},'${prefix}')">Delete</button>
     </div>
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option><option value="master_fundraiser"${c.requiresUnlock==='master_fundraiser'?' selected':''}>Master Fundraiser</option><option value="grassroots_organizer"${c.requiresUnlock==='grassroots_organizer'?' selected':''}>Grassroots Organizer</option><option value="jewish_scholar"${c.requiresUnlock==='jewish_scholar'?' selected':''}>Jewish Scholar</option><option value="political_operator"${c.requiresUnlock==='political_operator'?' selected':''}>Political Operator</option><option value="media_savvy"${c.requiresUnlock==='media_savvy'?' selected':''}>Media Savvy</option><option value="burnout_survivor"${c.requiresUnlock==='burnout_survivor'?' selected':''}>Burnout Survivor</option></select><div class="form-hint">Which character trait unlocks this choice</div></div>
+    <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option>${(GD.characterTraits||[]).map(t=>`<option value="${esc(t.id)}"${c.requiresUnlock===t.id?' selected':''}>${esc(t.name)}</option>`).join('')}${(c.requiresUnlock && !(GD.characterTraits||[]).some(t=>t.id===c.requiresUnlock))?`<option value="${esc(c.requiresUnlock)}" selected>⚠ Unknown trait "${esc(c.requiresUnlock)}" — no player can pick this</option>`:''}</select><div class="form-hint">Only traits defined in the Character Traits panel can unlock a choice. A trait listed here that no longer exists makes the choice permanently unreachable.</div></div>
     <div class="form-group" style="margin-bottom:6px"><label>Gelt Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Gelt units spent if player picks this choice</div></div>
     <div class="pol-impact-box${hasPol?' active':''}">
       <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
@@ -23625,12 +23812,21 @@ function saveSegments() {
   segs.forEach(function(seg, i) {
     seg.name = document.getElementById('seg-name-'+i)?.value || seg.name;
     seg.id = document.getElementById('seg-sid-'+i)?.value || seg.id;
-    seg.populationBaseline = parseInt(document.getElementById('seg-pop-'+i).value) || seg.populationBaseline;
-    seg.politicalCenter = parseInt(document.getElementById('seg-pol-'+i).value) || seg.politicalCenter;
-    seg.comfortRange = parseInt(document.getElementById('seg-comfort-'+i).value) || 20;
-    seg.israelCenter = parseInt(document.getElementById('seg-ilcenter-'+i).value) || 50;
-    seg.israelComfortRange = parseInt(document.getElementById('seg-ilcomfort-'+i).value) || 20;
-    seg.baseStartApproval = parseInt(document.getElementById('seg-base-'+i).value) || seg.baseStartApproval;
+    // Read as "use the typed number unless the field is blank/invalid" — a
+    // plain `|| fallback` would reject 0, making far-left political centers
+    // and 0 comfort ranges impossible to save.
+    var num = function(id, fallback) {
+      var el = document.getElementById(id);
+      if (!el || el.value === '') return fallback;
+      var v = parseInt(el.value, 10);
+      return isNaN(v) ? fallback : v;
+    };
+    seg.populationBaseline = num('seg-pop-'+i, seg.populationBaseline);
+    seg.politicalCenter = num('seg-pol-'+i, seg.politicalCenter);
+    seg.comfortRange = num('seg-comfort-'+i, 20);
+    seg.israelCenter = num('seg-ilcenter-'+i, 50);
+    seg.israelComfortRange = num('seg-ilcomfort-'+i, 20);
+    seg.baseStartApproval = num('seg-base-'+i, seg.baseStartApproval);
     var fc = (document.getElementById('seg-fc-'+i).value || '').split('/');
     if (fc.length === 2) { seg.floor = parseInt(fc[0])||5; seg.ceiling = parseInt(fc[1])||30; }
   });

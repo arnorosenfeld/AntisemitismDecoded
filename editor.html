@@ -21758,9 +21758,6 @@ function saveScenario(i, prefix) {
   }
   // Save advisor quotes with recommendation fields
   s.advisorQuotes = readAdvisorQuotes(i, prefix);
-  // Save highStakes from the checkbox
-  var hsCheck = document.querySelector('#'+prefix+'-form-'+i+' .hs-check');
-  s.highStakes = hsCheck ? hsCheck.checked : !!s.highStakes;
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success'); refreshDependentPanels('scenarios');
   toggleEdit(prefix, i);
 }
@@ -23057,12 +23054,15 @@ function deleteInvestment(i){
 // ═══ ADVISOR QUOTES ON SCENARIO FORMS ═══
 // Full advisor quotes editor with recommendation fields (Phase 5)
 function renderAdvisorQuotesEditor(scenario, si, prefix){
-  var hs = scenario.highStakes ? 'checked' : '';
   var quotes = scenario.advisorQuotes || [];
   var pool = GD.advisorPool || [];
   var choices = scenario.choices || [];
   var stats = GD.stats || [];
-  var html = '<div class="form-section" style="margin-top:12px"><label><input type="checkbox" class="hs-check" '+hs+' /> Advisor Input (show advisor quotes)</label>';
+  // No on/off toggle here: the engine shows advisor quotes whenever they exist
+  // and the advisor is on the player's team. A checkbox that appeared to gate
+  // them (highStakes) was never read by the engine and has been removed.
+  var html = '<div class="form-section" style="margin-top:12px"><label class="section-label" style="margin-top:0">Advisor Input</label>' +
+    '<div class="form-hint">Quotes appear above the choices. Each one shows only when that advisor is on the player\'s team, so add a quote to show it and delete it to remove it.</div>';
   html += '<div class="aq-list" style="margin-top:8px">';
   quotes.forEach(function(q, qi){
     var adv = pool.find(function(a){return a.id===q.advisorId}) || {};

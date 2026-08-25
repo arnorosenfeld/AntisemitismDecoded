@@ -21618,9 +21618,10 @@ function renderChoiceEditor(c, si, ci, prefix) {
 // Outcomes used to render all twelve Jewish Security components as number
 // inputs, so every outcome carried ten-plus zeros. In the authored data the
 // median outcome sets 2 of them and only 5 of 382 set more than 3, so the form
-// now shows a couple of "pick an impact, set its value" rows and lets the
-// author add more. Same expressive range, a fraction of the fields on screen.
-var SECURITY_ROWS_DEFAULT = 2;
+// now shows three "pick an impact, set its value" rows and lets the author add
+// more. Three covers everything up to the 99th percentile of the authored data
+// without touching "+ Add". Same expressive range, a fraction of the fields.
+var SECURITY_ROWS_DEFAULT = 3;
 
 function securityLeafOptions(selected) {
   var cats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
@@ -21651,8 +21652,8 @@ function renderSecurityPicker(prefix, si, ci, oi, secFx, secCount) {
     if (!secFx[k]) return;
     rows += securityRowHtml(k, secFx[k]); n++;
   });
-  // Offer a couple of empty slots so a fresh outcome invites authoring without
-  // the author having to hunt for an "add" button first.
+  // Offer empty slots up to the default so a fresh outcome invites authoring
+  // without the author having to hunt for an "add" button first.
   while (n < SECURITY_ROWS_DEFAULT) { rows += securityRowHtml('', ''); n++; }
   return '<details class="sec-details"' + (secCount ? ' open' : '') + '>' +
     '<summary>Security impacts' + (secCount ? ' (' + secCount + ')' : '') + '</summary>' +

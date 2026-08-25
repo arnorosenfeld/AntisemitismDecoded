@@ -144,6 +144,18 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
 /* ── STAT INPUTS GRID ── */
 .stat-inputs{display:flex;flex-wrap:wrap;gap:10px 12px}
+
+/* Security impact picker — replaces the twelve-input grid on each outcome. */
+.sec-details{margin:4px 0 8px}
+.sec-details>summary{font-size:10px;font-weight:700;letter-spacing:.5px;cursor:pointer;color:#6ba5e7}
+.sec-rows{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.sec-row{display:flex;align-items:center;gap:6px}
+.sec-row .sec-key{flex:1;min-width:0;padding:5px 6px;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-size:12px;outline:none}
+.sec-row .sec-val{width:64px;flex:0 0 auto;padding:5px 4px;text-align:center;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:13px;outline:none}
+.sec-row .sec-del{flex:0 0 auto;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:4px 8px}
+.sec-row .sec-del:hover{color:#b3362b;border-color:#b3362b}
+.sec-add{margin-top:6px;border:1px dashed var(--border);background:none;color:var(--muted);cursor:pointer;font-family:'Merriweather Sans',sans-serif;font-size:11px;padding:4px 10px}
+.sec-add:hover{color:#6ba5e7;border-color:#6ba5e7}
 .stat-input-group{display:flex;flex-direction:column;gap:4px;flex:0 0 auto;width:90px}
 .stat-input-group label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
 .stat-input-group input{width:100%;box-sizing:border-box;padding:6px 4px;text-align:center;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:13px;outline:none}
@@ -357,8 +369,10 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-ghost" onclick="loadFromGithub()">Pull from GitHub</button>
               <button class="btn btn-gold" onclick="saveToGithub()">Publish to GitHub</button>
+              <button class="btn btn-ghost" onclick="runDataValidation()">Check for broken references</button>
               <button class="btn btn-ghost" onclick="resetToDefaults()">Reset to Defaults</button>
             </div>
+            <div id="validation-results" style="margin-top:16px"></div>
           </div>
 
           <!-- GitHub Connection -->
@@ -848,11 +862,15 @@ var EDITOR_DATA =
     "traitsToSelect": 2,
     "missionStartStars": 3,
     "missionMaxStars": 5,
-    "failureBarThreshold": 30,
-    "failureScoreThreshold": 30,
-    "promotionThreshold": 75,
+    "failureBarThreshold": 15,
+    "failureScoreThreshold": 40,
+    "promotionThreshold": 80,
     "inboxPerRound": 2,
-    "scoreWeights": {},
+    "scoreWeights": {
+      "trust": 0.33,
+      "morale": 0.33,
+      "donors": 0.33
+    },
     "roundNames": [],
     "editorPassword": "admin1234",
     "missionStarPoints": 3,
@@ -927,7 +945,37 @@ var EDITOR_DATA =
                 "val": -2,
                 "pct": 46
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 48,
+              "categories": [
+                {
+                  "name": "Physical Safety",
+                  "start": 42,
+                  "end": 48,
+                  "shift": 6
+                },
+                {
+                  "name": "Ideology",
+                  "start": 45,
+                  "end": 50,
+                  "shift": 5
+                },
+                {
+                  "name": "Democracy",
+                  "start": 30,
+                  "end": 32,
+                  "shift": 2
+                },
+                {
+                  "name": "Communal Vitality",
+                  "start": 50,
+                  "end": 52,
+                  "shift": 2
+                }
+              ]
+            }
           },
           {
             "text": "Coordinate a joint response with the Interfaith Council and campus civil rights groups first",
@@ -988,7 +1036,37 @@ var EDITOR_DATA =
                 "val": 3,
                 "pct": 60
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 50,
+              "categories": [
+                {
+                  "name": "Physical Safety",
+                  "start": 42,
+                  "end": 45,
+                  "shift": 3
+                },
+                {
+                  "name": "Ideology",
+                  "start": 45,
+                  "end": 50,
+                  "shift": 5
+                },
+                {
+                  "name": "Democracy",
+                  "start": 30,
+                  "end": 33,
+                  "shift": 3
+                },
+                {
+                  "name": "Communal Vitality",
+                  "start": 50,
+                  "end": 56,
+                  "shift": 6
+                }
+              ]
+            }
           },
           {
             "text": "Focus inward — organize support for affected students and staff before making any public statement",
@@ -1049,7 +1127,37 @@ var EDITOR_DATA =
                 "val": 4,
                 "pct": 62
               }
-            ]
+            ],
+            "jsi": {
+              "compositeStart": 42,
+              "compositeEnd": 41,
+              "categories": [
+                {
+                  "name": "Physical Safety",
+                  "start": 42,
+                  "end": 41,
+                  "shift": -1
+                },
+                {
+                  "name": "Ideology",
+                  "start": 45,
+                  "end": 43,
+                  "shift": -2
+                },
+                {
+                  "name": "Democracy",
+                  "start": 30,
+                  "end": 30,
+                  "shift": 0
+                },
+                {
+                  "name": "Communal Vitality",
+                  "start": 50,
+                  "end": 53,
+                  "shift": 3
+                }
+              ]
+            }
           }
         ],
         "transitionText": "That was day one. You have twelve months to go.",
@@ -1237,11 +1345,11 @@ var EDITOR_DATA =
         "baseStartApproval": 40
       }
     ],
-    "advisorSlots": 5,
+    "advisorSlots": 3,
     "advisorBonusStacking": "best",
     "gamePassword": "playtest2026",
     "startingBudget": 100,
-    "dangerOrangeThreshold": 75,
+    "dangerOrangeThreshold": 25,
     "dangerRedThreshold": 20,
     "investmentsPerYear": 2,
     "nationalInvestmentsPerYear": 4,
@@ -1254,57 +1362,62 @@ var EDITOR_DATA =
       "centristCloutRate": 0.6
     },
     "outgoingED": {
-      "name": "Avi Rosen",
+      "name": "Andy Rose",
       "role": "Outgoing Executive Director",
       "portrait": "art/advisors/avi_rosen"
     },
     "popupMessages": {
       "onboarding": [
         {
-          "mood": "neutral",
-          "msg": "Let me be honest with you about what you're walking into. This job is a balancing act — and the board is always watching. Let me show you the office.",
-          "label": "What do I need to know?"
+          "mood": "approving",
+          "msg": "Welcome!  I had this job before you and want to help with a smooth transition. Your goal is to increase <strong>Jewish security</strong>. But that involves building a strong organization.",
+          "label": "How do I play?"
         },
         {
           "mood": "neutral",
-          "msg": "You have <strong>3 action points</strong> per round. Each desk object is a different channel of work: the <strong>monitor</strong> is your primary scenario inbox, the <strong>folder</strong> holds memos, the <strong>keys</strong> get you out into the field. Spend an AP by clicking one. The <strong>landline</strong> on the right is free — pick it up to call any of your advisors for guidance, no AP cost.",
-          "label": "And the phone?"
+          "msg": "You have <strong>3 action points</strong> per round that you can spend by clicking on the <strong>monitor, sticky note or keys</strong> to respond to a scenario. Sometimes a breaking news event will pop-up. That doesn't cost action points to engage with.",
+          "label": "And the phones?"
         },
         {
           "mood": "neutral",
-          "msg": "The <strong>cell phone</strong> shows your inbox — emails and texts that arrive throughout the day. Reading and replying to inbox messages is also free. Some have timers, though, so don't sit on them too long.",
+          "msg": "Emails and texts are sent to your <strong>cell phone</strong> — responding to messages is free, but some will expire and dock points if you wait too long. The <strong>landline</strong> lets you call your advisors and other characters you meet in the game and is also free to use.",
           "label": "What about the monitor screen?"
         },
         {
-          "mood": "approving",
-          "msg": "The monitor isn't just a click target — it's a desktop with three windows. <strong>Social</strong> lets you post to your org's accounts (engagement decays each post you make per round, so use them wisely). <strong>Briefings</strong> appears when you have active <strong>Tasks</strong> — multi-round initiatives with checkpoints and deadlines. <strong>Coalitions</strong> appears when you've signed partnerships. Drag windows around, expand them with the + button, click outside any window to pull a scenario from the monitor channel.",
-          "label": "Got it. What am I tracking?"
-        },
-        {
-          "mood": "concerned",
-          "msg": "Two scoreboards. At the <strong>top</strong> is the <strong>Jewish Security Index</strong> — a composite of four dimensions (Physical Safety, Ideology, Democracy, Communal Vitality), each weighted by your org's priorities. That's the world. At the <strong>bottom</strong> is your <strong>HUD</strong>: Trust, Morale, Donors — your three internal stats. If any drops to <strong>20 or below</strong>, the board calls an emergency meeting and your tenure ends.",
-          "label": "And the clipboard in the corner?"
-        },
-        {
-          "mood": "approving",
-          "msg": "That's your live <strong>Board Rating</strong> — a letter grade from F to A+ based on your stats plus mission-star bonuses. Hover it to see how it's calculated. At year's end the board evaluates the same number: <strong>≥80</strong> earns a distinguished tenure, <strong>≥40</strong> keeps your job, anything lower and your contract isn't renewed.",
-          "label": "Any other advice?"
+          "mood": "neutral",
+          "msg": "Click on the monitor to respond to scenarios. But the screen also has interactive windows. <strong>Social media</strong> lets you post messages for free — but the public's reaction degrades the more you post in a single round. As you accept <strong>Tasks</strong> or join <strong>Coalitions</strong> you'll see new windows pop up. Drag them around and click the + sign to expand any window.",
+          "label": "Got it. And what am I tracking?"
         },
         {
           "mood": "neutral",
-          "msg": "Use your <strong>budget (gelt)</strong> wisely — the investment bar above the HUD has options for security upgrades, marketing, training, and more. They don't cost AP, just money. And remember: every round your stats <strong>naturally decay</strong> as attention fades and donors expect fresh results. There are no perfect choices. The best leaders know which costs they can afford.",
+          "msg": "You're tracking the <strong>Jewish Security Index</strong> — a composite score located in a shield inside the <strong>top bar</strong>. If that falls to <strong>15</strong> or below you lose. If it rises to <strong>80</strong> or above you win. \n<br><br>\nBut you also have to keep your job. Finish a round with your <strong>Board Rating</strong> below <strong>40</strong>, or without any <strong>Mission Stars</strong> and your tenure will end. If any of your internal stats (trust, morale, donors) fall to <strong>15</strong> or below you'll be fired immediately.",
+          "label": "How do I keep my scores up?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "Every game action — scenarios, conversations and even social media posts — has consequences. The choices you select will boost or damage the meters that make up the <strong>Jewish Security Index</strong> and your <strong>Board Rating</strong>. Sometimes they'll do both. \n<br><br>\nEncouraging synagogues to eliminate their DEI programs in exchange for federal security grants will boost <strong>institutional security</strong> but damage <strong>minority rights</strong>, both of which contribute to the Jewish Security composite. And firing a staffer who criticized your organization on social media will make <strong>Donors</strong> happy but could hurt <strong>Morale</strong>. The Board will notice both.",
+          "label": "What about the other items?"
+        },
+        {
+          "mood": "neutral",
+          "msg": "Mission-aligned choices earn a <strong>Mission Star,</strong> regardless of outcome, while others can lose you a star. Earn <strong>Gelt</strong> throughout the game and spend it on <strong>Investments</strong> or expensive choices, like giving your staff raises. Same with <strong>Clout</strong>, which allows you to exert political influence. Your organization's <strong>Political Lean</strong> shifts based on your choices and helps determine the scenarios you receive what choices you have available.",
+          "label": "This sounds like a lot..."
+        },
+        {
+          "mood": "approving",
+          "msg": "The main thing is to make sure that the <strong>Jewish Security Index</strong> doesn't fall too sharply, and that your internal stats — <strong>Trust, Morale and Donors</strong> — stay at a reasonable level. Everything else will fall into place as you play. And remember: When it comes to countering antisemitism, there are no perfect choices.",
           "label": "Let's do this →"
         }
       ],
-      "statDangerRed": "🚨 The board has called an emergency meeting. Your <strong>{stat}</strong> is critically low at {value}. If it drops to {threshold}, your tenure ends immediately.",
-      "statDangerOrange": "Heads up — your <strong>{stat}</strong> is getting low at {value}. Keep an eye on it before the board starts asking questions.",
-      "investmentSuggestion": "Your <strong>{stat}</strong> is in trouble. Consider using investments to help — check the investment bar for options that boost {stat}.",
-      "missionStarLow": "Your mission stars are dangerously low. The board expects you to stay true to your stated priorities — losing all your stars means losing their confidence.",
-      "missionStarMax": "You've earned maximum mission stars. The board sees a leader with clear vision and consistent follow-through. This will significantly boost your year-end evaluation.",
-      "communityCloutBonus": "⚡ +{amount} Clout from your position near the community's political center.",
-      "communityCloutBonusCentrist": "⚡ +{amount} Clout from your position near the community's political center. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
-      "geltCrisis": "Your gelt is critically low. Some choices may be unavailable until finances improve.",
-      "centristClout": "Your decision would have earned +{full} clout, but the centrist penalty reduced it to +{reduced}. Organizations closer to the political center build influence more slowly."
+      "statDangerRed": "🚨 The Board just called an emergency meeting. <strong>{stat}</strong> is critically low. If it drops to {threshold}, they'll fire you immediately.",
+      "statDangerOrange": "Hey! Your <strong>{stat}</strong> has fallen below {value}. Make sure it doesn't go any lower or your job could be in jeopardy.",
+      "investmentSuggestion": "Check your investment options (located below the desk) for something that could help raise your <strong>{stat}</strong>.",
+      "missionStarLow": "You need at least one <strong>Mission Star</strong> before the round ends. It doesn't matter how <strong>Jewish Security</strong> is doing if you stray from your organization's mission and lose the board's confidence.",
+      "missionStarMax": "You've earned maximum <strong>Mission Star</strong>. The board sees you delivering, and this will help your year-end evaluation — even if <strong>Jewish Security</strong> is middling.",
+      "communityCloutBonus": "⚡ +{amount} Clout bonus from your organization's position near the Jewish community's political heart.",
+      "communityCloutBonusCentrist": "⚡ +{amount} Clout from your position near the community's political heart. You earned {amount} instead of {full} because centrist organizations build influence at half rate.",
+      "geltCrisis": "Your low <strong>Gelt</strong> may get you into trouble. Try to boost it over the next few rounds.",
+      "centristClout": "Your decision would have earned +{full} clout, but the <strong>Centrist Penalty</strong> reduced it to +{reduced}. Sitting in the middle of the political spectrum keeps your options open — but your lack of a committed base mean it's harder to build influence."
     },
     "coachingMessages": {
       "stat_yellow": [
@@ -1313,7 +1426,7 @@ var EDITOR_DATA =
         "Your {stat} is getting into uncomfortable territory. The board notices these trends."
       ],
       "stat_red": [
-        "🚨 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "🚨 {stat} is critically low. If it falls to {threshold}, the board will call an emergency meeting and your tenure ends.",
         "🚨 {stat} is in the danger zone. One more bad outcome and you could be out.",
         "🚨 Crisis warning: {stat} is near the point of no return."
       ],
@@ -1507,7 +1620,13 @@ var EDITOR_DATA =
           "delta": 1
         }
       ]
-    }
+    },
+    "tiltPositions": {
+      "left": 25,
+      "center": 50,
+      "right": 75
+    },
+    "statDecayPerRound": 1
   },
   "stats": [
     {
@@ -1526,34 +1645,27 @@ var EDITOR_DATA =
   "avatarEmojis": [
     "👩",
     "👨",
-    "👩‍💼",
-    "👨‍💼",
-    "👩‍🏫",
-    "👨‍🏫",
-    "👩‍⚖️",
-    "👨‍⚖️",
-    "🧕",
-    "👲",
-    "🧔",
     "👩‍🦱",
-    "👨‍🦱",
-    "👩‍🦳",
-    "👨‍🦳",
+    "🧑‍🦱",
+    "🧔‍♂️",
+    "👴",
     "👵",
     "🦁",
-    "🦊",
-    "🐺",
-    "🦉",
-    "🐻",
-    "🐼",
     "🦅",
+    "🥯",
+    "🍉",
+    "🇺🇸",
+    "🇮🇱",
+    "🇵🇸",
+    "🕍",
+    "🕎",
     "✡️"
   ],
   "characterTraits": [
     {
       "id": "community_insider",
-      "name": "Community Insider",
-      "description": "You've been in Jewish communal life for decades. People know you — and you know where the bodies are buried.",
+      "name": "The Macher",
+      "description": "You've spent decades at leading Jewish nonprofits. You have the relationships — and you know how to get things done.",
       "statModifiers": {
         "trust": 6,
         "donors": 3
@@ -1561,16 +1673,16 @@ var EDITOR_DATA =
     },
     {
       "id": "outsider_voice",
-      "name": "Outsider Voice",
-      "description": "You came from outside the Jewish communal bubble. You see things others miss — and don't owe anyone favors.",
+      "name": "The Outsider",
+      "description": "You spent your career outside the Jewish community. You may not know everyone, but you have fresh ideas and no baggage.",
       "statModifiers": {
         "morale": 6
       }
     },
     {
       "id": "fundraiser",
-      "name": "Master Fundraiser",
-      "description": "You have a gift for the ask. Donors take your calls and write bigger checks than they planned.",
+      "name": "The Fundraiser",
+      "description": "You know all the foundations and philanthropists. When you make the hard ask, people give — and give more than they had planned.",
       "statModifiers": {
         "donors": 7
       },
@@ -1578,8 +1690,8 @@ var EDITOR_DATA =
     },
     {
       "id": "organizer",
-      "name": "Grassroots Organizer",
-      "description": "You built power from the ground up. You know how to mobilize people who've never shown up before.",
+      "name": "The Organizer",
+      "description": "You know how to build grassroots movements, and bring in people who don't normally show up.",
       "statModifiers": {
         "trust": 4,
         "morale": 6
@@ -1587,17 +1699,17 @@ var EDITOR_DATA =
     },
     {
       "id": "scholar",
-      "name": "Jewish Scholar",
-      "description": "Your depth of Jewish learning gives you moral authority. When you cite Torah, people listen.",
+      "name": "The Scholar",
+      "description": "You seamlessly weave Jewish texts and knowledge into conversations. People believe this is more than a job for you.",
       "statModifiers": {
-        "trust": 4,
-        "morale": 3
+        "trust": 3,
+        "morale": 5
       }
     },
     {
       "id": "political_operator",
-      "name": "Political Operator",
-      "description": "You understand power. You know who to call, what to trade, and when to hold your fire.",
+      "name": "The Operator",
+      "description": "You know how to move legislation — and politicians. It may not always be pretty, but you get results.",
       "statModifiers": {
         "donors": 6
       },
@@ -1605,18 +1717,10 @@ var EDITOR_DATA =
     },
     {
       "id": "media_savvy",
-      "name": "Media Savvy",
-      "description": "You know how to work a story. Journalists take your calls and you rarely come off badly in print.",
+      "name": "The Visionary",
+      "description": "You charm the room, whether it's a board meeting, an all-hands or a TV interview. People come away impressed and convinced.",
       "statModifiers": {
         "trust": 7
-      }
-    },
-    {
-      "id": "burnout_survivor",
-      "name": "Burnout Survivor",
-      "description": "You've been through the fire before. You protect your staff because you know what it costs when no one does.",
-      "statModifiers": {
-        "morale": 8
       }
     }
   ],
@@ -1624,13 +1728,14 @@ var EDITOR_DATA =
     {
       "id": "left",
       "name": "Jews for Justice",
-      "badge": "Progressive",
+      "badge": "Left",
       "badgeClass": "badge-left",
-      "description": "A national progressive Jewish advocacy organization working on social justice, voting rights, and Israeli-Palestinian peace at the federal level.",
+      "description": "Founded in the 1990s to promote the liberal policies supported by many American Jews but overlooked by the establishment — abortion rights, gun control, racial justice — Jews for Justice has since expanded to work on Israel-Palestine. A Jewish voice on the progressive left.",
       "traits": [
-        "National media: every statement is amplified",
-        "Large progressive donor base across 30+ cities",
-        "Coalition work with major civil rights organizations"
+        "Prioritize building a \"multiracial democracy\"",
+        "Strong relationships with national civil rights orgs",
+        "Navigating hard questions over Israel and antisemitism",
+        "Counts on a loose network of small donors"
       ],
       "statModifiers": {
         "morale": 5,
@@ -1686,13 +1791,13 @@ var EDITOR_DATA =
     {
       "id": "right",
       "name": "Israel Action Committee",
-      "badge": "Conservative",
+      "badge": "Right",
       "badgeClass": "badge-right",
-      "description": "A right-wing pro-Israel advocacy org focused on combating left-wing antisemitism and supporting strong US-Israel ties.",
+      "description": "An upstart organization created by donors who felt legacy organizations were too timid, the Israel Action Committee is a fierce defender of the Jewish state. It seeks to limit the influence of progressives activists promoting anti-Zionism, while trying to keep the most antisemitic voices on the right in check. ",
       "traits": [
-        "Major donor driven: consistency expected",
-        "Strong Israel focus: deviations are costly",
-        "Credibility at risk on right-wing antisemitism"
+        "Focused on a strong U.S.-Israel relationship",
+        "Works inside the conservative movement",
+        "Relies on a small number of major donors"
       ],
       "statModifiers": {
         "trust": -2,
@@ -1713,7 +1818,7 @@ var EDITOR_DATA =
         "olderAdults": 30
       },
       "allocationPoints": 75,
-      "startingBudget": 70,
+      "startingBudget": 90,
       "securityWeights": {
         "categoryWeights": {
           "safety": 30,
@@ -1748,17 +1853,17 @@ var EDITOR_DATA =
     {
       "id": "center",
       "name": "Association of American Jews",
-      "badge": "Centrist",
+      "badge": "Center",
       "badgeClass": "badge-center",
-      "description": "The umbrella body for mainstream American Jewish advocacy, representing hundreds of local organizations and speaking for the communal consensus.",
+      "description": "One of the nation's oldest and most established Jewish organizations, the Association of American Jews seeks to represent the Jewish community domestically and abroad. It's supported by a network of local affiliates and the country's wealthiest Jewish donors, but faces mounting challenges to its credibility from both the right and left.",
       "traits": [
-        "Represents diverse constituency: every decision is contested",
-        "Largest platform in Jewish America",
-        "Bipartisan credibility is your greatest asset"
+        "Strongest brand and largest platform",
+        "Seeks to maintain bipartisan consensus on Israel and antisemitism",
+        "Huge donor base but defections are starting"
       ],
       "statModifiers": {
-        "trust": 5,
-        "donors": 3
+        "trust": 6,
+        "donors": 4
       },
       "politicalTilt": [
         "center"
@@ -1775,7 +1880,7 @@ var EDITOR_DATA =
         "olderAdults": 23
       },
       "allocationPoints": 90,
-      "startingBudget": 120,
+      "startingBudget": 125,
       "securityWeights": {
         "categoryWeights": {
           "safety": 25,
@@ -1812,22 +1917,23 @@ var EDITOR_DATA =
   "missions": [
     {
       "id": "antisemitism_all",
-      "name": "Combat Antisemitism Across the Political Spectrum",
-      "description": "Your organization fights antisemitism wherever it comes from — far right, far left, and everywhere in between.",
+      "name": "Combat Antisemitism Across the Spectrum",
+      "description": "You take a \"swivel-headed\" approach to antisemitism, fighting it on the right, left or wherever else it emerges without focusing on one of these threats over another.",
       "availableTo": [
         "left",
         "right",
         "center"
       ],
       "statBonus": {
-        "trust": 5,
-        "morale": 2
+        "trust": 3,
+        "morale": 2,
+        "donors": 3
       }
     },
     {
       "id": "antisemitism_left",
       "name": "Counter Antisemitism and Anti-Zioinsm from the Left",
-      "description": "You focus on left-wing antisemitism — in progressive movements, on campuses, and in political discourse.",
+      "description": "Your organization believes that antisemitism related to Israel — which you believe includes anti-Zionism — is the greatest threat to the Jewish people.",
       "availableTo": [
         "right",
         "center"
@@ -1839,8 +1945,8 @@ var EDITOR_DATA =
     },
     {
       "id": "antisemitism_right",
-      "name": "Counter Far-Right Antisemitism and White Supremacy",
-      "description": "You focus on right-wing and white nationalist antisemitism — the most statistically deadly threat to Jewish Americans.",
+      "name": "Fight Far-Right Antisemitism and White Supremacy",
+      "description": "Your greatest priority is tanding up to the far-right because of the threat you think white supremacy and Christian nationalism pose and existential threat to Jews and other vulnerable groups.",
       "availableTo": [
         "left",
         "center"
@@ -1854,20 +1960,20 @@ var EDITOR_DATA =
     {
       "id": "israel_security",
       "name": "Defend Israel",
-      "description": "Your primary mission is securing American political and financial support for Israel.",
+      "description": "Your top concern is eroding support for Israel among Americans and the U.S. government, and your organization is focused on stopping this shift.",
       "availableTo": [
         "right",
         "center"
       ],
       "statBonus": {
-        "trust": -5,
+        "trust": -3,
         "donors": 15
       }
     },
     {
       "id": "israel_peace",
       "name": "Advocate for Palestinian Rights",
-      "description": "You push for a ending the occupation, stopping settlement construction and human rights and dignity for both Israelis and Palestinians.",
+      "description": "You believe American Jews have a moral obligation to oppose Israeli human rights abuses, and your organization pushes for an end to the occupation and limiting U.S. support for Israel.",
       "availableTo": [
         "left",
         "center"
@@ -1879,23 +1985,9 @@ var EDITOR_DATA =
       }
     },
     {
-      "id": "social_justice",
-      "name": "Jewish Social Justice Advocacy",
-      "description": "You ground your work in Jewish values — tikkun olam and tzedakah — applied to racial justice, immigrant rights, and economic equality.",
-      "availableTo": [
-        "left",
-        "center"
-      ],
-      "statBonus": {
-        "trust": 2,
-        "morale": 8,
-        "donors": -3
-      }
-    },
-    {
       "id": "diaspora_unity",
-      "name": "Unite the Jewish Diaspora",
-      "description": "You work to build bridges across denominations, politics, and geographies.",
+      "name": "Keep the Community Together",
+      "description": "The center must hold. That's your organization's guiding principle and you'll do everything possible to make sure political divisions — over Israel or domestic politics — don't break the Jewish community apart.",
       "availableTo": [
         "center"
       ],
@@ -1968,7 +2060,6 @@ var EDITOR_DATA =
           "text": "Coordinate a coalition response with other civil rights organizations before speaking publicly.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -2275,7 +2366,7 @@ var EDITOR_DATA =
           "budgetCost": 0,
           "politicalLean": 0,
           "cloutEffect": 0,
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ],
       "categories": [
@@ -2338,7 +2429,6 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -2378,8 +2468,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -2453,7 +2542,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -2550,8 +2638,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Offer meaningful raises funded by drawing down reserves, and hire a part-time events coordinator.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -2615,9 +2702,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Recruit community volunteers aggressively to fill the capacity gap.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -2644,9 +2729,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
           "missionAligned": [],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Some donors are disappointed. But your team enters the year rested and turnover hits zero.",
@@ -2894,8 +2977,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Sign the letter. Your values are your values, and your donors should understand that.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security",
@@ -3002,8 +3084,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -3268,9 +3349,7 @@ var EDITOR_DATA =
         {
           "id": "c0",
           "text": "Issue a supportive public statement alongside the JCC's reopening, emphasizing community resilience and coordinated security — calm leadership, no fearmongering.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -3306,9 +3385,7 @@ var EDITOR_DATA =
           "text": "Use your political relationships to fast-track federal security grants for the JCC and every Jewish site in the region. Make the effort public.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The closure costs revenue but you reopen with meaningful security improvements that become a model for other JCCs.",
@@ -3341,8 +3418,7 @@ var EDITOR_DATA =
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_all",
-            "community_hub"
+            "antisemitism_all"
           ],
           "outcomes": [
             {
@@ -3370,7 +3446,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Co-host an emergency community meeting that evening alongside the JCC, inviting law enforcement, elected officials, and community leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -3625,8 +3700,6 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -3676,7 +3749,6 @@ var EDITOR_DATA =
           "text": "Support Jewish students across the political spectrum in testifying about how the resolution affects campus climate, without taking an organizational position on divestment itself.",
           "missionAligned": [
             "antisemitism_all",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -3721,14 +3793,13 @@ var EDITOR_DATA =
             "reform": 2,
             "youngAdults": 3
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "israelLean": -2
         },
         {
           "id": "c2",
           "text": "Organize counter-programming: a campus dialogue on antisemitism, Islamophobia, and how divestment debates affect real students on both sides.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -3843,8 +3914,6 @@ var EDITOR_DATA =
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "jewish_identity",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3910,7 +3979,6 @@ var EDITOR_DATA =
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3953,7 +4021,7 @@ var EDITOR_DATA =
             "unaffiliated": 2,
             "youngAdults": 2
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "cloutCost": 6
         },
         {
@@ -3962,8 +4030,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -4010,9 +4077,7 @@ var EDITOR_DATA =
           "missionOpposed": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "social_justice",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "outcomes": [
             {
@@ -4085,9 +4150,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Accept the partnership. Security is non-negotiable and the threats are real. Address staff concerns with a town hall.",
           "missionAligned": [],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The partnership is implemented. Security improves immediately. Three progressive staff members resign, and a local racial justice group issues a statement of disappointment.",
@@ -4116,9 +4179,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Accept the partnership while launching a community safety initiative with local civil rights organizations.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4140,14 +4201,12 @@ var EDITOR_DATA =
           ],
           "budgetCost": 7,
           "politicalLean": -2,
-          "requiresUnlock": "grassroots_organizer"
+          "requiresUnlock": "organizer"
         },
         {
           "id": "c2",
           "text": "Decline the police partnership. Invest in private security and community-based safety alternatives instead.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -4181,7 +4240,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Delay the decision pending a community-wide listening session that includes staff, congregants, and neighborhood leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -4322,8 +4380,7 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Host a follow-up event: ‘The Exodus Story Through Many Eyes’ — turning the controversy into a moderated public dialogue about shared narratives.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -4361,8 +4418,7 @@ var EDITOR_DATA =
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "outcomes": [
             {
@@ -4518,8 +4574,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Let her go. Her public persona has become inseparable from the organization’s brand, and the controversy is a distraction you can’t afford.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -4662,9 +4717,7 @@ var EDITOR_DATA =
             "antisemitism_left",
             "antisemitism_right"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The press conference is praised for honesty. Activists on the left and right quote the data that suits them. Your organization emerges as a credible source.",
@@ -4701,8 +4754,7 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Emphasize the far-right increase in the press release, since it represents the larger share of the threat.",
           "missionAligned": [
-            "antisemitism_right",
-            "social_justice"
+            "antisemitism_right"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -4745,8 +4797,7 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -5022,7 +5073,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Go beyond condemnation: organize a community support event with mental health resources for people processing the trauma of seeing this hatred go mainstream.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -5168,9 +5218,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 5,
           "cloutEffect": 4,
           "politicalRequirement": {
@@ -5385,9 +5433,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Support the victim’s family publicly but leave the charging decision to the DA without taking a position on hate crime enhancement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -5413,7 +5459,6 @@ var EDITOR_DATA =
           "text": "Support hate crime charges while simultaneously partnering with Black community leaders to frame this as a shared fight against all hate — not a Black vs. Jewish issue.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -5456,9 +5501,7 @@ var EDITOR_DATA =
         {
           "id": "c3",
           "text": "Stay out of the legal process entirely. Focus on the victim’s recovery and offer community healing programs.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -5519,10 +5562,7 @@ var EDITOR_DATA =
         {
           "id": "c0",
           "text": "Launch a major ‘Save Our School’ campaign with your organization as the lead. Commit significant resources and fundraising capacity.",
-          "missionAligned": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "segmentOverrides": {
@@ -5556,7 +5596,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Help the school modernize: broker partnerships with public schools, create a part-time Hebrew enrichment track, and help them appeal to unaffiliated families.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -5599,13 +5638,9 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Offer to absorb the school’s key programs into your JCC/community center programming rather than saving the school as an independent institution.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "You save the educational content but the school closes. Orthodox families are devastated. Your programming grows but the community feels a real loss.",
@@ -5630,10 +5665,7 @@ var EDITOR_DATA =
           "text": "Express sympathy but explain this isn’t your organization’s role. The school’s board needs to solve this themselves.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The school closes at the end of the year. The community mourns. Your name comes up repeatedly in conversations about ‘who could have helped but didn’t.’",
@@ -5689,8 +5721,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Accept the county’s invitation and develop the module, even if it strains your progressive alliances. This is a once-in-a-generation opportunity.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -5737,7 +5768,6 @@ var EDITOR_DATA =
           "text": "Accept but collaborate with other minority groups on a broader module that includes antisemitism alongside other forms of hatred — shared authorship, shared ownership.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -5805,13 +5835,10 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Decline and publicly challenge the premise that DEI should exclude antisemitism — write an op-ed making the case that any equity framework that excludes Jewish experiences is incomplete.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 3,
           "outcomes": [
             {
@@ -5877,9 +5904,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 6,
           "segmentOverrides": {
             "orthodox": 8,
@@ -5970,9 +5995,7 @@ var EDITOR_DATA =
         {
           "id": "c3",
           "text": "Decline entirely and issue a statement explaining that your organization’s commitment to LGBTQ+ inclusion and pluralism is incompatible with this partnership.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -6208,9 +6231,7 @@ var EDITOR_DATA =
             "antisemitism_left"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -6310,8 +6331,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use the moment to host a community conversation about political divisions within the Jewish community — inviting the rabbi and her progressive critics to the same stage.",
           "missionAligned": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6399,9 +6419,7 @@ var EDITOR_DATA =
         {
           "id": "c0",
           "text": "Sign the statement. Your coalition relationships are your most important asset, and you can work to soften the language from inside.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security",
@@ -6500,7 +6518,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Negotiate privately — ask for amended language that distinguishes between the Israeli government and Jewish self-determination. Offer to sign a revised version.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6545,10 +6562,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use your grassroots network to organize a counter-letter from progressive Jews of color, LGBTQ Jews, and Mizrachi Jews arguing the coalition's framing erases diverse Jewish experiences.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -6616,8 +6632,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Approve the joint commemoration. This is exactly the kind of brave, values-driven programming your organization should be doing.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "requiresUnlock": null,
           "missionOpposed": [
@@ -6705,8 +6720,7 @@ var EDITOR_DATA =
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -6738,10 +6752,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use your donor relationships to privately secure bridge funding that would replace any lost pledges, then greenlight the event with financial cover in place.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -3,
           "outcomes": [
@@ -6814,8 +6827,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Publish a direct rebuttal centering the voices of Jews of color in your organization — making the case that antisemitism IS a racial justice issue.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6862,8 +6874,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Request a private meeting with the consultant to discuss her claims. Bring your Jews-of-color staff members who want to participate.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6904,10 +6915,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Don't engage with the article directly. Instead, invest in programming that demonstrates — rather than argues — why antisemitism is a racial justice issue.",
-          "missionAligned": [
-            "social_justice",
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -6939,10 +6947,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Place an op-ed in a major outlet through your media contacts — not a rebuttal, but a proactive piece on why progressive movements need to take antisemitism seriously.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7058,8 +7065,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Meet with her privately. Demand a genuine public apology and commitment to antisemitism education — but don't rescind the endorsement yet.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -7104,7 +7110,6 @@ var EDITOR_DATA =
           "text": "Turn this into a teaching moment — host a public forum on antisemitism in progressive spaces, inviting the council member to participate (not as the accused, but as a learner).",
           "missionAligned": [
             "antisemitism_left",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -7143,7 +7148,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_left"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7335,10 +7340,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Address the room as a Jewish educator — draw on texts about machloket and the tradition of holding multiple truths. Reframe this as a strength, not a crisis.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7538,7 +7542,7 @@ var EDITOR_DATA =
             "antisemitism_all",
             "antisemitism_right"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "politicalLean": -2,
           "outcomes": [
@@ -7611,9 +7615,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -7703,7 +7705,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Decline the partnership entirely and publish a position paper on why Jewish organizations should not partner with groups that seek Jewish conversion, regardless of shared political goals.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -7742,10 +7743,9 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Counter-propose: you'll work with the church only if they publicly remove conversion language from their website and commit to a 'no proselytizing' covenant, using your halachic expertise to draft the covenant terms.",
           "missionAligned": [
-            "jewish_identity",
             "israel_security"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -7938,7 +7938,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -8134,7 +8134,7 @@ var EDITOR_DATA =
             "antisemitism_right",
             "israel_security"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8323,7 +8323,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8475,7 +8475,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Sidestep the political debate entirely. Show up on campus with programming: a teach-in, free food, mental health support for stressed Jewish students regardless of their views.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -8513,7 +8512,7 @@ var EDITOR_DATA =
             "diaspora_unity",
             "antisemitism_all"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8594,7 +8593,6 @@ var EDITOR_DATA =
           "missionOpposed": [
             "antisemitism_right",
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -8687,8 +8685,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -8727,7 +8724,6 @@ var EDITOR_DATA =
           "text": "Invoke Jewish textual tradition to draft a new, original framework that draws on IHRA, Nexus, and Jerusalem Declaration — positioning it as emerging from Jewish scholarly consensus rather than political camps.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -8758,7 +8754,7 @@ var EDITOR_DATA =
             "youngAdults": 2,
             "olderAdults": 2
           },
-          "requiresUnlock": "jewish_scholar"
+          "requiresUnlock": "scholar"
         }
       ]
     },
@@ -8936,7 +8932,7 @@ var EDITOR_DATA =
             "youngAdults": 2,
             "olderAdults": 1
           },
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ]
     },
@@ -8983,8 +8979,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -9041,8 +9036,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -9204,7 +9198,6 @@ var EDITOR_DATA =
           "text": "Write a forceful statement defending your attempt to stay out of political debates as a philosophy of conviction, not cowardice — with specific examples of what your approach has actually accomplished.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9395,8 +9388,7 @@ var EDITOR_DATA =
           "text": "Publicly support removing the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, your organization should say so clearly.",
           "missionAligned": [],
           "missionOpposed": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "outcomes": [
             {
@@ -9440,7 +9432,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Propose a compromise: a new 'identity wall' in the JCC lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9486,8 +9477,7 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Publicly back keeping the flag. It's been there since 1987 and represents a connection to Israel that is part of the JCC's identity. Your organization won't support caving to pressure.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -9594,7 +9584,6 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Tell the JCC board to approve the rental. Their policy is clear, and a Jewish community space that decides which Jews are 'Jewish enough' for the building has lost its way.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -9643,12 +9632,8 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Tell the JCC board to deny this specific event but help them revise their rental policy to require that all events align with 'building Jewish community' — creating a principled framework for future decisions.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionAligned": [],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "JVP calls it 'a political litmus test dressed up as policy.' Your legal counsel says the new policy is defensible. Most members accept the framework. But the question of who defines 'building Jewish community' now haunts every rental application.",
@@ -9682,7 +9667,6 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -9717,7 +9701,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Propose a creative compromise to the JCC: approve the rental but have the JCC co-host, adding a second panel with a range of Jewish perspectives on Israel. Turn a one-sided event into a community dialogue — your organization's grassroots network can help ensure diverse attendance.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9803,8 +9786,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -9839,9 +9821,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Advise the JCC to meet with the teacher privately. Explain the situation, ask her to make her social media private, and separate her personal views from her professional role.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left",
             "israel_security"
@@ -9920,7 +9900,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Publicly defend the teacher's right to share her views on her own time, but work quietly with the JCC to reassure the parents that the issue is being handled internally. Ask the teacher to delete the most inflammatory posts and be more careful going forward.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9982,7 +9961,6 @@ var EDITOR_DATA =
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -10019,8 +9997,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -10090,7 +10067,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10299,8 +10275,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Meet with the student coalition privately. Acknowledge their concerns, propose adding a free-speech protection clause, and ask them to stay in the coalition.",
           "missionAligned": [
-            "antisemitism_all",
-            "social_justice"
+            "antisemitism_all"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -10330,9 +10305,7 @@ var EDITOR_DATA =
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your firmness earns praise from pro-Israel groups and some faculty. But six progressive student organizations withdraw from the coalition, and the campus newspaper runs a story about 'Jewish org silencing Palestinian voices.'",
@@ -10358,7 +10331,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Agree to their exclusion language. Keeping the coalition together is more important than winning the definitional fight.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -10637,9 +10609,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The donor pressure works. Martinez files the bill and Chen agrees to co-sponsor. But the progressive press writes about 'dark money behind anti-BDS legislation' and your methods become part of the story.",
@@ -11070,9 +11040,7 @@ var EDITOR_DATA =
             "israel_security",
             "antisemitism_left"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The pro-Israel advocate is appointed. Democrats are furious — 'This isn't bipartisan, it's a pro-Israel talking shop.' Two Democratic members threaten to resign before the first meeting.",
@@ -11099,7 +11067,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Lean toward the Democratic pick. Including a progressive critic of Israel signals that the task force won't be used to silence dissent — and that's worth the discomfort.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -11321,7 +11288,6 @@ var EDITOR_DATA =
           "text": "Feature the Khoury-Levins — a Jewish-Palestinian couple whose children face antisemitism AND Islamophobia. Complicated but it challenges every assumption.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -11356,9 +11322,7 @@ var EDITOR_DATA =
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The student’s story ignites a fierce debate. Conservative media loves it. Progressive allies accuse you of conflating anti-Zionism with antisemitism. The episode gets views but costs you coalition relationships.",
@@ -11461,9 +11425,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Cut the rally footage entirely. The episode is strong enough without it, and including it risks torpedoing the entire series.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left"
           ],
@@ -11493,8 +11455,7 @@ var EDITOR_DATA =
           "text": "Keep the footage AND add an interview with a Palestinian-American activist who condemns the antisemitic signs. Let a human voice make the distinction.",
           "missionAligned": [
             "antisemitism_all",
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -11863,9 +11824,7 @@ var EDITOR_DATA =
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The grant fast-tracks funding. But three Reform synagogues threaten to leave over the Israel programming requirement. You have the money but the coalition is fracturing.",
@@ -12363,8 +12322,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Walk to the microphone and invite the group’s leader to speak for two minutes. This summit is about hearing every Jewish voice — including ones that make us uncomfortable.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [
             "israel_security"
@@ -12428,7 +12386,6 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "missionOpposed": [
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -12651,9 +12608,7 @@ var EDITOR_DATA =
           "text": "Terminate the internship immediately and issue a statement distancing the org.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The decision is defensible but generates a secondary story about workplace culture. She becomes a minor cause célèbre.",
@@ -12698,9 +12653,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Defend her publicly as a private individual exercising free expression, while clarifying your org's position.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -12902,9 +12855,7 @@ var EDITOR_DATA =
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "He attends, the event gets press coverage. Two coalition partners quietly pull back from joint programming.",
@@ -12927,9 +12878,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Decline and explain that the Voting Rights vote makes it impossible to host him at this time.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -12974,7 +12923,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Counter-propose a private meeting instead of a public appearance — build the relationship without the optics.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -13072,7 +13021,7 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Use your political relationships to identify who is driving this and quietly address their specific concerns.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -13417,8 +13366,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Grant full access. This is a chance to show the world the complexity and humanity of Jewish communal life.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -13563,8 +13511,7 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Respond firmly: Zionism — Jewish self-determination — is not something we will disavow. Period. Publish the response before they publish theirs.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -13592,8 +13539,7 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Respond thoughtfully: explain the diversity of Zionist thought, reject the binary framing, and invite the students to a dialogue about what a just future looks like.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -13645,7 +13591,6 @@ var EDITOR_DATA =
           "id": "c3",
           "text": "Reach out directly to the student leaders before Friday. Meet with them in person. Have an honest, off-the-record conversation.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -13748,9 +13693,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Don’t issue a public statement, but quietly connect David’s daughter with a mentor from your young leadership program. Turn crisis into engagement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -14517,7 +14460,6 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Drop everything. Drive to the hospital. Organize a community vigil for tonight.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -14572,9 +14514,7 @@ var EDITOR_DATA =
         {
           "id": "c2",
           "text": "Focus inward — secure your own buildings, notify your community, cancel events for the week.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14641,9 +14581,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Connect the student with legal resources and organize a campus support network before going public.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14759,7 +14697,6 @@ var EDITOR_DATA =
           "id": "c2",
           "text": "Use the moment for education — publish a thread about Holocaust history and why the omission matters.",
           "missionAligned": [
-            "jewish_identity",
             "antisemitism_all"
           ],
           "missionOpposed": [],
@@ -14844,7 +14781,6 @@ var EDITOR_DATA =
           "id": "c1",
           "text": "Focus on community care: organize emergency gatherings, provide talking points for parents, and set up a hotline for people experiencing antisemitic harassment.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -14928,8 +14864,6 @@ var EDITOR_DATA =
           "id": "c0",
           "text": "Organize a massive community restoration day. Mobilize volunteers, bring in stone restoration experts, and turn the cleanup into a public act of defiance.",
           "missionAligned": [
-            "community_hub",
-            "jewish_identity",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -14957,9 +14891,7 @@ var EDITOR_DATA =
         {
           "id": "c1",
           "text": "Launch a targeted fundraising campaign to restore the cemetery and establish a permanent security fund.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -15312,7 +15244,7 @@ var EDITOR_DATA =
   "advisorPool": [
     {
       "id": "board_chair",
-      "name": "Rachel Steinberg",
+      "name": "Laura Gelman",
       "role": "Board Chair",
       "portrait": "art/advisors/rachel_steinberg",
       "bio": "20 years in Jewish communal governance. Thinks in terms of risk, reputation, and fiduciary duty.",
@@ -15326,7 +15258,7 @@ var EDITOR_DATA =
     },
     {
       "id": "program_dir",
-      "name": "Avi Kessler",
+      "name": "Adam Kaufman",
       "role": "Program Director",
       "portrait": "art/advisors/avi_kessler",
       "bio": "Former campus Hillel director. Believes the mission comes first, always. Staff love him.",
@@ -15340,7 +15272,7 @@ var EDITOR_DATA =
     },
     {
       "id": "dev_director",
-      "name": "Miriam Gold",
+      "name": "Shira Gold",
       "role": "Development Director",
       "portrait": "art/advisors/miriam_gold",
       "bio": "Raised $40M across three organizations. Knows every major donor by name and preference.",
@@ -15354,7 +15286,7 @@ var EDITOR_DATA =
     },
     {
       "id": "rabbi_scholar",
-      "name": "Rabbi David Friedman",
+      "name": "Arthur Hirsch",
       "role": "Senior Rabbi, Congregation Beth Israel",
       "portrait": "art/advisors/rabbi_friedman",
       "type": "external",
@@ -15368,7 +15300,7 @@ var EDITOR_DATA =
     },
     {
       "id": "political_consultant",
-      "name": "Sarah Feld",
+      "name": "Shani Levitt",
       "role": "Political Consultant",
       "portrait": "art/advisors/sarah_feld",
       "type": "external",
@@ -15382,7 +15314,7 @@ var EDITOR_DATA =
     },
     {
       "id": "community_organizer",
-      "name": "Tali Navarro",
+      "name": "Gabby Zimmerman",
       "role": "Community Organizer",
       "portrait": "art/advisors/tali_navarro",
       "type": "external",
@@ -15397,7 +15329,7 @@ var EDITOR_DATA =
     },
     {
       "id": "major_donor_rep",
-      "name": "Leonard Katz",
+      "name": "Leonard Cohen",
       "role": "Philanthropic Advisor",
       "portrait": "art/advisors/leonard_katz",
       "type": "external",
@@ -15411,7 +15343,7 @@ var EDITOR_DATA =
     },
     {
       "id": "media_strategist",
-      "name": "Noa Landover",
+      "name": "Maya Landau",
       "role": "Media Strategist",
       "portrait": "art/advisors/noa_berman",
       "type": "external",
@@ -15429,7 +15361,7 @@ var EDITOR_DATA =
       "id": "conv_donor_harold",
       "type": "character",
       "character": {
-        "name": "Harold Weinstein",
+        "name": "Harold Weinberg",
         "emoji": "🧑‍💼",
         "role": "Major Donor · 15 Years",
         "context": "Called to discuss your decision on his restricted gift"
@@ -16062,7 +15994,7 @@ var EDITOR_DATA =
       "id": "conv_vice_chair_rival",
       "type": "character",
       "character": {
-        "name": "David Chen",
+        "name": "Nathan Saxe",
         "emoji": "👔",
         "role": "Board Vice Chair · 8 Years",
         "context": "Called after the rival organization published their attack"
@@ -16415,7 +16347,7 @@ var EDITOR_DATA =
       "id": "conv_donor_meghan_evangelical",
       "type": "character",
       "character": {
-        "name": "Meghan Torres-Klein",
+        "name": "Muriel Goodman",
         "emoji": "👩‍🦰",
         "role": "Board Member · Interfaith Committee Chair",
         "context": "Called after learning about the evangelical alliance proposal"
@@ -16771,7 +16703,7 @@ var EDITOR_DATA =
       "id": "conv_parent_jcc_bomb_threat",
       "type": "character",
       "character": {
-        "name": "Nadia Kalman",
+        "name": "Sofia Tabachnikoff",
         "emoji": "👩",
         "role": "JCC Preschool Parent · PTA President",
         "context": "Arrived at the JCC during the bomb threat lockdown"
@@ -20289,7 +20221,7 @@ function exportCodeOnly() {
   a.click();
 }
 function resetToDefaults() {
-  if (!confirm('Reset all game data to built-in defaults? This cannot be undone.')) return;
+  if (!confirm('Reset all game data to the defaults built into this editor file?\n\nWarning: those defaults are a snapshot from when this editor was last updated, and are probably OLDER than what is live on GitHub. Publishing after a reset would roll the live game back.\n\nTo get the current live content instead, cancel and use "Pull from GitHub".\n\nThis cannot be undone.')) return;
   GD = JSON.parse(JSON.stringify(DEFAULT_GD));
   localStorage.setItem('gd_cache', JSON.stringify(GD));
   populateAllPanels();
@@ -20334,6 +20266,193 @@ function updateDashboardStats() {
     '<strong>' + (GD.advisorPool||[]).length + '</strong> advisors';
 }
 
+// ═══ DATA VALIDATION ═══
+// Scans all content for references to IDs that no longer exist. Deleting a
+// mission/trait/advisor/coalition leaves dangling references behind that fail
+// silently at runtime (a trait lock nothing can open, an alignment that never
+// awards a star), so this reports them before they ship.
+function collectDataProblems() {
+  if (!GD) return [];
+  var P = [];
+  var add = function(sev, where, msg) { P.push({sev:sev, where:where, msg:msg}); };
+  var ids = function(arr) { return (arr||[]).map(function(x){return x.id}); };
+
+  var traits    = ids(GD.characterTraits);
+  var missions  = ids(GD.missions);
+  var advisors  = ids(GD.advisorPool || GD.advisors);
+  var coalitions= ids(GD.coalitionOffers);
+  var stats     = ids(GD.stats);
+  var subs      = ids(GD.subMissions);
+  var orgs      = ids(GD.organizations).concat(ids(GD.nationalOrganizations));
+  var segments  = ids((GD.config||{}).segments);
+  var scenIds   = ids(GD.scenarios);
+  var leaves    = [];
+  (((GD.config||{}).jewishSecurity||{}).categories||[]).forEach(function(cat){
+    (cat.leaves||[]).forEach(function(l){ leaves.push(l.id); });
+  });
+
+  // Duplicate IDs anywhere
+  [['scenarios',scenIds],['inbox scenarios',ids(GD.inboxScenarios)],['breaking news',ids(GD.breakingNews)],
+   ['advisors',advisors],['missions',missions],['traits',traits],['coalitions',coalitions],
+   ['sub-missions',subs],['conversations',ids(GD.conversations)]].forEach(function(pair){
+    var seen = {}, dupes = [];
+    pair[1].forEach(function(id){ if(seen[id] && dupes.indexOf(id)<0) dupes.push(id); seen[id]=1; });
+    if (dupes.length) add('critical', pair[0], 'Duplicate ID' + (dupes.length>1?'s':'') + ': ' + dupes.join(', '));
+  });
+
+  // Choice-bearing content: scenarios, inbox, breaking news
+  [['Scenario', GD.scenarios], ['Inbox', GD.inboxScenarios], ['Breaking news', GD.breakingNews]].forEach(function(grp){
+    var label = grp[0];
+    (grp[1]||[]).forEach(function(s){
+      var at = label + ' "' + (s.id||'?') + '"';
+      if (s.subMissionId && subs.indexOf(s.subMissionId) < 0)
+        add('critical', at, 'Tagged to sub-mission "' + s.subMissionId + '" which does not exist — it can never enter the scenario pool.');
+      (s.choices||[]).forEach(function(c, ci){
+        var cAt = at + ' choice ' + String.fromCharCode(65+ci);
+        if (c.requiresUnlock && traits.indexOf(c.requiresUnlock) < 0)
+          add('critical', cAt, 'Requires trait "' + c.requiresUnlock + '" which does not exist — no player can ever unlock this choice.');
+        (c.missionAligned||[]).concat(c.missionOpposed||[]).forEach(function(m){
+          if (missions.indexOf(m) < 0)
+            add('critical', cAt, 'Mission alignment "' + m + '" does not exist — awards no mission star and shows no badge.');
+        });
+        (c.endangersCoalition||[]).forEach(function(id){
+          if (coalitions.indexOf(id) < 0) add('warning', cAt, 'Endangers coalition "' + id + '" which does not exist.');
+        });
+        Object.keys(c.segmentOverrides||{}).forEach(function(sg){
+          if (segments.indexOf(sg) < 0) add('warning', cAt, 'Segment override for unknown segment "' + sg + '".');
+        });
+        Object.keys(c.securityEffects||{}).forEach(function(lf){
+          if (leaves.indexOf(lf) < 0) add('warning', cAt, 'Security effect on unknown component "' + lf + '".');
+        });
+        (c.outcomes||[]).forEach(function(o, oi){
+          var oAt = cAt + ' outcome ' + (oi+1);
+          Object.keys(o.effects||{}).forEach(function(k){
+            if (stats.indexOf(k) < 0) add('warning', oAt, 'Effect on unknown stat "' + k + '".');
+          });
+          Object.keys(o.securityEffects||{}).forEach(function(lf){
+            if (leaves.indexOf(lf) < 0) add('warning', oAt, 'Security effect on unknown component "' + lf + '".');
+          });
+          if (o.subMissionCheckpoint && subs.indexOf(o.subMissionCheckpoint.subMissionId) < 0)
+            add('warning', oAt, 'Checkpoint on unknown sub-mission "' + o.subMissionCheckpoint.subMissionId + '".');
+        });
+      });
+      (s.advisorQuotes||[]).forEach(function(q){
+        if (advisors.indexOf(q.advisorId) < 0)
+          add('warning', at, 'Advisor quote from "' + q.advisorId + '" who is not in the character pool — the quote never appears.');
+        var rc = q.recommendsChoice;
+        if (rc !== null && rc !== undefined && (rc < 0 || rc >= (s.choices||[]).length))
+          add('warning', at, 'Advisor quote recommends choice ' + rc + ', but this only has ' + (s.choices||[]).length + ' choices.');
+      });
+    });
+  });
+
+  // Missions
+  (GD.missions||[]).forEach(function(m){
+    (m.availableTo||[]).forEach(function(o){
+      if (orgs.indexOf(o) < 0) add('warning', 'Mission "' + m.id + '"', 'Available to unknown organization "' + o + '".');
+    });
+  });
+
+  // Sub-missions
+  (GD.subMissions||[]).forEach(function(sm){
+    (sm.applicableOrgs||[]).forEach(function(o){
+      if (orgs.indexOf(o) < 0) add('warning', 'Sub-mission "' + sm.id + '"', 'Applies to unknown organization "' + o + '".');
+    });
+    var tr = sm.trigger||{};
+    if (tr.type === 'scenarioChoice' && scenIds.indexOf(tr.scenarioId) < 0)
+      add('critical', 'Sub-mission "' + sm.id + '"', 'Triggered by scenario "' + tr.scenarioId + '" which does not exist — it can never activate.');
+  });
+
+  // Conversations
+  (GD.conversations||[]).forEach(function(cv){
+    var at = 'Conversation "' + cv.id + '"';
+    var tr = cv.trigger||{};
+    if ((tr.type === 'afterScenario' || tr.type === 'beforeScenario') && scenIds.indexOf(tr.scenarioId) < 0)
+      add('critical', at, 'Triggered by scenario "' + tr.scenarioId + '" which does not exist — it can never fire.');
+    if (cv.type === 'advisor' && advisors.indexOf(cv.advisorId) < 0)
+      add('critical', at, 'Belongs to character "' + cv.advisorId + '" who is not in the pool — it can never fire.');
+    var nodes = cv.nodes||{};
+    if (!nodes.n0) add('critical', at, 'Has no starting node "n0".');
+    Object.keys(nodes).forEach(function(nid){
+      (nodes[nid].responses||[]).forEach(function(r, ri){
+        if (r.next && r.next !== 'end' && !nodes[r.next])
+          add('critical', at, 'Node ' + nid + ' response ' + (ri+1) + ' jumps to missing node "' + r.next + '" — the conversation dead-ends.');
+      });
+    });
+  });
+
+  // Social posts
+  (GD.socialMediaPosts||[]).forEach(function(p){
+    if (p.subMissionId && subs.indexOf(p.subMissionId) < 0)
+      add('warning', 'Social post "' + p.id + '"', 'Gated on unknown sub-mission "' + p.subMissionId + '".');
+  });
+
+  return P;
+}
+
+// Human-readable summary of what changed since the last pull/publish, so the
+// author can see what they are about to ship instead of publishing blind.
+function summarizePendingChanges() {
+  var cleanRaw = localStorage.getItem('gd_clean');
+  if (!cleanRaw || !GD) return null;
+  var clean;
+  try { clean = JSON.parse(cleanRaw); } catch(e) { return null; }
+  var LABELS = {
+    scenarios:'scenario', inboxScenarios:'inbox scenario', breakingNews:'breaking news item',
+    conversations:'conversation', organizations:'organization', missions:'mission',
+    characterTraits:'trait', advisorPool:'character', coalitionOffers:'coalition',
+    investments:'investment', subMissions:'sub-mission', socialMediaPosts:'social post',
+    gazetteTemplates:'gazette template'
+  };
+  var parts = [];
+  Object.keys(LABELS).forEach(function(key) {
+    var before = clean[key] || [], after = GD[key] || [];
+    var bById = {}; before.forEach(function(x){ bById[x.id] = JSON.stringify(x); });
+    var aById = {}; after.forEach(function(x){ aById[x.id] = JSON.stringify(x); });
+    var added = after.filter(function(x){ return !(x.id in bById); }).length;
+    var removed = before.filter(function(x){ return !(x.id in aById); }).length;
+    var edited = after.filter(function(x){ return (x.id in bById) && bById[x.id] !== aById[x.id]; }).length;
+    var bits = [];
+    if (added)   bits.push(added + ' added');
+    if (edited)  bits.push(edited + ' edited');
+    if (removed) bits.push(removed + ' removed');
+    if (bits.length) {
+      var noun = LABELS[key] + ((added+edited+removed) === 1 ? '' : 's');
+      parts.push(noun + ': ' + bits.join(', '));
+    }
+  });
+  if (JSON.stringify(clean.config||{}) !== JSON.stringify(GD.config||{})) parts.push('configuration changed');
+  if (JSON.stringify(clean.scoring||{}) !== JSON.stringify(GD.scoring||{})) parts.push('scoring changed');
+  return parts;
+}
+
+function runDataValidation() {
+  var box = document.getElementById('validation-results');
+  if (!box) return;
+  var P = collectDataProblems();
+  if (!P.length) {
+    box.innerHTML = '<div style="border:1.5px solid var(--good,#2d6a4f);background:rgba(45,106,79,.07);padding:14px 16px">' +
+      '<strong style="color:var(--good,#2d6a4f)">No broken references found.</strong>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:4px">Every trait, mission, advisor, coalition, scenario and sub-mission reference in your content points at something that exists.</div></div>';
+    return;
+  }
+  var crit = P.filter(function(p){return p.sev==='critical'});
+  var warn = P.filter(function(p){return p.sev==='warning'});
+  var row = function(p){
+    var color = p.sev === 'critical' ? '#b3362b' : '#8a6d0e';
+    return '<div style="padding:7px 0;border-bottom:1px solid var(--border)">' +
+      '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:.5px">' + esc(p.where) + '</div>' +
+      '<div style="font-size:12.5px;color:var(--ink);line-height:1.5">' + esc(p.msg) + '</div></div>';
+  };
+  box.innerHTML =
+    '<div style="border:1.5px solid #b3362b;background:rgba(179,54,43,.06);padding:14px 16px">' +
+      '<div style="font-weight:700;margin-bottom:2px">' + crit.length + ' broken reference' + (crit.length===1?'':'s') +
+        (warn.length ? ' · ' + warn.length + ' warning' + (warn.length===1?'':'s') : '') + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">These point at IDs that no longer exist. They fail silently in the game rather than erroring.</div>' +
+      '<div style="max-height:420px;overflow-y:auto">' + crit.map(row).join('') + warn.map(row).join('') + '</div>' +
+    '</div>';
+}
+
 // ═══ AUTO-PULL ON LOGIN ═══
 async function tryAutoPull() {
   if (!ghConfig.username || !ghConfig.repo || !ghConfig.token) {
@@ -20342,12 +20461,17 @@ async function tryAutoPull() {
     updateDashboardStats();
     return;
   }
+  // Guard against silently discarding unpublished work. "Clean" is the exact
+  // content of the last successful pull or publish; if the cache has drifted
+  // from it, this browser holds edits that exist nowhere else, and pulling
+  // would destroy them. The old check only looked at whether a pull had ever
+  // happened, which let the common pull → edit → close → reopen cycle through.
   var cached = localStorage.getItem('gd_cache');
-  var lastPull = localStorage.getItem('gd_last_pull');
-  if (cached && !lastPull) {
-    // Has local edits but never pulled — ask user
-    if (!confirm('You have local edits that have not been published.\n\nOK = Pull latest from GitHub (overwrites local)\nCancel = Continue with local edits')) {
-      setStatus('Using local edits. Remember to publish when done.', 'saving');
+  var clean  = localStorage.getItem('gd_clean');
+  var hasUnpublishedEdits = cached && (clean === null ? !localStorage.getItem('gd_last_pull') : cached !== clean);
+  if (hasUnpublishedEdits) {
+    if (!confirm('This browser has edits that have not been published to GitHub.\n\nOK = Discard them and pull the latest from GitHub\nCancel = Keep editing locally (publish when you are done)')) {
+      setStatus('Keeping your unpublished edits. Publish when you are done.', 'saving');
       updateDashboardStats();
       return;
     }
@@ -20387,7 +20511,9 @@ async function loadFromGithub() {
     if (!GD) throw new Error('Could not find GAME_DATA block in file.');
     sessionPassword = GD.config.editorPassword || sessionPassword;
     if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
-    localStorage.setItem('gd_cache', JSON.stringify(GD));
+    var _pulled = JSON.stringify(GD);
+    localStorage.setItem('gd_cache', _pulled);
+    localStorage.setItem('gd_clean', _pulled); // baseline for unpublished-edit detection
     localStorage.setItem('gd_last_pull', new Date().toLocaleString());
     populateAllPanels();
     updateDashboardStats();
@@ -20444,6 +20570,32 @@ async function saveToGithub() {
   // Tooltips panel was rendered: flush any in-DOM edits to GD so
   // users don't lose unsaved changes when they click Publish directly.
   try { var _tl = document.getElementById('tooltips-list'); if (_tl && _tl.innerHTML.trim()) saveTooltips(); } catch(e) {}
+  // Per-item edit forms (scenarios, inbox, breaking news, advisors, coalitions,
+  // conversations) are not auto-flushed above — their fields only reach GD when
+  // the author clicks that form's own Save. Warn rather than publishing edits
+  // the author believes are included.
+  var _openForms = [].slice.call(document.querySelectorAll('.open')).filter(function(el){ return /-card-\d+$/.test(el.id || ''); });
+  if (_openForms.length) {
+    if (!confirm(_openForms.length + ' edit form' + (_openForms.length===1?' is':'s are') + ' still open.\n\nAnything you typed there is not included unless you clicked Save on that form.\n\nOK = Publish without those changes\nCancel = Go back and save them first')) {
+      setStatus('Publish cancelled — save your open edit forms first.', 'error');
+      return;
+    }
+  }
+  // Show what is actually about to ship, and surface broken references before
+  // they go live rather than after a playtester finds them.
+  var _changes = summarizePendingChanges();
+  var _problems = collectDataProblems().filter(function(p){ return p.sev === 'critical'; });
+  var _lines = [];
+  if (_changes === null) _lines.push('About to publish your current game data.');
+  else if (_changes.length) _lines.push('About to publish:\n  • ' + _changes.join('\n  • '));
+  else _lines.push('No content changes detected since your last pull.');
+  if (_problems.length) {
+    _lines.push('\n⚠ ' + _problems.length + ' broken reference' + (_problems.length === 1 ? '' : 's') +
+      ' in this data. They fail silently in the game — run "Check for broken references" on the Dashboard to see them.');
+  }
+  _lines.push('\nPublish to GitHub?');
+  if (!confirm(_lines.join('\n'))) { setStatus('Publish cancelled.', 'error'); return; }
+
   if (ghConfig.password) GD.config.editorPassword = ghConfig.password;
   const btn = document.getElementById('publish-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }
@@ -20467,6 +20619,20 @@ async function saveToGithub() {
     if (!_b64Get) throw new Error('GitHub API returned no content for ' + ghConfig.filename);
     const _bytesGet = Uint8Array.from(atob(_b64Get), c => c.charCodeAt(0));
     const currentContent = new TextDecoder('utf-8').decode(_bytesGet);
+    // Conflict detection. Publishing splices the local GD over whatever is on
+    // GitHub, so if the remote data changed since this browser last pulled,
+    // another session's work is about to be overwritten without a trace.
+    var _clean = localStorage.getItem('gd_clean');
+    if (_clean) {
+      var _remote = null;
+      try { _remote = extractGameData(currentContent); } catch(e) {}
+      if (_remote && JSON.stringify(_remote) !== _clean) {
+        if (!confirm('The game data on GitHub has changed since you last pulled it.\n\nSomeone else may have published edits. Publishing now replaces their version with yours.\n\nOK = Publish anyway\nCancel = Stop, so you can pull and review their changes first')) {
+          setStatus('Publish cancelled. Pull from GitHub to review the newer version first.', 'error');
+          return;
+        }
+      }
+    }
     var newContent;
     // Try marked format first
     if (currentContent.indexOf('/* GAME_DATA_START */') >= 0) {
@@ -20493,7 +20659,9 @@ async function saveToGithub() {
       body: JSON.stringify({ message: 'Update game data via editor', content: (function(){ var e = new TextEncoder(); var bytes = e.encode(newContent); var bin = ''; for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]); return btoa(bin); })(), sha, branch: ghConfig.branch })
     });
     if (!putRes.ok) { const e = await putRes.json(); throw new Error(`Push error: ${putRes.status} — ${e.message}`); }
-    localStorage.setItem('gd_cache', JSON.stringify(GD));
+    var _published = JSON.stringify(GD);
+    localStorage.setItem('gd_cache', _published);
+    localStorage.setItem('gd_clean', _published); // published state is now the clean baseline
     localStorage.setItem('gd_last_pull', new Date().toLocaleString());
     setStatus('✓ Published! Live in ~60s.', 'success');
     updateDashboardStats();
@@ -21415,7 +21583,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
       <button class="btn btn-danger btn-sm" onclick="deleteChoice(${si},${ci},'${prefix}')">Delete</button>
     </div>
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option><option value="master_fundraiser"${c.requiresUnlock==='master_fundraiser'?' selected':''}>Master Fundraiser</option><option value="grassroots_organizer"${c.requiresUnlock==='grassroots_organizer'?' selected':''}>Grassroots Organizer</option><option value="jewish_scholar"${c.requiresUnlock==='jewish_scholar'?' selected':''}>Jewish Scholar</option><option value="political_operator"${c.requiresUnlock==='political_operator'?' selected':''}>Political Operator</option><option value="media_savvy"${c.requiresUnlock==='media_savvy'?' selected':''}>Media Savvy</option><option value="burnout_survivor"${c.requiresUnlock==='burnout_survivor'?' selected':''}>Burnout Survivor</option></select><div class="form-hint">Which character trait unlocks this choice</div></div>
+    <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option>${(GD.characterTraits||[]).map(t=>`<option value="${esc(t.id)}"${c.requiresUnlock===t.id?' selected':''}>${esc(t.name)}</option>`).join('')}${(c.requiresUnlock && !(GD.characterTraits||[]).some(t=>t.id===c.requiresUnlock))?`<option value="${esc(c.requiresUnlock)}" selected>⚠ Unknown trait "${esc(c.requiresUnlock)}" — no player can pick this</option>`:''}</select><div class="form-hint">Only traits defined in the Character Traits panel can unlock a choice. A trait listed here that no longer exists makes the choice permanently unreachable.</div></div>
     <div class="form-group" style="margin-bottom:6px"><label>Gelt Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Gelt units spent if player picks this choice</div></div>
     <div class="pol-impact-box${hasPol?' active':''}">
       <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
@@ -21446,21 +21614,87 @@ function renderChoiceEditor(c, si, ci, prefix) {
     ${renderSegOverrides(c, si, ci, prefix)}
   </div>`;
 }
+// ═══ SECURITY IMPACT PICKER ═══
+// Outcomes used to render all twelve Jewish Security components as number
+// inputs, so every outcome carried ten-plus zeros. In the authored data the
+// median outcome sets 2 of them and only 5 of 382 set more than 3, so the form
+// now shows three "pick an impact, set its value" rows and lets the author add
+// more. Three covers everything up to the 99th percentile of the authored data
+// without touching "+ Add". Same expressive range, a fraction of the fields.
+var SECURITY_ROWS_DEFAULT = 3;
+
+function securityLeafOptions(selected) {
+  var cats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
+  var html = '<option value="">— choose impact —</option>';
+  cats.forEach(function(cat) {
+    html += '<optgroup label="' + esc(cat.name) + '">';
+    (cat.leaves || []).forEach(function(leaf) {
+      html += '<option value="' + esc(leaf.id) + '"' + (leaf.id === selected ? ' selected' : '') + '>' + esc(leaf.name) + '</option>';
+    });
+    html += '</optgroup>';
+  });
+  return html;
+}
+
+function securityRowHtml(leafId, value) {
+  return '<div class="sec-row">' +
+    '<select class="sec-key">' + securityLeafOptions(leafId || '') + '</select>' +
+    '<input class="sec-val" type="number" value="' + (value === undefined || value === '' ? '' : value) + '" placeholder="0" />' +
+    '<button type="button" class="sec-del" title="Remove this impact" onclick="removeSecurityRow(this)">×</button>' +
+  '</div>';
+}
+
+function renderSecurityPicker(prefix, si, ci, oi, secFx, secCount) {
+  var boxId = prefix + '-secrows-' + si + '-' + ci + '-' + oi;
+  var rows = '';
+  var n = 0;
+  Object.keys(secFx || {}).forEach(function(k) {
+    if (!secFx[k]) return;
+    rows += securityRowHtml(k, secFx[k]); n++;
+  });
+  // Offer empty slots up to the default so a fresh outcome invites authoring
+  // without the author having to hunt for an "add" button first.
+  while (n < SECURITY_ROWS_DEFAULT) { rows += securityRowHtml('', ''); n++; }
+  return '<details class="sec-details"' + (secCount ? ' open' : '') + '>' +
+    '<summary>Security impacts' + (secCount ? ' (' + secCount + ')' : '') + '</summary>' +
+    '<div class="sec-rows" id="' + boxId + '">' + rows + '</div>' +
+    '<button type="button" class="sec-add" onclick="addSecurityRow(\'' + boxId + '\')">+ Add impact</button>' +
+  '</details>';
+}
+
+function addSecurityRow(boxId) {
+  var box = document.getElementById(boxId);
+  if (box) box.insertAdjacentHTML('beforeend', securityRowHtml('', ''));
+}
+
+function removeSecurityRow(btn) {
+  var row = btn.closest('.sec-row');
+  if (row) row.remove();
+}
+
+// Read the picker back. Rows are read from the DOM rather than by index so
+// adding and removing rows in any order stays consistent. Rows with no impact
+// chosen, or a zero/blank value, contribute nothing.
+function readSecurityRows(prefix, si, ci, oi) {
+  var box = document.getElementById(prefix + '-secrows-' + si + '-' + ci + '-' + oi);
+  var out = {};
+  if (!box) return out;
+  box.querySelectorAll('.sec-row').forEach(function(row) {
+    var keyEl = row.querySelector('.sec-key');
+    var valEl = row.querySelector('.sec-val');
+    if (!keyEl || !valEl) return;
+    var k = keyEl.value;
+    var v = parseInt(valEl.value, 10);
+    if (k && !isNaN(v) && v !== 0) out[k] = v;
+  });
+  return out;
+}
+
 function renderOutcomeEditor(si, ci, oi, o, prefix) {
   const stats = GD.stats || [];
-  const jsCats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
   const secFx = o.securityEffects || {};
-  var secInputs = '';
-  var secCount = 0;
-  jsCats.forEach(function(cat) {
-    (cat.leaves || []).forEach(function(leaf) {
-      var val = secFx[leaf.id] || 0;
-      if (val) secCount++;
-      var shortName = leaf.name.length > 18 ? leaf.name.substring(0,16)+'..' : leaf.name;
-      secInputs += '<div class="stat-input-group"><label style="color:' + cat.color + '">' + esc(shortName) + '</label><input type="number" id="' + prefix + '-osfx-' + si + '-' + ci + '-' + oi + '-' + leaf.id + '" value="' + val + '" /></div>';
-    });
-  });
-  var secHtml = secInputs ? '<details style="margin:4px 0 8px"><summary style="font-size:10px;font-weight:700;cursor:pointer;color:#6ba5e7">Security Effects (' + secCount + ' set)</summary><div class="stat-inputs cols-4" style="margin-top:6px">' + secInputs + '</div></details>' : '';
+  var secCount = Object.keys(secFx).filter(function(k){ return secFx[k]; }).length;
+  var secHtml = renderSecurityPicker(prefix, si, ci, oi, secFx, secCount);
   return `<div class="outcome-card">
     <div class="outcome-card-header"><span class="outcome-card-title">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
@@ -21508,6 +21742,7 @@ function editConditions(si,ci,oi,prefix) {
 function saveScenario(i, prefix) {
   const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
   const s = list[i];
+  var _prevScenario = JSON.parse(JSON.stringify(s));
   s.id = document.getElementById(prefix+'-id-'+i)?.value||s.id;
   s.tag = document.getElementById(prefix+'-tag-'+i)?.value||'';
   // Group and political range
@@ -21524,7 +21759,14 @@ function saveScenario(i, prefix) {
   s.body = document.getElementById(prefix+'-body-'+i)?.value||'';
   const allCats=['all','progressive','centrist','conservative'];
   s.categories = allCats.filter(c=>document.getElementById(prefix+'-cat-'+i+'-'+c)?.checked);
-  if(!s.categories.length) s.categories=['all'];
+  // Preserve an authored empty array instead of rewriting it to ['all'] — that
+  // would be a silent content change on an ordinary save. (Note: the engine
+  // treats categories: [] as 'matches nothing', so such a scenario never
+  // appears; that is a data problem to fix deliberately, not here.)
+  if(!s.categories.length) {
+    if (_prevScenario && Array.isArray(_prevScenario.categories)) s.categories = _prevScenario.categories.slice();
+    else s.categories = ['all'];
+  }
   // orgLevel field removed in the 3-org reduction.
   s.complexity = parseInt(document.getElementById(prefix+'-cplx-'+i)?.value)||3;
   var anyChecked = document.getElementById(prefix+'-channel-'+i+'-any')?.checked;
@@ -21539,6 +21781,12 @@ function saveScenario(i, prefix) {
   var consensusEl = document.getElementById(prefix+'-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
   const missions = GD.missions||[];
+  // Snapshot the previous choices BEFORE clearing the array below. The
+  // existing-outcome lookups further down read from it, and reading the
+  // live array after it was emptied meant they always saw undefined —
+  // which silently reset every outcome's `conditions` to [] on save and
+  // defeated the key-order preservation.
+  var _prevChoices = (list[i] && list[i].choices) ? list[i].choices.slice() : [];
   s.choices = [];
   let ci=0;
   while(document.getElementById(prefix+'-ctext-'+i+'-'+ci)) {
@@ -21565,7 +21813,7 @@ function saveScenario(i, prefix) {
     while(document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi)) {
       const effects={};
       (GD.stats||[]).forEach(st=>{const v=parseInt(document.getElementById(prefix+'-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
-      const existingO = (list[i]?.choices?.[ci]?.outcomes||[])[oi];
+      const existingO = (_prevChoices[ci]?.outcomes||[])[oi];
       var oClout = parseInt(document.getElementById(prefix+'-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
       var oGelt = parseInt(document.getElementById(prefix+'-ogelt-'+i+'-'+ci+'-'+oi)?.value)||0;
       var outcomeObj = {text:document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById(prefix+'-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById(prefix+'-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
@@ -21576,35 +21824,55 @@ function saveScenario(i, prefix) {
       if(oHead) outcomeObj.headline = oHead;
       if(oSub) outcomeObj.subline = oSub;
       // Read security effects
-      var secFx = {};
-      var jsCats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
-      jsCats.forEach(function(cat) {
-        (cat.leaves || []).forEach(function(leaf) {
-          var v = parseInt(document.getElementById(prefix+'-osfx-'+i+'-'+ci+'-'+oi+'-'+leaf.id)?.value) || 0;
-          if (v) secFx[leaf.id] = v;
-        });
-      });
-      if (Object.keys(secFx).length > 0) outcomeObj.securityEffects = secFx;
+      var secFx = readSecurityRows(prefix, i, ci, oi);
+      if (Object.keys(secFx).length > 0) outcomeObj.securityEffects = preserveKeyOrder(secFx, existingO && existingO.securityEffects);
+      outcomeObj.effects = preserveKeyOrder(outcomeObj.effects, existingO && existingO.effects);
+      restoreUnrenderedOutcomeFields(outcomeObj, existingO);
+      dropMaterializedDefaults(outcomeObj, existingO, {contextNote: '', conditions: []});
+      // Emit the outcome's keys in their authored order for the same reason as
+      // the choice above: identical values in a different order still diff.
+      if (existingO) outcomeObj = preserveKeyOrder(outcomeObj, existingO);
       outcomes.push(outcomeObj);
       oi++;
     }
     var segOv = readSegOverrides(prefix, i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    // Assign these only when set. Writing `key: undefined` into the literal
+    // created the key on the object, so a save with no edits reported the
+    // choice as changed even though nothing meaningful differed.
+    if (Object.keys(polReq).length) choice.politicalRequirement = polReq; else delete choice.politicalRequirement;
+    if (segOv) choice.segmentOverrides = segOv; else delete choice.segmentOverrides;
     if (unlock) choice.requiresUnlock = unlock;
+    else if (_prevChoices[ci] && _prevChoices[ci].requiresUnlock === null) choice.requiresUnlock = null;
     else delete choice.requiresUnlock;
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
     if (israelLean !== 0) choice.israelLean = israelLean; else delete choice.israelLean;
     var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById(prefix+'-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
     if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
+    var _prevChoice = _prevChoices[ci];
+    choice.missionAligned = preserveArrayOrder(choice.missionAligned, _prevChoice && _prevChoice.missionAligned);
+    choice.missionOpposed = preserveArrayOrder(choice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
+    // The scenario form has no choice-level Clout field (only Clout Cost, and
+    // Clout on each outcome), so rebuilding the choice dropped any authored
+    // cloutEffect — six scenario choices rely on it for political consequences.
+    // Carry it across, but never over a value the form supplied (inbox and
+    // breaking-news forms do have this field).
+    if (choice.cloutEffect === undefined && _prevChoice && _prevChoice.cloutEffect !== undefined) choice.cloutEffect = _prevChoice.cloutEffect;
+    if (choice.segmentOverrides) choice.segmentOverrides = preserveKeyOrder(choice.segmentOverrides, _prevChoice && _prevChoice.segmentOverrides);
+    dropMaterializedDefaults(choice, _prevChoice, {budgetCost: 0, politicalLean: 0});
+    // Conditional assignments above append keys in a different order than the
+    // authored object, so re-emit in the original order — otherwise a no-op save
+    // still produces a diff even though every value is identical.
+    if (_prevChoice) choice = preserveKeyOrder(choice, _prevChoice);
     s.choices.push(choice);
     ci++;
   }
   // Save advisor quotes with recommendation fields
   s.advisorQuotes = readAdvisorQuotes(i, prefix);
-  // Save highStakes from the checkbox
-  var hsCheck = document.querySelector('#'+prefix+'-form-'+i+' .hs-check');
-  s.highStakes = hsCheck ? hsCheck.checked : !!s.highStakes;
+  // Same reasoning as the choice level: don't invent scenario-level keys the
+  // author never set just because the form renders a default for them.
+  dropMaterializedDefaults(s, _prevScenario, {complexity: 3, communityConsensus: 0.5, advisorQuotes: [], categories: ['all']});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success'); refreshDependentPanels('scenarios');
   toggleEdit(prefix, i);
 }
@@ -21793,6 +22061,7 @@ function renderInboxForm(s, i) {
 function saveInbox(i) {
   // Reuse saveScenario with ib prefix, but also save inbox-specific fields
   const s = GD.inboxScenarios[i];
+  var _prevScenario = JSON.parse(JSON.stringify(s));
   s.id = document.getElementById('ib-id-'+i)?.value||s.id;
   s.tag = document.getElementById('ib-tag-'+i)?.value||'';
   // Group and political range
@@ -21825,15 +22094,34 @@ function saveInbox(i) {
     (GD.stats||[]).forEach(function(st){var v=parseInt(document.getElementById('ib-expfx-'+i+'-'+st.id)?.value)||0;if(v)expEffects[st.id]=v;});
     var expText = document.getElementById('ib-exptext-'+i)?.value||'';
     var expNote = document.getElementById('ib-expnote-'+i)?.value||'';
-    if(expText || Object.keys(expEffects).length) s.expiredOutcome = {text:expText,effects:expEffects,contextNote:expNote};
+    if(expText || Object.keys(expEffects).length) {
+      // Build on the previous expiredOutcome so fields the form does not render
+      // (budgetEffect) survive, and keep the authored key order.
+      var _prevExp = (_prevScenario && _prevScenario.expiredOutcome) || null;
+      var _newExp = Object.assign({}, _prevExp || {});
+      _newExp.text = expText;
+      _newExp.contextNote = expNote;
+      _newExp.effects = (_prevExp && _prevExp.effects) ? preserveKeyOrder(expEffects, _prevExp.effects) : expEffects;
+      s.expiredOutcome = _prevExp ? preserveKeyOrder(_newExp, _prevExp) : _newExp;
+    }
     else delete s.expiredOutcome;
   } else {
-    delete s.expiresIn; delete s.expiredOutcome;
+    // Clearing the timer removes expiresIn, but keep any authored expiredOutcome.
+    // Four inbox messages carry expiry text with no timer set, and deleting it
+    // here silently destroyed that writing on an ordinary save. Without a timer
+    // the field is simply inert, and it is there again if a timer is re-added.
+    delete s.expiresIn;
   }
   // Community consensus
   var consensusEl = document.getElementById('ib-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
   const missions = GD.missions||[];
+  // Snapshot the previous choices BEFORE clearing the array below. The
+  // existing-outcome lookups further down read from it, and reading the
+  // live array after it was emptied meant they always saw undefined —
+  // which silently reset every outcome's `conditions` to [] on save and
+  // defeated the key-order preservation.
+  var _prevChoices = (GD.inboxScenarios[i] && GD.inboxScenarios[i].choices) ? GD.inboxScenarios[i].choices.slice() : [];
   s.choices = [];
   let ci=0;
   while(document.getElementById('ib-ctext-'+i+'-'+ci)) {
@@ -21843,12 +22131,16 @@ function saveInbox(i) {
     missions.forEach(m=>{const v=document.getElementById('ib-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
     // Political impact fields
     var polLean = parseInt(document.getElementById('ib-cpollean-'+i+'-'+ci)?.value)||0;
-    var polClout = parseInt(document.getElementById('ib-cpolclout-'+i+'-'+ci)?.value)||0;
+    // NOTE: the shared choice editor renders no choice-level Clout field, so this
+    // lookup never resolves. Reading it as 0 and writing it through overwrote
+    // authored cloutEffect values; the value is now carried over from the
+    // previous choice below instead.
+    var polClout = parseInt(document.getElementById('ib-cpolclout-'+i+'-'+ci)?.value);
     var polMinClout = parseInt(document.getElementById('ib-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
-    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
-    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    var polMinPos = document.getElementById('ib'+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById('ib'+'-cpolmaxpos-'+i+'-'+ci)?.value;
     if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
     if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var cloutCost = parseInt(document.getElementById('ib-ccloutcost-'+i+'-'+ci)?.value) || 0;
@@ -21857,34 +22149,55 @@ function saveInbox(i) {
     while(document.getElementById('ib-otext-'+i+'-'+ci+'-'+oi)) {
       const effects={};
       (GD.stats||[]).forEach(st=>{const v=parseInt(document.getElementById('ib-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
-      const existingO=(GD.inboxScenarios[i]?.choices?.[ci]?.outcomes||[])[oi];
+      const existingO=(_prevChoices[ci]?.outcomes||[])[oi];
       var ibClout = parseInt(document.getElementById('ib-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
       var ibGelt = parseInt(document.getElementById('ib-ogelt-'+i+'-'+ci+'-'+oi)?.value)||0;
       var ibOutcome = {text:document.getElementById('ib-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById('ib-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById('ib-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
       if(ibClout) ibOutcome.cloutEffect = ibClout;
       if(ibGelt) ibOutcome.budgetEffect = ibGelt;
       // Read security effects
-      var secFx = {};
-      var jsCats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
-      jsCats.forEach(function(cat) {
-        (cat.leaves || []).forEach(function(leaf) {
-          var v = parseInt(document.getElementById('ib-osfx-'+i+'-'+ci+'-'+oi+'-'+leaf.id)?.value) || 0;
-          if (v) secFx[leaf.id] = v;
-        });
-      });
-      if (Object.keys(secFx).length > 0) ibOutcome.securityEffects = secFx;
+      var secFx = readSecurityRows('ib', i, ci, oi);
+      if (Object.keys(secFx).length > 0) ibOutcome.securityEffects = preserveKeyOrder(secFx, existingO && existingO.securityEffects);
+      ibOutcome.effects = preserveKeyOrder(ibOutcome.effects, existingO && existingO.effects);
+      restoreUnrenderedOutcomeFields(ibOutcome, existingO);
+      dropMaterializedDefaults(ibOutcome, existingO, {contextNote: '', conditions: []});
+      // Emit the outcome's keys in their authored order for the same reason as
+      // the choice above: identical values in a different order still diff.
+      if (existingO) ibOutcome = preserveKeyOrder(ibOutcome, existingO);
       outcomes.push(ibOutcome);
       oi++;
     }
     var segOv = readSegOverrides('ib', i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    if (Object.keys(polReq).length) choice.politicalRequirement = polReq; else delete choice.politicalRequirement;
+    if (segOv) choice.segmentOverrides = segOv; else delete choice.segmentOverrides;
     if (unlock) choice.requiresUnlock = unlock;
+    else if (_prevChoices[ci] && _prevChoices[ci].requiresUnlock === null) choice.requiresUnlock = null;
     else delete choice.requiresUnlock;
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
+    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById('ib-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
+    var _prevChoice = _prevChoices[ci];
+    choice.missionAligned = preserveArrayOrder(choice.missionAligned, _prevChoice && _prevChoice.missionAligned);
+    choice.missionOpposed = preserveArrayOrder(choice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
+    // The scenario form has no choice-level Clout field (only Clout Cost, and
+    // Clout on each outcome), so rebuilding the choice dropped any authored
+    // cloutEffect — six scenario choices rely on it for political consequences.
+    // Carry it across, but never over a value the form supplied (inbox and
+    // breaking-news forms do have this field).
+    if (!isNaN(polClout)) choice.cloutEffect = polClout;
+    if (choice.cloutEffect === undefined && _prevChoice && _prevChoice.cloutEffect !== undefined) choice.cloutEffect = _prevChoice.cloutEffect;
+    if (choice.segmentOverrides) choice.segmentOverrides = preserveKeyOrder(choice.segmentOverrides, _prevChoice && _prevChoice.segmentOverrides);
+    dropMaterializedDefaults(choice, _prevChoice, {budgetCost: 0, politicalLean: 0});
+    // Conditional assignments above append keys in a different order than the
+    // authored object, so re-emit in the original order — otherwise a no-op save
+    // still produces a diff even though every value is identical.
+    if (_prevChoice) choice = preserveKeyOrder(choice, _prevChoice);
     s.choices.push(choice);
     ci++;
   }
+  dropMaterializedDefaults(s, _prevScenario, {complexity: 3, communityConsensus: 0.5, advisorQuotes: [], categories: ['all']});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Inbox saved.','success');
   toggleEdit('ib', i);
 }
@@ -22576,6 +22889,7 @@ function renderBreakingForm(bn,i){
 }
 function saveBreaking(i){
   var bn = GD.breakingNews[i];
+  var _prevScenario = JSON.parse(JSON.stringify(bn));
   bn.id = document.getElementById('bn-id-'+i)?.value||bn.id;
   bn.tag = document.getElementById('bn-tag-'+i)?.value||'BREAKING';
   bn.trigger = document.getElementById('bn-trigger-'+i)?.value||'any';
@@ -22594,6 +22908,12 @@ function saveBreaking(i){
   if(consensusEl) bn.communityConsensus = parseFloat(consensusEl.value);
   // Save choices using same logic as scenarios
   var missions = GD.missions||[];
+  // Snapshot the previous choices BEFORE clearing the array below. The
+  // existing-outcome lookups further down read from it, and reading the
+  // live array after it was emptied meant they always saw undefined —
+  // which silently reset every outcome's `conditions` to [] on save and
+  // defeated the key-order preservation.
+  var _prevChoices = (GD.breakingNews[i] && GD.breakingNews[i].choices) ? GD.breakingNews[i].choices.slice() : [];
   bn.choices = [];
   var ci=0;
   while(document.getElementById('bn-ctext-'+i+'-'+ci)) {
@@ -22602,12 +22922,16 @@ function saveBreaking(i){
     var aligned=[],opposed=[];
     missions.forEach(function(m){var v=document.getElementById('bn-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
     var polLean = parseInt(document.getElementById('bn-cpollean-'+i+'-'+ci)?.value)||0;
-    var polClout = parseInt(document.getElementById('bn-cpolclout-'+i+'-'+ci)?.value)||0;
+    // NOTE: the shared choice editor renders no choice-level Clout field, so this
+    // lookup never resolves. Reading it as 0 and writing it through overwrote
+    // authored cloutEffect values; the value is now carried over from the
+    // previous choice below instead.
+    var polClout = parseInt(document.getElementById('bn-cpolclout-'+i+'-'+ci)?.value);
     var polMinClout = parseInt(document.getElementById('bn-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
-    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
-    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    var polMinPos = document.getElementById('bn'+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById('bn'+'-cpolmaxpos-'+i+'-'+ci)?.value;
     if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
     if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var outcomes=[];
@@ -22615,19 +22939,44 @@ function saveBreaking(i){
     while(document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi)) {
       var effects={};
       (GD.stats||[]).forEach(function(st){var v=parseInt(document.getElementById('bn-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
-      var existingO=(GD.breakingNews[i]?.choices?.[ci]?.outcomes||[])[oi];
+      var existingO=(_prevChoices[ci]?.outcomes||[])[oi];
       var bnClout = parseInt(document.getElementById('bn-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
       var bnGelt = parseInt(document.getElementById('bn-ogelt-'+i+'-'+ci+'-'+oi)?.value)||0;
       var bnOutcome = {text:document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi).value,effects:effects,weight:parseInt(document.getElementById('bn-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById('bn-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
+      bnOutcome.effects = preserveKeyOrder(bnOutcome.effects, existingO && existingO.effects);
       if(bnClout) bnOutcome.cloutEffect = bnClout;
       if(bnGelt) bnOutcome.budgetEffect = bnGelt;
+      var bnSecFx = readSecurityRows('bn', i, ci, oi);
+      if (Object.keys(bnSecFx).length) bnOutcome.securityEffects = preserveKeyOrder(bnSecFx, existingO && existingO.securityEffects);
+      restoreUnrenderedOutcomeFields(bnOutcome, existingO);
+      dropMaterializedDefaults(bnOutcome, existingO, {contextNote: '', conditions: []});
+      // Emit the outcome's keys in their authored order for the same reason as
+      // the choice above: identical values in a different order still diff.
+      if (existingO) bnOutcome = preserveKeyOrder(bnOutcome, existingO);
       outcomes.push(bnOutcome);
       oi++;
     }
     var segOv = readSegOverrides('bn', i, ci);
-    bn.choices.push({id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:parseInt(document.getElementById('bn-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
+    var bnChoice = {id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:parseInt(document.getElementById('bn-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    if (Object.keys(polReq).length) bnChoice.politicalRequirement = polReq;
+    if (segOv) bnChoice.segmentOverrides = segOv;
+    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById('bn-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    if (endangers.length) bnChoice.endangersCoalition = endangers; else delete bnChoice.endangersCoalition;
+    var _prevChoice = _prevChoices[ci];
+    bnChoice.missionAligned = preserveArrayOrder(bnChoice.missionAligned, _prevChoice && _prevChoice.missionAligned);
+    bnChoice.missionOpposed = preserveArrayOrder(bnChoice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
+    if (!isNaN(polClout)) bnChoice.cloutEffect = polClout;
+    if (bnChoice.cloutEffect === undefined && _prevChoice && _prevChoice.cloutEffect !== undefined) bnChoice.cloutEffect = _prevChoice.cloutEffect;
+    if (bnChoice.segmentOverrides) bnChoice.segmentOverrides = preserveKeyOrder(bnChoice.segmentOverrides, _prevChoice && _prevChoice.segmentOverrides);
+    dropMaterializedDefaults(bnChoice, _prevChoice, {budgetCost: 0, politicalLean: 0, requiresUnlock: null});
+    // Conditional assignments above append keys in a different order than the
+    // authored object, so re-emit in the original order — otherwise a no-op save
+    // still produces a diff even though every value is identical.
+    if (_prevChoice) bnChoice = preserveKeyOrder(bnChoice, _prevChoice);
+    bn.choices.push(bnChoice);
     ci++;
   }
+  dropMaterializedDefaults(bn, _prevScenario, {complexity: 3, communityConsensus: 0.5, categories: ['all']});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Breaking news saved.','success');
   toggleEdit('bn', i);
 }
@@ -22901,12 +23250,15 @@ function deleteInvestment(i){
 // ═══ ADVISOR QUOTES ON SCENARIO FORMS ═══
 // Full advisor quotes editor with recommendation fields (Phase 5)
 function renderAdvisorQuotesEditor(scenario, si, prefix){
-  var hs = scenario.highStakes ? 'checked' : '';
   var quotes = scenario.advisorQuotes || [];
   var pool = GD.advisorPool || [];
   var choices = scenario.choices || [];
   var stats = GD.stats || [];
-  var html = '<div class="form-section" style="margin-top:12px"><label><input type="checkbox" class="hs-check" '+hs+' /> Advisor Input (show advisor quotes)</label>';
+  // No on/off toggle here: the engine shows advisor quotes whenever they exist
+  // and the advisor is on the player's team. A checkbox that appeared to gate
+  // them (highStakes) was never read by the engine and has been removed.
+  var html = '<div class="form-section" style="margin-top:12px"><label class="section-label" style="margin-top:0">Advisor Input</label>' +
+    '<div class="form-hint">Quotes appear above the choices. Each one shows only when that advisor is on the player\'s team, so add a quote to show it and delete it to remove it.</div>';
   html += '<div class="aq-list" style="margin-top:8px">';
   quotes.forEach(function(q, qi){
     var adv = pool.find(function(a){return a.id===q.advisorId}) || {};
@@ -23000,7 +23352,23 @@ function readAdvisorQuotes(si, prefix){
       var v = parseInt(document.getElementById(prefix+'-aqefx-'+si+'-'+qi+'-'+st.id)?.value)||0;
       if(v) effectModifier[st.id] = v;
     });
-    quotes.push({advisorId:advisorId,text:text,mood:mood,recommendsChoice:recommendsChoice,effectModifier:effectModifier,explicit:explicit});
+    var q = {advisorId:advisorId,text:text,mood:mood,recommendsChoice:recommendsChoice,effectModifier:effectModifier,explicit:explicit};
+    var prevQ = existing[qi];
+    // Keep authored zeros in the effect modifier, and don't invent a `mood` key
+    // on quotes that never had one just because the select defaults to neutral.
+    if (prevQ && prevQ.effectModifier) {
+      Object.keys(prevQ.effectModifier).forEach(function(st){
+        if (prevQ.effectModifier[st] === 0 && q.effectModifier[st] === undefined) q.effectModifier[st] = 0;
+      });
+      q.effectModifier = preserveKeyOrder(q.effectModifier, prevQ.effectModifier);
+    }
+    // An authored null effectModifier is not the same as an empty object: the
+    // engine filters advisor bonuses on `q.effectModifier &&`, so null is skipped
+    // while {} passes and logs an empty bonus. Preserve the distinction.
+    if (prevQ && prevQ.effectModifier === null && Object.keys(q.effectModifier).length === 0) q.effectModifier = null;
+    dropMaterializedDefaults(q, prevQ, {mood: 'neutral'});
+    if (prevQ) q = preserveKeyOrder(q, prevQ);
+    quotes.push(q);
     qi++;
   }
   return quotes;
@@ -23625,12 +23993,21 @@ function saveSegments() {
   segs.forEach(function(seg, i) {
     seg.name = document.getElementById('seg-name-'+i)?.value || seg.name;
     seg.id = document.getElementById('seg-sid-'+i)?.value || seg.id;
-    seg.populationBaseline = parseInt(document.getElementById('seg-pop-'+i).value) || seg.populationBaseline;
-    seg.politicalCenter = parseInt(document.getElementById('seg-pol-'+i).value) || seg.politicalCenter;
-    seg.comfortRange = parseInt(document.getElementById('seg-comfort-'+i).value) || 20;
-    seg.israelCenter = parseInt(document.getElementById('seg-ilcenter-'+i).value) || 50;
-    seg.israelComfortRange = parseInt(document.getElementById('seg-ilcomfort-'+i).value) || 20;
-    seg.baseStartApproval = parseInt(document.getElementById('seg-base-'+i).value) || seg.baseStartApproval;
+    // Read as "use the typed number unless the field is blank/invalid" — a
+    // plain `|| fallback` would reject 0, making far-left political centers
+    // and 0 comfort ranges impossible to save.
+    var num = function(id, fallback) {
+      var el = document.getElementById(id);
+      if (!el || el.value === '') return fallback;
+      var v = parseInt(el.value, 10);
+      return isNaN(v) ? fallback : v;
+    };
+    seg.populationBaseline = num('seg-pop-'+i, seg.populationBaseline);
+    seg.politicalCenter = num('seg-pol-'+i, seg.politicalCenter);
+    seg.comfortRange = num('seg-comfort-'+i, 20);
+    seg.israelCenter = num('seg-ilcenter-'+i, 50);
+    seg.israelComfortRange = num('seg-ilcomfort-'+i, 20);
+    seg.baseStartApproval = num('seg-base-'+i, seg.baseStartApproval);
     var fc = (document.getElementById('seg-fc-'+i).value || '').split('/');
     if (fc.length === 2) { seg.floor = parseInt(fc[0])||5; seg.ceiling = parseInt(fc[1])||30; }
   });
@@ -23730,6 +24107,69 @@ function renderSegOverrides(choice, si, ci, prefix) {
   });
   html += '</div></details>';
   return html;
+}
+
+// Rebuilding an object from its form fields emits keys in form order, which is
+// rarely the order they were authored in. The values are identical but the
+// serialized JSON differs, so a save with no edits produced a large, meaningless
+// diff. Re-emit the new object using the previous key order wherever those keys
+// still exist, appending any genuinely new ones.
+// The form always produces a value for every field it renders, so saving
+// materializes defaults for fields the author never set — which turned a
+// no-op save into a large, meaningless diff. Drop keys that were absent
+// before and came back as exactly their default.
+function dropMaterializedDefaults(obj, prev, defaults) {
+  if (!obj) return obj;
+  Object.keys(defaults).forEach(function(k) {
+    var wasAbsent = !prev || !Object.prototype.hasOwnProperty.call(prev, k);
+    if (wasAbsent && JSON.stringify(obj[k]) === JSON.stringify(defaults[k])) delete obj[k];
+  });
+  return obj;
+}
+
+// Fields the outcome form actually renders. Anything else on an authored
+// outcome (subMissionCheckpoint, and whatever gets added later) has no input to
+// round-trip through, so rebuilding the object from the form silently dropped
+// it — saving a scenario severed its sub-mission checkpoint wiring on 65
+// outcomes. Restore any key the form does not own.
+var FORM_OWNED_OUTCOME_KEYS = {text:1, effects:1, weight:1, contextNote:1, conditions:1,
+  cloutEffect:1, budgetEffect:1, headline:1, subline:1, securityEffects:1};
+function restoreUnrenderedOutcomeFields(newOutcome, prevOutcome) {
+  if (!prevOutcome) return newOutcome;
+  Object.keys(prevOutcome).forEach(function(k) {
+    if (!FORM_OWNED_OUTCOME_KEYS[k] && !Object.prototype.hasOwnProperty.call(newOutcome, k)) {
+      newOutcome[k] = prevOutcome[k];
+    }
+  });
+  // An authored zero is meaningful data, not an unset field: keep it rather
+  // than dropping the key just because the form read back 0.
+  ['budgetEffect','cloutEffect'].forEach(function(k) {
+    if (newOutcome[k] === undefined && prevOutcome[k] === 0) newOutcome[k] = 0;
+  });
+  if (prevOutcome.effects && newOutcome.effects) {
+    Object.keys(prevOutcome.effects).forEach(function(st) {
+      if (prevOutcome.effects[st] === 0 && newOutcome.effects[st] === undefined) newOutcome.effects[st] = 0;
+    });
+    newOutcome.effects = preserveKeyOrder(newOutcome.effects, prevOutcome.effects);
+  }
+  return newOutcome;
+}
+
+function preserveKeyOrder(newObj, oldObj) {
+  if (!newObj || !oldObj || typeof oldObj !== 'object') return newObj;
+  var out = {};
+  Object.keys(oldObj).forEach(function(k) { if (Object.prototype.hasOwnProperty.call(newObj, k)) out[k] = newObj[k]; });
+  Object.keys(newObj).forEach(function(k) { if (!Object.prototype.hasOwnProperty.call(out, k)) out[k] = newObj[k]; });
+  return out;
+}
+
+// Same idea for the mission-alignment arrays, which are rebuilt by iterating
+// GD.missions. If the membership is unchanged, keep the authored order.
+function preserveArrayOrder(newArr, oldArr) {
+  if (!Array.isArray(newArr) || !Array.isArray(oldArr)) return newArr;
+  if (newArr.length !== oldArr.length) return newArr;
+  var same = oldArr.every(function(v) { return newArr.indexOf(v) >= 0; });
+  return same ? oldArr.slice() : newArr;
 }
 
 function readSegOverrides(prefix, si, ci) {

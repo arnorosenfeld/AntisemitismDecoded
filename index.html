@@ -961,12 +961,12 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
    Inset by ~10% top/bottom so it doesn't run edge-to-edge. */
 .security-divider{width:1px;align-self:stretch;background:rgba(255,255,255,0.18);margin:6px 6px;flex-shrink:0}
 /* Category scores in a row */
-.security-categories{display:flex;gap:14px}
+.security-categories{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
 /* Each category: icon on the left at a readable size, content column on the
    right (name+val on top, bar beneath). Icon renders next to the bar, not
    squeezed against the text. Natural-width so bars stay compact and icons
    read at a proper size. */
-.security-cat{flex:0 0 auto;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s;display:flex;align-items:center;gap:10px;width:180px}
+.security-cat{flex:0 0 auto;cursor:pointer;position:relative;padding:4px 6px;border-radius:3px;transition:background 0.15s;display:flex;align-items:center;gap:10px;width:auto;min-width:172px;max-width:240px;flex:1 1 172px}
 .security-cat:hover{background:rgba(255,255,255,0.06)}
 /* Icon container — base size is 48px, but each category scales its OWN
    container width/height via CSS variables. Sizing the container (instead of
@@ -983,7 +983,7 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 .security-cat-vitality .security-cat-icon  { width: calc(48px * var(--sec-icon-scale-vitality, 1.1));   height: calc(48px * var(--sec-icon-scale-vitality, 1.1)); }
 .security-cat-content{flex:1;min-width:0}
 .security-cat-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:6px}
-.security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.security-cat-name{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#a0aab8;white-space:normal;line-height:1.25;overflow-wrap:break-word}
 /* Category number matches the label typography (9px uppercase, 0.8px
    letter-spacing) so both rows read at the same visual weight. Per-category
    color is still applied inline (barColor of the current score) for at-a-glance
@@ -1187,7 +1187,10 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 
 /* CONSTITUENCY SEGMENTS */
 .trust-meter { position: relative; cursor: pointer; }
-.trust-meter:hover .seg-tooltip { display: block; }
+/* .tapped is toggled by click so the segment breakdown is reachable on touch
+   devices, where :hover never fires. */
+.trust-meter:hover .seg-tooltip,
+.trust-meter.tapped .seg-tooltip { display: block; }
 .seg-tooltip {
   display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
   background: #1a1a30; border: 1px solid rgba(255,255,255,0.15); padding: 12px 16px;
@@ -1542,6 +1545,15 @@ body:not(:has(#desk-scene)) .invest-strip { display: none; }
 /* Tutorial overlay */
 .onboarding-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:8999}
 .onboarding-notif{z-index:9000 !important;max-width:440px !important;width:90vw !important;padding:18px 22px !important;font-size:13px !important}
+/* Conversation lockout — the floating chrome (status bar with End Round,
+   invest strip, clipboard, help) sits outside .game-main and stays on screen
+   while a conversation overlay is open. Make it inert so End Round can't fire
+   mid-dialogue and render the round transition underneath the overlay. */
+body.conv-active .game-status-bar,
+body.conv-active .invest-strip,
+body.conv-active .clipboard-bug,
+body.conv-active .floating-help-btn,
+body.conv-active .inbox-strip{pointer-events:none;opacity:0.4}
 </style>
 </head>
 <body>
@@ -2515,7 +2527,7 @@ const GAME_DATA = {
         "Your {stat} is getting into uncomfortable territory. The board notices these trends."
       ],
       "stat_red": [
-        "🚨 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+        "🚨 {stat} is critically low. If it falls to {threshold}, the board will call an emergency meeting and your tenure ends.",
         "🚨 {stat} is in the danger zone. One more bad outcome and you could be out.",
         "🚨 Crisis warning: {stat} is near the point of no return."
       ],
@@ -2714,7 +2726,8 @@ const GAME_DATA = {
       "left": 25,
       "center": 50,
       "right": 75
-    }
+    },
+    "statDecayPerRound": 1
   },
   "stats": [
     {
@@ -3463,7 +3476,7 @@ const GAME_DATA = {
           "budgetCost": 0,
           "politicalLean": 0,
           "cloutEffect": 0,
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ],
       "categories": [
@@ -3526,7 +3539,6 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -3566,8 +3578,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -3641,7 +3652,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -3738,8 +3748,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Offer meaningful raises funded by drawing down reserves, and hire a part-time events coordinator.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -3803,9 +3812,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Recruit community volunteers aggressively to fill the capacity gap.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -3832,9 +3839,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Scale back both events and invest in staff recovery. Send a letter to stakeholders explaining why.",
           "missionAligned": [],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Some donors are disappointed. But your team enters the year rested and turnover hits zero.",
@@ -4082,8 +4087,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Sign the letter. Your values are your values, and your donors should understand that.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security",
@@ -4190,8 +4194,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -4456,9 +4459,7 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Issue a supportive public statement alongside the JCC's reopening, emphasizing community resilience and coordinated security — calm leadership, no fearmongering.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -4494,9 +4495,7 @@ const GAME_DATA = {
           "text": "Use your political relationships to fast-track federal security grants for the JCC and every Jewish site in the region. Make the effort public.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The closure costs revenue but you reopen with meaningful security improvements that become a model for other JCCs.",
@@ -4529,8 +4528,7 @@ const GAME_DATA = {
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "antisemitism_all",
-            "community_hub"
+            "antisemitism_all"
           ],
           "outcomes": [
             {
@@ -4558,7 +4556,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Co-host an emergency community meeting that evening alongside the JCC, inviting law enforcement, elected officials, and community leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -4813,8 +4810,6 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -4864,7 +4859,6 @@ const GAME_DATA = {
           "text": "Support Jewish students across the political spectrum in testifying about how the resolution affects campus climate, without taking an organizational position on divestment itself.",
           "missionAligned": [
             "antisemitism_all",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -4909,14 +4903,13 @@ const GAME_DATA = {
             "reform": 2,
             "youngAdults": 3
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "israelLean": -2
         },
         {
           "id": "c2",
           "text": "Organize counter-programming: a campus dialogue on antisemitism, Islamophobia, and how divestment debates affect real students on both sides.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -5031,8 +5024,6 @@ const GAME_DATA = {
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "jewish_identity",
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -5098,7 +5089,6 @@ const GAME_DATA = {
             "antisemitism_all",
             "antisemitism_left",
             "antisemitism_right",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -5141,7 +5131,7 @@ const GAME_DATA = {
             "unaffiliated": 2,
             "youngAdults": 2
           },
-          "requiresUnlock": "grassroots_organizer",
+          "requiresUnlock": "organizer",
           "cloutCost": 6
         },
         {
@@ -5150,8 +5140,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -5198,9 +5187,7 @@ const GAME_DATA = {
           "missionOpposed": [
             "antisemitism_all",
             "antisemitism_left",
-            "antisemitism_right",
-            "social_justice",
-            "jewish_identity"
+            "antisemitism_right"
           ],
           "outcomes": [
             {
@@ -5273,9 +5260,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Accept the partnership. Security is non-negotiable and the threats are real. Address staff concerns with a town hall.",
           "missionAligned": [],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The partnership is implemented. Security improves immediately. Three progressive staff members resign, and a local racial justice group issues a statement of disappointment.",
@@ -5304,9 +5289,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Accept the partnership while launching a community safety initiative with local civil rights organizations.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5328,14 +5311,12 @@ const GAME_DATA = {
           ],
           "budgetCost": 7,
           "politicalLean": -2,
-          "requiresUnlock": "grassroots_organizer"
+          "requiresUnlock": "organizer"
         },
         {
           "id": "c2",
           "text": "Decline the police partnership. Invest in private security and community-based safety alternatives instead.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -5369,7 +5350,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Delay the decision pending a community-wide listening session that includes staff, congregants, and neighborhood leaders.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -5510,8 +5490,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Host a follow-up event: ‘The Exodus Story Through Many Eyes’ — turning the controversy into a moderated public dialogue about shared narratives.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -5549,8 +5528,7 @@ const GAME_DATA = {
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "outcomes": [
             {
@@ -5706,8 +5684,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Let her go. Her public persona has become inseparable from the organization’s brand, and the controversy is a distraction you can’t afford.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -5850,9 +5827,7 @@ const GAME_DATA = {
             "antisemitism_left",
             "antisemitism_right"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The press conference is praised for honesty. Activists on the left and right quote the data that suits them. Your organization emerges as a credible source.",
@@ -5889,8 +5864,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Emphasize the far-right increase in the press release, since it represents the larger share of the threat.",
           "missionAligned": [
-            "antisemitism_right",
-            "social_justice"
+            "antisemitism_right"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -5933,8 +5907,7 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -6210,7 +6183,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Go beyond condemnation: organize a community support event with mental health resources for people processing the trauma of seeing this hatred go mainstream.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -6356,9 +6328,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 5,
           "cloutEffect": 4,
           "politicalRequirement": {
@@ -6573,9 +6543,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Support the victim’s family publicly but leave the charging decision to the DA without taking a position on hate crime enhancement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -6601,7 +6569,6 @@ const GAME_DATA = {
           "text": "Support hate crime charges while simultaneously partnering with Black community leaders to frame this as a shared fight against all hate — not a Black vs. Jewish issue.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6644,9 +6611,7 @@ const GAME_DATA = {
         {
           "id": "c3",
           "text": "Stay out of the legal process entirely. Focus on the victim’s recovery and offer community healing programs.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -6707,10 +6672,7 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Launch a major ‘Save Our School’ campaign with your organization as the lead. Commit significant resources and fundraising capacity.",
-          "missionAligned": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "segmentOverrides": {
@@ -6744,7 +6706,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Help the school modernize: broker partnerships with public schools, create a part-time Hebrew enrichment track, and help them appeal to unaffiliated families.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6787,13 +6748,9 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Offer to absorb the school’s key programs into your JCC/community center programming rather than saving the school as an independent institution.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "You save the educational content but the school closes. Orthodox families are devastated. Your programming grows but the community feels a real loss.",
@@ -6818,10 +6775,7 @@ const GAME_DATA = {
           "text": "Express sympathy but explain this isn’t your organization’s role. The school’s board needs to solve this themselves.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity",
-            "community_hub"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The school closes at the end of the year. The community mourns. Your name comes up repeatedly in conversations about ‘who could have helped but didn’t.’",
@@ -6877,8 +6831,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Accept the county’s invitation and develop the module, even if it strains your progressive alliances. This is a once-in-a-generation opportunity.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -6925,7 +6878,6 @@ const GAME_DATA = {
           "text": "Accept but collaborate with other minority groups on a broader module that includes antisemitism alongside other forms of hatred — shared authorship, shared ownership.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -6993,13 +6945,10 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Decline and publicly challenge the premise that DEI should exclude antisemitism — write an op-ed making the case that any equity framework that excludes Jewish experiences is incomplete.",
           "missionAligned": [
-            "antisemitism_all",
-            "jewish_identity"
+            "antisemitism_all"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 3,
           "outcomes": [
             {
@@ -7065,9 +7014,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 6,
           "segmentOverrides": {
             "orthodox": 8,
@@ -7158,9 +7105,7 @@ const GAME_DATA = {
         {
           "id": "c3",
           "text": "Decline entirely and issue a statement explaining that your organization’s commitment to LGBTQ+ inclusion and pluralism is incompatible with this partnership.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -7396,9 +7341,7 @@ const GAME_DATA = {
             "antisemitism_left"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -7498,8 +7441,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use the moment to host a community conversation about political divisions within the Jewish community — inviting the rabbi and her progressive critics to the same stage.",
           "missionAligned": [
-            "diaspora_unity",
-            "community_hub"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -7587,9 +7529,7 @@ const GAME_DATA = {
         {
           "id": "c0",
           "text": "Sign the statement. Your coalition relationships are your most important asset, and you can work to soften the language from inside.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security",
@@ -7688,7 +7628,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Negotiate privately — ask for amended language that distinguishes between the Israeli government and Jewish self-determination. Offer to sign a revised version.",
           "missionAligned": [
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -7733,10 +7672,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use your grassroots network to organize a counter-letter from progressive Jews of color, LGBTQ Jews, and Mizrachi Jews arguing the coalition's framing erases diverse Jewish experiences.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -7804,8 +7742,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Approve the joint commemoration. This is exactly the kind of brave, values-driven programming your organization should be doing.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "requiresUnlock": null,
           "missionOpposed": [
@@ -7893,8 +7830,7 @@ const GAME_DATA = {
           "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -7926,10 +7862,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use your donor relationships to privately secure bridge funding that would replace any lost pledges, then greenlight the event with financial cover in place.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -3,
           "outcomes": [
@@ -8002,8 +7937,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Publish a direct rebuttal centering the voices of Jews of color in your organization — making the case that antisemitism IS a racial justice issue.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -8050,8 +7984,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Request a private meeting with the consultant to discuss her claims. Bring your Jews-of-color staff members who want to participate.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -8092,10 +8025,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Don't engage with the article directly. Instead, invest in programming that demonstrates — rather than argues — why antisemitism is a racial justice issue.",
-          "missionAligned": [
-            "social_justice",
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -8127,10 +8057,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Place an op-ed in a major outlet through your media contacts — not a rebuttal, but a proactive piece on why progressive movements need to take antisemitism seriously.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8246,8 +8175,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Meet with her privately. Demand a genuine public apology and commitment to antisemitism education — but don't rescind the endorsement yet.",
           "missionAligned": [
-            "antisemitism_left",
-            "social_justice"
+            "antisemitism_left"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -8292,7 +8220,6 @@ const GAME_DATA = {
           "text": "Turn this into a teaching moment — host a public forum on antisemitism in progressive spaces, inviting the council member to participate (not as the accused, but as a learner).",
           "missionAligned": [
             "antisemitism_left",
-            "social_justice",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -8331,7 +8258,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_left"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8523,10 +8450,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Address the room as a Jewish educator — draw on texts about machloket and the tradition of holding multiple truths. Reframe this as a strength, not a crisis.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -8726,7 +8652,7 @@ const GAME_DATA = {
             "antisemitism_all",
             "antisemitism_right"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "politicalLean": -2,
           "outcomes": [
@@ -8799,9 +8725,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "jewish_identity"
-          ],
+          "missionOpposed": [],
           "politicalLean": 4,
           "outcomes": [
             {
@@ -8891,7 +8815,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Decline the partnership entirely and publish a position paper on why Jewish organizations should not partner with groups that seek Jewish conversion, regardless of shared political goals.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -8930,10 +8853,9 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Counter-propose: you'll work with the church only if they publicly remove conversion language from their website and commit to a 'no proselytizing' covenant, using your halachic expertise to draft the covenant terms.",
           "missionAligned": [
-            "jewish_identity",
             "israel_security"
           ],
-          "requiresUnlock": "halachic_option",
+          "requiresUnlock": "scholar",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9126,7 +9048,7 @@ const GAME_DATA = {
           "missionAligned": [
             "diaspora_unity"
           ],
-          "requiresUnlock": "major_gift_option",
+          "requiresUnlock": "fundraiser",
           "missionOpposed": [],
           "politicalLean": -1,
           "outcomes": [
@@ -9322,7 +9244,7 @@ const GAME_DATA = {
             "antisemitism_right",
             "israel_security"
           ],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9511,7 +9433,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all"
           ],
-          "requiresUnlock": "press_option",
+          "requiresUnlock": "media_savvy",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9663,7 +9585,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Sidestep the political debate entirely. Show up on campus with programming: a teach-in, free food, mental health support for stressed Jewish students regardless of their views.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -9701,7 +9622,7 @@ const GAME_DATA = {
             "diaspora_unity",
             "antisemitism_all"
           ],
-          "requiresUnlock": "coalition_option",
+          "requiresUnlock": "community_insider",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -9782,7 +9703,6 @@ const GAME_DATA = {
           "missionOpposed": [
             "antisemitism_right",
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -9875,8 +9795,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_right",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "antisemitism_left",
@@ -9915,7 +9834,6 @@ const GAME_DATA = {
           "text": "Invoke Jewish textual tradition to draft a new, original framework that draws on IHRA, Nexus, and Jerusalem Declaration — positioning it as emerging from Jewish scholarly consensus rather than political camps.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -9946,7 +9864,7 @@ const GAME_DATA = {
             "youngAdults": 2,
             "olderAdults": 2
           },
-          "requiresUnlock": "jewish_scholar"
+          "requiresUnlock": "scholar"
         }
       ]
     },
@@ -10124,7 +10042,7 @@ const GAME_DATA = {
             "youngAdults": 2,
             "olderAdults": 1
           },
-          "requiresUnlock": "master_fundraiser"
+          "requiresUnlock": "fundraiser"
         }
       ]
     },
@@ -10171,8 +10089,7 @@ const GAME_DATA = {
           "missionAligned": [
             "antisemitism_all",
             "antisemitism_left",
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -10229,8 +10146,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -10360,7 +10276,9 @@ const GAME_DATA = {
       "applicableOrgs": [
         "center"
       ],
-      "categories": [],
+      "categories": [
+        "centrist"
+      ],
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.25,
@@ -10392,7 +10310,6 @@ const GAME_DATA = {
           "text": "Write a forceful statement defending your attempt to stay out of political debates as a philosophy of conviction, not cowardice — with specific examples of what your approach has actually accomplished.",
           "missionAligned": [
             "antisemitism_all",
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10543,7 +10460,9 @@ const GAME_DATA = {
       "title": "The Flag in the Lobby",
       "body": "An Israeli flag has hung in the lobby of a local JCC since the building opened in 1987. A group of younger members — many of them parents of preschoolers — has formally petitioned the JCC's board to remove it, arguing it makes non-Zionist and anti-Zionist Jewish families feel excluded from a space meant to serve all Jews. A counter-petition from older members has gathered twice as many signatures, calling the flag 'non-negotiable.' Both sides are threatening to cancel their memberships. The JCC board is split and has publicly asked your organization to weigh in — they know your position will shape their decision.",
       "applicableOrgs": [],
-      "categories": [],
+      "categories": [
+        "all"
+      ],
       "complexity": 4,
       "highStakes": true,
       "communityConsensus": 0.25,
@@ -10583,8 +10502,7 @@ const GAME_DATA = {
           "text": "Publicly support removing the flag. A JCC must be a welcoming space for all Jews, and if the flag is preventing that, your organization should say so clearly.",
           "missionAligned": [],
           "missionOpposed": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "outcomes": [
             {
@@ -10628,7 +10546,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Propose a compromise: a new 'identity wall' in the JCC lobby featuring flags and symbols from Israel, the diaspora, and Jewish communities worldwide — contextualizing the Israeli flag within a broader story of Jewish peoplehood.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10674,8 +10591,7 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Publicly back keeping the flag. It's been there since 1987 and represents a connection to Israel that is part of the JCC's identity. Your organization won't support caving to pressure.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -10782,7 +10698,6 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Tell the JCC board to approve the rental. Their policy is clear, and a Jewish community space that decides which Jews are 'Jewish enough' for the building has lost its way.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -10831,12 +10746,8 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Tell the JCC board to deny this specific event but help them revise their rental policy to require that all events align with 'building Jewish community' — creating a principled framework for future decisions.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
-          "missionOpposed": [
-            "community_hub"
-          ],
+          "missionAligned": [],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "JVP calls it 'a political litmus test dressed up as policy.' Your legal counsel says the new policy is defensible. Most members accept the framework. But the question of who defines 'building Jewish community' now haunts every rental application.",
@@ -10870,7 +10781,6 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "community_hub",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -10905,7 +10815,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Propose a creative compromise to the JCC: approve the rental but have the JCC co-host, adding a second panel with a range of Jewish perspectives on Israel. Turn a one-sided event into a community dialogue — your organization's grassroots network can help ensure diverse attendance.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -10956,7 +10865,9 @@ const GAME_DATA = {
       "title": "The Preschool Teacher's Posts",
       "body": "A parent at a local JCC preschool has forwarded screenshots from a teacher's personal Instagram account to your organization, asking you to intervene. The teacher — beloved by kids and parents, three years on staff — has posted a series of stories calling Israel \"a genocidal apartheid state,\" sharing graphic images from Gaza, and writing \"Zionism is racism.\" The parent says: \"I'm not sending my four-year-old to be taught by someone who hates our people.\" The teacher has never brought politics into the classroom. The JCC's director is asking what your organization thinks they should do.",
       "applicableOrgs": [],
-      "categories": [],
+      "categories": [
+        "all"
+      ],
       "complexity": 5,
       "highStakes": true,
       "communityConsensus": 0.15,
@@ -10991,8 +10902,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "outcomes": [
             {
@@ -11027,9 +10937,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Advise the JCC to meet with the teacher privately. Explain the situation, ask her to make her social media private, and separate her personal views from her professional role.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left",
             "israel_security"
@@ -11108,7 +11016,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Publicly defend the teacher's right to share her views on her own time, but work quietly with the JCC to reassure the parents that the issue is being handled internally. Ask the teacher to delete the most inflammatory posts and be more careful going forward.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -11170,7 +11077,6 @@ const GAME_DATA = {
           ],
           "missionOpposed": [
             "israel_peace",
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -11207,8 +11113,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Issue a statement expressing concern for all civilian casualties on both sides and calling for a ceasefire.",
           "missionAligned": [
-            "israel_peace",
-            "social_justice"
+            "israel_peace"
           ],
           "missionOpposed": [
             "israel_security"
@@ -11278,7 +11183,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Frame your statement entirely through Jewish textual tradition — pikuach nefesh, the sanctity of all human life — and try to keep politics out of it.",
           "missionAligned": [
-            "jewish_identity",
             "diaspora_unity"
           ],
           "missionOpposed": [],
@@ -11487,8 +11391,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Meet with the student coalition privately. Acknowledge their concerns, propose adding a free-speech protection clause, and ask them to stay in the coalition.",
           "missionAligned": [
-            "antisemitism_all",
-            "social_justice"
+            "antisemitism_all"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -11518,9 +11421,7 @@ const GAME_DATA = {
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "Your firmness earns praise from pro-Israel groups and some faculty. But six progressive student organizations withdraw from the coalition, and the campus newspaper runs a story about 'Jewish org silencing Palestinian voices.'",
@@ -11546,7 +11447,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Agree to their exclusion language. Keeping the coalition together is more important than winning the definitional fight.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -11825,9 +11725,7 @@ const GAME_DATA = {
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The donor pressure works. Martinez files the bill and Chen agrees to co-sponsor. But the progressive press writes about 'dark money behind anti-BDS legislation' and your methods become part of the story.",
@@ -12258,9 +12156,7 @@ const GAME_DATA = {
             "israel_security",
             "antisemitism_left"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The pro-Israel advocate is appointed. Democrats are furious — 'This isn't bipartisan, it's a pro-Israel talking shop.' Two Democratic members threaten to resign before the first meeting.",
@@ -12287,7 +12183,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Lean toward the Democratic pick. Including a progressive critic of Israel signals that the task force won't be used to silence dissent — and that's worth the discomfort.",
           "missionAligned": [
-            "social_justice",
             "israel_peace"
           ],
           "missionOpposed": [
@@ -12509,7 +12404,6 @@ const GAME_DATA = {
           "text": "Feature the Khoury-Levins — a Jewish-Palestinian couple whose children face antisemitism AND Islamophobia. Complicated but it challenges every assumption.",
           "missionAligned": [
             "antisemitism_all",
-            "social_justice",
             "diaspora_unity"
           ],
           "missionOpposed": [
@@ -12544,9 +12438,7 @@ const GAME_DATA = {
             "antisemitism_left",
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The student’s story ignites a fierce debate. Conservative media loves it. Progressive allies accuse you of conflating anti-Zionism with antisemitism. The episode gets views but costs you coalition relationships.",
@@ -12649,9 +12541,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Cut the rally footage entirely. The episode is strong enough without it, and including it risks torpedoing the entire series.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "missionOpposed": [
             "antisemitism_left"
           ],
@@ -12681,8 +12571,7 @@ const GAME_DATA = {
           "text": "Keep the footage AND add an interview with a Palestinian-American activist who condemns the antisemitic signs. Let a human voice make the distinction.",
           "missionAligned": [
             "antisemitism_all",
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [],
           "outcomes": [
@@ -13051,9 +12940,7 @@ const GAME_DATA = {
           "missionAligned": [
             "israel_security"
           ],
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The grant fast-tracks funding. But three Reform synagogues threaten to leave over the Israel programming requirement. You have the money but the coalition is fracturing.",
@@ -13551,8 +13438,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Walk to the microphone and invite the group’s leader to speak for two minutes. This summit is about hearing every Jewish voice — including ones that make us uncomfortable.",
           "missionAligned": [
-            "diaspora_unity",
-            "social_justice"
+            "diaspora_unity"
           ],
           "missionOpposed": [
             "israel_security"
@@ -13616,7 +13502,6 @@ const GAME_DATA = {
             "israel_security"
           ],
           "missionOpposed": [
-            "social_justice",
             "diaspora_unity"
           ],
           "outcomes": [
@@ -13839,9 +13724,7 @@ const GAME_DATA = {
           "text": "Terminate the internship immediately and issue a statement distancing the org.",
           "missionAligned": [],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "The decision is defensible but generates a secondary story about workplace culture. She becomes a minor cause célèbre.",
@@ -13886,9 +13769,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Defend her publicly as a private individual exercising free expression, while clarifying your org's position.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "antisemitism_all"
@@ -14090,9 +13971,7 @@ const GAME_DATA = {
             "israel_security"
           ],
           "requiresUnlock": null,
-          "missionOpposed": [
-            "social_justice"
-          ],
+          "missionOpposed": [],
           "outcomes": [
             {
               "text": "He attends, the event gets press coverage. Two coalition partners quietly pull back from joint programming.",
@@ -14115,9 +13994,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Decline and explain that the Voting Rights vote makes it impossible to host him at this time.",
-          "missionAligned": [
-            "social_justice"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [
             "israel_security"
@@ -14162,7 +14039,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Counter-propose a private meeting instead of a public appearance — build the relationship without the optics.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14260,7 +14137,7 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Use your political relationships to identify who is driving this and quietly address their specific concerns.",
           "missionAligned": [],
-          "requiresUnlock": "political_option",
+          "requiresUnlock": "political_operator",
           "missionOpposed": [],
           "outcomes": [
             {
@@ -14605,8 +14482,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Grant full access. This is a chance to show the world the complexity and humanity of Jewish communal life.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -14751,8 +14627,7 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Respond firmly: Zionism — Jewish self-determination — is not something we will disavow. Period. Publish the response before they publish theirs.",
           "missionAligned": [
-            "israel_security",
-            "jewish_identity"
+            "israel_security"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -14780,8 +14655,7 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Respond thoughtfully: explain the diversity of Zionist thought, reject the binary framing, and invite the students to a dialogue about what a just future looks like.",
           "missionAligned": [
-            "diaspora_unity",
-            "jewish_identity"
+            "diaspora_unity"
           ],
           "requiresUnlock": null,
           "missionOpposed": [],
@@ -14833,7 +14707,6 @@ const GAME_DATA = {
           "id": "c3",
           "text": "Reach out directly to the student leaders before Friday. Meet with them in person. Have an honest, off-the-record conversation.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity"
           ],
           "requiresUnlock": null,
@@ -14936,9 +14809,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Don’t issue a public statement, but quietly connect David’s daughter with a mentor from your young leadership program. Turn crisis into engagement.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -15705,7 +15576,6 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Drop everything. Drive to the hospital. Organize a community vigil for tonight.",
           "missionAligned": [
-            "community_hub",
             "diaspora_unity",
             "antisemitism_all"
           ],
@@ -15760,9 +15630,7 @@ const GAME_DATA = {
         {
           "id": "c2",
           "text": "Focus inward — secure your own buildings, notify your community, cancel events for the week.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -15829,9 +15697,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Connect the student with legal resources and organize a campus support network before going public.",
-          "missionAligned": [
-            "community_hub"
-          ],
+          "missionAligned": [],
           "missionOpposed": [],
           "outcomes": [
             {
@@ -15947,7 +15813,6 @@ const GAME_DATA = {
           "id": "c2",
           "text": "Use the moment for education — publish a thread about Holocaust history and why the omission matters.",
           "missionAligned": [
-            "jewish_identity",
             "antisemitism_all"
           ],
           "missionOpposed": [],
@@ -16032,7 +15897,6 @@ const GAME_DATA = {
           "id": "c1",
           "text": "Focus on community care: organize emergency gatherings, provide talking points for parents, and set up a hotline for people experiencing antisemitic harassment.",
           "missionAligned": [
-            "community_hub",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -16116,8 +15980,6 @@ const GAME_DATA = {
           "id": "c0",
           "text": "Organize a massive community restoration day. Mobilize volunteers, bring in stone restoration experts, and turn the cleanup into a public act of defiance.",
           "missionAligned": [
-            "community_hub",
-            "jewish_identity",
             "antisemitism_all"
           ],
           "requiresUnlock": null,
@@ -16145,9 +16007,7 @@ const GAME_DATA = {
         {
           "id": "c1",
           "text": "Launch a targeted fundraising campaign to restore the cemetery and establish a permanent security fund.",
-          "missionAligned": [
-            "jewish_identity"
-          ],
+          "missionAligned": [],
           "requiresUnlock": null,
           "missionOpposed": [],
           "outcomes": [
@@ -16820,7 +16680,7 @@ const GAME_DATA = {
           "characterLine": "Before you decide anything — I need you to hear something. Three of my people are in crisis. Real crisis. One is seeing a therapist for the first time because of this job. I don't say that lightly.",
           "responses": [
             {
-              "text": "Avi, I hear you. Tell me specifically what your team needs to get through the High Holidays.",
+              "text": "Adam, I hear you. Tell me specifically what your team needs to get through the High Holidays.",
               "approach": "Listen",
               "dispositionDelta": 5,
               "next": "n1_open"
@@ -16871,7 +16731,7 @@ const GAME_DATA = {
           "characterLine": "OK. I trust you to do right by us. Just... please don't let this be another conversation that leads to a committee that leads to nothing.",
           "responses": [
             {
-              "text": "It won't be. And Avi — thank you for being the person who says the uncomfortable thing. That's why you're invaluable.",
+              "text": "It won't be. And Adam — thank you for being the person who says the uncomfortable thing. That's why you're invaluable.",
               "approach": "Affirm",
               "dispositionDelta": 3,
               "next": "end"
@@ -16889,7 +16749,7 @@ const GAME_DATA = {
         {
           "minDisposition": 75,
           "heading": "",
-          "text": "Avi leaves feeling genuinely heard. He'll go to bat for whatever you decide — and his team will feel it.",
+          "text": "Adam leaves feeling genuinely heard. He'll go to bat for whatever you decide — and his team will feel it.",
           "effects": {
             "trust": 7,
             "morale": 5
@@ -16900,7 +16760,7 @@ const GAME_DATA = {
         {
           "minDisposition": 60,
           "heading": "",
-          "text": "Avi accepts your direction but is watching closely. His support for your decision is conditional.",
+          "text": "Adam accepts your direction but is watching closely. His support for your decision is conditional.",
           "effects": {
             "trust": -7
           },
@@ -16910,7 +16770,7 @@ const GAME_DATA = {
         {
           "minDisposition": 55,
           "heading": "",
-          "text": "Avi is visibly frustrated. He'll comply but won't advocate for your approach with his team.",
+          "text": "Adam is visibly frustrated. He'll comply but won't advocate for your approach with his team.",
           "effects": {
             "trust": -7,
             "morale": -7
@@ -16921,7 +16781,7 @@ const GAME_DATA = {
         {
           "minDisposition": 45,
           "heading": "",
-          "text": "Avi leaves the meeting angry. Two staff members will hear about this conversation within the hour.",
+          "text": "Adam leaves the meeting angry. Two staff members will hear about this conversation within the hour.",
           "effects": {
             "trust": -9,
             "morale": -12
@@ -21381,7 +21241,16 @@ function advPortrait(adv, mood, size, shape) {
   }
   return '<span style="font-size:' + size + 'px;line-height:1;vertical-align:middle">' + (adv.emoji || '') + '</span>';
 }
-function saveGame() { localStorage.setItem('ad_save', JSON.stringify(G)); }
+// Transient scratch fields are excluded: _callMenuPrevHtml holds a full HTML
+// snapshot of the desk view purely so closeCallMenu() can restore it, and
+// _statsBeforeLastEffects is only meaningful within a single choice. Neither
+// belongs in a persisted save.
+var SAVE_SKIP_KEYS = { _callMenuPrevHtml: 1, _statsBeforeLastEffects: 1 };
+function saveGame() {
+  localStorage.setItem('ad_save', JSON.stringify(G, function(k, v) {
+    return SAVE_SKIP_KEYS[k] ? undefined : v;
+  }));
+}
 function hasSavedGame() { return !!localStorage.getItem('ad_save'); }
 function loadSavedGame() {
   var saved = localStorage.getItem('ad_save');
@@ -21486,11 +21355,6 @@ function showScreen(id) {
   // current chrome configuration (with or without invest strip, etc.).
   if (isGame) setTimeout(function() { if (typeof positionGameMain === 'function') positionGameMain(); }, 20);
   window.scrollTo(0,0);
-}
-function shuffle(arr) {
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-  return a;
 }
 function barColor(v) {
   if(v>=60) return '#2d6a4f';
@@ -21790,6 +21654,24 @@ function scenarioApplies(scenario) {
   // when that sub-mission is active.
   if (scenario.subMissionId) {
     if (!(G.activeSubMissions || []).some(function(sm) { return sm.id === scenario.subMissionId; })) return false;
+  }
+  // Political-range gating (authored in the editor as min/max position). A
+  // scenario outside the player's current standing on the 0-100 spectrum
+  // doesn't apply to them.
+  if (scenario.politicalRange) {
+    var pos = G.politicalPosition;
+    if (scenario.politicalRange.min !== undefined && pos < scenario.politicalRange.min) return false;
+    if (scenario.politicalRange.max !== undefined && pos > scenario.politicalRange.max) return false;
+  }
+  // Variant grouping: scenarios sharing a groupId are alternate takes on the
+  // same event, so only one of them may appear per game.
+  if (scenario.groupId) {
+    var alreadyUsedFromGroup = (G.usedScenarioIds || []).some(function(usedId) {
+      if (usedId === scenario.id) return false;
+      var used = GAME_DATA.scenarios.find(function(s) { return s.id === usedId; });
+      return used && used.groupId === scenario.groupId;
+    });
+    if (alreadyUsedFromGroup) return false;
   }
   const cats = scenario.categories || ['all'];
   if (cats.includes('all')) return true;
@@ -22663,7 +22545,7 @@ function toggleHelpPanel() {
   if (!isOpen) {
     var body = document.getElementById('help-panel-body');
     if (body) {
-      var fbt = GAME_DATA.config.failureBarThreshold || 20;
+      var fbt = GAME_DATA.config.failureBarThreshold || 15;
       var pt  = GAME_DATA.config.promotionThreshold || 80;
       var fst = GAME_DATA.config.failureScoreThreshold || 40;
       var sect = function(title, content) {
@@ -22694,7 +22576,7 @@ function toggleHelpPanel() {
         sect('\ud83d\udcde Landline Calls',
           'Pick up the landline to call any of your advisors for a free strategy conversation. Each advisor has 3 topics; outcomes shift their disposition toward you and can boost their advisor bonus on related scenarios.') +
         sect('\ud83d\udce7 Phone Inbox',
-          'Emails and texts arrive throughout the day. Some have round-based timers &mdash; reply before they expire or take the consequence. Free to read and respond.') +
+          'Emails and texts arrive throughout the day. Some expire after a set number of actions &mdash; every action you take anywhere burns one tick, so reply before the counter runs out or take the consequence. Reading and replying is free.') +
         '<hr style="border:0;border-top:1px solid var(--border);margin:16px 0">' +
         // ── Systems detail ──
         '<div style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Systems detail</div>' +
@@ -22724,7 +22606,7 @@ var COACHING_MESSAGES = {
     "Your {stat} is getting into uncomfortable territory. The board notices these trends."
   ],
   stat_red: [
-    "\ud83d\udea8 {stat} is critically low. If it hits 20, the board will call an emergency meeting and your tenure could end.",
+    "\ud83d\udea8 {stat} is critically low. If it falls to {threshold}, the board will call an emergency meeting and your tenure ends.",
     "\ud83d\udea8 {stat} is in the danger zone. One more bad outcome and you could be out.",
     "\ud83d\udea8 Crisis warning: {stat} is near the point of no return."
   ],
@@ -22899,7 +22781,7 @@ function checkCoachingWarnings() {
   // Per-round cooldown so we don't spam multiple warnings per action within a round
   if (!G._coachWarningsThisRound) G._coachWarningsThisRound = {};
 
-  // Avi's onboarding replaces the old closing advice for first-time players
+  // Andy's onboarding replaces the old closing advice for first-time players
 
   // Mission star alerts
   if (G.missionStars <= 1 && G.missionStars > 0 && !G._coachWarningsLifetime['stars_low']) {
@@ -22917,17 +22799,22 @@ function checkCoachingWarnings() {
   var isPenultimate = G.round >= totalRounds - 1;
   var warnings = [];
   
+  var fbt = GAME_DATA.config.failureBarThreshold || 15;
+  var redAt = GAME_DATA.config.dangerRedThreshold || 20;
+  var yellowAt = GAME_DATA.config.dangerOrangeThreshold || 25;
+
   GAME_DATA.stats.forEach(function(s) {
     var val = G.stats[s.id] || 50;
     var redKey = 'red_' + s.id;
     var yellowKey = 'yellow_' + s.id;
     var penultKey = 'penult_' + s.id;
-    
-    // Red danger: stat has dropped to 20 or below (5 points above auto-fire).
-    // Yellow warning: 25 or below — first signal to pay attention.
-    if (val <= 20 && !G._coachWarningsLifetime[redKey] && !G._coachWarningsThisRound[redKey]) {
-      warnings.push({ msg: pickCoachMsg('stat_red').replace('{stat}', s.label), level: 'red', priority: 1, key: redKey });
-    } else if (val <= 25 && !G._coachWarningsLifetime[yellowKey] && !G._coachWarningsThisRound[yellowKey]) {
+
+    // Red danger and yellow warning are both early-warning bands above the
+    // actual fire-you threshold (failureBarThreshold), and the copy quotes
+    // that threshold rather than a hardcoded number.
+    if (val <= redAt && !G._coachWarningsLifetime[redKey] && !G._coachWarningsThisRound[redKey]) {
+      warnings.push({ msg: pickCoachMsg('stat_red').replace('{stat}', s.label).replace('{threshold}', fbt), level: 'red', priority: 1, key: redKey });
+    } else if (val <= yellowAt && !G._coachWarningsLifetime[yellowKey] && !G._coachWarningsThisRound[yellowKey]) {
       warnings.push({ msg: pickCoachMsg('stat_yellow').replace('{stat}', s.label), level: 'yellow', priority: 2, key: yellowKey });
     } else if (isPenultimate && !isFinalRound && val < 35 && !G._coachWarningsLifetime[penultKey] && !G._coachWarningsThisRound[penultKey]) {
       warnings.push({ msg: pickCoachMsg('penultimate_warning').replace('{stat}', s.label), level: 'yellow', priority: 3, key: penultKey });
@@ -22976,7 +22863,7 @@ function startGame(){
     const t=GAME_DATA.characterTraits.find(t=>t.id===tid);
     if(t) G.activeUnlocks.push(t.id);
   });
-  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];gazetteEvents=[];G.activeSubMissions=[];G.completedSubMissions=[];G.failedSubMissions=[];G.declinedSubMissions=[];G.security=null;
+  G.round=0; G.history=[]; G.usedScenarioIds=[]; G.usedInboxIds=[];G.activeCoalitions=[];G.declinedCoalitions=[];G.brokenCoalitions=[];G.statHistory=[];G.gazetteEvents=[];G.activeSubMissions=[];G.completedSubMissions=[];G.failedSubMissions=[];G.declinedSubMissions=[];G.security=null;
   G.inboxMessages=[]; G.coalitionStrikes={};
   G.advisorBonusLog = [];
   G.currentAdvisorBonusMultiplier = 1.0;
@@ -23001,6 +22888,7 @@ function startGame(){
   });
   
   G.budgetMax = G.budget;
+  G._startingBudget = G.budget; // baseline for the year-end Gelt delta
   G.budgetIncomeThisYear = 0; G.budgetSpentThisYear = 0;
   G.orgOperatingCost = orgBudgetOverrides.operatingCost || bc.operatingCostPerRound || 8;
   G.orgBaseIncome = orgBudgetOverrides.baseIncome || bc.baseIncomePerRound || 5;
@@ -23018,7 +22906,7 @@ function startGame(){
   G.charTraits.forEach(function(tid){
     var t = GAME_DATA.characterTraits.find(function(t){return t.id===tid});
     if(t && t.id === 'political_operator') { G.politicalClout += 10; }
-    if(t && t.id === 'grassroots_organizer') { G.politicalPosition -= 3; G.politicalClout += 5; }
+    if(t && t.id === 'organizer') { G.politicalPosition -= 3; G.politicalClout += 5; }
   });
   // Apply advisor political lean and clout
   G.selectedAdvisors.forEach(function(advId) {
@@ -23097,6 +22985,11 @@ function beginRound(){
   // Tick sub-mission deadlines (fail any that expired).
   if (G.round > 1) tickSubMissionDeadlines();
   if (G.round > 1) applySecurityDrift();
+  // Timed inbox messages are per-action and must not straddle rounds.
+  if (G.round > 1) expireCarryoverInboxTimers();
+  // Natural decay runs AFTER the snapshot above so the round summary shows it
+  // as part of this round's movement rather than hiding it.
+  if (G.round > 1) { applyStatDecay(); if (checkFailure()) return; }
 
   // Update desk skin (donor hysteresis) and morale state (silent — no toast/animation).
   // Round 1 stays 'plain'; round 2+ reads current morale band.
@@ -23981,6 +23874,17 @@ function toggleInboxPopup(ev) {
   if (el.classList.contains('visible')) hideInboxPopup();
   else showInboxPopup();
 }
+// Tap-to-toggle for the Trust segment breakdown. The tooltip is hover-only in
+// CSS, which leaves it unreachable on touch devices, so a tap toggles it and a
+// tap elsewhere closes it.
+document.addEventListener('click', function(ev) {
+  var meter = ev.target.closest ? ev.target.closest('.trust-meter') : null;
+  document.querySelectorAll('.trust-meter.tapped').forEach(function(m) {
+    if (m !== meter) m.classList.remove('tapped');
+  });
+  if (meter) meter.classList.toggle('tapped');
+});
+
 // Click-outside dismisses the popup (handles touch/tap-outside).
 document.addEventListener('click', function(ev) {
   var popup = document.getElementById('desk-inbox-popup');
@@ -24028,7 +23932,7 @@ function devQuickStart() {
 }
 function devResetTutorial() {
   try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
-  alert('Tutorial reset — start a new game to see Avi\u2019s onboarding.');
+  alert('Tutorial reset — start a new game to see Andy\u2019s onboarding.');
 }
 // Skip the rest of the current run and render the end-of-year screen.
 function devSkipToEndGame() {
@@ -24157,7 +24061,7 @@ function updateDeskDevPanel() {
 }
 function initDeskDevPanel() {
   if (!/[?&]devdesk/.test(location.search)) return;
-  // Every ?devdesk page load wipes the onboarded flag so Avi's tutorial
+  // Every ?devdesk page load wipes the onboarded flag so Andy's tutorial
   // replays when you start a new game — dev sessions should see the full
   // first-play experience without manually clearing localStorage.
   try { localStorage.removeItem('ad_onboarded'); } catch (e) {}
@@ -24178,7 +24082,7 @@ function initDeskDevPanel() {
         '<button onclick="devEndRoundNow()" style="' + halfBtnStyle + '">⏭ End round</button>' +
         '<button onclick="devSkipToEndGame()" style="' + dangerHalfStyle + '">⏹ Skip to end</button>' +
       '</div>' +
-      '<button onclick="devResetTutorial()" style="' + resetBtnStyle + '">↻ Reset Avi tutorial flag</button>' +
+      '<button onclick="devResetTutorial()" style="' + resetBtnStyle + '">↻ Reset Andy tutorial flag</button>' +
     '</div>' +
     '<div style="font-weight:700;margin-bottom:7px;color:#86efac;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;">Desk Dev</div>' +
     '<div style="margin-bottom:5px;"><span style="opacity:0.55;margin-right:6px;display:inline-block;width:44px;">skin</span>' +
@@ -24351,7 +24255,7 @@ function renderMain(){
       var sc = m.scenario || {};
       var urgent = m.timerRemaining ? '<span class="desk-phone-alert">\u2757</span>' : '';
       inboxScreenHtml += '<div class="desk-phone-msg" onclick="event.stopPropagation();openInboxMessage(\'' + m.id + '\')">';
-      inboxScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? m.timerRemaining + ' rd' : '') + '</span></div>';
+      inboxScreenHtml += '<div class="desk-phone-from">' + urgent + esc(sc.from || 'Unknown') + '<span class="desk-phone-time">' + (m.timerRemaining ? '⏳' + m.timerRemaining : '') + '</span></div>';
       inboxScreenHtml += '<div class="desk-phone-subj">' + esc(sc.subject || sc.title || '') + '</div>';
       inboxScreenHtml += '</div>';
     });
@@ -24924,7 +24828,7 @@ function processQueue(){
 function renderScenario(s){
   const valid=s.choices; // Show all choices, locked ones rendered as disabled
   // Status bar always shows round + actions remaining (not per-screen context).
-  var _totalR = GAME_DATA.config.totalRounds || 5;
+  var _totalR = GAME_DATA.config.totalRounds || 6;
   var _apL = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
   updateStatusBar('Round ' + G.round + ' of ' + _totalR + ' \u2014 ' + _apL, false);
   // Auto-infer political lean for choices
@@ -24945,9 +24849,9 @@ function renderScenario(s){
   document.getElementById('game-inner').innerHTML=`
     <div class="event-card">
       ${smBanner}
-      <span class="event-tag">${s.tag}</span>
-      <div class="event-title">${s.title}</div>
-      <div class="event-body">${s.body}</div>
+      <span class="event-tag">${esc(s.tag)}</span>
+      <div class="event-title">${esc(s.title)}</div>
+      <div class="event-body">${esc(s.body)}</div>
       ${advisorHtml}
       <div class="event-choices">
         ${valid.map((c,i)=>{
@@ -24971,8 +24875,8 @@ function renderScenario(s){
           var lockPolitical = isChoicePoliticallyLocked(c);
           var isLocked = lockBudget || !hasClout || lockPolitical || traitLocked;
           var recBadge = getAdvisorRecommendationBadge(s, i);
-          return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled':''}onclick="chooseScenario('${s.id}',${i})">
-            <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
+          return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled ':''}onclick="chooseScenario('${s.id}',${i})">
+            <span class="ev-key">${String.fromCharCode(65+i)}.</span>${esc(c.text)}
             ${costTag}
             ${cloutTag}
             ${traitTag}
@@ -25132,7 +25036,7 @@ function chooseScenario(sid,idx){
 
 // ═══════════════ INBOX ═══════════════
 function renderInbox(s){
-  var _totalR = GAME_DATA.config.totalRounds || 5;
+  var _totalR = GAME_DATA.config.totalRounds || 6;
   var _apL = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
   updateStatusBar('Round ' + G.round + ' of ' + _totalR + ' \u2014 ' + _apL, false);
   // Mark as read in inbox
@@ -25152,10 +25056,10 @@ function renderInbox(s){
   document.getElementById('game-inner').innerHTML=`
     <div class="inbox-card">
       <div class="inbox-head">
-        <div class="inbox-from">${s.tag==='Email'?'📧':'💬'} ${s.from}</div>
-        <div class="inbox-subj">${s.subject}${msg && msg.timerRemaining !== null && !msg.expired ? '<span class="inbox-timer">🔴 URGENT</span>' : ''}</div>
+        <div class="inbox-from">${s.tag==='Email'?'📧':'💬'} ${esc(s.from)}</div>
+        <div class="inbox-subj">${esc(s.subject)}${msg && msg.timerRemaining !== null && !msg.expired ? '<span class="inbox-timer">🔴 ' + msg.timerRemaining + ' action' + (msg.timerRemaining === 1 ? '' : 's') + ' left</span>' : ''}</div>
       </div>
-      <div class="inbox-body">${s.body}</div>
+      <div class="inbox-body">${esc(s.body)}</div>
       ${renderAdvisorQuotes(s)}
       <div class="inbox-choices">
         <div class="label" style="margin-bottom:7px">How do you respond?</div>
@@ -25180,7 +25084,7 @@ function renderInbox(s){
           var lockPolitical = isChoicePoliticallyLocked(c);
           var isLocked = lockBudget || !hasClout || lockPolitical || traitLocked;
           return `<button class="ev-choice${isLocked?' budget-locked':''}" ${isLocked?'disabled ':''}onclick="chooseInbox('${s.id}',${i})">
-            <span class="ev-key">${String.fromCharCode(65+i)}.</span>${c.text}
+            <span class="ev-key">${String.fromCharCode(65+i)}.</span>${esc(c.text)}
             ${costTag}
             ${cloutTag}
             ${traitTag}
@@ -25281,8 +25185,10 @@ function chooseInbox(sid,idx){
   var securityChips = '';
   if (outcome.securityEffects) securityChips = applySecurityEffects(outcome.securityEffects);
   if (c.securityEffects) securityChips += applySecurityEffects(c.securityEffects);
-  // Remove from inbox messages (answered)
+  // Remove from inbox messages (answered) before ticking, so replying to a
+  // message never counts a tick against itself.
   G.inboxMessages = (G.inboxMessages||[]).filter(function(m){return m.id!==s.id});
+  tickInboxTimers();
   updateInboxPanel();
   G.history.push('MESSAGE: '+s.subject+' → '+c.text.substring(0,55)+'...');
   updateHUD();
@@ -25305,27 +25211,37 @@ function chooseInbox(sid,idx){
 // ═══════════════ OUTCOME ═══════════════
 // #5: Shows chosen choice, #10: Shows context note
 function showOutcome(title, choiceText, outcomeText, chips, contextNote, cb){
-  var _totalR = GAME_DATA.config.totalRounds || 5;
+  var _totalR = GAME_DATA.config.totalRounds || 6;
   var _apL = G.apRemaining + ' action' + (G.apRemaining !== 1 ? 's' : '') + ' remaining';
   updateStatusBar('Round ' + G.round + ' of ' + _totalR + ' \u2014 ' + _apL, false);
   const id='oc'+Date.now();
   document.getElementById('game-inner').innerHTML=`
     <div class="outcome-panel">
-      <h3>${title}</h3>
+      <h3>${esc(title)}</h3>
       <div class="outcome-your-choice">
         <span class="label">Your Decision</span>
-        ${choiceText}
+        ${esc(choiceText)}
       </div>
-      <p>${outcomeText}</p>
+      <p>${esc(outcomeText)}</p>
       <div class="chip-row" style="margin-bottom:16px">${chips}</div>
       ${contextNote ? `<div class="context-note">${contextNote}</div>` : ''}
       <button id="${id}" class="btn btn-primary" style="margin-top:16px">Continue →</button>
     </div>`;
   document.getElementById(id).onclick=cb;
+  // A choice has been fully resolved and its effects applied — this is a safe
+  // point to persist. Saving only at round start meant a reload discarded the
+  // entire round in progress. Note we deliberately do NOT save while a
+  // scenario is merely on screen: rolling back to the last resolved choice
+  // returns the unspent action point rather than eating the scenario.
+  saveGame();
 }
 
 // ═══════════════ EFFECTS ═══════════════
 function applyEffects(fx, choice, scenario){
+  // Snapshot the stats as they stood before this choice landed. Coalition
+  // maintainStat checks use it to distinguish "this choice pushed the stat
+  // under the threshold" from "the stat was already under it".
+  G._statsBeforeLastEffects = Object.assign({}, G.stats);
   let chips='';
   for(const [stat,delta] of Object.entries(fx||{})){
     if(!GAME_DATA.stats.find(s=>s.id===stat)) continue;
@@ -25348,6 +25264,30 @@ function applyEffects(fx, choice, scenario){
     }
   }
   return chips;
+}
+
+// ═══════════════ STAT DECAY ═══════════════
+// The "you have to keep running to stay in place" pressure the help panel
+// describes. Runs once at the top of every round after the first.
+// Rate is config.statDecayPerRound (0 disables it).
+function applyStatDecay() {
+  var amount = GAME_DATA.config.statDecayPerRound;
+  if (amount === undefined || amount === null) amount = 1;
+  if (!amount) return;
+  (GAME_DATA.stats || []).forEach(function(s) {
+    if (typeof G.stats[s.id] !== 'number') return;
+    if (s.id === 'trust' && G.segmentApproval) {
+      // Trust is a weighted composite of segment approvals, so decaying the
+      // composite directly would be overwritten on the next recompute. Decay
+      // the underlying segments instead.
+      (GAME_DATA.config.segments || []).forEach(function(seg) {
+        G.segmentApproval[seg.id] = Math.max(0, Math.min(100, (G.segmentApproval[seg.id] || 50) - amount));
+      });
+      G.stats.trust = computeCompositeTrust();
+    } else {
+      G.stats[s.id] = Math.max(0, Math.min(100, G.stats[s.id] - amount));
+    }
+  });
 }
 
 // ═══════════════ FAILURE ═══════════════
@@ -25379,7 +25319,7 @@ function checkFailure(){
     }
   }
   // Fire coaching warnings after each action (round 2+ only). Round 1 is a
-  // learning round — only Avi's tutorial fires on launch, so stat warnings
+  // learning round — only Andy's tutorial fires on launch, so stat warnings
   // don't pile on top of the onboarding messages.
   if ((G.round || 1) > 1) checkCoachingWarnings();
   return false;
@@ -25419,7 +25359,7 @@ function showRoundTransition() {
   if (checkJsiRoundEndFailure()) return;
   updateStatusBar('End of Round ' + (G.round || 1), false);
 
-  var totalRounds = GAME_DATA.config.totalRounds || 4;
+  var totalRounds = GAME_DATA.config.totalRounds || 6;
   var currentRound = G.round;
   var nextRound = currentRound + 1;
 
@@ -25429,13 +25369,20 @@ function showRoundTransition() {
     return;
   }
 
+  // Once-per-round sweep for coalitions whose stat requirement is still unmet.
+  checkCoalitionStandingAtRoundEnd();
+
   // Season names
   var roundNames = GAME_DATA.config.roundNames || [];
   var currentSeason = roundNames[currentRound - 1] || {};
   var nextSeason = roundNames[nextRound - 1] || {};
 
   // Stat deltas this round
-  var prevSnap = (G.statHistory && G.statHistory.length > 1) ? G.statHistory[G.statHistory.length - 2] : (G.statHistory && G.statHistory[0]) || {};
+  // recordStatSnapshot() runs at the top of every beginRound(), so the LAST
+  // entry is the snapshot taken when this round started — that is the baseline
+  // for "what changed this round". Using length-2 compared against the start of
+  // the *previous* round and reported the wrong deltas from round 2 onward.
+  var prevSnap = (G.statHistory && G.statHistory.length) ? G.statHistory[G.statHistory.length - 1] : {};
   var currentSnap = {};
   GAME_DATA.stats.forEach(function(s) { currentSnap[s.id] = Math.round(G.stats[s.id] || 0); });
 
@@ -25472,6 +25419,23 @@ function showRoundTransition() {
       '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px">This round\'s defining moment</div>' +
       '<div style="color:#3a3528"><strong>' + esc(m.title) + '</strong> \u2014 ' + esc(m.outcomeText) + '</div>' +
     '</div>';
+  }
+
+  // Decision log for the round. The engine has always recorded every choice,
+  // but nothing surfaced it once the old action-log panel was removed, so the
+  // player had no way to review what they actually did.
+  var roundMoments = (G.notableMoments || []).filter(function(mm) { return mm.round === currentRound; });
+  var decisionLogHtml = '';
+  if (roundMoments.length) {
+    decisionLogHtml = '<div style="background:var(--white);border:1px solid var(--border);padding:16px 20px;margin-bottom:20px">' +
+      '<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Your decisions this round</div>';
+    roundMoments.forEach(function(mm) {
+      decisionLogHtml += '<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;line-height:1.55">' +
+        '<div style="font-weight:700;color:#3a3528">' + (mm.isBreaking ? '\u26a0\ufe0f ' : '') + esc(mm.title) + '</div>' +
+        '<div style="color:var(--muted)">\u21b3 ' + esc(mm.choiceText) + '</div>' +
+      '</div>';
+    });
+    decisionLogHtml += '</div>';
   }
 
   // Gazette headlines
@@ -25537,11 +25501,12 @@ function showRoundTransition() {
           '<div style="background:#ede8dc;padding:10px 12px"><div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Constraint</div><div style="font-size:12px;color:#c0392b">' + esc(constraintText) + '</div></div>' +
         '</div>' +
         (breakText ? '<div style="background:#f5e6e6;padding:8px 12px;margin-bottom:16px;font-size:12px;color:#8b1a1a"><strong>If broken:</strong> ' + breakText + '</div>' : '') +
+        // Declining can carry a real stat penalty. It used to be 9px text
+        // tucked under the button, which players misread as a free "no".
+        (declineText ? '<div style="background:#f5e6e6;padding:8px 12px;margin-bottom:16px;font-size:12px;color:#8b1a1a"><strong>If you decline:</strong> ' + esc(declineText) + '</div>' : '') +
         '<div style="display:flex;gap:12px;justify-content:center">' +
           '<button class="btn btn-gold" onclick="acceptCoalitionTransition(\'' + esc(co.id) + '\')">' + 'Accept Partnership \u2192</button>' +
-          '<button class="btn btn-secondary" onclick="declineCoalitionTransition(\'' + esc(co.id) + '\')" style="position:relative">' +
-            'Decline' + (declineText ? '<span style="display:block;font-size:9px;color:#c0392b;margin-top:2px;text-transform:none;letter-spacing:0;font-weight:600">' + declineText + '</span>' : '') +
-          '</button>' +
+          '<button class="btn btn-secondary" onclick="declineCoalitionTransition(\'' + esc(co.id) + '\')">Decline</button>' +
         '</div>' +
       '</div>';
   }
@@ -25570,8 +25535,8 @@ function showRoundTransition() {
       '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Board Rating</span><span class="hud-grade-letter grade-' + liveGrade.grade.toLowerCase() + '">' + liveGrade.grade + '</span></div>' +
       '<div style="text-align:center"><span style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px">Clout</span><span style="font-family:Merriweather,serif;font-weight:700;font-size:16px">\u26a1' + Math.round(G.politicalClout) + '</span></div>' +
     '</div>' +
-    // Defining moment
-    momentHtml;
+    // Defining moment, then the full decision log
+    momentHtml + decisionLogHtml;
 
   // Jewish Security round summary
   var secSummaryHtml = '';
@@ -25699,13 +25664,17 @@ function showRoundTransition() {
 
   el.innerHTML = html;
   window.scrollTo(0, 0);
+  saveGame();
 }
 
 function checkCoalitionOfferForTransition() {
   var offers = GAME_DATA.coalitionOffers || [];
   for (var i = 0; i < offers.length; i++) {
     var co = offers[i];
-    if (co.offerRound && co.offerRound !== G.round) continue;
+    // Availability is authored as offeredByRound ("available from round N on").
+    // offerRound is accepted as a legacy alias.
+    var availFrom = (co.offeredByRound !== undefined) ? co.offeredByRound : co.offerRound;
+    if (availFrom !== undefined && G.round < availFrom) continue;
     if ((G.activeCoalitions||[]).some(function(ac){return ac.id===co.id})) continue;
     if ((G.declinedCoalitions||[]).includes(co.id)) continue;
     if ((G.brokenCoalitions||[]).includes(co.id)) continue;
@@ -25781,6 +25750,13 @@ function continueFromTransition() {
 }
 
 // ═══════════════ YEAR END ═══════════════
+// Year-end-only score adjustment for how much gelt the org finished with.
+// Shared by endYear() (which applies it) and renderEndScreen() (which shows it
+// in the breakdown), so the two can never disagree.
+function getYearEndBudgetModifier() {
+  return G.budget >= 60 ? 5 : G.budget >= 40 ? 2 : G.budget >= 20 ? 0 : G.budget >= 10 ? -3 : -5;
+}
+
 function endYear(){
   // Use the same scoring as the live Board Rating — includes stat
   // weights + Jewish Security delta + mission star bonus.
@@ -25789,7 +25765,7 @@ function endYear(){
 
   // Budget health bonus/penalty (capped at +/- 5 points) — applied on top
   // of the live-grade score since budget is a year-end-only modifier.
-  var budgetMod = G.budget >= 60 ? 5 : G.budget >= 40 ? 2 : G.budget >= 20 ? 0 : G.budget >= 10 ? -3 : -5;
+  var budgetMod = getYearEndBudgetModifier();
   score = Math.max(0, Math.min(100, score + budgetMod));
 
   // 0 mission stars = automatic loss (you wandered from your stated mission)
@@ -25897,7 +25873,12 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
 
   // Score breakdown line
   if (!forcedFail) {
-    html += '<div class="end-score-breakdown">Base: <strong>' + baseScore + '</strong> + Mission Stars: <strong>+' + starBonus + '</strong> (' + (G.missionStars||0) + ' × ' + (GAME_DATA.config.missionStarPoints||5) + ') = <strong>' + score + '</strong></div>';
+    // endYear() adds a budget modifier on top of the live-grade score, so the
+    // breakdown has to show it or the arithmetic visibly fails to add up.
+    var budgetMod = getYearEndBudgetModifier();
+    var budgetPart = budgetMod === 0 ? '' :
+      ' ' + (budgetMod > 0 ? '+' : '−') + ' Gelt reserves: <strong>' + Math.abs(budgetMod) + '</strong>';
+    html += '<div class="end-score-breakdown">Base: <strong>' + baseScore + '</strong> + Mission Stars: <strong>+' + starBonus + '</strong> (' + (G.missionStars||0) + ' × ' + (GAME_DATA.config.missionStarPoints||1) + ')' + budgetPart + ' = <strong>' + score + '</strong></div>';
   }
 
   // Verdict
@@ -25917,7 +25898,9 @@ function renderEndScreen(score,forcedFail,forcedMsg,retirement=false,promotion=f
   html += '</div>';
 
   // Secondary stats
-  var startBudget = G.budgetMax || 100;
+  // Compare against what the year STARTED with. Using budgetMax (the running
+  // peak) made the delta permanently negative even after a profitable year.
+  var startBudget = (typeof G._startingBudget === 'number') ? G._startingBudget : (G.budgetMax || 100);
   var startStars = GAME_DATA.config.missionStartStars || 3;
   var starsHtml = '';
   var maxS = GAME_DATA.config.missionMaxStars || 5;
@@ -26215,6 +26198,24 @@ function restartSameCharacter(){
   G.roundActions = [];
   G.actionsThisRound = 0;
   G.inboxDelivered = 0;
+  // A fresh run must not inherit the previous one's progress or perks: the
+  // promoted office, already-used landline topics, spent investment charges,
+  // one-time breaking news, and dragged-open monitor windows all persisted.
+  G.deskSkin = 'basic';
+  G._deskSkinLocked = false;
+  G.deskMoraleState = 'plain';
+  G.usedCallIds = [];
+  G.callsThisRound = 0;
+  G.postsThisRound = 0;
+  G.investmentUses = {};
+  G.investmentsUsed = 0;
+  G.segmentSnapshots = [];
+  G.monitorWindows = null;
+  G.breakingNewsFired = {};
+  G.gazetteEvents = [];
+  G.advisorBonusLog = [];
+  G.pendingReserves = [];
+  G.endowmentIncome = 0;
 
   // Restore character
   G.charName = charName;
@@ -26343,11 +26344,6 @@ function openInvestModal() {
 function closeInvestModal() {
   document.getElementById('invest-modal-overlay').classList.remove('open');
 }
-function toggleActionLog() {
-  var panel = document.getElementById('action-log-panel');
-  if(panel) panel.classList.toggle('open');
-}
-
 function renderInvestmentContent() {
   var investments = GAME_DATA.investments || [];
   if(investments.length === 0) return '';
@@ -26441,7 +26437,7 @@ function makeInvestment(invId) {
   // Handle endowment (gelt per round)
   if(inv.geltPerRound) {
     G.endowmentIncome = (G.endowmentIncome || 0) + inv.geltPerRound;
-    var roundsLeft = (GAME_DATA.config.totalRounds || 4) - G.round;
+    var roundsLeft = (GAME_DATA.config.totalRounds || 6) - G.round;
     budgetChip += '<span class="chip chip-star-up">\ud83c\udfdb\ufe0f +' + inv.geltPerRound + ' gelt/round (' + roundsLeft + ' rounds remaining)</span>';
   }
   // Handle clout gain (e.g. lobbyist)
@@ -26463,11 +26459,24 @@ function makeInvestment(invId) {
 
 // Get starting political position based on org
 function getOrgStartingPosition(orgId) {
+  // config.tiltPositions is authored in the editor's Political Mechanics panel
+  // and takes precedence; the map below is the fallback for orgs it doesn't
+  // name. Previously the hardcoded values were used unconditionally, so
+  // editing the tilt positions had no effect on the game.
+  var tilt = (GAME_DATA.config && GAME_DATA.config.tiltPositions) || {};
+  var allOrgs = (GAME_DATA.organizations || []).concat(GAME_DATA.nationalOrganizations || []);
+  var org = allOrgs.find(function(o) { return o.id === orgId; });
+  if (org) {
+    if (typeof org.startingPoliticalPosition === 'number') return org.startingPoliticalPosition;
+    var t = Array.isArray(org.politicalTilt) ? org.politicalTilt[0] : org.politicalTilt;
+    if (t && typeof tilt[t] === 'number') return tilt[t];
+  }
+  if (typeof tilt[orgId] === 'number') return tilt[orgId];
   var positions = {
     'left': 25, 'right': 75, 'center': 50, 'jcc': 48,
     'nat_left': 22, 'nat_right': 78, 'nat_center': 50, 'nat_jcc': 48
   };
-  return positions[orgId] || 50;
+  return positions[orgId] !== undefined ? positions[orgId] : 50;
 }
 
 // Get starting political clout based on org
@@ -26661,7 +26670,7 @@ function inferPoliticalLean(choice, scenario) {
 }
 
 // ═══════════════ BOOT ═══════════════
-OUTGOING_ED = GAME_DATA.config.outgoingED || { name: 'Avi Rosen', portrait: 'art/advisors/avi_rosen' };
+OUTGOING_ED = GAME_DATA.config.outgoingED || { name: 'Andy Rose', portrait: 'art/advisors/avi_rosen' };
 
 initIntro(); initChar(); initOrg();
 
@@ -27120,18 +27129,6 @@ function updateSecurityHUD() {
 }
 
 // Phone tab switching (inbox vs compose/social media)
-function switchPhoneTab(tab) {
-  var inbox = document.getElementById('phone-tab-inbox');
-  var compose = document.getElementById('phone-tab-compose');
-  if (!inbox || !compose) return;
-  var tabs = document.querySelectorAll('.desk-phone-tab');
-  tabs.forEach(function(t, i) {
-    t.classList.toggle('active', (tab === 'inbox' && i === 0) || (tab === 'compose' && i === 1));
-  });
-  inbox.style.display = tab === 'inbox' ? 'flex' : 'none';
-  compose.style.display = tab === 'compose' ? 'flex' : 'none';
-}
-
 // ═══════════════ SOCIAL MEDIA POST SYSTEM ═══════════════
 
 // Get available social media posts for the current state.
@@ -27208,11 +27205,12 @@ function executeSocialPost(postId) {
   }
 
   G.postsThisRound = postNum + 1;
+  tickInboxTimers();
   G.stats.trust = computeCompositeTrust();
   updateHUD();
   if (checkFailure()) return;
 
-  // Simple toast (not Avi's coaching system)
+  // Simple toast (not Andy's coaching system)
   var div = document.createElement('div');
   div.className = 'game-notification notif-toast';
   div.style.background = '#eef2ff';
@@ -27223,7 +27221,7 @@ function executeSocialPost(postId) {
   if (typeof positionNotification === 'function') positionNotification(div);
   setTimeout(function() { if (div.parentNode) div.remove(); }, 3500);
 
-  // Avi warning after N posts (this one IS from Avi)
+  // Andy warning after N posts (this one IS from Andy)
   if (G.postsThisRound >= warnAfter && G.postsThisRound === warnAfter) {
     setTimeout(function() {
       showCoachingWarning('Careful — posting too much in one round tends to backfire. The positive impact shrinks but the negatives don\'t.', 'yellow');
@@ -27351,6 +27349,7 @@ function startProactiveCall(convId) {
   G.callsThisRound = (G.callsThisRound || 0) + 1;
   if (!G.usedCallIds) G.usedCallIds = [];
   G.usedCallIds.push(convId); // prevent this conversation from appearing again
+  tickInboxTimers();
   showConversation(convId, function() {
     renderMain();
   });
@@ -27722,7 +27721,12 @@ function showConversation(convId, callback) {
   
   updateDispositionMeter();
   
-  // Show overlay, hide game inner
+  // Show overlay, hide game inner. The floating chrome (status bar with its
+  // End Round button, invest strip, clipboard, help) lives OUTSIDE .game-main
+  // and stays on screen, so mark the body and let CSS make it inert —
+  // otherwise End Round fires mid-dialogue and renders the round transition
+  // underneath the overlay.
+  document.body.classList.add('conv-active');
   document.getElementById('conv-overlay').style.display = '';
   document.querySelector('.game-main').style.display = 'none';
   
@@ -27907,7 +27911,8 @@ function endConversation() {
   var cb = convState ? convState.callback : null;
   convState = null;
   
-  // Hide overlay, show game inner
+  // Hide overlay, show game inner, re-enable the floating chrome
+  document.body.classList.remove('conv-active');
   document.getElementById('conv-overlay').style.display = 'none';
   document.querySelector('.game-main').style.display = '';
   
@@ -27923,22 +27928,10 @@ function startAdvisorConversation(convId, scenarioId) {
     if (scenario) renderScenario(scenario);
   });
 }
-var gazetteEvents = [];
 function recordEvent(evtType, data) {
-  gazetteEvents.push(Object.assign({type:evtType, round:G.round}, data||{}));
-}
-function showGazette() {
-  var headlines = pickGazetteHeadlines();
-  if (headlines.length === 0) return endRoundContinue();
-  var rn = GAME_DATA.config.roundNames && GAME_DATA.config.roundNames[G.round-1];
-  var dateStr = rn ? rn.english + ' \u2014 ' + rn.year : 'Round ' + G.round;
-  var storiesHtml = headlines.map(function(h){
-    return '<div class="gazette-story"><div class="gazette-headline">' + esc(substituteOrgTokens(h.headline)) + '</div><div class="gazette-subline">' + esc(substituteOrgTokens(h.subline || '')) + '</div></div>';
-  }).join('');
-  var overlay = document.createElement('div');
-  overlay.className = 'gazette-overlay';
-  overlay.innerHTML = '<div class="gazette"><div class="gazette-header"><span class="gazette-title">\u2721 The Jewish Gazette</span><span class="gazette-date">' + esc(dateStr) + '</span></div><div class="gazette-body">' + storiesHtml + '<button class="gazette-continue" onclick="this.closest(\'.gazette-overlay\').remove();endRoundContinue()">Continue \u2192</button></div></div>';
-  document.body.appendChild(overlay);
+  // Stored on G so a reload keeps this round's event-driven headlines.
+  G.gazetteEvents = G.gazetteEvents || [];
+  G.gazetteEvents.push(Object.assign({type:evtType, round:G.round}, data||{}));
 }
 function getOrgName() {
   var allOrgs = (GAME_DATA.organizations || []).concat(GAME_DATA.nationalOrganizations || []);
@@ -27968,7 +27961,7 @@ function pickGazetteHeadlines() {
   templates.forEach(function(t) {
     var tr = t.trigger;
     if (tr.type === 'choiceMade') {
-      if (gazetteEvents.some(function(e){return e.type==='choiceMade' && e.scenarioId===tr.scenarioId && e.choiceIndex===tr.choiceIndex && e.round===G.round})) matched.push(t);
+      if ((G.gazetteEvents||[]).some(function(e){return e.type==='choiceMade' && e.scenarioId===tr.scenarioId && e.choiceIndex===tr.choiceIndex && e.round===G.round})) matched.push(t);
     } else if (tr.type === 'statAbove') {
       var sv = tr.stat === 'budget' ? (G.budget||0) : (stats[tr.stat]||50);
       if (sv > tr.threshold) matched.push(t);
@@ -27976,11 +27969,11 @@ function pickGazetteHeadlines() {
       var sv2 = tr.stat === 'budget' ? (G.budget||0) : (stats[tr.stat]||50);
       if (sv2 < tr.threshold) matched.push(t);
     } else if (tr.type === 'coalitionFormed') {
-      if (gazetteEvents.some(function(e){return e.type==='coalitionFormed' && e.round===G.round})) matched.push(t);
+      if ((G.gazetteEvents||[]).some(function(e){return e.type==='coalitionFormed' && e.round===G.round})) matched.push(t);
     } else if (tr.type === 'coalitionBroken') {
-      if (gazetteEvents.some(function(e){return e.type==='coalitionBroken' && e.round===G.round})) matched.push(t);
+      if ((G.gazetteEvents||[]).some(function(e){return e.type==='coalitionBroken' && e.round===G.round})) matched.push(t);
     } else if (tr.type === 'inboxExpired') {
-      if (gazetteEvents.some(function(e){return e.type==='inboxExpired' && e.round===G.round})) matched.push(t);
+      if ((G.gazetteEvents||[]).some(function(e){return e.type==='inboxExpired' && e.round===G.round})) matched.push(t);
     } else if (tr.type === 'missionStarsHigh') {
       if ((G.missionStars||0) >= (GAME_DATA.config.missionMaxStars||5)-1) matched.push(t);
     } else if (tr.type === 'missionStarsLow') {
@@ -28006,35 +27999,60 @@ function shuffle(arr) {
 // Stack notifications below the lowest visible top strip (security bar +
 // coalition/sub-mission strips, if present) so they populate within the
 // office scene and never overlay the top chrome.
+// Cap how many notifications can be on screen at once. Coaching warnings,
+// inbox toasts and the onboarding sequence could otherwise stack past the
+// bottom of the viewport and cover the scenario the player is reading.
+var MAX_VISIBLE_NOTIFICATIONS = 3;
+function trimNotificationStack(keep) {
+  var all = [].slice.call(document.querySelectorAll('.game-notification'))
+    .filter(function(n) { return !n.classList.contains('onboarding-notif'); });
+  var excess = all.length - MAX_VISIBLE_NOTIFICATIONS;
+  for (var i = 0; i < excess; i++) {
+    if (all[i] !== keep && all[i].parentNode) all[i].remove();
+  }
+}
+
 function positionNotification(el) {
+  trimNotificationStack(el);
   var topStrips = [
     document.getElementById('security-bar-el'),
     document.getElementById('coalition-strip'),
     document.getElementById('submission-strip')
   ];
-  var topOffset = 20; // fallback if no strips visible
+  var base = 20; // fallback if no strips visible
   topStrips.forEach(function(strip) {
     if (!strip) return;
     if (getComputedStyle(strip).display === 'none') return;
     var r = strip.getBoundingClientRect();
     if (r.height === 0) return;
-    if (r.bottom + 20 > topOffset) topOffset = r.bottom + 20;
+    if (r.bottom + 20 > base) base = r.bottom + 20;
   });
-  // Stack below any previously-positioned notification
-  var existing = document.querySelectorAll('.game-notification');
-  existing.forEach(function(n) {
-    if (n !== el) {
-      topOffset = Math.max(topOffset, n.offsetTop + n.offsetHeight + 8);
-    }
+  // Re-lay out the whole stack from the base every time. Measuring each new
+  // notification against the previous one's position let the stack drift
+  // permanently down the page as notifications came and went, eventually
+  // placing them below the fold.
+  var all = [].slice.call(document.querySelectorAll('.game-notification'))
+    .filter(function(n) { return !n.classList.contains('onboarding-notif'); });
+  if (all.indexOf(el) < 0) all.push(el);
+  var y = base;
+  all.forEach(function(n) {
+    n.style.top = y + 'px';
+    y += (n.offsetHeight || 60) + 8;
   });
-  el.style.top = topOffset + 'px';
 }
 
 // ═══ TIMED INBOX SYSTEM (Persistent Inbox) ═══
+// Timed inbox messages count down per ACTION, not per round — every action the
+// player takes (desk channel, inbox reply, landline call, social post) burns a
+// tick. Labels throughout the UI say "actions" to match.
+function _hasLiveTimer(msg) {
+  return msg.timerRemaining !== null && msg.timerRemaining !== undefined && !msg.expired;
+}
+
 function tickInboxTimers() {
   var expired = [];
   (G.inboxMessages||[]).forEach(function(msg) {
-    if (msg.timerRemaining !== null && !msg.expired) {
+    if (_hasLiveTimer(msg)) {
       msg.timerRemaining--;
       if (msg.timerRemaining <= 0) {
         msg.expired = true;
@@ -28043,6 +28061,25 @@ function tickInboxTimers() {
       }
     }
   });
+  _applyInboxExpiry(expired);
+}
+
+// A timed message must not survive into the next round: anything still pending
+// when the round ends expires now, rather than carrying its countdown over.
+function expireCarryoverInboxTimers() {
+  var expired = [];
+  (G.inboxMessages||[]).forEach(function(msg) {
+    if (_hasLiveTimer(msg)) {
+      msg.timerRemaining = 0;
+      msg.expired = true;
+      msg.unread = false;
+      expired.push(msg);
+    }
+  });
+  _applyInboxExpiry(expired);
+}
+
+function _applyInboxExpiry(expired) {
   expired.forEach(function(msg) {
     var sc = msg.scenario;
     if (sc && sc.expiredOutcome) {
@@ -28155,7 +28192,7 @@ function updateInboxPanel() {
     if(msg.expired) {
       timerHtml = '<span class="inbox-msg-expired-tag">EXPIRED</span>';
     } else if(msg.timerRemaining !== null) {
-      timerHtml = '<span class="inbox-msg-timer">🔴 URGENT</span>';
+      timerHtml = '<span class="inbox-msg-timer">🔴 ' + msg.timerRemaining + ' action' + (msg.timerRemaining === 1 ? '' : 's') + ' left</span>';
     }
     var clickHandler = msg.expired ? '' : 'onclick="openInboxMessage(\''+msg.id+'\')"';
     return '<div class="inbox-msg' + (msg.unread?' unread':'') + (msg.expired?' expired':'') + '" ' + clickHandler + '>' +
@@ -28400,19 +28437,21 @@ function renderCoalitionWarnings(choice) {
 }
 
 // ═══ BREAKING NEWS SYSTEM ═══
-var breakingNewsFired = {};
 function checkBreakingNews() {
+  // One-time flags live on G so they survive save/reload; as a module global
+  // they reset on load, letting 'once' breaking news fire again.
+  G.breakingNewsFired = G.breakingNewsFired || {};
   if (G.breakingNewsThisRound >= 1) return null; // max 1 per round
   if ((G.breakingNewsCount || 0) >= 3) return null; // max 3 per year
   var pool = (GAME_DATA.breakingNews||[]).filter(function(bn) {
-    if (bn.once && breakingNewsFired[bn.id]) return false;
+    if (bn.once && G.breakingNewsFired[bn.id]) return false;
     if (bn.minRound && G.round < bn.minRound) return false;
     if (bn.maxRound && G.round > bn.maxRound) return false;
     return true;
   });
   for (var i = 0; i < pool.length; i++) {
     if (Math.random()*100 < (pool[i].probability||0)) {
-      breakingNewsFired[pool[i].id] = true;
+      G.breakingNewsFired[pool[i].id] = true;
       return pool[i];
     }
   }
@@ -28548,7 +28587,7 @@ function pickBreakingChoice(ci) {
       '<div class="bn-screen-inner">' +
         '<div class="bn-tag">Outcome</div>' +
         '<div class="bn-outcome-choice"><span style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#999;display:block;margin-bottom:4px">Your Decision</span>' + esc(choice.text) + '</div>' +
-        '<div class="bn-body">' + outcome.text + '</div>' +
+        '<div class="bn-body">' + esc(outcome.text) + '</div>' +
         '<div class="chip-row" style="margin-bottom:12px">' + chips+sc+budgetChip+polChips+advisorChips + '</div>' +
         (contextWithPol ? '<div class="bn-context">' + contextWithPol + '</div>' : '') +
         '<button class="bn-continue" onclick="closeBreakingNews()">Return to your desk →</button>' +
@@ -28566,125 +28605,6 @@ function closeBreakingNews() {
 }
 
 // ═══ COALITION SYSTEM ═══
-function checkCoalitionOffers() {
-  var offers = (GAME_DATA.coalitionOffers||[]).filter(function(co) {
-    if (co.offeredByRound > G.round) return false;
-    if ((G.activeCoalitions||[]).some(function(ac){return ac.id===co.id})) return false;
-    if ((G.declinedCoalitions||[]).includes(co.id)) return false;
-    if ((G.brokenCoalitions||[]).includes(co.id)) return false;
-    // Check political requirement
-    if (co.politicalRequirement) {
-      var pr = co.politicalRequirement;
-      if (pr.maxPosition !== undefined && G.politicalPosition > pr.maxPosition) return false;
-      if (pr.minPosition !== undefined && G.politicalPosition < pr.minPosition) return false;
-      if (pr.minClout !== undefined && G.politicalClout < pr.minClout) return false;
-    }
-    // Don't offer coalitions with stat requirements the player can't currently meet
-    var ineligible = false;
-    (co.constraints || []).forEach(function(con) {
-      if (con.type === 'maintainStat' && (G.stats[con.stat] || 50) < (con.above || 0)) {
-        ineligible = true;
-      }
-    });
-    if (ineligible) return false;
-    return true;
-  });
-  if (offers.length === 0 || (G.activeCoalitions||[]).length >= 3) return null;
-  // Offer one at random
-  return offers[Math.floor(Math.random()*offers.length)];
-}
-function showCoalitionOffer(co) {
-  var benefitText = Object.entries(co.benefits.perRound||{}).map(function(e){return '+'+e[1]+' '+e[0]+'/round'}).join(', ');
-  if(co.benefits.budgetPerRound) benefitText += (benefitText?', ':'')+'+'+co.benefits.budgetPerRound+' gelt/round';
-  var constraintText = (co.constraints||[]).map(function(c){return c.description}).join('; ');
-  
-  // Political info
-  var politicalChips = '';
-  var lean = co.politicalLean || 0;
-  if (lean < 0) politicalChips += '<span style="display:inline-block;background:#dbeafe;color:#1e40af;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:4px">\u2190 Leans Left (' + lean + ')</span>';
-  else if (lean > 0) politicalChips += '<span style="display:inline-block;background:#fde8e8;color:#9b1c1c;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:4px">Leans Right \u2192 (+' + lean + ')</span>';
-  if (co.acceptClout) politicalChips += '<span style="display:inline-block;background:#f3e8ff;color:#6b21a8;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:4px">\u26a1+' + co.acceptClout + ' Clout</span>';
-  
-  // Break penalty summary
-  var breakText = '';
-  var breakClout = co.breakCloutPenalty || 0;
-  var breakFx = (co.violationPenalty||{}).effects || {};
-  var breakBudget = (co.violationPenalty||{}).budgetEffect || 0;
-  var breakParts = [];
-  if (breakClout) breakParts.push(breakClout + ' Clout');
-  Object.entries(breakFx).forEach(function(e) { if(e[1] < 0) breakParts.push(e[1] + ' ' + e[0]); });
-  if (breakBudget < 0) breakParts.push(breakBudget + ' gelt');
-  if (breakParts.length) breakText = breakParts.join(', ');
-  
-  // Decline penalty
-  var declineText = '';
-  if (co.declinePenalty) {
-    var dp = co.declinePenalty;
-    var dpParts = [];
-    Object.entries(dp.effects||{}).forEach(function(e){ if(e[1] < 0) dpParts.push(e[1] + ' ' + e[0]); });
-    if (dp.budgetEffect && dp.budgetEffect < 0) dpParts.push(dp.budgetEffect + ' gelt');
-    if (dpParts.length) declineText = dpParts.join(', ');
-  }
-
-  var overlay = document.createElement('div');
-  overlay.className = 'coalition-offer-overlay';
-  overlay.id = 'coalition-offer-overlay';
-  overlay.innerHTML = '<div class="coalition-card"><h2>\ud83e\udd1d Coalition Offer</h2><h3>' + esc(co.name) + '</h3><p>' + esc(co.description) + '</p>' +
-    '<div class="coalition-benefit">\u2705 Benefits: ' + esc(benefitText) + (co.duration ? ' ('+co.duration+' rounds)' : ' (permanent)') + '</div>' +
-    (politicalChips ? '<div style="margin:8px 0">' + politicalChips + '</div>' : '') +
-    '<div class="coalition-constraint">\u26a0\ufe0f Constraint: ' + esc(constraintText) + '</div>' +
-    (breakText ? '<div style="margin:6px 0;font-size:12px;color:#8b1a1a">\ud83d\udea8 If broken: ' + esc(breakText) + '</div>' : '') +
-    '<div class="coalition-btns"><button class="coalition-accept" onclick="acceptCoalition(\'' + co.id + '\')">Accept Partnership</button>' +
-    '<button class="coalition-decline" onclick="declineCoalition(\'' + co.id + '\')">' + (declineText ? 'Decline (' + esc(declineText) + ')' : 'Decline') + '</button></div></div>';
-  document.body.appendChild(overlay);
-}
-function acceptCoalition(coId) {
-  var co = (GAME_DATA.coalitionOffers||[]).find(function(c){return c.id===coId});
-  if (!co) return;
-  if (!G.activeCoalitions) G.activeCoalitions = [];
-  G.activeCoalitions.push({id:co.id, name:co.name, remaining:co.duration||999, benefits:co.benefits, constraints:co.constraints, violationPenalty:co.violationPenalty, strikeMax:co.strikeMax||null, breakCloutPenalty:co.breakCloutPenalty||0});
-  recordEvent('coalitionFormed', {coalitionId:co.id});
-  // Apply political lean and clout on acceptance
-  var lean = co.politicalLean || 0;
-  if (lean !== 0) {
-    G.politicalPosition = Math.max(0, Math.min(100, G.politicalPosition + lean));
-  }
-  var clout = co.acceptClout || 0;
-  if (clout !== 0) {
-    G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + clout));
-  }
-  var el = document.getElementById('coalition-offer-overlay');
-  if (el) el.remove();
-  updateHUD();
-  afterCoalitionCheck();
-}
-function declineCoalition(coId) {
-  if (!G.declinedCoalitions) G.declinedCoalitions = [];
-  G.declinedCoalitions.push(coId);
-  // Apply decline penalty if any
-  var co = (GAME_DATA.coalitionOffers||[]).find(function(c){return c.id===coId});
-  if (co && co.declinePenalty) {
-    var dp = co.declinePenalty;
-    var fx = dp.effects || {};
-    Object.keys(fx).forEach(function(k){
-      if(k === 'trust' && G.segmentApproval) { applySegmentEffects(fx[k], null, null); }
-      else { G.stats[k] = Math.max(0, Math.min(100, (G.stats[k]||50) + fx[k])); }
-    });
-    if (dp.budgetEffect) { G.budget += dp.budgetEffect; G.budgetSpentThisYear += Math.abs(dp.budgetEffect); if(G.budget < 0) G.budget = 0; }
-    // Show decline penalty notification
-    var div = document.createElement('div');
-    div.className = 'game-notification notif-warning';
-    div.innerHTML = '<div style="font-weight:700;margin-bottom:4px">Partnership Declined: ' + esc(co.name) + '</div><div style="font-size:12px;opacity:0.9">' + esc(dp.text||'The offer was declined.') + '</div>';
-    div.onclick = function(){div.remove()};
-    document.body.appendChild(div);
-    positionNotification(div);
-    setTimeout(function(){if(div.parentNode)div.remove()}, 6000);
-    updateHUD();
-  }
-  var el = document.getElementById('coalition-offer-overlay');
-  if (el) el.remove();
-  afterCoalitionCheck();
-}
 function applyCoalitionBenefits() {
   (G.activeCoalitions||[]).forEach(function(ac) {
     var perRound = (ac.benefits||{}).perRound || {};
@@ -28701,7 +28621,11 @@ function applyCoalitionBenefits() {
     if(G.budget > G.budgetMax) G.budgetMax = G.budget;
   });
 }
-function checkCoalitionViolations(choice) {
+// Called after every choice. `statsBefore` is a snapshot taken before the
+// choice's effects were applied, used to tell "this choice pushed the stat
+// below the line" apart from "the stat was already below the line".
+function checkCoalitionViolations(choice, statsBefore) {
+  if (!statsBefore) statsBefore = G._statsBeforeLastEffects;
   var defaultMax = GAME_DATA.config.coalitionStrikeMax || 3;
   (G.activeCoalitions||[]).forEach(function(ac) {
     var violated = false;
@@ -28710,50 +28634,83 @@ function checkCoalitionViolations(choice) {
         var align = choice.missionAligned || [];
         if (con.missionIds.some(function(mid){return align.includes(mid)})) violated = true;
       } else if (con.type === 'maintainStat') {
-        if ((G.stats[con.stat]||50) < (con.above||0)) violated = true;
+        // Strike only when THIS choice moved the stat and left it under the
+        // threshold. Previously any choice made while the stat happened to be
+        // low counted as a violation, so a single dip converted three
+        // unrelated actions into three strikes and broke the partnership —
+        // including actions taken to fix it. Sitting below the line without
+        // touching the stat is instead caught once per round by
+        // checkCoalitionStandingAtRoundEnd().
+        var after = (G.stats[con.stat] === undefined) ? 50 : G.stats[con.stat];
+        var before = (statsBefore && statsBefore[con.stat] !== undefined) ? statsBefore[con.stat] : after;
+        if (after < (con.above||0) && after < before) violated = true;
       }
     });
     if (!violated) return;
 
-    // Add a strike instead of immediately breaking
-    if(!G.coalitionStrikes) G.coalitionStrikes = {};
-    G.coalitionStrikes[ac.id] = (G.coalitionStrikes[ac.id]||0) + 1;
-    var max = ac.strikeMax || defaultMax;
+    applyCoalitionStrike(ac, 'Constraint violation');
+  });
+}
 
-    if(G.coalitionStrikes[ac.id] >= max) {
-      // Coalition breaks from accumulated strikes
-      var fx = (ac.violationPenalty||{}).effects || {};
-      Object.keys(fx).forEach(function(k){
-        if(k === 'trust' && G.segmentApproval) { applySegmentEffects(fx[k], null, null); }
-        else { G.stats[k] = Math.max(0, Math.min(100, (G.stats[k]||50) + fx[k])); }
-      });
-      var bfxPen = (ac.violationPenalty||{}).budgetEffect || 0;
-      if(bfxPen < 0) { G.budget += bfxPen; G.budgetSpentThisYear += Math.abs(bfxPen); }
-      if(G.budget < 0) G.budget = 0;
-      var cloutPen = ac.breakCloutPenalty || (ac.violationPenalty||{}).cloutEffect || 0;
-      if(cloutPen !== 0) { G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutPen)); }
-      recordEvent('coalitionBroken', {coalitionId:ac.id, reason:'violations'});
-      if (!G.brokenCoalitions) G.brokenCoalitions = [];
-      G.brokenCoalitions.push(ac.id);
-      var div = document.createElement('div');
-      div.className = 'game-notification notif-broken';
-      div.innerHTML = '<div style="font-weight:700;margin-bottom:4px">\ud83d\udea8 Coalition Broken: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">' + esc((ac.violationPenalty||{}).text||'Too many constraint violations ended this partnership.') + '</div>';
-      div.onclick = function(){div.remove()};
-      document.body.appendChild(div);
-      positionNotification(div);
-      setTimeout(function(){if(div.parentNode)div.remove()}, 7000);
-      G.activeCoalitions = (G.activeCoalitions||[]).filter(function(c){return c.id!==ac.id});
-    } else {
-      // Warning
-      var remaining = max - G.coalitionStrikes[ac.id];
-      var div = document.createElement('div');
-      div.className = 'game-notification notif-warning';
-      div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">\u26a0\ufe0f Coalition Warning: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">Constraint violation \u2014 Strike ' + G.coalitionStrikes[ac.id] + '/' + max + '. ' + remaining + ' more and this partnership ends.</div>';
-      div.onclick = function(){div.remove()};
-      document.body.appendChild(div);
-      positionNotification(div);
-      setTimeout(function(){if(div.parentNode)div.remove()}, 5000);
-    }
+// Record one strike against a coalition, breaking it if that reaches the limit.
+// Shared by the per-choice violation check and the round-end standing check so
+// both paths apply identical penalties and messaging.
+function applyCoalitionStrike(ac, reasonText) {
+  var defaultMax = GAME_DATA.config.coalitionStrikeMax || 3;
+  if(!G.coalitionStrikes) G.coalitionStrikes = {};
+  G.coalitionStrikes[ac.id] = (G.coalitionStrikes[ac.id]||0) + 1;
+  var max = ac.strikeMax || defaultMax;
+
+  if(G.coalitionStrikes[ac.id] >= max) {
+    // Coalition breaks from accumulated strikes
+    var fx = (ac.violationPenalty||{}).effects || {};
+    Object.keys(fx).forEach(function(k){
+      if(k === 'trust' && G.segmentApproval) { applySegmentEffects(fx[k], null, null); }
+      else { G.stats[k] = Math.max(0, Math.min(100, (G.stats[k]||50) + fx[k])); }
+    });
+    var bfxPen = (ac.violationPenalty||{}).budgetEffect || 0;
+    if(bfxPen < 0) { G.budget += bfxPen; G.budgetSpentThisYear += Math.abs(bfxPen); }
+    if(G.budget < 0) G.budget = 0;
+    var cloutPen = ac.breakCloutPenalty || (ac.violationPenalty||{}).cloutEffect || 0;
+    if(cloutPen !== 0) { G.politicalClout = Math.max(0, Math.min(100, G.politicalClout + cloutPen)); }
+    recordEvent('coalitionBroken', {coalitionId:ac.id, reason:'violations'});
+    if (!G.brokenCoalitions) G.brokenCoalitions = [];
+    G.brokenCoalitions.push(ac.id);
+    var div = document.createElement('div');
+    div.className = 'game-notification notif-broken';
+    div.innerHTML = '<div style="font-weight:700;margin-bottom:4px">\ud83d\udea8 Coalition Broken: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">' + esc((ac.violationPenalty||{}).text||'Too many constraint violations ended this partnership.') + '</div>';
+    div.onclick = function(){div.remove()};
+    document.body.appendChild(div);
+    positionNotification(div);
+    setTimeout(function(){if(div.parentNode)div.remove()}, 7000);
+    G.activeCoalitions = (G.activeCoalitions||[]).filter(function(c){return c.id!==ac.id});
+  } else {
+    // Warning
+    var remaining = max - G.coalitionStrikes[ac.id];
+    var div = document.createElement('div');
+    div.className = 'game-notification notif-warning';
+    div.innerHTML = '<div style="font-weight:700;margin-bottom:3px">\u26a0\ufe0f Coalition Warning: ' + esc(ac.name) + '</div><div style="font-size:12px;opacity:0.9">' + esc(reasonText || 'Constraint violation') + ' \u2014 Strike ' + G.coalitionStrikes[ac.id] + '/' + max + '. ' + remaining + ' more and this partnership ends.</div>';
+    div.onclick = function(){div.remove()};
+    document.body.appendChild(div);
+    positionNotification(div);
+    setTimeout(function(){if(div.parentNode)div.remove()}, 5000);
+  }
+}
+
+// Round-end sweep: a maintainStat coalition whose stat is still under its
+// threshold takes one strike per round. This is the slow-burn pressure that
+// stops a player camping below the line indefinitely, without the old
+// per-action spiral that broke partnerships within a single round.
+function checkCoalitionStandingAtRoundEnd() {
+  (G.activeCoalitions||[]).slice().forEach(function(ac) {
+    var breached = null;
+    (ac.constraints||[]).forEach(function(con) {
+      if (con.type === 'maintainStat' && (G.stats[con.stat] === undefined ? 50 : G.stats[con.stat]) < (con.above||0)) {
+        var lbl = (GAME_DATA.stats.find(function(s){return s.id===con.stat})||{}).label || con.stat;
+        breached = lbl + ' still below ' + (con.above||0);
+      }
+    });
+    if (breached) applyCoalitionStrike(ac, breached);
   });
 }
 function tickCoalitionDurations() {

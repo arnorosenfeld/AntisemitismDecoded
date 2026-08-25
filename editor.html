@@ -144,6 +144,18 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 
 /* ── STAT INPUTS GRID ── */
 .stat-inputs{display:flex;flex-wrap:wrap;gap:10px 12px}
+
+/* Security impact picker — replaces the twelve-input grid on each outcome. */
+.sec-details{margin:4px 0 8px}
+.sec-details>summary{font-size:10px;font-weight:700;letter-spacing:.5px;cursor:pointer;color:#6ba5e7}
+.sec-rows{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+.sec-row{display:flex;align-items:center;gap:6px}
+.sec-row .sec-key{flex:1;min-width:0;padding:5px 6px;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-size:12px;outline:none}
+.sec-row .sec-val{width:64px;flex:0 0 auto;padding:5px 4px;text-align:center;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:13px;outline:none}
+.sec-row .sec-del{flex:0 0 auto;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:4px 8px}
+.sec-row .sec-del:hover{color:#b3362b;border-color:#b3362b}
+.sec-add{margin-top:6px;border:1px dashed var(--border);background:none;color:var(--muted);cursor:pointer;font-family:'Merriweather Sans',sans-serif;font-size:11px;padding:4px 10px}
+.sec-add:hover{color:#6ba5e7;border-color:#6ba5e7}
 .stat-input-group{display:flex;flex-direction:column;gap:4px;flex:0 0 auto;width:90px}
 .stat-input-group label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
 .stat-input-group input{width:100%;box-sizing:border-box;padding:6px 4px;text-align:center;border:1.5px solid var(--border);background:white;font-family:'Merriweather Sans',sans-serif;font-weight:700;font-size:13px;outline:none}
@@ -21602,21 +21614,86 @@ function renderChoiceEditor(c, si, ci, prefix) {
     ${renderSegOverrides(c, si, ci, prefix)}
   </div>`;
 }
+// ═══ SECURITY IMPACT PICKER ═══
+// Outcomes used to render all twelve Jewish Security components as number
+// inputs, so every outcome carried ten-plus zeros. In the authored data the
+// median outcome sets 2 of them and only 5 of 382 set more than 3, so the form
+// now shows a couple of "pick an impact, set its value" rows and lets the
+// author add more. Same expressive range, a fraction of the fields on screen.
+var SECURITY_ROWS_DEFAULT = 2;
+
+function securityLeafOptions(selected) {
+  var cats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
+  var html = '<option value="">— choose impact —</option>';
+  cats.forEach(function(cat) {
+    html += '<optgroup label="' + esc(cat.name) + '">';
+    (cat.leaves || []).forEach(function(leaf) {
+      html += '<option value="' + esc(leaf.id) + '"' + (leaf.id === selected ? ' selected' : '') + '>' + esc(leaf.name) + '</option>';
+    });
+    html += '</optgroup>';
+  });
+  return html;
+}
+
+function securityRowHtml(leafId, value) {
+  return '<div class="sec-row">' +
+    '<select class="sec-key">' + securityLeafOptions(leafId || '') + '</select>' +
+    '<input class="sec-val" type="number" value="' + (value === undefined || value === '' ? '' : value) + '" placeholder="0" />' +
+    '<button type="button" class="sec-del" title="Remove this impact" onclick="removeSecurityRow(this)">×</button>' +
+  '</div>';
+}
+
+function renderSecurityPicker(prefix, si, ci, oi, secFx, secCount) {
+  var boxId = prefix + '-secrows-' + si + '-' + ci + '-' + oi;
+  var rows = '';
+  var n = 0;
+  Object.keys(secFx || {}).forEach(function(k) {
+    if (!secFx[k]) return;
+    rows += securityRowHtml(k, secFx[k]); n++;
+  });
+  // Offer a couple of empty slots so a fresh outcome invites authoring without
+  // the author having to hunt for an "add" button first.
+  while (n < SECURITY_ROWS_DEFAULT) { rows += securityRowHtml('', ''); n++; }
+  return '<details class="sec-details"' + (secCount ? ' open' : '') + '>' +
+    '<summary>Security impacts' + (secCount ? ' (' + secCount + ')' : '') + '</summary>' +
+    '<div class="sec-rows" id="' + boxId + '">' + rows + '</div>' +
+    '<button type="button" class="sec-add" onclick="addSecurityRow(\'' + boxId + '\')">+ Add impact</button>' +
+  '</details>';
+}
+
+function addSecurityRow(boxId) {
+  var box = document.getElementById(boxId);
+  if (box) box.insertAdjacentHTML('beforeend', securityRowHtml('', ''));
+}
+
+function removeSecurityRow(btn) {
+  var row = btn.closest('.sec-row');
+  if (row) row.remove();
+}
+
+// Read the picker back. Rows are read from the DOM rather than by index so
+// adding and removing rows in any order stays consistent. Rows with no impact
+// chosen, or a zero/blank value, contribute nothing.
+function readSecurityRows(prefix, si, ci, oi) {
+  var box = document.getElementById(prefix + '-secrows-' + si + '-' + ci + '-' + oi);
+  var out = {};
+  if (!box) return out;
+  box.querySelectorAll('.sec-row').forEach(function(row) {
+    var keyEl = row.querySelector('.sec-key');
+    var valEl = row.querySelector('.sec-val');
+    if (!keyEl || !valEl) return;
+    var k = keyEl.value;
+    var v = parseInt(valEl.value, 10);
+    if (k && !isNaN(v) && v !== 0) out[k] = v;
+  });
+  return out;
+}
+
 function renderOutcomeEditor(si, ci, oi, o, prefix) {
   const stats = GD.stats || [];
-  const jsCats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
   const secFx = o.securityEffects || {};
-  var secInputs = '';
-  var secCount = 0;
-  jsCats.forEach(function(cat) {
-    (cat.leaves || []).forEach(function(leaf) {
-      var val = secFx[leaf.id] || 0;
-      if (val) secCount++;
-      var shortName = leaf.name.length > 18 ? leaf.name.substring(0,16)+'..' : leaf.name;
-      secInputs += '<div class="stat-input-group"><label style="color:' + cat.color + '">' + esc(shortName) + '</label><input type="number" id="' + prefix + '-osfx-' + si + '-' + ci + '-' + oi + '-' + leaf.id + '" value="' + val + '" /></div>';
-    });
-  });
-  var secHtml = secInputs ? '<details style="margin:4px 0 8px"><summary style="font-size:10px;font-weight:700;cursor:pointer;color:#6ba5e7">Security Effects (' + secCount + ' set)</summary><div class="stat-inputs cols-4" style="margin-top:6px">' + secInputs + '</div></details>' : '';
+  var secCount = Object.keys(secFx).filter(function(k){ return secFx[k]; }).length;
+  var secHtml = renderSecurityPicker(prefix, si, ci, oi, secFx, secCount);
   return `<div class="outcome-card">
     <div class="outcome-card-header"><span class="outcome-card-title">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
@@ -21746,14 +21823,7 @@ function saveScenario(i, prefix) {
       if(oHead) outcomeObj.headline = oHead;
       if(oSub) outcomeObj.subline = oSub;
       // Read security effects
-      var secFx = {};
-      var jsCats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
-      jsCats.forEach(function(cat) {
-        (cat.leaves || []).forEach(function(leaf) {
-          var v = parseInt(document.getElementById(prefix+'-osfx-'+i+'-'+ci+'-'+oi+'-'+leaf.id)?.value) || 0;
-          if (v) secFx[leaf.id] = v;
-        });
-      });
+      var secFx = readSecurityRows(prefix, i, ci, oi);
       if (Object.keys(secFx).length > 0) outcomeObj.securityEffects = preserveKeyOrder(secFx, existingO && existingO.securityEffects);
       outcomeObj.effects = preserveKeyOrder(outcomeObj.effects, existingO && existingO.effects);
       restoreUnrenderedOutcomeFields(outcomeObj, existingO);
@@ -22085,14 +22155,7 @@ function saveInbox(i) {
       if(ibClout) ibOutcome.cloutEffect = ibClout;
       if(ibGelt) ibOutcome.budgetEffect = ibGelt;
       // Read security effects
-      var secFx = {};
-      var jsCats = (GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || [];
-      jsCats.forEach(function(cat) {
-        (cat.leaves || []).forEach(function(leaf) {
-          var v = parseInt(document.getElementById('ib-osfx-'+i+'-'+ci+'-'+oi+'-'+leaf.id)?.value) || 0;
-          if (v) secFx[leaf.id] = v;
-        });
-      });
+      var secFx = readSecurityRows('ib', i, ci, oi);
       if (Object.keys(secFx).length > 0) ibOutcome.securityEffects = preserveKeyOrder(secFx, existingO && existingO.securityEffects);
       ibOutcome.effects = preserveKeyOrder(ibOutcome.effects, existingO && existingO.effects);
       restoreUnrenderedOutcomeFields(ibOutcome, existingO);
@@ -22882,13 +22945,7 @@ function saveBreaking(i){
       bnOutcome.effects = preserveKeyOrder(bnOutcome.effects, existingO && existingO.effects);
       if(bnClout) bnOutcome.cloutEffect = bnClout;
       if(bnGelt) bnOutcome.budgetEffect = bnGelt;
-      var bnSecFx = {};
-      ((GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || []).forEach(function(cat){
-        (cat.leaves || []).forEach(function(leaf){
-          var v = parseInt(document.getElementById('bn-osfx-'+i+'-'+ci+'-'+oi+'-'+leaf.id)?.value) || 0;
-          if (v) bnSecFx[leaf.id] = v;
-        });
-      });
+      var bnSecFx = readSecurityRows('bn', i, ci, oi);
       if (Object.keys(bnSecFx).length) bnOutcome.securityEffects = preserveKeyOrder(bnSecFx, existingO && existingO.securityEffects);
       restoreUnrenderedOutcomeFields(bnOutcome, existingO);
       dropMaterializedDefaults(bnOutcome, existingO, {contextNote: '', conditions: []});

@@ -21664,6 +21664,7 @@ function editConditions(si,ci,oi,prefix) {
 function saveScenario(i, prefix) {
   const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
   const s = list[i];
+  var _prevScenario = JSON.parse(JSON.stringify(s));
   s.id = document.getElementById(prefix+'-id-'+i)?.value||s.id;
   s.tag = document.getElementById(prefix+'-tag-'+i)?.value||'';
   // Group and political range
@@ -21680,7 +21681,14 @@ function saveScenario(i, prefix) {
   s.body = document.getElementById(prefix+'-body-'+i)?.value||'';
   const allCats=['all','progressive','centrist','conservative'];
   s.categories = allCats.filter(c=>document.getElementById(prefix+'-cat-'+i+'-'+c)?.checked);
-  if(!s.categories.length) s.categories=['all'];
+  // Preserve an authored empty array instead of rewriting it to ['all'] — that
+  // would be a silent content change on an ordinary save. (Note: the engine
+  // treats categories: [] as 'matches nothing', so such a scenario never
+  // appears; that is a data problem to fix deliberately, not here.)
+  if(!s.categories.length) {
+    if (_prevScenario && Array.isArray(_prevScenario.categories)) s.categories = _prevScenario.categories.slice();
+    else s.categories = ['all'];
+  }
   // orgLevel field removed in the 3-org reduction.
   s.complexity = parseInt(document.getElementById(prefix+'-cplx-'+i)?.value)||3;
   var anyChecked = document.getElementById(prefix+'-channel-'+i+'-any')?.checked;
@@ -21695,6 +21703,12 @@ function saveScenario(i, prefix) {
   var consensusEl = document.getElementById(prefix+'-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
   const missions = GD.missions||[];
+  // Snapshot the previous choices BEFORE clearing the array below. The
+  // existing-outcome lookups further down read from it, and reading the
+  // live array after it was emptied meant they always saw undefined —
+  // which silently reset every outcome's `conditions` to [] on save and
+  // defeated the key-order preservation.
+  var _prevChoices = (list[i] && list[i].choices) ? list[i].choices.slice() : [];
   s.choices = [];
   let ci=0;
   while(document.getElementById(prefix+'-ctext-'+i+'-'+ci)) {
@@ -21721,7 +21735,7 @@ function saveScenario(i, prefix) {
     while(document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi)) {
       const effects={};
       (GD.stats||[]).forEach(st=>{const v=parseInt(document.getElementById(prefix+'-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
-      const existingO = (list[i]?.choices?.[ci]?.outcomes||[])[oi];
+      const existingO = (_prevChoices[ci]?.outcomes||[])[oi];
       var oClout = parseInt(document.getElementById(prefix+'-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
       var oGelt = parseInt(document.getElementById(prefix+'-ogelt-'+i+'-'+ci+'-'+oi)?.value)||0;
       var outcomeObj = {text:document.getElementById(prefix+'-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById(prefix+'-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById(prefix+'-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
@@ -21740,24 +21754,54 @@ function saveScenario(i, prefix) {
           if (v) secFx[leaf.id] = v;
         });
       });
-      if (Object.keys(secFx).length > 0) outcomeObj.securityEffects = secFx;
+      if (Object.keys(secFx).length > 0) outcomeObj.securityEffects = preserveKeyOrder(secFx, existingO && existingO.securityEffects);
+      outcomeObj.effects = preserveKeyOrder(outcomeObj.effects, existingO && existingO.effects);
+      restoreUnrenderedOutcomeFields(outcomeObj, existingO);
+      dropMaterializedDefaults(outcomeObj, existingO, {contextNote: '', conditions: []});
+      // Emit the outcome's keys in their authored order for the same reason as
+      // the choice above: identical values in a different order still diff.
+      if (existingO) outcomeObj = preserveKeyOrder(outcomeObj, existingO);
       outcomes.push(outcomeObj);
       oi++;
     }
     var segOv = readSegOverrides(prefix, i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    // Assign these only when set. Writing `key: undefined` into the literal
+    // created the key on the object, so a save with no edits reported the
+    // choice as changed even though nothing meaningful differed.
+    if (Object.keys(polReq).length) choice.politicalRequirement = polReq; else delete choice.politicalRequirement;
+    if (segOv) choice.segmentOverrides = segOv; else delete choice.segmentOverrides;
     if (unlock) choice.requiresUnlock = unlock;
+    else if (_prevChoices[ci] && _prevChoices[ci].requiresUnlock === null) choice.requiresUnlock = null;
     else delete choice.requiresUnlock;
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
     if (israelLean !== 0) choice.israelLean = israelLean; else delete choice.israelLean;
     var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById(prefix+'-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
     if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
+    var _prevChoice = _prevChoices[ci];
+    choice.missionAligned = preserveArrayOrder(choice.missionAligned, _prevChoice && _prevChoice.missionAligned);
+    choice.missionOpposed = preserveArrayOrder(choice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
+    // The scenario form has no choice-level Clout field (only Clout Cost, and
+    // Clout on each outcome), so rebuilding the choice dropped any authored
+    // cloutEffect — six scenario choices rely on it for political consequences.
+    // Carry it across, but never over a value the form supplied (inbox and
+    // breaking-news forms do have this field).
+    if (choice.cloutEffect === undefined && _prevChoice && _prevChoice.cloutEffect !== undefined) choice.cloutEffect = _prevChoice.cloutEffect;
+    if (choice.segmentOverrides) choice.segmentOverrides = preserveKeyOrder(choice.segmentOverrides, _prevChoice && _prevChoice.segmentOverrides);
+    dropMaterializedDefaults(choice, _prevChoice, {budgetCost: 0, politicalLean: 0});
+    // Conditional assignments above append keys in a different order than the
+    // authored object, so re-emit in the original order — otherwise a no-op save
+    // still produces a diff even though every value is identical.
+    if (_prevChoice) choice = preserveKeyOrder(choice, _prevChoice);
     s.choices.push(choice);
     ci++;
   }
   // Save advisor quotes with recommendation fields
   s.advisorQuotes = readAdvisorQuotes(i, prefix);
+  // Same reasoning as the choice level: don't invent scenario-level keys the
+  // author never set just because the form renders a default for them.
+  dropMaterializedDefaults(s, _prevScenario, {complexity: 3, communityConsensus: 0.5, advisorQuotes: [], categories: ['all']});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success'); refreshDependentPanels('scenarios');
   toggleEdit(prefix, i);
 }
@@ -21946,6 +21990,7 @@ function renderInboxForm(s, i) {
 function saveInbox(i) {
   // Reuse saveScenario with ib prefix, but also save inbox-specific fields
   const s = GD.inboxScenarios[i];
+  var _prevScenario = JSON.parse(JSON.stringify(s));
   s.id = document.getElementById('ib-id-'+i)?.value||s.id;
   s.tag = document.getElementById('ib-tag-'+i)?.value||'';
   // Group and political range
@@ -21978,15 +22023,34 @@ function saveInbox(i) {
     (GD.stats||[]).forEach(function(st){var v=parseInt(document.getElementById('ib-expfx-'+i+'-'+st.id)?.value)||0;if(v)expEffects[st.id]=v;});
     var expText = document.getElementById('ib-exptext-'+i)?.value||'';
     var expNote = document.getElementById('ib-expnote-'+i)?.value||'';
-    if(expText || Object.keys(expEffects).length) s.expiredOutcome = {text:expText,effects:expEffects,contextNote:expNote};
+    if(expText || Object.keys(expEffects).length) {
+      // Build on the previous expiredOutcome so fields the form does not render
+      // (budgetEffect) survive, and keep the authored key order.
+      var _prevExp = (_prevScenario && _prevScenario.expiredOutcome) || null;
+      var _newExp = Object.assign({}, _prevExp || {});
+      _newExp.text = expText;
+      _newExp.contextNote = expNote;
+      _newExp.effects = (_prevExp && _prevExp.effects) ? preserveKeyOrder(expEffects, _prevExp.effects) : expEffects;
+      s.expiredOutcome = _prevExp ? preserveKeyOrder(_newExp, _prevExp) : _newExp;
+    }
     else delete s.expiredOutcome;
   } else {
-    delete s.expiresIn; delete s.expiredOutcome;
+    // Clearing the timer removes expiresIn, but keep any authored expiredOutcome.
+    // Four inbox messages carry expiry text with no timer set, and deleting it
+    // here silently destroyed that writing on an ordinary save. Without a timer
+    // the field is simply inert, and it is there again if a timer is re-added.
+    delete s.expiresIn;
   }
   // Community consensus
   var consensusEl = document.getElementById('ib-consensus-'+i);
   if(consensusEl) s.communityConsensus = parseFloat(consensusEl.value);
   const missions = GD.missions||[];
+  // Snapshot the previous choices BEFORE clearing the array below. The
+  // existing-outcome lookups further down read from it, and reading the
+  // live array after it was emptied meant they always saw undefined —
+  // which silently reset every outcome's `conditions` to [] on save and
+  // defeated the key-order preservation.
+  var _prevChoices = (GD.inboxScenarios[i] && GD.inboxScenarios[i].choices) ? GD.inboxScenarios[i].choices.slice() : [];
   s.choices = [];
   let ci=0;
   while(document.getElementById('ib-ctext-'+i+'-'+ci)) {
@@ -21996,12 +22060,16 @@ function saveInbox(i) {
     missions.forEach(m=>{const v=document.getElementById('ib-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
     // Political impact fields
     var polLean = parseInt(document.getElementById('ib-cpollean-'+i+'-'+ci)?.value)||0;
-    var polClout = parseInt(document.getElementById('ib-cpolclout-'+i+'-'+ci)?.value)||0;
+    // NOTE: the shared choice editor renders no choice-level Clout field, so this
+    // lookup never resolves. Reading it as 0 and writing it through overwrote
+    // authored cloutEffect values; the value is now carried over from the
+    // previous choice below instead.
+    var polClout = parseInt(document.getElementById('ib-cpolclout-'+i+'-'+ci)?.value);
     var polMinClout = parseInt(document.getElementById('ib-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
-    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
-    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    var polMinPos = document.getElementById('ib'+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById('ib'+'-cpolmaxpos-'+i+'-'+ci)?.value;
     if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
     if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var cloutCost = parseInt(document.getElementById('ib-ccloutcost-'+i+'-'+ci)?.value) || 0;
@@ -22010,7 +22078,7 @@ function saveInbox(i) {
     while(document.getElementById('ib-otext-'+i+'-'+ci+'-'+oi)) {
       const effects={};
       (GD.stats||[]).forEach(st=>{const v=parseInt(document.getElementById('ib-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
-      const existingO=(GD.inboxScenarios[i]?.choices?.[ci]?.outcomes||[])[oi];
+      const existingO=(_prevChoices[ci]?.outcomes||[])[oi];
       var ibClout = parseInt(document.getElementById('ib-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
       var ibGelt = parseInt(document.getElementById('ib-ogelt-'+i+'-'+ci+'-'+oi)?.value)||0;
       var ibOutcome = {text:document.getElementById('ib-otext-'+i+'-'+ci+'-'+oi).value,effects,weight:parseInt(document.getElementById('ib-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById('ib-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
@@ -22025,19 +22093,47 @@ function saveInbox(i) {
           if (v) secFx[leaf.id] = v;
         });
       });
-      if (Object.keys(secFx).length > 0) ibOutcome.securityEffects = secFx;
+      if (Object.keys(secFx).length > 0) ibOutcome.securityEffects = preserveKeyOrder(secFx, existingO && existingO.securityEffects);
+      ibOutcome.effects = preserveKeyOrder(ibOutcome.effects, existingO && existingO.effects);
+      restoreUnrenderedOutcomeFields(ibOutcome, existingO);
+      dropMaterializedDefaults(ibOutcome, existingO, {contextNote: '', conditions: []});
+      // Emit the outcome's keys in their authored order for the same reason as
+      // the choice above: identical values in a different order still diff.
+      if (existingO) ibOutcome = preserveKeyOrder(ibOutcome, existingO);
       outcomes.push(ibOutcome);
       oi++;
     }
     var segOv = readSegOverrides('ib', i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    if (Object.keys(polReq).length) choice.politicalRequirement = polReq; else delete choice.politicalRequirement;
+    if (segOv) choice.segmentOverrides = segOv; else delete choice.segmentOverrides;
     if (unlock) choice.requiresUnlock = unlock;
+    else if (_prevChoices[ci] && _prevChoices[ci].requiresUnlock === null) choice.requiresUnlock = null;
     else delete choice.requiresUnlock;
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
+    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById('ib-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
+    var _prevChoice = _prevChoices[ci];
+    choice.missionAligned = preserveArrayOrder(choice.missionAligned, _prevChoice && _prevChoice.missionAligned);
+    choice.missionOpposed = preserveArrayOrder(choice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
+    // The scenario form has no choice-level Clout field (only Clout Cost, and
+    // Clout on each outcome), so rebuilding the choice dropped any authored
+    // cloutEffect — six scenario choices rely on it for political consequences.
+    // Carry it across, but never over a value the form supplied (inbox and
+    // breaking-news forms do have this field).
+    if (!isNaN(polClout)) choice.cloutEffect = polClout;
+    if (choice.cloutEffect === undefined && _prevChoice && _prevChoice.cloutEffect !== undefined) choice.cloutEffect = _prevChoice.cloutEffect;
+    if (choice.segmentOverrides) choice.segmentOverrides = preserveKeyOrder(choice.segmentOverrides, _prevChoice && _prevChoice.segmentOverrides);
+    dropMaterializedDefaults(choice, _prevChoice, {budgetCost: 0, politicalLean: 0});
+    // Conditional assignments above append keys in a different order than the
+    // authored object, so re-emit in the original order — otherwise a no-op save
+    // still produces a diff even though every value is identical.
+    if (_prevChoice) choice = preserveKeyOrder(choice, _prevChoice);
     s.choices.push(choice);
     ci++;
   }
+  dropMaterializedDefaults(s, _prevScenario, {complexity: 3, communityConsensus: 0.5, advisorQuotes: [], categories: ['all']});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Inbox saved.','success');
   toggleEdit('ib', i);
 }
@@ -22729,6 +22825,7 @@ function renderBreakingForm(bn,i){
 }
 function saveBreaking(i){
   var bn = GD.breakingNews[i];
+  var _prevScenario = JSON.parse(JSON.stringify(bn));
   bn.id = document.getElementById('bn-id-'+i)?.value||bn.id;
   bn.tag = document.getElementById('bn-tag-'+i)?.value||'BREAKING';
   bn.trigger = document.getElementById('bn-trigger-'+i)?.value||'any';
@@ -22747,6 +22844,12 @@ function saveBreaking(i){
   if(consensusEl) bn.communityConsensus = parseFloat(consensusEl.value);
   // Save choices using same logic as scenarios
   var missions = GD.missions||[];
+  // Snapshot the previous choices BEFORE clearing the array below. The
+  // existing-outcome lookups further down read from it, and reading the
+  // live array after it was emptied meant they always saw undefined —
+  // which silently reset every outcome's `conditions` to [] on save and
+  // defeated the key-order preservation.
+  var _prevChoices = (GD.breakingNews[i] && GD.breakingNews[i].choices) ? GD.breakingNews[i].choices.slice() : [];
   bn.choices = [];
   var ci=0;
   while(document.getElementById('bn-ctext-'+i+'-'+ci)) {
@@ -22755,12 +22858,16 @@ function saveBreaking(i){
     var aligned=[],opposed=[];
     missions.forEach(function(m){var v=document.getElementById('bn-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
     var polLean = parseInt(document.getElementById('bn-cpollean-'+i+'-'+ci)?.value)||0;
-    var polClout = parseInt(document.getElementById('bn-cpolclout-'+i+'-'+ci)?.value)||0;
+    // NOTE: the shared choice editor renders no choice-level Clout field, so this
+    // lookup never resolves. Reading it as 0 and writing it through overwrote
+    // authored cloutEffect values; the value is now carried over from the
+    // previous choice below instead.
+    var polClout = parseInt(document.getElementById('bn-cpolclout-'+i+'-'+ci)?.value);
     var polMinClout = parseInt(document.getElementById('bn-cpolminclout-'+i+'-'+ci)?.value)||0;
     var polReq = {};
     if(polMinClout > 0) polReq.minClout = polMinClout;
-    var polMinPos = document.getElementById(prefix+'-cpolminpos-'+i+'-'+ci)?.value;
-    var polMaxPos = document.getElementById(prefix+'-cpolmaxpos-'+i+'-'+ci)?.value;
+    var polMinPos = document.getElementById('bn'+'-cpolminpos-'+i+'-'+ci)?.value;
+    var polMaxPos = document.getElementById('bn'+'-cpolmaxpos-'+i+'-'+ci)?.value;
     if(polMinPos !== '' && polMinPos !== undefined) polReq.minPosition = parseInt(polMinPos);
     if(polMaxPos !== '' && polMaxPos !== undefined) polReq.maxPosition = parseInt(polMaxPos);
     var outcomes=[];
@@ -22768,19 +22875,50 @@ function saveBreaking(i){
     while(document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi)) {
       var effects={};
       (GD.stats||[]).forEach(function(st){var v=parseInt(document.getElementById('bn-ofx-'+i+'-'+ci+'-'+oi+'-'+st.id)?.value)||0;if(v)effects[st.id]=v;});
-      var existingO=(GD.breakingNews[i]?.choices?.[ci]?.outcomes||[])[oi];
+      var existingO=(_prevChoices[ci]?.outcomes||[])[oi];
       var bnClout = parseInt(document.getElementById('bn-oclout-'+i+'-'+ci+'-'+oi)?.value)||0;
       var bnGelt = parseInt(document.getElementById('bn-ogelt-'+i+'-'+ci+'-'+oi)?.value)||0;
       var bnOutcome = {text:document.getElementById('bn-otext-'+i+'-'+ci+'-'+oi).value,effects:effects,weight:parseInt(document.getElementById('bn-owt-'+i+'-'+ci+'-'+oi)?.value)||100,contextNote:document.getElementById('bn-onote-'+i+'-'+ci+'-'+oi)?.value||'',conditions:existingO?.conditions||[]};
+      bnOutcome.effects = preserveKeyOrder(bnOutcome.effects, existingO && existingO.effects);
       if(bnClout) bnOutcome.cloutEffect = bnClout;
       if(bnGelt) bnOutcome.budgetEffect = bnGelt;
+      var bnSecFx = {};
+      ((GD.config && GD.config.jewishSecurity && GD.config.jewishSecurity.categories) || []).forEach(function(cat){
+        (cat.leaves || []).forEach(function(leaf){
+          var v = parseInt(document.getElementById('bn-osfx-'+i+'-'+ci+'-'+oi+'-'+leaf.id)?.value) || 0;
+          if (v) bnSecFx[leaf.id] = v;
+        });
+      });
+      if (Object.keys(bnSecFx).length) bnOutcome.securityEffects = preserveKeyOrder(bnSecFx, existingO && existingO.securityEffects);
+      restoreUnrenderedOutcomeFields(bnOutcome, existingO);
+      dropMaterializedDefaults(bnOutcome, existingO, {contextNote: '', conditions: []});
+      // Emit the outcome's keys in their authored order for the same reason as
+      // the choice above: identical values in a different order still diff.
+      if (existingO) bnOutcome = preserveKeyOrder(bnOutcome, existingO);
       outcomes.push(bnOutcome);
       oi++;
     }
     var segOv = readSegOverrides('bn', i, ci);
-    bn.choices.push({id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:parseInt(document.getElementById('bn-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean,cloutEffect:polClout,politicalRequirement:Object.keys(polReq).length?polReq:undefined,segmentOverrides:segOv});
+    var bnChoice = {id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:parseInt(document.getElementById('bn-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    if (Object.keys(polReq).length) bnChoice.politicalRequirement = polReq;
+    if (segOv) bnChoice.segmentOverrides = segOv;
+    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById('bn-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    if (endangers.length) bnChoice.endangersCoalition = endangers; else delete bnChoice.endangersCoalition;
+    var _prevChoice = _prevChoices[ci];
+    bnChoice.missionAligned = preserveArrayOrder(bnChoice.missionAligned, _prevChoice && _prevChoice.missionAligned);
+    bnChoice.missionOpposed = preserveArrayOrder(bnChoice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
+    if (!isNaN(polClout)) bnChoice.cloutEffect = polClout;
+    if (bnChoice.cloutEffect === undefined && _prevChoice && _prevChoice.cloutEffect !== undefined) bnChoice.cloutEffect = _prevChoice.cloutEffect;
+    if (bnChoice.segmentOverrides) bnChoice.segmentOverrides = preserveKeyOrder(bnChoice.segmentOverrides, _prevChoice && _prevChoice.segmentOverrides);
+    dropMaterializedDefaults(bnChoice, _prevChoice, {budgetCost: 0, politicalLean: 0, requiresUnlock: null});
+    // Conditional assignments above append keys in a different order than the
+    // authored object, so re-emit in the original order — otherwise a no-op save
+    // still produces a diff even though every value is identical.
+    if (_prevChoice) bnChoice = preserveKeyOrder(bnChoice, _prevChoice);
+    bn.choices.push(bnChoice);
     ci++;
   }
+  dropMaterializedDefaults(bn, _prevScenario, {complexity: 3, communityConsensus: 0.5, categories: ['all']});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Breaking news saved.','success');
   toggleEdit('bn', i);
 }
@@ -23156,7 +23294,23 @@ function readAdvisorQuotes(si, prefix){
       var v = parseInt(document.getElementById(prefix+'-aqefx-'+si+'-'+qi+'-'+st.id)?.value)||0;
       if(v) effectModifier[st.id] = v;
     });
-    quotes.push({advisorId:advisorId,text:text,mood:mood,recommendsChoice:recommendsChoice,effectModifier:effectModifier,explicit:explicit});
+    var q = {advisorId:advisorId,text:text,mood:mood,recommendsChoice:recommendsChoice,effectModifier:effectModifier,explicit:explicit};
+    var prevQ = existing[qi];
+    // Keep authored zeros in the effect modifier, and don't invent a `mood` key
+    // on quotes that never had one just because the select defaults to neutral.
+    if (prevQ && prevQ.effectModifier) {
+      Object.keys(prevQ.effectModifier).forEach(function(st){
+        if (prevQ.effectModifier[st] === 0 && q.effectModifier[st] === undefined) q.effectModifier[st] = 0;
+      });
+      q.effectModifier = preserveKeyOrder(q.effectModifier, prevQ.effectModifier);
+    }
+    // An authored null effectModifier is not the same as an empty object: the
+    // engine filters advisor bonuses on `q.effectModifier &&`, so null is skipped
+    // while {} passes and logs an empty bonus. Preserve the distinction.
+    if (prevQ && prevQ.effectModifier === null && Object.keys(q.effectModifier).length === 0) q.effectModifier = null;
+    dropMaterializedDefaults(q, prevQ, {mood: 'neutral'});
+    if (prevQ) q = preserveKeyOrder(q, prevQ);
+    quotes.push(q);
     qi++;
   }
   return quotes;
@@ -23895,6 +24049,69 @@ function renderSegOverrides(choice, si, ci, prefix) {
   });
   html += '</div></details>';
   return html;
+}
+
+// Rebuilding an object from its form fields emits keys in form order, which is
+// rarely the order they were authored in. The values are identical but the
+// serialized JSON differs, so a save with no edits produced a large, meaningless
+// diff. Re-emit the new object using the previous key order wherever those keys
+// still exist, appending any genuinely new ones.
+// The form always produces a value for every field it renders, so saving
+// materializes defaults for fields the author never set — which turned a
+// no-op save into a large, meaningless diff. Drop keys that were absent
+// before and came back as exactly their default.
+function dropMaterializedDefaults(obj, prev, defaults) {
+  if (!obj) return obj;
+  Object.keys(defaults).forEach(function(k) {
+    var wasAbsent = !prev || !Object.prototype.hasOwnProperty.call(prev, k);
+    if (wasAbsent && JSON.stringify(obj[k]) === JSON.stringify(defaults[k])) delete obj[k];
+  });
+  return obj;
+}
+
+// Fields the outcome form actually renders. Anything else on an authored
+// outcome (subMissionCheckpoint, and whatever gets added later) has no input to
+// round-trip through, so rebuilding the object from the form silently dropped
+// it — saving a scenario severed its sub-mission checkpoint wiring on 65
+// outcomes. Restore any key the form does not own.
+var FORM_OWNED_OUTCOME_KEYS = {text:1, effects:1, weight:1, contextNote:1, conditions:1,
+  cloutEffect:1, budgetEffect:1, headline:1, subline:1, securityEffects:1};
+function restoreUnrenderedOutcomeFields(newOutcome, prevOutcome) {
+  if (!prevOutcome) return newOutcome;
+  Object.keys(prevOutcome).forEach(function(k) {
+    if (!FORM_OWNED_OUTCOME_KEYS[k] && !Object.prototype.hasOwnProperty.call(newOutcome, k)) {
+      newOutcome[k] = prevOutcome[k];
+    }
+  });
+  // An authored zero is meaningful data, not an unset field: keep it rather
+  // than dropping the key just because the form read back 0.
+  ['budgetEffect','cloutEffect'].forEach(function(k) {
+    if (newOutcome[k] === undefined && prevOutcome[k] === 0) newOutcome[k] = 0;
+  });
+  if (prevOutcome.effects && newOutcome.effects) {
+    Object.keys(prevOutcome.effects).forEach(function(st) {
+      if (prevOutcome.effects[st] === 0 && newOutcome.effects[st] === undefined) newOutcome.effects[st] = 0;
+    });
+    newOutcome.effects = preserveKeyOrder(newOutcome.effects, prevOutcome.effects);
+  }
+  return newOutcome;
+}
+
+function preserveKeyOrder(newObj, oldObj) {
+  if (!newObj || !oldObj || typeof oldObj !== 'object') return newObj;
+  var out = {};
+  Object.keys(oldObj).forEach(function(k) { if (Object.prototype.hasOwnProperty.call(newObj, k)) out[k] = newObj[k]; });
+  Object.keys(newObj).forEach(function(k) { if (!Object.prototype.hasOwnProperty.call(out, k)) out[k] = newObj[k]; });
+  return out;
+}
+
+// Same idea for the mission-alignment arrays, which are rebuilt by iterating
+// GD.missions. If the membership is unchanged, keep the authored order.
+function preserveArrayOrder(newArr, oldArr) {
+  if (!Array.isArray(newArr) || !Array.isArray(oldArr)) return newArr;
+  if (newArr.length !== oldArr.length) return newArr;
+  var same = oldArr.every(function(v) { return newArr.indexOf(v) >= 0; });
+  return same ? oldArr.slice() : newArr;
 }
 
 function readSegOverrides(prefix, si, ci) {

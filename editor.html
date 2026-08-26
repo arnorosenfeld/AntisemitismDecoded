@@ -145,6 +145,28 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 /* ── STAT INPUTS GRID ── */
 .stat-inputs{display:flex;flex-wrap:wrap;gap:10px 12px}
 
+/* Collapsible sections (choices, outcomes, advisor panel) */
+.collapsible > .collapsible-body{display:none}
+.collapsible.open > .collapsible-body{display:block}
+.choice-editor-header,.outcome-card-header,.collapsible-head{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.collapse-caret{flex:0 0 auto;font-size:11px;color:var(--muted);width:10px}
+.choice-preview{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:400;color:var(--muted);font-style:italic}
+.choice-editor-header:hover .choice-preview,.outcome-card-header:hover .choice-preview{color:var(--ink)}
+/* Sticky scenario header while the form is open */
+.sticky-head{position:sticky;top:0;z-index:20;background:var(--white);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+/* Inline checkbox rows (categories, channel) */
+.checkbox-inline{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px}
+.checkbox-inline .checkbox-item{white-space:nowrap}
+.form-row.two{display:flex;gap:14px}
+.form-row.two > .form-group{flex:1;min-width:0}
+/* Political range: two thumbs on one rail */
+.polrange{position:relative;flex:1;height:22px;min-width:120px}
+.polrange-rail{position:absolute;top:9px;left:0;right:0;height:4px;background:var(--border);border-radius:2px}
+.polrange-fill{position:absolute;top:9px;height:4px;background:var(--gold);border-radius:2px}
+.polrange-thumb{position:absolute;top:3px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--gold);border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.35);cursor:grab;touch-action:none}
+.polrange-thumb:active{cursor:grabbing}
+.polrange-thumb:focus{outline:2px solid var(--gold);outline-offset:2px}
+.polrange-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:2px}
 /* Add-from-list pickers (mission alignment, endangers coalitions) */
 .pick-cols{display:flex;gap:14px;flex-wrap:wrap}
 .pick-col{flex:1 1 200px;min-width:0}
@@ -367,7 +389,6 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
       </div>
     </div>
 
-
     <!-- MAIN -->
     <div class="editor-main">
       <div class="editor-topbar">
@@ -490,8 +511,6 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
               <div class="form-group"><label>Advisor Bonus Stacking</label><select id="cfg-advisorBonusStacking"><option value="best">Best Bonus Only</option><option value="stack">Stack All Bonuses</option></select><div class="form-hint">"Best" = only strongest advisor bonus applies. "Stack" = all bonuses add together.</div></div>
             </div>
           </div>
-
-
 
           <div class="form-section">
             <h3>Mission Star System</h3>
@@ -21142,7 +21161,6 @@ function addMission() {
   localStorage.setItem('gd_cache',JSON.stringify(GD)); populateMissions(); refreshDependentPanels('missions');
 }
 
-
 // ═══ JEWISH SECURITY CONFIG ═══
 function populateSecurityConfig() {
   if (!GD.config) GD.config = {};
@@ -21566,32 +21584,34 @@ function renderScenarioForm(s, i, prefix) {
   const allCats = ['all','progressive','centrist','conservative'];
   const cats = s.categories || ['all'];
   return `<div class="item-edit-form" id="${prefix}-form-${i}" style="display:none">
-    <div class="form-group" style="margin-bottom:11px"><label>Tag</label>
-      <select id="${prefix}-tagsel-${i}" onchange="onTagSelect('${prefix}',${i})">${renderTagOptions(s.tag||'')}</select>
-      <input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" placeholder="Custom tag" style="margin-top:6px;display:${isCustomTag(s.tag||'')?'':'none'}" />
-      <div class="form-hint">Display label shown above the scenario. Choose "Custom…" to type your own.</div>
+    <div class="form-row two">
+      <div class="form-group"><label>Tag</label>
+        <select id="${prefix}-tagsel-${i}" onchange="onTagSelect('${prefix}',${i})">${renderTagOptions(s.tag||'')}</select>
+        <input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" placeholder="Custom tag" style="margin-top:6px;display:${isCustomTag(s.tag||'')?'':'none'}" />
+      </div>
+      <div class="form-group"><label>Complexity (1–5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /><div class="form-hint">Higher complexity appears in later rounds</div></div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Title</label><input id="${prefix}-title-${i}" value="${esc(s.title||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="${prefix}-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
-    <div class="form-row three">
-      <div class="form-group"><label>Categories</label><div class="form-hint">Political filters — scenario only appears for orgs matching these categories</div><div class="checkbox-grid">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cat-${i}-${c}" ${cats.includes(c)?'checked':''} onchange="handleCatToggle('${prefix}-cat-${i}','${c}')" />${c}</label>`).join('')}</div></div>
-<!-- Org Level dropdown removed in the 3-org reduction (local/national tiers no longer exist). -->
-      <div class="form-group"><label>Complexity (1-5)</label><input type="number" id="${prefix}-cplx-${i}" value="${s.complexity||3}" min="1" max="5" /><div class="form-hint">1-5 rating affecting when scenarios appear — higher complexity appears in later rounds</div></div>
+    <div class="form-group" style="margin-bottom:8px"><label>Categories</label>
+      <div class="checkbox-inline">${allCats.map(c=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cat-${i}-${c}" ${cats.includes(c)?'checked':''} onchange="handleCatToggle('${prefix}-cat-${i}','${c}')" />${c}</label>`).join('')}</div>
+      <div class="form-hint">Political filters — scenario only appears for orgs matching these categories</div>
     </div>
-    <div class="form-row three" style="margin-top:8px">
-      <div class="form-group"><label>Channel</label><div style="display:flex;flex-wrap:wrap;gap:6px 14px">
+    <div class="form-group" style="margin-bottom:8px"><label>Channel</label>
+      <div class="checkbox-inline">
         <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-any" ${(!s.channel||s.channel==='any')?'checked':''} onchange="toggleChannelAny('${prefix}',${i})" />Any</label>
-        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-monitor" ${(Array.isArray(s.channel)?s.channel.includes('monitor'):s.channel==='monitor')?'checked':''} />Monitor (Digital)</label>
-        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-folder" ${(Array.isArray(s.channel)?s.channel.includes('folder'):s.channel==='folder')?'checked':''} />Folder (Memos)</label>
-        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-keys" ${(Array.isArray(s.channel)?s.channel.includes('keys'):s.channel==='keys')?'checked':''} />Keys (In-Person)</label>
-      </div><div class="form-hint">Which desk objects this scenario can appear in</div></div>
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-monitor" ${(Array.isArray(s.channel)?s.channel.includes('monitor'):s.channel==='monitor')?'checked':''} />Monitor</label>
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-folder" ${(Array.isArray(s.channel)?s.channel.includes('folder'):s.channel==='folder')?'checked':''} />Folder</label>
+        <label class="checkbox-item"><input type="checkbox" id="${prefix}-channel-${i}-keys" ${(Array.isArray(s.channel)?s.channel.includes('keys'):s.channel==='keys')?'checked':''} />Keys</label>
+      </div>
+      <div class="form-hint">Which desk objects this scenario can appear in</div>
     </div>
+    ${renderPoliticalRange(prefix, i, s.politicalRange)}
     ${renderConsensusField(s, i, prefix)}
     <details class="adv-section"><summary>Advanced</summary>
       <div class="adv-body">
         <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Generated from the title when created. Referenced by conversation and gazette triggers — changing it breaks those links.</div></div>
         <div class="form-group"><label>Variant Group</label><input id="${prefix}-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. bds_event" /><div class="form-hint">Scenarios sharing a group ID are variants — only one from each group fires per game</div></div>
-        <div class="form-group"><label>Political Range</label>${renderPoliticalRange(prefix, i, s.politicalRange)}</div>
       </div>
     </details>
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
@@ -21641,46 +21661,120 @@ function renderPoliticalRange(prefix, i, range) {
   var on = !!(range && (range.min !== undefined || range.max !== undefined));
   var lo = (range && range.min !== undefined) ? range.min : 0;
   var hi = (range && range.max !== undefined) ? range.max : 100;
-  return '<div class="polrange" id="' + prefix + '-polrange-' + i + '">' +
-    '<label class="opt-label"><input type="checkbox" id="' + prefix + '-polrange-on-' + i + '" ' + (on ? 'checked' : '') +
+  var id = prefix + '-polrange-' + i;
+  return '<div class="form-group" style="margin-bottom:8px" id="' + id + '">' +
+    '<label class="opt-label" style="font-weight:400"><input type="checkbox" id="' + id + '-on" ' + (on ? 'checked' : '') +
       ' onchange="onPolRangeToggle(\'' + prefix + '\',' + i + ')" /> Limit to part of the political spectrum</label>' +
     '<div class="polrange-body" style="display:' + (on ? 'block' : 'none') + '">' +
-      '<div class="polrange-track">' +
-        '<input type="range" min="0" max="100" step="1" id="' + prefix + '-polmin-' + i + '" value="' + lo + '" oninput="onPolRangeInput(\'' + prefix + '\',' + i + ')" />' +
-        '<input type="range" min="0" max="100" step="1" id="' + prefix + '-polmax-' + i + '" value="' + hi + '" oninput="onPolRangeInput(\'' + prefix + '\',' + i + ')" />' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<div class="polrange" data-lo="' + lo + '" data-hi="' + hi + '">' +
+          '<div class="polrange-rail"></div>' +
+          '<div class="polrange-fill"></div>' +
+          '<div class="polrange-thumb lo" data-side="lo" tabindex="0" role="slider" aria-label="Minimum political position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + lo + '"></div>' +
+          '<div class="polrange-thumb hi" data-side="hi" tabindex="0" role="slider" aria-label="Maximum political position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + hi + '"></div>' +
+        '</div>' +
+        '<span class="consensus-val" id="' + id + '-val">' + lo + ' – ' + hi + '</span>' +
       '</div>' +
-      '<div class="polrange-scale"><span>← Left</span><span id="' + prefix + '-polrange-val-' + i + '">' + lo + ' – ' + hi + '</span><span>Right →</span></div>' +
+      '<div class="polrange-scale"><span>← Left</span><span>Center</span><span>Right →</span></div>' +
     '</div>' +
   '</div>';
 }
 
 function onPolRangeToggle(prefix, i) {
-  var cb = document.getElementById(prefix + '-polrange-on-' + i);
-  var body = document.querySelector('#' + prefix + '-polrange-' + i + ' .polrange-body');
+  var box = document.getElementById(prefix + '-polrange-' + i);
+  if (!box) return;
+  var cb = document.getElementById(prefix + '-polrange-' + i + '-on');
+  var body = box.querySelector('.polrange-body');
   if (body) body.style.display = cb && cb.checked ? 'block' : 'none';
+  if (cb && cb.checked) paintPolRange(box.querySelector('.polrange'));
+}
+
+// The previous version stacked two native range inputs and disabled pointer
+// events on their tracks, which meant the upper input covered the lower one's
+// thumb and neither reliably dragged. This drives two thumbs over one rail
+// directly from pointer events instead.
+function paintPolRange(el) {
+  if (!el) return;
+  var lo = +el.getAttribute('data-lo'), hi = +el.getAttribute('data-hi');
+  var loT = el.querySelector('.polrange-thumb.lo'), hiT = el.querySelector('.polrange-thumb.hi');
+  var fill = el.querySelector('.polrange-fill');
+  if (loT) { loT.style.left = lo + '%'; loT.setAttribute('aria-valuenow', lo); }
+  if (hiT) { hiT.style.left = hi + '%'; hiT.setAttribute('aria-valuenow', hi); }
+  if (fill) { fill.style.left = lo + '%'; fill.style.width = Math.max(0, hi - lo) + '%'; }
+  var group = el.closest('.form-group');
+  var out = group && group.querySelector('.consensus-val');
+  if (out) out.textContent = lo + ' – ' + hi;
+}
+
+function _polRangeValueFromEvent(el, clientX) {
+  var r = el.getBoundingClientRect();
+  var pct = (clientX - r.left) / Math.max(1, r.width) * 100;
+  return Math.round(Math.max(0, Math.min(100, pct)));
+}
+
+function startPolRangeDrag(e) {
+  var thumb = e.target.closest('.polrange-thumb');
+  var el = e.target.closest('.polrange');
+  if (!el) return;
+  var side;
+  if (thumb) side = thumb.getAttribute('data-side');
+  else {
+    // Clicking the rail moves whichever handle is nearer.
+    var v = _polRangeValueFromEvent(el, e.clientX);
+    side = Math.abs(v - +el.getAttribute('data-lo')) <= Math.abs(v - +el.getAttribute('data-hi')) ? 'lo' : 'hi';
+  }
+  e.preventDefault();
+  var move = function(ev) {
+    var v = _polRangeValueFromEvent(el, ev.clientX);
+    var lo = +el.getAttribute('data-lo'), hi = +el.getAttribute('data-hi');
+    // Handles stop at each other rather than crossing over.
+    if (side === 'lo') el.setAttribute('data-lo', Math.min(v, hi));
+    else el.setAttribute('data-hi', Math.max(v, lo));
+    paintPolRange(el);
+  };
+  var up = function() {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+  };
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+  move(e);
+}
+
+// Keyboard support, since the thumbs are focusable.
+function polRangeKey(e) {
+  var thumb = e.target.closest('.polrange-thumb');
+  if (!thumb) return;
+  var delta = e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1
+            : e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : 0;
+  if (!delta) return;
+  e.preventDefault();
+  var el = thumb.closest('.polrange');
+  var side = thumb.getAttribute('data-side');
+  var lo = +el.getAttribute('data-lo'), hi = +el.getAttribute('data-hi');
+  if (side === 'lo') el.setAttribute('data-lo', Math.max(0, Math.min(lo + delta, hi)));
+  else el.setAttribute('data-hi', Math.min(100, Math.max(hi + delta, lo)));
+  paintPolRange(el);
+}
+
+document.addEventListener('pointerdown', function(e) {
+  if (e.target.closest('.polrange')) startPolRangeDrag(e);
+});
+document.addEventListener('keydown', polRangeKey);
+
+function readPoliticalRange(prefix, i) {
+  var cb = document.getElementById(prefix + '-polrange-' + i + '-on');
+  if (!cb || !cb.checked) return undefined;
+  var el = document.querySelector('#' + prefix + '-polrange-' + i + ' .polrange');
+  if (!el) return undefined;
+  var lo = +el.getAttribute('data-lo'), hi = +el.getAttribute('data-hi');
+  var out = {};
+  if (lo > 0) out.min = lo;
+  if (hi < 100) out.max = hi;
+  return Object.keys(out).length ? out : undefined;
 }
 
 // Keep the handles from crossing over each other.
-function onPolRangeInput(prefix, i) {
-  var lo = document.getElementById(prefix + '-polmin-' + i);
-  var hi = document.getElementById(prefix + '-polmax-' + i);
-  if (!lo || !hi) return;
-  var a = parseInt(lo.value, 10), b = parseInt(hi.value, 10);
-  if (a > b) { if (document.activeElement === lo) hi.value = a; else lo.value = b; }
-  var lbl = document.getElementById(prefix + '-polrange-val-' + i);
-  if (lbl) lbl.textContent = lo.value + ' – ' + hi.value;
-}
-
-function readPoliticalRange(prefix, i) {
-  var cb = document.getElementById(prefix + '-polrange-on-' + i);
-  if (!cb || !cb.checked) return undefined;
-  var lo = parseInt(document.getElementById(prefix + '-polmin-' + i)?.value, 10);
-  var hi = parseInt(document.getElementById(prefix + '-polmax-' + i)?.value, 10);
-  var out = {};
-  if (!isNaN(lo) && lo > 0) out.min = lo;
-  if (!isNaN(hi) && hi < 100) out.max = hi;
-  return Object.keys(out).length ? out : undefined;
-}
 
 // ═══ ID GENERATION (item 2) ═══
 // Authors no longer type an ID. Slugified from the title so the ~41 conversation
@@ -21707,6 +21801,24 @@ function allScenarioIds() {
     (GD.inboxScenarios || []).map(function(s){ return s.id; }),
     (GD.breakingNews || []).map(function(s){ return s.id; })
   );
+}
+
+// Collapse/expand for choices, outcomes and the advisor panel. Deliberately
+// non-exclusive: opening one does not close the others, because balancing a
+// scenario means comparing choices side by side.
+function toggleCollapsible(headEl) {
+  var box = headEl.closest('.collapsible');
+  if (!box) return;
+  var open = box.classList.toggle('open');
+  var caret = headEl.querySelector('.collapse-caret');
+  if (caret) caret.textContent = open ? '\u25BE' : '\u25B8';
+}
+
+// Keep a scenario's title and its close control reachable while it is open,
+// so collapsing never requires scrolling back up through the whole form.
+function stickScenarioHeader(prefix, i, on) {
+  var card = document.getElementById(prefix + '-card-' + i);
+  if (card) card.classList.toggle('sticky-head', !!on);
 }
 
 // ═══ ADD-FROM-LIST PICKERS (mission alignment, endangers coalitions) ═══
@@ -21821,11 +21933,17 @@ function renderChoiceEditor(c, si, ci, prefix) {
   var hasPol = !!(polShow.politicalLean || polShow.israelLean || polShow.cloutCost ||
     (c.cloutEffect !== undefined && c.cloutEffect !== 0) ||
     (polShow.politicalRequirement && Object.keys(polShow.politicalRequirement).length));
-  return `<div class="choice-editor" id="${prefix}-choice-${si}-${ci}">
-    <div class="choice-editor-header">
+  // Choices collapse so a scenario is not ~9,600px tall with everything open.
+  // Multiple may be open at once, since balancing choices means comparing them.
+  var _preview = (c.text || '').replace(/\s+/g,' ').trim().slice(0, 70);
+  return `<div class="choice-editor collapsible" id="${prefix}-choice-${si}-${ci}">
+    <div class="choice-editor-header" onclick="toggleCollapsible(this)">
+      <span class="collapse-caret">▸</span>
       <span class="choice-letter">${String.fromCharCode(65+ci)}</span>
-      <button class="btn btn-danger btn-sm" onclick="deleteChoice(${si},${ci},'${prefix}')">Delete</button>
+      <span class="choice-preview">${esc(_preview)}${_preview.length>=70?'…':''}</span>
+      <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteChoice(${si},${ci},'${prefix}')">Delete</button>
     </div>
+    <div class="collapsible-body">
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
     <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option>${(GD.characterTraits||[]).map(t=>`<option value="${esc(t.id)}"${c.requiresUnlock===t.id?' selected':''}>${esc(t.name)}</option>`).join('')}${(c.requiresUnlock && !(GD.characterTraits||[]).some(t=>t.id===c.requiresUnlock))?`<option value="${esc(c.requiresUnlock)}" selected>⚠ Unknown trait "${esc(c.requiresUnlock)}" — no player can pick this</option>`:''}</select><div class="form-hint">Only traits defined in the Character Traits panel can unlock a choice. A trait listed here that no longer exists makes the choice permanently unreachable.</div></div>
     <div class="opt-box${hasGelt?' active':''}">
@@ -21865,6 +21983,7 @@ function renderChoiceEditor(c, si, ci, prefix) {
     ${outcomes.map((o,oi)=>renderOutcomeEditor(si,ci,oi,o,prefix)).join('')}
     <button class="add-btn" style="padding:6px;font-size:11px;margin-top:4px" onclick="addOutcome(${si},${ci},'${prefix}')">+ Add Outcome</button>
     ${renderSegOverrides(c, si, ci, prefix)}
+    </div>
   </div>`;
 }
 // ═══ SECURITY IMPACT PICKER ═══
@@ -21948,8 +22067,17 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
   const secFx = o.securityEffects || {};
   var secCount = Object.keys(secFx).filter(function(k){ return secFx[k]; }).length;
   var secHtml = renderSecurityPicker(prefix, si, ci, oi, secFx, secCount);
-  return `<div class="outcome-card">
-    <div class="outcome-card-header"><span class="outcome-card-title">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
+  // Outcome 1 opens by default because most choices have exactly one; any
+  // further outcomes start collapsed with a preview of their text.
+  var _oPrev = (o.text || '').replace(/\s+/g,' ').trim().slice(0, 60);
+  return `<div class="outcome-card collapsible ${oi===0?'open':''}">
+    <div class="outcome-card-header" onclick="toggleCollapsible(this)">
+      <span class="collapse-caret">${oi===0?'▾':'▸'}</span>
+      <span class="outcome-card-title">Outcome ${oi+1}</span>
+      <span class="choice-preview">${esc(_oPrev)}${_oPrev.length>=60?'…':''}</span>
+      ${oi>0?`<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}
+    </div>
+    <div class="collapsible-body">
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
     <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /><div class="form-hint">Probability weight — higher weight = more likely when multiple outcomes exist</div></div></div>
     <div class="stat-inputs cols-4" style="margin-bottom:5px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-ofx-${si}-${ci}-${oi}-${s.id}" value="${(o.effects||{})[s.id]||0}" /></div>`).join('')}<div class="stat-input-group"><label>Clout</label><input type="number" id="${prefix}-oclout-${si}-${ci}-${oi}" value="${o.cloutEffect||0}" min="-10" max="10" /></div><div class="stat-input-group"><label>Gelt</label><input type="number" id="${prefix}-ogelt-${si}-${ci}-${oi}" value="${o.budgetEffect||0}" /></div></div>
@@ -21961,33 +22089,10 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
         <div style="font-size:10px;color:var(--muted);margin-top:8px">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
       </div>
     </details>
+    </div>
   </div>`;
 }
-function addOutcome(si, ci, prefix) {
-  // Harvest all currently-open form inputs into GD first so unsaved edits
-  // (choice text, other outcome text/effects, body, etc.) survive the
-  // repopulate that follows the mutation.
-  try { saveScenario(si, prefix); } catch (e) { /* best-effort */ }
-  const list = getListForPrefix(prefix);
-  const c = list[si].choices[ci];
-  if(!c.outcomes) c.outcomes=[{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
-  c.outcomes.push({text:'',effects:{},weight:50,conditions:[],contextNote:''});
-  localStorage.setItem('gd_cache',JSON.stringify(GD));
-  var scrollY = document.querySelector('.editor-main').scrollTop;
-  repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
-}
-function deleteOutcome(si,ci,oi,prefix) {
-  // Same protective harvest before the destructive mutation.
-  try { saveScenario(si, prefix); } catch (e) { /* best-effort */ }
-  const list = getListForPrefix(prefix);
-  if((list[si].choices[ci].outcomes||[]).length<=1) return;
-  list[si].choices[ci].outcomes.splice(oi,1);
-  localStorage.setItem('gd_cache',JSON.stringify(GD));
-  var scrollY = document.querySelector('.editor-main').scrollTop;
-  repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
-}
+
 function editConditions(si,ci,oi,prefix) {
   const list = getListForPrefix(prefix);
   const o = (list[si].choices[ci].outcomes||[])[oi];
@@ -22146,6 +22251,135 @@ function saveScenario(i, prefix) {
   localStorage.setItem('gd_cache',JSON.stringify(GD)); setStatus('Scenario saved.','success'); refreshDependentPanels('scenarios');
   toggleEdit(prefix, i);
 }
+// ═══ SURGICAL ADD / DELETE ═══
+// These used to rebuild the entire panel — all 61 scenarios, ~74,000 DOM nodes,
+// ~430ms of blocking work — to add or remove a single row. That is the freeze
+// and the blank flash. They now re-render just the affected container and leave
+// the rest of the page untouched. saveScenario() still runs first so unsaved
+// form values are harvested before the DOM under them is replaced.
+
+function _reopenAfterMutate(prefix, si) {
+  // The form is rebuilt in place, so nothing needs reopening or re-scrolling.
+  var card = document.getElementById(prefix + '-card-' + si);
+  if (card && !card.classList.contains('open')) toggleEdit(prefix, si);
+}
+
+// Re-render only this scenario's choices container.
+function _rerenderChoices(prefix, si) {
+  var list = getListForPrefix(prefix);
+  var box = document.getElementById(prefix + '-choices-' + si);
+  if (!box) return false;
+  box.innerHTML = (list[si].choices || []).map(function(c, ci) {
+    return renderChoiceEditor(c, si, ci, prefix);
+  }).join('');
+  var groups = {};
+  box.querySelectorAll('.pick-add[data-group]').forEach(function(sel) { groups[sel.getAttribute('data-group')] = 1; });
+  Object.keys(groups).forEach(function(g) { refreshPickerMenus(g); });
+  box.querySelectorAll('.polrange').forEach(paintPolRange);
+  return true;
+}
+
+// Re-render only the outcomes belonging to one choice.
+function _rerenderOutcomes(prefix, si, ci) {
+  var list = getListForPrefix(prefix);
+  var choiceBox = document.getElementById(prefix + '-choice-' + si + '-' + ci);
+  if (!choiceBox) return false;
+  var cards = choiceBox.querySelectorAll(':scope > .collapsible-body > .outcome-card');
+  if (!cards.length) return false;
+  var parent = cards[0].parentNode;
+  var html = (list[si].choices[ci].outcomes || []).map(function(o, oi) {
+    return renderOutcomeEditor(si, ci, oi, o, prefix);
+  }).join('');
+  var anchor = cards[cards.length - 1].nextSibling;
+  cards.forEach(function(c) { c.remove(); });
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  while (tmp.firstChild) parent.insertBefore(tmp.firstChild, anchor);
+  return true;
+}
+
+// Re-render only the advisor-quote panel.
+function _rerenderAdvisorQuotes(prefix, si) {
+  var list = prefix === 'sc' ? GD.scenarios : GD.inboxScenarios;
+  var form = document.getElementById(prefix + '-form-' + si);
+  if (!form) return false;
+  var panels = form.querySelectorAll(':scope > .form-section.collapsible');
+  var panel = panels[panels.length - 1];
+  if (!panel) return false;
+  var wasOpen = panel.classList.contains('open');
+  var tmp = document.createElement('div');
+  tmp.innerHTML = renderAdvisorQuotesEditor(list[si], si, prefix);
+  var fresh = tmp.firstElementChild;
+  if (!fresh) return false;
+  if (wasOpen) fresh.classList.add('open');
+  var caret = fresh.querySelector('.collapse-caret');
+  if (caret) caret.textContent = wasOpen ? '\u25BE' : '\u25B8';
+  panel.replaceWith(fresh);
+  return true;
+}
+
+function addChoice(si, prefix) {
+  try { saveScenario(si, prefix); } catch (e) {}
+  const list = getListForPrefix(prefix);
+  list[si].choices.push({id:'c'+list[si].choices.length,text:'',requiresUnlock:null,missionAligned:[],missionOpposed:[],outcomes:[{text:'',effects:{},weight:100,conditions:[],contextNote:''}],budgetCost:0,politicalLean:0});
+  localStorage.setItem('gd_cache',JSON.stringify(GD));
+  _reopenAfterMutate(prefix, si);
+  if (!_rerenderChoices(prefix, si)) { repopulateForPrefix(prefix); setTimeout(function(){ toggleEdit(prefix, si); }, 50); }
+}
+
+function deleteChoice(si,ci,prefix) {
+  try { saveScenario(si, prefix); } catch (e) {}
+  const list = getListForPrefix(prefix);
+  list[si].choices.splice(ci,1);
+  localStorage.setItem('gd_cache',JSON.stringify(GD));
+  _reopenAfterMutate(prefix, si);
+  if (!_rerenderChoices(prefix, si)) { repopulateForPrefix(prefix); setTimeout(function(){ toggleEdit(prefix, si); }, 50); }
+}
+
+function addOutcome(si, ci, prefix) {
+  try { saveScenario(si, prefix); } catch (e) {}
+  const list = getListForPrefix(prefix);
+  const c = list[si].choices[ci];
+  if(!c.outcomes) c.outcomes=[{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
+  c.outcomes.push({text:'',effects:{},weight:50,conditions:[],contextNote:''});
+  localStorage.setItem('gd_cache',JSON.stringify(GD));
+  _reopenAfterMutate(prefix, si);
+  if (!_rerenderOutcomes(prefix, si, ci)) { repopulateForPrefix(prefix); setTimeout(function(){ toggleEdit(prefix, si); }, 50); }
+}
+
+function deleteOutcome(si,ci,oi,prefix) {
+  try { saveScenario(si, prefix); } catch (e) {}
+  const list = getListForPrefix(prefix);
+  if((list[si].choices[ci].outcomes||[]).length<=1) return;
+  list[si].choices[ci].outcomes.splice(oi,1);
+  localStorage.setItem('gd_cache',JSON.stringify(GD));
+  _reopenAfterMutate(prefix, si);
+  if (!_rerenderOutcomes(prefix, si, ci)) { repopulateForPrefix(prefix); setTimeout(function(){ toggleEdit(prefix, si); }, 50); }
+}
+
+function addAdvisorQuote(si, prefix){
+  // This previously skipped the harvest entirely, so adding a quote silently
+  // discarded every unsaved edit in the form.
+  try { saveScenario(si, prefix); } catch (e) {}
+  var list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  var s = list[si]; if(!s) return;
+  if(!s.advisorQuotes) s.advisorQuotes = [];
+  s.advisorQuotes.push({advisorId:'',text:'',mood:'neutral',recommendsChoice:null,effectModifier:{},explicit:true});
+  setDirty();
+  _reopenAfterMutate(prefix, si);
+  if (!_rerenderAdvisorQuotes(prefix, si)) { (prefix==='sc'?populateScenarios():populateInbox()); setTimeout(function(){ toggleEdit(prefix, si); }, 50); }
+}
+
+function deleteAdvisorQuote(si, qi, prefix){
+  try { saveScenario(si, prefix); } catch (e) {}
+  var list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
+  var s = list[si]; if(!s||!s.advisorQuotes) return;
+  s.advisorQuotes.splice(qi,1);
+  setDirty();
+  _reopenAfterMutate(prefix, si);
+  if (!_rerenderAdvisorQuotes(prefix, si)) { (prefix==='sc'?populateScenarios():populateInbox()); setTimeout(function(){ toggleEdit(prefix, si); }, 50); }
+}
+
 function getListForPrefix(prefix){
   if(prefix==='sc') return GD.scenarios;
   if(prefix==='ib') return GD.inboxScenarios;
@@ -22157,25 +22391,7 @@ function repopulateForPrefix(prefix){
   else if(prefix==='ib') populateInbox();
   else if(prefix==='bn') populateBreaking();
 }
-function addChoice(si, prefix) {
-  // Preserve unsaved form values before repopulate wipes them.
-  try { saveScenario(si, prefix); } catch (e) {}
-  const list = getListForPrefix(prefix);
-  list[si].choices.push({id:'c'+list[si].choices.length,text:'',requiresUnlock:null,missionAligned:[],missionOpposed:[],outcomes:[{text:'',effects:{},weight:100,conditions:[],contextNote:''}]});
-  localStorage.setItem('gd_cache',JSON.stringify(GD));
-  var scrollY = document.querySelector('.editor-main').scrollTop;
-  repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
-}
-function deleteChoice(si,ci,prefix) {
-  try { saveScenario(si, prefix); } catch (e) {}
-  const list = getListForPrefix(prefix);
-  list[si].choices.splice(ci,1);
-  localStorage.setItem('gd_cache',JSON.stringify(GD));
-  var scrollY = document.querySelector('.editor-main').scrollTop;
-  repopulateForPrefix(prefix);
-  setTimeout(function(){ toggleEdit(prefix, si); document.querySelector('.editor-main').scrollTop = scrollY; }, 50);
-}
+
 function deleteScenario(i,prefix) {
   if(!confirm('Delete this scenario?'))return;
   const list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
@@ -22749,12 +22965,14 @@ function toggleEdit(prefix, i) {
   if(!card||!form) return;
   const isOpen = card.classList.contains('open');
   card.classList.toggle('open', !isOpen);
+  if (isOpen) stickScenarioHeader(prefix, i, false);
   form.style.display = isOpen ? 'none' : 'block';
   if(exp) exp.textContent = isOpen ? '▸' : '▾';
   // When opening, scroll the card header to the top of the viewport so the
   // edit form below is fully visible (prevents the form feeling like it
   // "opens upward" when the card was near the bottom of the viewport).
   if(!isOpen) {
+    stickScenarioHeader(prefix, i, true);
     // Picker menus render empty and are filled in here, once the form exists,
     // so each "+" offers exactly the options not already chosen in its group.
     var groups = {};
@@ -22766,8 +22984,6 @@ function toggleEdit(prefix, i) {
   }
 }
 function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-
 
 // ═══ MOMENTUM CONFIG ═══
 function populateMomentumConfig(){
@@ -23579,7 +23795,13 @@ function renderAdvisorQuotesEditor(scenario, si, prefix){
   // No on/off toggle here: the engine shows advisor quotes whenever they exist
   // and the advisor is on the player's team. A checkbox that appeared to gate
   // them (highStakes) was never read by the engine and has been removed.
-  var html = '<div class="form-section" style="margin-top:12px"><label class="section-label" style="margin-top:0">Advisor Input</label>' +
+  var html = '<div class="form-section collapsible" style="margin-top:12px">' +
+    '<div class="collapsible-head" onclick="toggleCollapsible(this)">' +
+      '<span class="collapse-caret">▸</span>' +
+      '<span class="section-label" style="margin:0">Advisor Input</span>' +
+      '<span class="choice-preview">' + quotes.length + ' quote' + (quotes.length===1?'':'s') + '</span>' +
+    '</div>' +
+    '<div class="collapsible-body">' +
     '<div class="form-hint">Quotes appear above the choices. Each one shows only when that advisor is on the player\'s team, so add a quote to show it and delete it to remove it.</div>';
   html += '<div class="aq-list" style="margin-top:8px">';
   quotes.forEach(function(q, qi){
@@ -23621,7 +23843,7 @@ function renderAdvisorQuotesEditor(scenario, si, prefix){
     html += '</div>';
     html += '</div>'; // end .aq-item
   });
-  html += '</div><button class="add-btn" style="font-size:11px;margin-top:4px" onclick="addAdvisorQuote('+si+',\''+prefix+'\')">+ Add Advisor Quote</button></div>';
+  html += '</div><button class="add-btn" style="font-size:11px;margin-top:4px" onclick="addAdvisorQuote('+si+',\''+prefix+'\')">+ Add Advisor Quote</button></div></div>';
   return html;
 }
 
@@ -23634,25 +23856,6 @@ function updateMoodPreview(prefix, si, qi){
   // Replace the mood filename in the src
   src = src.replace(/\/(neutral|approving|concerned|disapproving|excited)\.png/, '/'+mood+'.png');
   preview.src = src;
-}
-
-function addAdvisorQuote(si, prefix){
-  var list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
-  var s = list[si]; if(!s) return;
-  if(!s.advisorQuotes) s.advisorQuotes = [];
-  s.advisorQuotes.push({advisorId:'',text:'',mood:'neutral',recommendsChoice:null,effectModifier:{},explicit:true});
-  setDirty();
-  prefix==='sc'?populateScenarios():populateInbox();
-  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
-}
-
-function deleteAdvisorQuote(si, qi, prefix){
-  var list = prefix==='sc'?GD.scenarios:GD.inboxScenarios;
-  var s = list[si]; if(!s||!s.advisorQuotes) return;
-  s.advisorQuotes.splice(qi,1);
-  setDirty();
-  prefix==='sc'?populateScenarios():populateInbox();
-  setTimeout(function(){ toggleEdit(prefix, si); }, 50);
 }
 
 function readAdvisorQuotes(si, prefix){
@@ -24277,7 +24480,6 @@ if(origSaveConfig){
     saveMomentumConfig();
   };
 }
-
 
 // ═══ SEGMENTS ═══
 function populateSegments() {

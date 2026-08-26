@@ -145,6 +145,34 @@ body{font-family:'Merriweather Sans',sans-serif;font-size:14px;background:var(--
 /* ── STAT INPUTS GRID ── */
 .stat-inputs{display:flex;flex-wrap:wrap;gap:10px 12px}
 
+/* Add-from-list pickers (mission alignment, endangers coalitions) */
+.pick-cols{display:flex;gap:14px;flex-wrap:wrap}
+.pick-col{flex:1 1 200px;min-width:0}
+.pick-col-head{display:flex;align-items:center;gap:8px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.pick-add{width:30px;flex:0 0 auto;text-align:center;text-align-last:center;border:1.5px solid var(--border);background:white;color:var(--ink);cursor:pointer;font-family:'Merriweather Sans',sans-serif;font-size:13px;font-weight:700;padding:1px 2px;line-height:1.4;-webkit-appearance:none;appearance:none}
+.pick-add:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.pick-add:disabled{opacity:.4;cursor:default}
+.pick-list{display:flex;flex-direction:column;gap:3px;min-height:4px}
+.pick-entry{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--border);padding:4px 8px;font-size:12px}
+.pick-entry-label{flex:1;min-width:0}
+.pick-entry-del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0 2px}
+.pick-entry-del:hover{color:#b3362b}
+/* Opt-in blocks (gelt cost, political impact) */
+.opt-box{border:1px solid var(--border);background:#faf9f6;padding:8px 10px;margin-bottom:6px}
+.opt-box.active{border-color:var(--gold);background:#fffdf5}
+.opt-label{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer}
+/* Advanced disclosure, used at scenario and outcome level */
+.adv-section{margin:10px 0;border-top:1px solid var(--border);padding-top:8px}
+.adv-section>summary{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer}
+.adv-section>summary:hover{color:var(--gold)}
+.adv-body{margin-top:8px;padding-left:10px;border-left:2px solid var(--border)}
+/* Political range: two handles sharing one track */
+.polrange-body{margin-top:6px}
+.polrange-track{position:relative;height:26px}
+.polrange-track input[type=range]{position:absolute;left:0;width:100%;margin:0;pointer-events:none;background:none;-webkit-appearance:none;appearance:none}
+.polrange-track input[type=range]::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.35);cursor:pointer}
+.polrange-track input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--border);border-radius:2px}
+.polrange-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
 /* Security impact picker — replaces the twelve-input grid on each outcome. */
 .sec-details{margin:4px 0 8px}
 .sec-details>summary{font-size:10px;font-weight:700;letter-spacing:.5px;cursor:pointer;color:#6ba5e7}
@@ -21538,15 +21566,10 @@ function renderScenarioForm(s, i, prefix) {
   const allCats = ['all','progressive','centrist','conservative'];
   const cats = s.categories || ['all'];
   return `<div class="item-edit-form" id="${prefix}-form-${i}" style="display:none">
-    <div class="form-row three">
-      <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Unique identifier — used in triggers, conversations, and coalition links</div></div>
-      <div class="form-group"><label>Tag</label><input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label shown above the scenario (e.g., 'Crisis', 'Opportunity', 'Dilemma')</div></div>
-      <div class="form-group"><label>Variant Group</label><input id="${prefix}-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. bds_event" /><div class="form-hint">Scenarios with the same group ID are variants — only one from each group fires per game</div></div>
-    </div>
-    <div class="form-row three">
-      <div class="form-group"><label>Political Range Min</label><input type="number" id="${prefix}-polmin-${i}" value="${s.politicalRange?s.politicalRange.min:''}" placeholder="0" min="0" max="100" /><div class="form-hint">Min political position to see this scenario (blank = no minimum)</div></div>
-      <div class="form-group"><label>Political Range Max</label><input type="number" id="${prefix}-polmax-${i}" value="${s.politicalRange?s.politicalRange.max:''}" placeholder="100" min="0" max="100" /><div class="form-hint">Max political position to see this scenario (blank = no maximum)</div></div>
-      <div></div>
+    <div class="form-group" style="margin-bottom:11px"><label>Tag</label>
+      <select id="${prefix}-tagsel-${i}" onchange="onTagSelect('${prefix}',${i})">${renderTagOptions(s.tag||'')}</select>
+      <input id="${prefix}-tag-${i}" value="${esc(s.tag||'')}" placeholder="Custom tag" style="margin-top:6px;display:${isCustomTag(s.tag||'')?'':'none'}" />
+      <div class="form-hint">Display label shown above the scenario. Choose "Custom…" to type your own.</div>
     </div>
     <div class="form-group" style="margin-bottom:11px"><label>Title</label><input id="${prefix}-title-${i}" value="${esc(s.title||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="${prefix}-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
@@ -21564,6 +21587,13 @@ function renderScenarioForm(s, i, prefix) {
       </div><div class="form-hint">Which desk objects this scenario can appear in</div></div>
     </div>
     ${renderConsensusField(s, i, prefix)}
+    <details class="adv-section"><summary>Advanced</summary>
+      <div class="adv-body">
+        <div class="form-group"><label>ID</label><input id="${prefix}-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Generated from the title when created. Referenced by conversation and gazette triggers — changing it breaks those links.</div></div>
+        <div class="form-group"><label>Variant Group</label><input id="${prefix}-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. bds_event" /><div class="form-hint">Scenarios sharing a group ID are variants — only one from each group fires per game</div></div>
+        <div class="form-group"><label>Political Range</label>${renderPoliticalRange(prefix, i, s.politicalRange)}</div>
+      </div>
+    </details>
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
     <div class="choices-editor" id="${prefix}-choices-${i}">${(s.choices||[]).map((c,ci)=>renderChoiceEditor(c,i,ci,prefix)).join('')}</div>
     <button class="add-btn" style="margin-top:8px" onclick="addChoice(${i},'${prefix}')">+ Add Choice</button>
@@ -21571,12 +21601,226 @@ function renderScenarioForm(s, i, prefix) {
     <div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="saveScenario(${i},'${prefix}')">Save</button></div>
   </div>`;
 }
+// ═══ TAG DROPDOWN (item 3) ═══
+// Free text let equivalent tags drift apart. The list is a starting point drawn
+// from tags already in use; "Custom…" still allows anything.
+var TAG_PRESETS = ['Task','Crisis','Coalition','Internal','Policy','Community',
+                   'Development','Israel','Governance','Communications','Strategy','Media'];
+
+function isCustomTag(tag) { return !!tag && TAG_PRESETS.indexOf(tag) < 0; }
+
+function renderTagOptions(current) {
+  var html = '<option value="">— none —</option>';
+  TAG_PRESETS.forEach(function(t) {
+    html += '<option value="' + esc(t) + '"' + (t === current ? ' selected' : '') + '>' + esc(t) + '</option>';
+  });
+  html += '<option value="__custom"' + (isCustomTag(current) ? ' selected' : '') + '>Custom…</option>';
+  return html;
+}
+
+function onTagSelect(prefix, i) {
+  var sel = document.getElementById(prefix + '-tagsel-' + i);
+  var box = document.getElementById(prefix + '-tag-' + i);
+  if (!sel || !box) return;
+  if (sel.value === '__custom') { box.style.display = ''; box.focus(); }
+  else { box.style.display = 'none'; box.value = sel.value; }
+}
+
+function readTag(prefix, i) {
+  var sel = document.getElementById(prefix + '-tagsel-' + i);
+  var box = document.getElementById(prefix + '-tag-' + i);
+  if (!sel) return box ? box.value : '';
+  if (sel.value === '__custom') return box ? box.value : '';
+  return sel.value;
+}
+
+// ═══ POLITICAL RANGE BAR (item 4) ═══
+// Two handles on one 0-100 track instead of a pair of number boxes, matching
+// the Community Consensus slider. Unset means the scenario is not gated.
+function renderPoliticalRange(prefix, i, range) {
+  var on = !!(range && (range.min !== undefined || range.max !== undefined));
+  var lo = (range && range.min !== undefined) ? range.min : 0;
+  var hi = (range && range.max !== undefined) ? range.max : 100;
+  return '<div class="polrange" id="' + prefix + '-polrange-' + i + '">' +
+    '<label class="opt-label"><input type="checkbox" id="' + prefix + '-polrange-on-' + i + '" ' + (on ? 'checked' : '') +
+      ' onchange="onPolRangeToggle(\'' + prefix + '\',' + i + ')" /> Limit to part of the political spectrum</label>' +
+    '<div class="polrange-body" style="display:' + (on ? 'block' : 'none') + '">' +
+      '<div class="polrange-track">' +
+        '<input type="range" min="0" max="100" step="1" id="' + prefix + '-polmin-' + i + '" value="' + lo + '" oninput="onPolRangeInput(\'' + prefix + '\',' + i + ')" />' +
+        '<input type="range" min="0" max="100" step="1" id="' + prefix + '-polmax-' + i + '" value="' + hi + '" oninput="onPolRangeInput(\'' + prefix + '\',' + i + ')" />' +
+      '</div>' +
+      '<div class="polrange-scale"><span>← Left</span><span id="' + prefix + '-polrange-val-' + i + '">' + lo + ' – ' + hi + '</span><span>Right →</span></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function onPolRangeToggle(prefix, i) {
+  var cb = document.getElementById(prefix + '-polrange-on-' + i);
+  var body = document.querySelector('#' + prefix + '-polrange-' + i + ' .polrange-body');
+  if (body) body.style.display = cb && cb.checked ? 'block' : 'none';
+}
+
+// Keep the handles from crossing over each other.
+function onPolRangeInput(prefix, i) {
+  var lo = document.getElementById(prefix + '-polmin-' + i);
+  var hi = document.getElementById(prefix + '-polmax-' + i);
+  if (!lo || !hi) return;
+  var a = parseInt(lo.value, 10), b = parseInt(hi.value, 10);
+  if (a > b) { if (document.activeElement === lo) hi.value = a; else lo.value = b; }
+  var lbl = document.getElementById(prefix + '-polrange-val-' + i);
+  if (lbl) lbl.textContent = lo.value + ' – ' + hi.value;
+}
+
+function readPoliticalRange(prefix, i) {
+  var cb = document.getElementById(prefix + '-polrange-on-' + i);
+  if (!cb || !cb.checked) return undefined;
+  var lo = parseInt(document.getElementById(prefix + '-polmin-' + i)?.value, 10);
+  var hi = parseInt(document.getElementById(prefix + '-polmax-' + i)?.value, 10);
+  var out = {};
+  if (!isNaN(lo) && lo > 0) out.min = lo;
+  if (!isNaN(hi) && hi < 100) out.max = hi;
+  return Object.keys(out).length ? out : undefined;
+}
+
+// ═══ ID GENERATION (item 2) ═══
+// Authors no longer type an ID. Slugified from the title so the ~41 conversation
+// and gazette triggers that reference scenario IDs stay readable. Purely local —
+// no API involved.
+var SLUG_STOPWORDS = ['a','an','the','of','to','for','and','or','in','on','at','is','are',
+                      'be','by','with','from','that','this','it','its','as','your','you','makes','make'];
+
+function slugifyTitle(title, existingIds) {
+  var words = String(title || '').toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/[\s-]+/)
+    .filter(function(w) { return w && SLUG_STOPWORDS.indexOf(w) < 0; });
+  var base = words.slice(0, 4).join('_') || 'scenario';
+  var id = base, n = 2;
+  var taken = existingIds || [];
+  while (taken.indexOf(id) >= 0) { id = base + '_' + n; n++; }
+  return id;
+}
+
+function allScenarioIds() {
+  return [].concat(
+    (GD.scenarios || []).map(function(s){ return s.id; }),
+    (GD.inboxScenarios || []).map(function(s){ return s.id; }),
+    (GD.breakingNews || []).map(function(s){ return s.id; })
+  );
+}
+
+// ═══ ADD-FROM-LIST PICKERS (mission alignment, endangers coalitions) ═══
+// Both blocks used to render one control per option on every choice — six
+// mission dropdowns and five coalition checkboxes — so the author had to read
+// past every option to find the one or two that mattered. These render nothing
+// until something is added: a labelled "+" opens a menu of the remaining
+// options, and each added entry appears as a removable row.
+
+function _pickerEntryHtml(kind, key, id, label) {
+  return '<div class="pick-entry" data-id="' + esc(id) + '">' +
+    '<span class="pick-entry-label">' + esc(label) + '</span>' +
+    '<button type="button" class="pick-entry-del" title="Remove" onclick="removePickerEntry(this)">×</button>' +
+  '</div>';
+}
+
+// Show/hide an opt-in block's fields. Unchecking neutralises the impact but
+// leaves the values on screen, so re-checking restores them without re-entry.
+function toggleOptBox(cb, fieldsId) {
+  var el = document.getElementById(fieldsId);
+  if (el) el.style.display = cb.checked ? 'block' : 'none';
+  var box = cb.closest('.opt-box');
+  if (box) box.classList.toggle('active', cb.checked);
+}
+
+function removePickerEntry(btn) {
+  var box = btn.closest('.pick-list');
+  var entry = btn.closest('.pick-entry');
+  if (entry) entry.remove();
+  if (box) refreshPickerMenus(box.getAttribute('data-group'));
+}
+
+// Options already chosen anywhere in the group are not offered again — a
+// mission cannot be both aligned and opposed.
+function _groupChosenIds(group) {
+  var ids = [];
+  document.querySelectorAll('.pick-list[data-group="' + group + '"] .pick-entry').forEach(function(e) {
+    ids.push(e.getAttribute('data-id'));
+  });
+  return ids;
+}
+
+function _pickerSource(kind) {
+  if (kind === 'mission') return (GD.missions || []).map(function(m){ return {id:m.id, label:m.name}; });
+  if (kind === 'coalition') return (GD.coalitionOffers || []).map(function(c){ return {id:c.id, label:c.name}; });
+  return [];
+}
+
+function refreshPickerMenus(group) {
+  var chosen = _groupChosenIds(group);
+  document.querySelectorAll('.pick-add[data-group="' + group + '"]').forEach(function(sel) {
+    var kind = sel.getAttribute('data-kind');
+    var remaining = _pickerSource(kind).filter(function(o){ return chosen.indexOf(o.id) < 0; });
+    sel.innerHTML = '<option value="">+</option>' + remaining.map(function(o) {
+      return '<option value="' + esc(o.id) + '">' + esc(o.label) + '</option>';
+    }).join('');
+    sel.disabled = remaining.length === 0;
+    sel.title = remaining.length === 0 ? 'All options already added' : 'Add';
+  });
+}
+
+function onPickerAdd(sel) {
+  var id = sel.value;
+  if (!id) return;
+  var kind = sel.getAttribute('data-kind');
+  var group = sel.getAttribute('data-group');
+  var listId = sel.getAttribute('data-list');
+  var box = document.getElementById(listId);
+  var opt = _pickerSource(kind).find(function(o){ return o.id === id; });
+  if (box && opt) box.insertAdjacentHTML('beforeend', _pickerEntryHtml(kind, listId, opt.id, opt.label));
+  sel.value = '';
+  refreshPickerMenus(group);
+}
+
+// Render one column: a caption, the chosen entries, and the "+" menu.
+function renderPickerColumn(kind, group, listId, caption, chosenIds) {
+  var src = _pickerSource(kind);
+  var entries = (chosenIds || []).map(function(id) {
+    var o = src.find(function(x){ return x.id === id; });
+    return _pickerEntryHtml(kind, listId, id, o ? o.label : id + ' (missing)');
+  }).join('');
+  return '<div class="pick-col">' +
+    '<div class="pick-col-head">' + esc(caption) +
+      '<select class="pick-add" data-kind="' + esc(kind) + '" data-group="' + esc(group) + '" data-list="' + esc(listId) + '" onchange="onPickerAdd(this)"><option value="">+</option></select>' +
+    '</div>' +
+    '<div class="pick-list" id="' + listId + '" data-group="' + esc(group) + '">' + entries + '</div>' +
+  '</div>';
+}
+
+function readPickerColumn(listId) {
+  var box = document.getElementById(listId);
+  if (!box) return [];
+  return [].slice.call(box.querySelectorAll('.pick-entry')).map(function(e){ return e.getAttribute('data-id'); });
+}
+
 function renderChoiceEditor(c, si, ci, prefix) {
   const missions = GD.missions || [];
   const aligned = c.missionAligned || [];
   const opposed = c.missionOpposed || [];
   const outcomes = c.outcomes || [{text:c.outcome||'',effects:c.effects||{},weight:100,conditions:[],contextNote:''}];
-  var hasPol = (c.politicalLean !== undefined && c.politicalLean !== 0) || (c.cloutEffect !== undefined && c.cloutEffect !== 0) || (c.cloutCost !== undefined && c.cloutCost !== 0);
+  var geltVal = (c.budgetCost || c._inactiveBudgetCost || 0);
+  var hasGelt = !!c.budgetCost;
+  // A choice with the political box off keeps its numbers on _inactivePolitical;
+  // merge them back for display so re-checking shows what was there.
+  var _ip = c._inactivePolitical || {};
+  var polShow = {
+    politicalLean: c.politicalLean || _ip.politicalLean || 0,
+    israelLean: c.israelLean || _ip.israelLean || 0,
+    cloutCost: c.cloutCost || _ip.cloutCost || 0,
+    politicalRequirement: c.politicalRequirement || _ip.politicalRequirement || {}
+  };
+  var hasPol = !!(polShow.politicalLean || polShow.israelLean || polShow.cloutCost ||
+    (c.cloutEffect !== undefined && c.cloutEffect !== 0) ||
+    (polShow.politicalRequirement && Object.keys(polShow.politicalRequirement).length));
   return `<div class="choice-editor" id="${prefix}-choice-${si}-${ci}">
     <div class="choice-editor-header">
       <span class="choice-letter">${String.fromCharCode(65+ci)}</span>
@@ -21584,30 +21828,39 @@ function renderChoiceEditor(c, si, ci, prefix) {
     </div>
     <div class="form-group" style="margin-bottom:6px"><label>Choice Text</label><textarea id="${prefix}-ctext-${si}-${ci}" rows="2">${esc(c.text||'')}</textarea></div>
     <div class="form-group" style="margin-bottom:6px"><label>Requires Trait</label><select id="${prefix}-cunlock-${si}-${ci}"><option value="">None (always available)</option>${(GD.characterTraits||[]).map(t=>`<option value="${esc(t.id)}"${c.requiresUnlock===t.id?' selected':''}>${esc(t.name)}</option>`).join('')}${(c.requiresUnlock && !(GD.characterTraits||[]).some(t=>t.id===c.requiresUnlock))?`<option value="${esc(c.requiresUnlock)}" selected>⚠ Unknown trait "${esc(c.requiresUnlock)}" — no player can pick this</option>`:''}</select><div class="form-hint">Only traits defined in the Character Traits panel can unlock a choice. A trait listed here that no longer exists makes the choice permanently unreachable.</div></div>
-    <div class="form-group" style="margin-bottom:6px"><label>Gelt Cost (0 = free)</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${c.budgetCost||0}" min="0" /><div class="form-hint">Gelt units spent if player picks this choice</div></div>
+    <div class="opt-box${hasGelt?' active':''}">
+      <label class="opt-label"><input type="checkbox" id="${prefix}-cbcoston-${si}-${ci}" ${hasGelt?'checked':''} onchange="toggleOptBox(this,'${prefix}-cbcostfields-${si}-${ci}')" /> 💰 Costs Gelt</label>
+      <div id="${prefix}-cbcostfields-${si}-${ci}" style="display:${hasGelt?'block':'none'}">
+        <div class="form-group" style="margin:6px 0 0"><label>Gelt Cost</label><input type="number" id="${prefix}-cbcost-${si}-${ci}" value="${geltVal}" min="0" /><div class="form-hint">Gelt spent if the player picks this choice. Unchecking the box removes the cost but keeps this number.</div></div>
+      </div>
+    </div>
     <div class="pol-impact-box${hasPol?' active':''}">
       <label class="pol-impact-label" onclick="togglePolFields('${prefix}',${si},${ci})">
         <input type="checkbox" id="${prefix}-cpol-${si}-${ci}" ${hasPol?'checked':''} style="accent-color:#6366f1" /> ⚖️ Political Impact
       </label>
       <div id="${prefix}-polfields-${si}-${ci}" style="display:${hasPol?'block':'none'}">
         <div class="pol-fields">
-          <div class="form-group"><label>Pol Lean</label><input type="number" id="${prefix}-cpollean-${si}-${ci}" value="${c.politicalLean||0}" min="-10" max="10" /><div class="form-hint">-10 to +10</div></div>
-          <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${c.israelLean||0}" min="-10" max="10" /><div class="form-hint">-10 to +10</div></div>
-          <div class="form-group"><label>Min Clout</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(c.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = none</div></div>
-          <div class="form-group"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${c.cloutCost||0}" min="0" /><div class="form-hint">0 = free</div></div>
-          <div class="form-group"><label>Min Pol Pos</label><input type="number" id="${prefix}-cpolminpos-${si}-${ci}" value="${(c.politicalRequirement||{}).minPosition||''}" min="0" max="100" placeholder="0" /><div class="form-hint">blank = none</div></div>
-          <div class="form-group"><label>Max Pol Pos</label><input type="number" id="${prefix}-cpolmaxpos-${si}-${ci}" value="${(c.politicalRequirement||{}).maxPosition||''}" min="0" max="100" placeholder="100" /><div class="form-hint">blank = none</div></div>
+          <div class="form-group"><label>Pol Lean</label><input type="number" id="${prefix}-cpollean-${si}-${ci}" value="${polShow.politicalLean}" min="-10" max="10" /><div class="form-hint">-10 to +10</div></div>
+          <div class="form-group"><label>Israel Lean</label><input type="number" id="${prefix}-cpolleanil-${si}-${ci}" value="${polShow.israelLean}" min="-10" max="10" /><div class="form-hint">-10 to +10</div></div>
+          <div class="form-group"><label>Min Clout</label><input type="number" id="${prefix}-cpolminclout-${si}-${ci}" value="${(polShow.politicalRequirement||{}).minClout||0}" min="0" max="100" /><div class="form-hint">0 = none</div></div>
+          <div class="form-group"><label>Clout Cost</label><input type="number" id="${prefix}-ccloutcost-${si}-${ci}" value="${polShow.cloutCost}" min="0" /><div class="form-hint">0 = free</div></div>
+          <div class="form-group"><label>Min Pol Pos</label><input type="number" id="${prefix}-cpolminpos-${si}-${ci}" value="${(polShow.politicalRequirement||{}).minPosition||''}" min="0" max="100" placeholder="0" /><div class="form-hint">blank = none</div></div>
+          <div class="form-group"><label>Max Pol Pos</label><input type="number" id="${prefix}-cpolmaxpos-${si}-${ci}" value="${(polShow.politicalRequirement||{}).maxPosition||''}" min="0" max="100" placeholder="100" /><div class="form-hint">blank = none</div></div>
         </div>
       </div>
     </div>
     <div class="mission-align-section"><label class="section-label" style="margin-top:0">Mission Alignment</label>
-    <div style="display:flex;flex-direction:column;gap:2px">${missions.map(m=>{
-      const st = aligned.includes(m.id)?'aligned':opposed.includes(m.id)?'opposed':'neutral';
-      return `<div class="mission-align-row"><span>${esc(m.name)}</span><select id="${prefix}-calign-${si}-${ci}-${m.id}"><option value="neutral" ${st==='neutral'?'selected':''}>Neutral</option><option value="aligned" ${st==='aligned'?'selected':''}>✓ Aligned</option><option value="opposed" ${st==='opposed'?'selected':''}>✗ Opposed</option></select></div>`;
-    }).join('')}</div></div>
-    <details style="margin:8px 0"><summary style="font-size:11px;font-weight:700;cursor:pointer;color:var(--gold)">Endangers Coalitions (${(c.endangersCoalition||[]).length} set)</summary>
-    <div style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px">${(GD.coalitionOffers||[]).map(co=>`<label class="checkbox-item"><input type="checkbox" id="${prefix}-cendanger-${si}-${ci}-${co.id}" ${(c.endangersCoalition||[]).includes(co.id)?'checked':''} />${esc(co.name)}</label>`).join('')}</div>
-    </details>
+      <div class="form-hint" style="margin-bottom:6px">Missions not listed in either column count as neutral.</div>
+      <div class="pick-cols">
+        ${renderPickerColumn('mission', prefix+'-mis-'+si+'-'+ci, prefix+'-misal-'+si+'-'+ci, 'Aligned', aligned)}
+        ${renderPickerColumn('mission', prefix+'-mis-'+si+'-'+ci, prefix+'-misop-'+si+'-'+ci, 'Opposed', opposed)}
+      </div>
+    </div>
+    <div class="mission-align-section"><label class="section-label" style="margin-top:0">Endangers Coalitions</label>
+      <div class="pick-cols">
+        ${renderPickerColumn('coalition', prefix+'-coal-'+si+'-'+ci, prefix+'-coallist-'+si+'-'+ci, 'At risk from this choice', c.endangersCoalition || [])}
+      </div>
+    </div>
     <label class="section-label">Outcomes (${outcomes.length})</label>
     ${outcomes.map((o,oi)=>renderOutcomeEditor(si,ci,oi,o,prefix)).join('')}
     <button class="add-btn" style="padding:6px;font-size:11px;margin-top:4px" onclick="addOutcome(${si},${ci},'${prefix}')">+ Add Outcome</button>
@@ -21698,11 +21951,16 @@ function renderOutcomeEditor(si, ci, oi, o, prefix) {
   return `<div class="outcome-card">
     <div class="outcome-card-header"><span class="outcome-card-title">Outcome ${oi+1}</span>${oi>0?`<button class="btn btn-danger btn-sm" onclick="deleteOutcome(${si},${ci},${oi},'${prefix}')">×</button>`:''}</div>
     <div class="form-group" style="margin-bottom:5px"><label>Text</label><textarea id="${prefix}-otext-${si}-${ci}-${oi}" rows="2">${esc(o.text||'')}</textarea></div>
-    <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /><div class="form-hint">Probability weight — higher weight = more likely when multiple outcomes exist</div></div><div class="form-group"><label>Context Note</label><input id="${prefix}-onote-${si}-${ci}-${oi}" value="${esc(o.contextNote||'')}" placeholder="optional info box" /><div class="form-hint">Optional info box shown to the player explaining deeper implications</div></div></div>
+    <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Weight %</label><input type="number" id="${prefix}-owt-${si}-${ci}-${oi}" value="${o.weight||100}" min="0" /><div class="form-hint">Probability weight — higher weight = more likely when multiple outcomes exist</div></div></div>
     <div class="stat-inputs cols-4" style="margin-bottom:5px">${stats.map(s=>`<div class="stat-input-group"><label>${s.label}</label><input type="number" id="${prefix}-ofx-${si}-${ci}-${oi}-${s.id}" value="${(o.effects||{})[s.id]||0}" /></div>`).join('')}<div class="stat-input-group"><label>Clout</label><input type="number" id="${prefix}-oclout-${si}-${ci}-${oi}" value="${o.cloutEffect||0}" min="-10" max="10" /></div><div class="stat-input-group"><label>Gelt</label><input type="number" id="${prefix}-ogelt-${si}-${ci}-${oi}" value="${o.budgetEffect||0}" /></div></div>
     ${secHtml}
-    <div class="form-row" style="margin-bottom:5px"><div class="form-group"><label>Gazette Headline</label><input id="${prefix}-ohead-${si}-${ci}-${oi}" value="${esc(o.headline||'')}" placeholder="optional — appears in Jewish Gazette" /><div class="form-hint">Optional. Use <code>[org]</code> to insert the player's org name.</div></div><div class="form-group"><label>Gazette Subline</label><input id="${prefix}-osub-${si}-${ci}-${oi}" value="${esc(o.subline||'')}" placeholder="optional subhead" /><div class="form-hint">Optional smaller text under the headline. Supports <code>[org]</code>.</div></div></div>
-    <div style="font-size:10px;color:var(--muted);margin-top:8px">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
+    <details class="adv-section"><summary>Advanced</summary>
+      <div class="adv-body">
+        <div class="form-group"><label>Context Note</label><input id="${prefix}-onote-${si}-${ci}-${oi}" value="${esc(o.contextNote||'')}" placeholder="optional info box" /><div class="form-hint">Optional info box shown to the player explaining deeper implications</div></div>
+        <div class="form-row"><div class="form-group"><label>Gazette Headline</label><input id="${prefix}-ohead-${si}-${ci}-${oi}" value="${esc(o.headline||'')}" placeholder="optional — appears in Jewish Gazette" /><div class="form-hint">Optional. Use <code>[org]</code> to insert the player's org name.</div></div><div class="form-group"><label>Gazette Subline</label><input id="${prefix}-osub-${si}-${ci}-${oi}" value="${esc(o.subline||'')}" placeholder="optional subhead" /><div class="form-hint">Optional smaller text under the headline. Supports <code>[org]</code>.</div></div></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px">Conditions: ${(o.conditions||[]).length?JSON.stringify(o.conditions):'None'} <button style="font-size:9px;cursor:pointer;border:1px solid var(--border);background:none;padding:1px 4px" onclick="editConditions(${si},${ci},${oi},'${prefix}')">Edit</button></div>
+      </div>
+    </details>
   </div>`;
 }
 function addOutcome(si, ci, prefix) {
@@ -21744,17 +22002,11 @@ function saveScenario(i, prefix) {
   const s = list[i];
   var _prevScenario = JSON.parse(JSON.stringify(s));
   s.id = document.getElementById(prefix+'-id-'+i)?.value||s.id;
-  s.tag = document.getElementById(prefix+'-tag-'+i)?.value||'';
-  // Group and political range
+  s.tag = readTag(prefix, i);
   var groupVal = document.getElementById(prefix+'-group-'+i)?.value||'';
   if(groupVal) s.groupId = groupVal; else delete s.groupId;
-  var polMinVal = document.getElementById(prefix+'-polmin-'+i)?.value;
-  var polMaxVal = document.getElementById(prefix+'-polmax-'+i)?.value;
-  if(polMinVal !== '' || polMaxVal !== '') {
-    s.politicalRange = {};
-    if(polMinVal !== '') s.politicalRange.min = parseInt(polMinVal);
-    if(polMaxVal !== '') s.politicalRange.max = parseInt(polMaxVal);
-  } else { delete s.politicalRange; }
+  var _pr = readPoliticalRange(prefix, i);
+  if (_pr) s.politicalRange = _pr; else delete s.politicalRange;
   s.title = document.getElementById(prefix+'-title-'+i)?.value||s.title;
   s.body = document.getElementById(prefix+'-body-'+i)?.value||'';
   const allCats=['all','progressive','centrist','conservative'];
@@ -21792,11 +22044,8 @@ function saveScenario(i, prefix) {
   while(document.getElementById(prefix+'-ctext-'+i+'-'+ci)) {
     const text = document.getElementById(prefix+'-ctext-'+i+'-'+ci).value;
     var unlock = document.getElementById(prefix+'-cunlock-'+i+'-'+ci)?.value || '';
-    const aligned=[],opposed=[];
-    missions.forEach(m=>{
-      const v=document.getElementById(prefix+'-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';
-      if(v==='aligned') aligned.push(m.id); else if(v==='opposed') opposed.push(m.id);
-    });
+    const aligned = readPickerColumn(prefix+'-misal-'+i+'-'+ci);
+    const opposed = readPickerColumn(prefix+'-misop-'+i+'-'+ci);
     // Political impact fields
     var polLean = parseInt(document.getElementById(prefix+'-cpollean-'+i+'-'+ci)?.value)||0;
     var israelLean = parseInt(document.getElementById(prefix+'-cpolleanil-'+i+'-'+ci)?.value)||0;
@@ -21836,7 +22085,7 @@ function saveScenario(i, prefix) {
       oi++;
     }
     var segOv = readSegOverrides(prefix, i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:0,politicalLean:polLean};
     // Assign these only when set. Writing `key: undefined` into the literal
     // created the key on the object, so a save with no edits reported the
     // choice as changed even though nothing meaningful differed.
@@ -21848,8 +22097,29 @@ function saveScenario(i, prefix) {
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
     if (israelLean !== 0) choice.israelLean = israelLean; else delete choice.israelLean;
-    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById(prefix+'-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    var endangers = readPickerColumn(prefix+'-coallist-'+i+'-'+ci);
     if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
+    // Gelt cost is opt-in. Unchecked means the choice costs nothing, but the
+    // number stays parked on _inactiveBudgetCost so ticking the box again
+    // restores it. The engine only ever reads budgetCost.
+    // Political impact is opt-in too. Unchecked neutralises lean/clout/gating
+    // while the entered numbers stay parked on _inactivePolitical, so ticking
+    // the box again restores them.
+    var _polOn = document.getElementById(prefix+'-cpol-'+i+'-'+ci);
+    var _polVals = {politicalLean: polLean, israelLean: israelLean, cloutCost: cloutCost, politicalRequirement: Object.keys(polReq).length ? polReq : undefined};
+    if (!_polOn || !_polOn.checked) {
+      var _parked = {};
+      Object.keys(_polVals).forEach(function(k){ if (_polVals[k]) _parked[k] = _polVals[k]; });
+      choice.politicalLean = 0;
+      delete choice.israelLean; delete choice.cloutCost; delete choice.politicalRequirement;
+      if (Object.keys(_parked).length) choice._inactivePolitical = _parked; else delete choice._inactivePolitical;
+    } else {
+      delete choice._inactivePolitical;
+    }
+    var _geltOn = document.getElementById(prefix+'-cbcoston-'+i+'-'+ci);
+    var _geltAmt = parseInt(document.getElementById(prefix+'-cbcost-'+i+'-'+ci)?.value) || 0;
+    if (_geltOn && _geltOn.checked && _geltAmt) { choice.budgetCost = _geltAmt; delete choice._inactiveBudgetCost; }
+    else { choice.budgetCost = 0; if (_geltAmt) choice._inactiveBudgetCost = _geltAmt; else delete choice._inactiveBudgetCost; }
     var _prevChoice = _prevChoices[ci];
     choice.missionAligned = preserveArrayOrder(choice.missionAligned, _prevChoice && _prevChoice.missionAligned);
     choice.missionOpposed = preserveArrayOrder(choice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
@@ -21914,7 +22184,11 @@ function deleteScenario(i,prefix) {
   refreshDependentPanels('scenarios');
 }
 function addScenario() {
-  GD.scenarios.push({id:'sc_'+Date.now(),tag:'Event',trigger:'community',title:'New Scenario',body:'',categories:['all'],complexity:3,choices:[]});
+  // ID is generated from the title rather than typed. 'New Scenario' seeds it;
+  // renaming the scenario later does not rewrite the ID, since conversation and
+  // gazette triggers reference it.
+  var _newTitle = 'New Scenario';
+  GD.scenarios.push({id:slugifyTitle(_newTitle, allScenarioIds()),tag:'',title:_newTitle,body:'',categories:['all'],complexity:3,choices:[]});
   localStorage.setItem('gd_cache',JSON.stringify(GD)); populateScenarios(); refreshDependentPanels('scenarios');
 }
 
@@ -22025,16 +22299,12 @@ function renderInboxForm(s, i) {
   const stats = GD.stats||[];
   const expOut = s.expiredOutcome||{};
   return `<div class="item-edit-form" id="ib-form-${i}" style="display:none">
-    <div class="form-row three">
-      <div class="form-group"><label>ID</label><input id="ib-id-${i}" value="${esc(s.id)}" /></div>
-      <div class="form-group"><label>Tag</label><input id="ib-tag-${i}" value="${esc(s.tag||'')}" /><div class="form-hint">Display label (e.g., 'Email', 'Message', 'Urgent')</div></div>
-      <div class="form-group"><label>From</label><input id="ib-from-${i}" value="${esc(s.from||'')}" /><div class="form-hint">Sender name shown in the inbox (e.g., 'Board Chair', 'Staff Slack')</div></div>
+    <div class="form-group" style="margin-bottom:11px"><label>Tag</label>
+      <select id="ib-tagsel-${i}" onchange="onTagSelect('ib',${i})">${renderTagOptions(s.tag||'')}</select>
+      <input id="ib-tag-${i}" value="${esc(s.tag||'')}" placeholder="Custom tag" style="margin-top:6px;display:${isCustomTag(s.tag||'')?'':'none'}" />
+      <div class="form-hint">Display label shown above the scenario. Choose "Custom…" to type your own.</div>
     </div>
-    <div class="form-row three">
-      <div class="form-group"><label>Variant Group</label><input id="ib-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. donor_pressure" /><div class="form-hint">Scenarios with the same group ID are variants — only one fires per game</div></div>
-      <div class="form-group"><label>Political Range Min</label><input type="number" id="ib-polmin-${i}" value="${s.politicalRange?s.politicalRange.min:''}" placeholder="0" min="0" max="100" /><div class="form-hint">Min political position to see this scenario (blank = no minimum)</div></div>
-      <div class="form-group"><label>Political Range Max</label><input type="number" id="ib-polmax-${i}" value="${s.politicalRange?s.politicalRange.max:''}" placeholder="100" min="0" max="100" /><div class="form-hint">Max political position to see this scenario (blank = no maximum)</div></div>
-    </div>
+    <div class="form-group" style="margin-bottom:11px"><label>From</label><input id="ib-from-${i}" value="${esc(s.from||'')}" /><div class="form-hint">Sender shown on the message</div></div>
     <div class="form-group" style="margin-bottom:11px"><label>Subject</label><input id="ib-subj-${i}" value="${esc(s.subject||'')}" /></div>
     <div class="form-group" style="margin-bottom:11px"><label>Body</label><textarea id="ib-body-${i}" rows="3">${esc(s.body||'')}</textarea></div>
     <div class="form-row three">
@@ -22052,6 +22322,13 @@ function renderInboxForm(s, i) {
       <div class="form-group"><label>Context Note</label><input id="ib-expnote-${i}" value="${esc(expOut.contextNote||'')}" /></div>
     </details>
     ${renderConsensusField(s, i, 'ib')}
+    <details class="adv-section"><summary>Advanced</summary>
+      <div class="adv-body">
+        <div class="form-group"><label>ID</label><input id="ib-id-${i}" value="${esc(s.id)}" /><div class="form-hint">Generated from the title when created. Referenced by conversation and gazette triggers — changing it breaks those links.</div></div>
+        <div class="form-group"><label>Variant Group</label><input id="ib-group-${i}" value="${esc(s.groupId||'')}" placeholder="e.g. bds_event" /><div class="form-hint">Scenarios sharing a group ID are variants — only one from each group fires per game</div></div>
+        <div class="form-group"><label>Political Range</label>${renderPoliticalRange('ib', i, s.politicalRange)}</div>
+      </div>
+    </details>
     <h3 style="font-size:13px;margin:14px 0 8px">Choices</h3>
     <div class="choices-editor">${(s.choices||[]).map((c,ci)=>renderChoiceEditor(c,i,ci,'ib')).join('')}</div>
     <button class="add-btn" style="margin-top:8px" onclick="addChoice(${i},'ib')">+ Add Choice</button>
@@ -22063,17 +22340,12 @@ function saveInbox(i) {
   const s = GD.inboxScenarios[i];
   var _prevScenario = JSON.parse(JSON.stringify(s));
   s.id = document.getElementById('ib-id-'+i)?.value||s.id;
-  s.tag = document.getElementById('ib-tag-'+i)?.value||'';
+  s.tag = readTag('ib', i);
   // Group and political range
   var ibGroupVal = document.getElementById('ib-group-'+i)?.value||'';
   if(ibGroupVal) s.groupId = ibGroupVal; else delete s.groupId;
-  var ibPolMin = document.getElementById('ib-polmin-'+i)?.value;
-  var ibPolMax = document.getElementById('ib-polmax-'+i)?.value;
-  if(ibPolMin !== '' || ibPolMax !== '') {
-    s.politicalRange = {};
-    if(ibPolMin !== '') s.politicalRange.min = parseInt(ibPolMin);
-    if(ibPolMax !== '') s.politicalRange.max = parseInt(ibPolMax);
-  } else { delete s.politicalRange; }
+  var _pr = readPoliticalRange('ib', i);
+  if (_pr) s.politicalRange = _pr; else delete s.politicalRange;
   s.from = document.getElementById('ib-from-'+i)?.value||'';
   s.subject = document.getElementById('ib-subj-'+i)?.value||'';
   s.body = document.getElementById('ib-body-'+i)?.value||'';
@@ -22127,10 +22399,11 @@ function saveInbox(i) {
   while(document.getElementById('ib-ctext-'+i+'-'+ci)) {
     const text = document.getElementById('ib-ctext-'+i+'-'+ci).value;
     var unlock = document.getElementById('ib-cunlock-'+i+'-'+ci)?.value || '';
-    const aligned=[],opposed=[];
-    missions.forEach(m=>{const v=document.getElementById('ib-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
+    const aligned = readPickerColumn('ib-misal-'+i+'-'+ci);
+    const opposed = readPickerColumn('ib-misop-'+i+'-'+ci);
     // Political impact fields
     var polLean = parseInt(document.getElementById('ib-cpollean-'+i+'-'+ci)?.value)||0;
+    var israelLean = parseInt(document.getElementById('ib-cpolleanil-'+i+'-'+ci)?.value)||0;
     // NOTE: the shared choice editor renders no choice-level Clout field, so this
     // lookup never resolves. Reading it as 0 and writing it through overwrote
     // authored cloutEffect values; the value is now carried over from the
@@ -22168,7 +22441,7 @@ function saveInbox(i) {
       oi++;
     }
     var segOv = readSegOverrides('ib', i, ci);
-    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    var choice = {id:'c'+ci,text,missionAligned:aligned,missionOpposed:opposed,outcomes,budgetCost:0,politicalLean:polLean};
     if (Object.keys(polReq).length) choice.politicalRequirement = polReq; else delete choice.politicalRequirement;
     if (segOv) choice.segmentOverrides = segOv; else delete choice.segmentOverrides;
     if (unlock) choice.requiresUnlock = unlock;
@@ -22176,8 +22449,29 @@ function saveInbox(i) {
     else delete choice.requiresUnlock;
     if (cloutCost > 0) choice.cloutCost = cloutCost;
     else delete choice.cloutCost;
-    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById('ib-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    var endangers = readPickerColumn('ib-coallist-'+i+'-'+ci);
     if (endangers.length) choice.endangersCoalition = endangers; else delete choice.endangersCoalition;
+    // Gelt cost is opt-in. Unchecked means the choice costs nothing, but the
+    // number stays parked on _inactiveBudgetCost so ticking the box again
+    // restores it. The engine only ever reads budgetCost.
+    // Political impact is opt-in too. Unchecked neutralises lean/clout/gating
+    // while the entered numbers stay parked on _inactivePolitical, so ticking
+    // the box again restores them.
+    var _polOn = document.getElementById('ib'+'-cpol-'+i+'-'+ci);
+    var _polVals = {politicalLean: polLean, israelLean: israelLean, cloutCost: cloutCost, politicalRequirement: Object.keys(polReq).length ? polReq : undefined};
+    if (!_polOn || !_polOn.checked) {
+      var _parked = {};
+      Object.keys(_polVals).forEach(function(k){ if (_polVals[k]) _parked[k] = _polVals[k]; });
+      choice.politicalLean = 0;
+      delete choice.israelLean; delete choice.cloutCost; delete choice.politicalRequirement;
+      if (Object.keys(_parked).length) choice._inactivePolitical = _parked; else delete choice._inactivePolitical;
+    } else {
+      delete choice._inactivePolitical;
+    }
+    var _geltOn = document.getElementById('ib-cbcoston-'+i+'-'+ci);
+    var _geltAmt = parseInt(document.getElementById('ib-cbcost-'+i+'-'+ci)?.value) || 0;
+    if (_geltOn && _geltOn.checked && _geltAmt) { choice.budgetCost = _geltAmt; delete choice._inactiveBudgetCost; }
+    else { choice.budgetCost = 0; if (_geltAmt) choice._inactiveBudgetCost = _geltAmt; else delete choice._inactiveBudgetCost; }
     var _prevChoice = _prevChoices[ci];
     choice.missionAligned = preserveArrayOrder(choice.missionAligned, _prevChoice && _prevChoice.missionAligned);
     choice.missionOpposed = preserveArrayOrder(choice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
@@ -22461,6 +22755,11 @@ function toggleEdit(prefix, i) {
   // edit form below is fully visible (prevents the form feeling like it
   // "opens upward" when the card was near the bottom of the viewport).
   if(!isOpen) {
+    // Picker menus render empty and are filled in here, once the form exists,
+    // so each "+" offers exactly the options not already chosen in its group.
+    var groups = {};
+    form.querySelectorAll('.pick-add[data-group]').forEach(function(sel){ groups[sel.getAttribute('data-group')] = 1; });
+    Object.keys(groups).forEach(function(g){ refreshPickerMenus(g); });
     requestAnimationFrame(function(){
       try { card.scrollIntoView({block:'start', behavior:'smooth'}); } catch(e) { card.scrollIntoView(true); }
     });
@@ -22919,9 +23218,11 @@ function saveBreaking(i){
   while(document.getElementById('bn-ctext-'+i+'-'+ci)) {
     var text = document.getElementById('bn-ctext-'+i+'-'+ci).value;
     var unlock = document.getElementById('bn-cunlock-'+i+'-'+ci)?.value||null;
-    var aligned=[],opposed=[];
-    missions.forEach(function(m){var v=document.getElementById('bn-calign-'+i+'-'+ci+'-'+m.id)?.value||'neutral';if(v==='aligned')aligned.push(m.id);else if(v==='opposed')opposed.push(m.id);});
+    var aligned = readPickerColumn('bn-misal-'+i+'-'+ci);
+    var opposed = readPickerColumn('bn-misop-'+i+'-'+ci);
     var polLean = parseInt(document.getElementById('bn-cpollean-'+i+'-'+ci)?.value)||0;
+    var cloutCost = parseInt(document.getElementById('bn-ccloutcost-'+i+'-'+ci)?.value)||0;
+    var israelLean = parseInt(document.getElementById('bn-cpolleanil-'+i+'-'+ci)?.value)||0;
     // NOTE: the shared choice editor renders no choice-level Clout field, so this
     // lookup never resolves. Reading it as 0 and writing it through overwrote
     // authored cloutEffect values; the value is now carried over from the
@@ -22957,11 +23258,32 @@ function saveBreaking(i){
       oi++;
     }
     var segOv = readSegOverrides('bn', i, ci);
-    var bnChoice = {id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:parseInt(document.getElementById('bn-cbcost-'+i+'-'+ci)?.value)||0,politicalLean:polLean};
+    var bnChoice = {id:'c'+ci,text:text,requiresUnlock:unlock||null,missionAligned:aligned,missionOpposed:opposed,outcomes:outcomes,budgetCost:0,politicalLean:polLean};
     if (Object.keys(polReq).length) bnChoice.politicalRequirement = polReq;
     if (segOv) bnChoice.segmentOverrides = segOv;
-    var endangers = (GD.coalitionOffers||[]).filter(function(co){return document.getElementById('bn-cendanger-'+i+'-'+ci+'-'+co.id)?.checked}).map(function(co){return co.id});
+    var endangers = readPickerColumn('bn-coallist-'+i+'-'+ci);
     if (endangers.length) bnChoice.endangersCoalition = endangers; else delete bnChoice.endangersCoalition;
+    // Gelt cost is opt-in. Unchecked means the choice costs nothing, but the
+    // number stays parked on _inactiveBudgetCost so ticking the box again
+    // restores it. The engine only ever reads budgetCost.
+    // Political impact is opt-in too. Unchecked neutralises lean/clout/gating
+    // while the entered numbers stay parked on _inactivePolitical, so ticking
+    // the box again restores them.
+    var _polOn = document.getElementById('bn'+'-cpol-'+i+'-'+ci);
+    var _polVals = {politicalLean: polLean, israelLean: israelLean, cloutCost: cloutCost, politicalRequirement: Object.keys(polReq).length ? polReq : undefined};
+    if (!_polOn || !_polOn.checked) {
+      var _parked = {};
+      Object.keys(_polVals).forEach(function(k){ if (_polVals[k]) _parked[k] = _polVals[k]; });
+      bnChoice.politicalLean = 0;
+      delete bnChoice.israelLean; delete bnChoice.cloutCost; delete bnChoice.politicalRequirement;
+      if (Object.keys(_parked).length) bnChoice._inactivePolitical = _parked; else delete bnChoice._inactivePolitical;
+    } else {
+      delete bnChoice._inactivePolitical;
+    }
+    var _geltOn = document.getElementById('bn'+'-cbcoston-'+i+'-'+ci);
+    var _geltAmt = parseInt(document.getElementById('bn'+'-cbcost-'+i+'-'+ci)?.value) || 0;
+    if (_geltOn && _geltOn.checked && _geltAmt) { bnChoice.budgetCost = _geltAmt; delete bnChoice._inactiveBudgetCost; }
+    else { bnChoice.budgetCost = 0; if (_geltAmt) bnChoice._inactiveBudgetCost = _geltAmt; else delete bnChoice._inactiveBudgetCost; }
     var _prevChoice = _prevChoices[ci];
     bnChoice.missionAligned = preserveArrayOrder(bnChoice.missionAligned, _prevChoice && _prevChoice.missionAligned);
     bnChoice.missionOpposed = preserveArrayOrder(bnChoice.missionOpposed, _prevChoice && _prevChoice.missionOpposed);
